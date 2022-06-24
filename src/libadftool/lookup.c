@@ -44,7 +44,7 @@ do_fetch (const struct adftool_bplus_parameters *parameters,
 
 int
 adftool_bplus_lookup (const struct adftool_bplus_key *needle,
-		      const struct adftool_bplus_parameters
+		      struct adftool_bplus_parameters
 		      *parameters, size_t start, size_t max,
 		      size_t *n_results, uint32_t * results)
 {

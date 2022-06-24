@@ -1,5 +1,6 @@
 src/adftool_private.h
 src/bplus_tree_lookup_example.c
+src/libadftool/hdf5.c
 src/libadftool/lookup.c
 src/libadftool/parameters.c
 src/libadftool/bplus_key.c

@@ -8,6 +8,8 @@
  (gnu packages base)
  (gnu packages code)
  (gnu packages gettext)
+ (gnu packages maths)
+ (gnu packages compression)
  (guix build utils)
  (guix build-system gnu)
  (guix build-system copy)
@@ -184,7 +186,7 @@
 			     '()
 			     "po")))))))
  (inputs
-  (list gnu-gettext))
+  (list gnu-gettext hdf5 zlib))
  (native-inputs
   (list autoconf autoconf-archive automake libtool
 	valgrind

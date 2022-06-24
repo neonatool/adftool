@@ -24,7 +24,8 @@ libadftool_la_SOURCES = \
   src/adftool_private.h \
   src/libadftool/lookup.c \
   src/libadftool/parameters.c \
-  src/libadftool/bplus_key.c
+  src/libadftool/bplus_key.c \
+  src/libadftool/hdf5.c
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I lib -I $(srcdir)/lib \

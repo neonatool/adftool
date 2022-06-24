@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <hdf5.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -60,12 +61,17 @@ extern "C"
 							     void *),
 					     void *context);
 
+  void adftool_bplus_parameters_set_fetch_from_hdf5 (struct
+						     adftool_bplus_parameters
+						     *parameters,
+						     hid_t dataset);
+
 /* The lookup function. The parameters "fetch" and "compare" must be
    set. */
 
   int
     adftool_bplus_lookup (const struct adftool_bplus_key *needle,
-			  const struct adftool_bplus_parameters
+			  struct adftool_bplus_parameters
 			  *parameters, size_t start, size_t max,
 			  size_t *n_results, uint32_t * results);
 

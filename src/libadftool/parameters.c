@@ -8,7 +8,7 @@ adftool_bplus_parameters_alloc (void)
   if (ret != NULL)
     {
       ret->fetch = NULL;
-      ret->fetch_context = NULL;
+      ret->fetch_context.type = ADFTOOL_BPLUS_FETCH_UNSET;
       ret->compare = NULL;
       ret->compare_context = NULL;
     }
@@ -31,7 +31,8 @@ adftool_bplus_parameters_set_fetch (struct adftool_bplus_parameters
 				    void *context)
 {
   parameters->fetch = fetch;
-  parameters->fetch_context = context;
+  parameters->fetch_context.type = ADFTOOL_BPLUS_FETCH_LOGICAL;
+  parameters->fetch_context.arg.logical = context;
 }
 
 void
