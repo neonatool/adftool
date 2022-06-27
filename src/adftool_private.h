@@ -301,6 +301,18 @@ adftool_bplus_parameters_compare (const struct adftool_bplus_parameters
 			      parameters->compare_context);
 }
 
+static inline int
+compare_known (const struct adftool_bplus_parameters
+	       *parameters, uint32_t key_a, uint32_t key_b, int *result)
+{
+  struct adftool_bplus_key a, b;
+  a.type = ADFTOOL_BPLUS_KEY_KNOWN;
+  a.arg.known = key_a;
+  b.type = ADFTOOL_BPLUS_KEY_KNOWN;
+  b.arg.known = key_b;
+  return adftool_bplus_parameters_compare (parameters, &a, &b, result);
+}
+
 static inline void
 adftool_bplus_parameters_allocate (struct adftool_bplus_parameters
 				   *parameters, uint32_t * node_id)

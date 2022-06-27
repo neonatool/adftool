@@ -144,6 +144,13 @@ extern "C"
   extern LIBADFTOOL_API
     int adftool_bplus_grow (struct adftool_bplus_parameters *parameters);
 
+  /* The insert function requires "fetch", "compare", "allocate" and
+     "store" parameters.
+   */
+  extern LIBADFTOOL_API
+    int adftool_bplus_insert (uint32_t key, uint32_t value,
+			      struct adftool_bplus_parameters *parameters);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */

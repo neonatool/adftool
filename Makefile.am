@@ -27,13 +27,15 @@ check_PROGRAMS = \
   bplus_tree_lookup_example \
   bplus_tree_grow_example \
   bplus_tree_grow_file_example \
-  bplus_tree_gets_initialized
+  bplus_tree_gets_initialized \
+  bplus_tree_insert_example
 
 TESTS = \
   bplus_tree_lookup_example \
   bplus_tree_grow_example \
   bplus_tree_grow_file_example \
-  bplus_tree_gets_initialized
+  bplus_tree_gets_initialized \
+  bplus_tree_insert_example
 LOG_COMPILER = $(LOG_VALGRIND)
 
 adftool_SOURCES = src/adftool.c
@@ -54,6 +56,7 @@ libadftool_la_SOURCES = \
   src/libadftool/hdf5.c \
   src/libadftool/version.c \
   src/libadftool/grow.c \
+  src/libadftool/insert.c \
   src/libadftool/emscripten.cpp
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -98,6 +101,14 @@ bplus_tree_grow_file_example_LDADD = \
 bplus_tree_gets_initialized_SOURCES = \
   src/bplus_tree_gets_initialized.c
 bplus_tree_gets_initialized_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  @LTLIBOBJS@
+
+bplus_tree_insert_example_SOURCES = \
+  src/bplus_tree_insert_example.c
+bplus_tree_insert_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
