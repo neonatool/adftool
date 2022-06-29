@@ -25,12 +25,16 @@ libadftool_la_SOURCES = \
   src/libadftool/lookup.c \
   src/libadftool/parameters.c \
   src/libadftool/bplus_key.c \
-  src/libadftool/version.c
+  src/libadftool/version.c \
+  src/libadftool/emscripten.cpp
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I lib -I $(srcdir)/lib \
   -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"$(LOCALEDIR)\"
+  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DBUILDING_LIBADFTOOL
+libadftool_la_CFLAGS = \
+    $(CFLAG_VISIBILITY)
 libadftool_la_LIBADD = lib/libadftool.la @LTLIBOBJS@
 libadftool_la_LDFLAGS = -no-undefined $(LTLIBINTL)
 

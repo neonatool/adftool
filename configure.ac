@@ -13,6 +13,7 @@ AC_ARG_WITH([hdf5],
 # Checks for programs.
 AC_PROG_CC
 gl_EARLY
+AC_PROG_CXX
 AM_INIT_AUTOMAKE([gnu -Wall -Werror subdir-objects])
 AM_PROG_AR
 LT_INIT([win32-dll])
@@ -27,7 +28,7 @@ AS_IF([test "x$with_hdf5" != "xno"], [
 ])
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdint.h])
+AC_CHECK_HEADERS([stdint.h emscripten.h emscripten/bind.h])
 AS_IF([test "x$with_hdf5" != "xno"], [
   AC_CHECK_HEADER([hdf5.h],, [AC_MSG_ERROR([I need the HDF5 header.])])
 ])
@@ -37,6 +38,7 @@ AC_C_INLINE
 AC_C_RESTRICT
 AC_TYPE_SIZE_T
 AC_TYPE_UINT32_T
+gl_VISIBILITY
 
 # Checks for library functions.
 AC_FUNC_MALLOC
