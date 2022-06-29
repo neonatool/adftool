@@ -3,7 +3,12 @@
 
 #include <stdint.h>
 #include <stddef.h>
+
+#ifdef LIBADFTOOL_WITHOUT_HDF5
+typedef void *hid_t;
+#else /* not LIBADFTOOL_WITHOUT_HDF5 */
 #include <hdf5.h>
+#endif /* not LIBADFTOOL_WITHOUT_HDF5 */
 
 #ifdef __cplusplus
 extern "C"
@@ -15,6 +20,8 @@ extern "C"
    just use their index in the key table, or they are not known. For
    instance, the key used in a query can be random and thus we know
    its literal value, but it does not exist in the table. */
+
+  int adftool_with_hdf5 (void);
 
   struct adftool_bplus_key;
 

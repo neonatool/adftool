@@ -97,4 +97,17 @@ adftool_bplus_parameters_compare (const struct adftool_bplus_parameters
 			      parameters->compare_context);
 }
 
+void _adftool_ensure_init (void);
+
+static inline void
+ensure_init (void)
+{
+  static int is_initialized = 0;
+  if (!is_initialized)
+    {
+      _adftool_ensure_init ();
+      is_initialized = 1;
+    }
+}
+
 #endif /* not H_ADFTOOL_PRIVATE_INCLUDED */

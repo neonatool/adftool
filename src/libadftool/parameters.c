@@ -3,6 +3,7 @@
 struct adftool_bplus_parameters *
 adftool_bplus_parameters_alloc (void)
 {
+  ensure_init ();
   struct adftool_bplus_parameters *ret =
     malloc (sizeof (struct adftool_bplus_parameters));
   if (ret != NULL)

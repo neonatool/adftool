@@ -3,6 +3,7 @@
 struct adftool_bplus_key *
 adftool_bplus_key_alloc (void)
 {
+  ensure_init ();
   struct adftool_bplus_key *ret = malloc (sizeof (struct adftool_bplus_key));
   if (ret != NULL)
     {

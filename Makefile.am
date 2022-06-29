@@ -15,9 +15,9 @@ AM_DISTCHECK_CONFIGURE_FLAGS = \
 
 lib_LTLIBRARIES = libadftool.la
 dist_include_HEADERS = include/adftool.h
-check_PROGRAMS = bplus_tree_lookup_example
+check_PROGRAMS =
 
-TESTS = bplus_tree_lookup_example
+TESTS = $(check_PROGRAMS)
 LOG_COMPILER = $(LOG_VALGRIND)
 
 libadftool_la_SOURCES = \
@@ -25,7 +25,7 @@ libadftool_la_SOURCES = \
   src/libadftool/lookup.c \
   src/libadftool/parameters.c \
   src/libadftool/bplus_key.c \
-  src/libadftool/hdf5.c
+  src/libadftool/version.c
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I lib -I $(srcdir)/lib \
@@ -34,9 +34,23 @@ libadftool_la_CPPFLAGS = \
 libadftool_la_LIBADD = lib/libadftool.la @LTLIBOBJS@
 libadftool_la_LDFLAGS = -no-undefined $(LTLIBINTL)
 
-bplus_tree_lookup_example_SOURCES = \
-  src/bplus_tree_lookup_example.c
-bplus_tree_lookup_example_LDADD = \
-  libadftool.la \
-  $(LTLIBINTL) \
-  @LTLIBOBJS@
+if WITH_HDF5
+  check_PROGRAMS += bplus_tree_lookup_example
+
+  bplus_tree_lookup_example_SOURCES = \
+    src/bplus_tree_lookup_example.c
+  bplus_tree_lookup_example_LDADD = \
+    libadftool.la \
+    $(LTLIBINTL) \
+    @LTLIBOBJS@
+
+  libadftool_la_SOURCES += \
+    src/libadftool/hdf5.c
+else # not WITH_HDF5
+  libadftool_la_SOURCES += \
+    src/libadftool/not-hdf5.c
+  AM_CPPFLAGS += \
+    -DLIBADFTOOL_WITHOUT_HDF5
+  libadftool_la_CPPFLAGS += \
+    -DLIBADFTOOL_WITHOUT_HDF5
+endif # not WITH_HDF5
