@@ -21,7 +21,7 @@ gl_INIT
 
 # Checks for libraries.
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.21])
+AM_GNU_GETTEXT_VERSION([0.19])
 
 AS_IF([test "x$with_hdf5" != "xno"], [
   AC_SEARCH_LIBS([H5open], [hdf5],,, [-lz])
