@@ -1,0 +1,31 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+pages:
+  script:
+    - apt-get update -y
+    - apt-get install -y git python gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++
+    - git clone https://github.com/emscripten-core/emsdk.git
+    - cd emsdk
+    - ./emsdk install latest
+    - ./emsdk activate latest
+    - source ./emsdk_env.sh
+    - cd ..
+    - export GNULIB_SRCDIR=$PWD/gnulib
+    - ./bootstrap --force --skip-po
+    - ./configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
+    - make -j
+    - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
+    - make distclean
+    - mkdir -p emscripten-build
+    - cd emscripten-build
+    - emconfigure ../configure --without-hdf5 CFLAGS=-sEXPORTED_RUNTIME_METHODS=ccall,cwrap CXXFLAGS=-sEXPORTED_RUNTIME_METHODS=ccall,cwrap
+    - emmake make -j
+    - ./libtool --tag=CC --mode=link emcc -O3 libadftool.la -o index.html
+    - ls -R .libs
+    - cp -R .libs/ ../public
+    - cd ..
+    - cp adftool-*.tar.gz public/adftool-latest.tar.gz
+  artifacts:
+    paths:
+      - public
