@@ -4,7 +4,7 @@ variables:
 pages:
   script:
     - apt-get update -y
-    - apt-get install -y git python gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ cmake m4 libtinfo5
+    - apt-get install -y git python gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ cmake m4 libtinfo5 wine wine64 mingw-w64 binutils-mingw-w64 gcc-mingw-w64 g++-mingw-w64
     - git clone https://github.com/emscripten-core/emsdk.git
     - cd emsdk
     - ./emsdk install latest
@@ -12,7 +12,7 @@ pages:
     - source ./emsdk_env.sh
     - cd ..
     - export GNULIB_SRCDIR=$PWD/gnulib
-    - mkdir build-hdf5-with-node build-hdf5-emscripten
+    - mkdir build-hdf5-with-node build-hdf5-emscripten build-hdf5-mingw32 build-hdf5-mingw64
     - cd hdf5
     - ln -s /usr/bin/libtoolize ./libtoolize
     - cp src/H5make_libsettings.c src/H5make_libsettings-original.c
@@ -34,6 +34,24 @@ pages:
     - cp ../hdf5/src/H5Tinit.c-emscripten ../hdf5/src/H5Tinit.c
     - emmake make -j 8
     - emmake make install
+    - cd ../build-hdf5-mingw32
+    - ../hdf5/configure --target=i686-w64-mingw32 --enable-build-mode=production --prefix=$PWD/../public/mingw32 --disable-tools --disable-tests
+    - make -j 8 -k || true
+    - cd src
+    - wine ./H5make_libsettings.exe > ../../hdf5/src/H5lib_settings.c
+    - wine ./H5detect.exe > ../../hdf5/src/H5Tinit.c
+    - cd ..
+    - make -j 8
+    - make install
+    - cd ../build-hdf5-mingw64
+    - ../hdf5/configure --target=x86_64-w64-mingw32 --enable-build-mode=production --prefix=$PWD/../public/mingw64 --disable-tools --disable-tests
+    - make -j 8 -k || true
+    - cd src
+    - wine64 ./H5make_libsettings.exe > ../../hdf5/src/H5lib_settings.c
+    - wine64 ./H5detect.exe > ../../hdf5/src/H5Tinit.c
+    - cd ..
+    - make -j 8
+    - make install
     - cd ..
     - ./bootstrap --force --skip-po
     - ./configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
