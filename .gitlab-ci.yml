@@ -60,7 +60,7 @@ pages:
     - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
     - cp adftool-*.tar.gz public/adftool-latest.tar.gz
     - make distclean
-    - mkdir -p build-adftool-emscripten
+    - mkdir -p build-adftool-emscripten build-adftool-mingw32 build-adftool-mingw64
     - cd build-adftool-emscripten
     - emconfigure ../configure CPPFLAGS=-I$PWD/../public/emscripten/include LIBS=$PWD/../public/emscripten/lib/libhdf5.a --prefix=$PWD/../public/emscripten
     - emmake make -j
@@ -68,6 +68,14 @@ pages:
     - ./libtool --tag=CC --mode=link emcc -O3 libadftool.la -o index.html
     - ls -R .libs
     - cp -R .libs/ ../public
+    - cd ../build-adftool-mingw32
+    - ../configure CPPFLAGS=-I$PWD/../public/mingw32/include LDFLAGS=-L$PWD/../public/mingw32/lib LIBS=-lhdf5 --prefix=$PWD/../public/mingw32 --target=i686-w64-mingw32
+    - make -j
+    - make -j install
+    - cd ../build-adftool-mingw64
+    - ../configure CPPFLAGS=-I$PWD/../public/mingw64/include LDFLAGS=-L$PWD/../public/mingw64/lib LIBS=-lhdf5 --prefix=$PWD/../public/mingw64 --target=x86_64-w64-mingw32
+    - make -j
+    - make -j install
   artifacts:
     paths:
       - public
