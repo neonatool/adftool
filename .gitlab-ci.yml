@@ -4,7 +4,7 @@ variables:
 pages:
   script:
     - apt-get update -y
-    - apt-get install -y git python gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++
+    - apt-get install -y git python gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ cmake m4 libtinfo5
     - git clone https://github.com/emscripten-core/emsdk.git
     - cd emsdk
     - ./emsdk install latest
@@ -12,6 +12,28 @@ pages:
     - source ./emsdk_env.sh
     - cd ..
     - export GNULIB_SRCDIR=$PWD/gnulib
+    - mkdir hdf5-with-node
+    - cd hdf5
+    - ln -s /usr/bin/libtoolize ./libtoolize
+    - cp src/H5make_libsettings.c src/H5make_libsettings-original.c
+    - "(echo '#define main true_main' ; cat src/H5make_libsettings.c ../H5make_libsettings_true_main.c) > src/H5make_libsettings.c-fixed"
+    - cp src/H5make_libsettings.c-fixed src/H5make_libsettings.c
+    - export HDF5_ACLOCAL=$(which aclocal) ; export HDF5_AUTOHEADER=$(which autoheader) ; export HDF5_AUTOMAKE=$(which automake) ; export HDF5_AUTOCONF=$(which autoconf) ; export HDF5_LIBTOOL=$(which libtool) ; export HDF5_M4=$(which m4) ; ./autogen.sh
+    - cd ../hdf5-with-node
+    - emconfigure ../hdf5/configure --enable-build-mode=production CFLAGS="-std=gnu11" LIBS="-lnodefs.js" --disable-tools --disable-tests
+    - emmake make -k -j 8 || true
+    - cd src
+    - "cat libhdf5.settings | node ./H5make_libsettings > ../../hdf5/src/H5lib_settings.c-true"
+    - node ./H5detect > ../../hdf5/src/H5Tinit.c-true
+    - cd ../../hdf5
+    - cp src/H5make_libsettings-original.c src/H5make_libsettings.c
+    - emconfigure ../hdf5/configure --enable-build-mode=production --prefix=$PWD/../with-hdf5 --disable-tools --disable-tests
+    - emmake make -j 8 -k || true
+    - cp src/H5lib_settings.c-true src/H5lib_settings.c
+    - cp src/H5Tinit.c-true src/H5Tinit.c
+    - emmake make -j 8
+    - emmake make install
+    - cd ..
     - ./bootstrap --force --skip-po
     - ./configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
     - make -j
@@ -19,7 +41,7 @@ pages:
     - make distclean
     - mkdir -p emscripten-build
     - cd emscripten-build
-    - emconfigure ../configure --without-hdf5 CFLAGS=-sEXPORTED_RUNTIME_METHODS=ccall,cwrap CXXFLAGS=-sEXPORTED_RUNTIME_METHODS=ccall,cwrap
+    - emconfigure ../configure CPPFLAGS=-I$PWD/../with-hdf5/include LIBS=$PWD/../with-hdf5/lib/libhdf5.a
     - emmake make -j
     - ./libtool --tag=CC --mode=link emcc -O3 libadftool.la -o index.html
     - ls -R .libs

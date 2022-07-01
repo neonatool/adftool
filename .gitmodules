@@ -1,3 +1,6 @@
 [submodule "gnulib"]
 	path = gnulib
 	url = https://git.savannah.gnu.org/git/gnulib.git
+[submodule "hdf5"]
+	path = hdf5
+	url = https://github.com/HDFGroup/hdf5
