@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-06-30 11:01+0000\n"
+"POT-Creation-Date: 2022-06-30 10:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,11 +40,4 @@ msgstr ""
 #: src/bplus_tree_lookup_example.c:124
 #, c-format
 msgid "Found %s.\n"
-msgstr ""
-
-#: src/libadftool/not-hdf5.c:15
-#, c-format
-msgid ""
-"Error: adftool has not been compiled with HDF5. This was a bad idea and now "
-"you understand why."
 msgstr ""
