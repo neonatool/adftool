@@ -38,6 +38,8 @@ pages:
     - ./configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
     - make -j
     - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
+    - mkdir public
+    - cp adftool-*.tar.gz public/adftool-latest.tar.gz
     - make distclean
     - mkdir -p emscripten-build
     - cd emscripten-build
@@ -46,8 +48,6 @@ pages:
     - ./libtool --tag=CC --mode=link emcc -O3 libadftool.la -o index.html
     - ls -R .libs
     - cp -R .libs/ ../public
-    - cd ..
-    - cp adftool-*.tar.gz public/adftool-latest.tar.gz
   artifacts:
     paths:
       - public
