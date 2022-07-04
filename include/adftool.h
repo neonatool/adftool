@@ -12,7 +12,7 @@
 #define LIBADFTOOL_EMSCRIPTEN_KEEPALIVE
 #endif
 
-#if defined _MSC_VER || defined _WIN32 || defined __MINGW32__
+#if defined _WIN32 && !defined __CYGWIN__
 #define LIBADFTOOL_DLL_MADNESS 1
 #else
 #define LIBADFTOOL_DLL_MADNESS 0
