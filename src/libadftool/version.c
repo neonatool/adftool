@@ -1,12 +1,13 @@
 #include <adftool_private.h>
+#include "relocatable.h"
 
 void
 _adftool_ensure_init (void)
 {
-  static int is_initialized = 0;
+  static volatile int is_initialized = 0;
   if (!is_initialized)
     {
-      bindtextdomain (PACKAGE, LOCALEDIR);
+      bindtextdomain (PACKAGE, relocate (LOCALEDIR));
       is_initialized = 1;
     }
 }

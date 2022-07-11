@@ -7,15 +7,19 @@ AC_CONFIG_SRCDIR([src/libadftool/lookup.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
+AM_CONDITIONAL([SHLIBS_IN_BINDIR],
+               [case "$host_os" in mingw* | cygwin*) true;; *) false;; esac])
 
 # Checks for programs.
 AC_PROG_CC
 gl_EARLY
+glprog_EARLY
 AC_PROG_CXX
 AM_INIT_AUTOMAKE([gnu -Wall -Werror subdir-objects])
 AM_PROG_AR
 LT_INIT([win32-dll])
 gl_INIT
+glprog_INIT
 
 # Checks for libraries.
 AM_GNU_GETTEXT([external])
@@ -38,5 +42,5 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNC([H5open],, [AC_MSG_ERROR([I need the HDF5 library functions.])])
 
-AC_CONFIG_FILES([Makefile lib/Makefile po/Makefile.in])
+AC_CONFIG_FILES([Makefile lib/Makefile libprog/Makefile po/Makefile.in])
 AC_OUTPUT

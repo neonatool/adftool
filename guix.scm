@@ -118,7 +118,8 @@
       (add-after
        'check 'distcheck
        (lambda _
-	 (invoke "make" "-j" "distcheck")))
+	 (invoke "make" "-j" "distcheck"
+		 "DISTCHECK_CONFIGURE_FLAGS=\"LDFLAGS=-Wl,-rpath -Wl,./.libs\"")))
       (add-after
        'install 'install-source
        (lambda* (#:key outputs #:allow-other-keys)
