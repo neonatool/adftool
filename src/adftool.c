@@ -7,6 +7,7 @@
 #include "gettext.h"
 #include "relocatable.h"
 #include "progname.h"
+#include <locale.h>
 
 #define _(String) gettext(String)
 #define N_(String) (String)
