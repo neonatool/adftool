@@ -11,13 +11,3 @@ _adftool_ensure_init (void)
       is_initialized = 1;
     }
 }
-
-int
-adftool_with_hdf5 (void)
-{
-#ifdef LIBADFTOOL_WITHOUT_HDF5
-  return 0;
-#else /* not LIBADFTOOL_WITHOUT_HDF5 */
-  return 1;
-#endif /* not LIBADFTOOL_WITHOUT_HDF5 */
-}
