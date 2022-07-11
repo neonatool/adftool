@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-06-30 10:34+0000\n"
+"POT-Creation-Date: 2022-07-11 14:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/bplus_tree_lookup_example.c:50
+#: src/bplus_tree_lookup_example.c:53
 #, c-format
 msgid "−> Load %u: [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
 msgstr ""
 
-#: src/bplus_tree_lookup_example.c:89
+#: src/bplus_tree_lookup_example.c:92
 #, c-format
 msgid "−> Compare %s to %s: %d\n"
 msgstr ""
 
-#: src/bplus_tree_lookup_example.c:102 src/bplus_tree_lookup_example.c:146
+#: src/bplus_tree_lookup_example.c:105 src/bplus_tree_lookup_example.c:149
 #, c-format
 msgid "adftool memory allocation problem detected.\n"
 msgstr ""
 
-#: src/bplus_tree_lookup_example.c:122
+#: src/bplus_tree_lookup_example.c:125
 #, c-format
 msgid "Finding %s…\n"
 msgstr ""
 
-#: src/bplus_tree_lookup_example.c:124
+#: src/bplus_tree_lookup_example.c:127
 #, c-format
 msgid "Found %s.\n"
 msgstr ""

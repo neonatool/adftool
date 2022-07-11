@@ -45,7 +45,10 @@ fetch (uint32_t node_id, size_t *row_actual_length,
   (void) context;
   /* context is where you would find the data for instance. */
   assert (node_id < 3);
-  assert (request_start + request_length <= 9);
+  if (request_start + request_length > 9)
+    {
+      request_length = 9 - request_start;
+    }
   fprintf (stderr,
 	   _("−> Load %u: [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"),
 	   node_id, (int32_t) data[node_id][0], (int32_t) data[node_id][1],
