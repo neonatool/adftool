@@ -19,9 +19,13 @@ bin_PROGRAMS = adftool
 
 lib_LTLIBRARIES = libadftool.la
 dist_include_HEADERS = include/adftool.h
-check_PROGRAMS = bplus_tree_lookup_example
+check_PROGRAMS = \
+  bplus_tree_lookup_example \
+  bplus_tree_grow_example
 
-TESTS = bplus_tree_lookup_example
+TESTS = \
+  bplus_tree_lookup_example \
+  bplus_tree_grow_example
 LOG_COMPILER = $(LOG_VALGRIND)
 
 adftool_SOURCES = src/adftool.c
@@ -41,6 +45,7 @@ libadftool_la_SOURCES = \
   src/libadftool/bplus_key.c \
   src/libadftool/hdf5.c \
   src/libadftool/version.c \
+  src/libadftool/grow.c \
   src/libadftool/emscripten.cpp
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -61,6 +66,13 @@ endif
 bplus_tree_lookup_example_SOURCES = \
   src/bplus_tree_lookup_example.c
 bplus_tree_lookup_example_LDADD = \
+  libadftool.la \
+  $(LTLIBINTL) \
+  @LTLIBOBJS@
+
+bplus_tree_grow_example_SOURCES = \
+  src/bplus_tree_grow_example.c
+bplus_tree_grow_example_LDADD = \
   libadftool.la \
   $(LTLIBINTL) \
   @LTLIBOBJS@

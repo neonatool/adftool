@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-07-12 07:48+0000\n"
+"POT-Creation-Date: 2022-07-12 07:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Hello, world!\n"
 msgstr ""
 
-#: src/bplus_tree_lookup_example.c:53
+#: src/bplus_tree_lookup_example.c:53 src/bplus_tree_grow_example.c:74
 #, c-format
 msgid "−> Load %u: [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
 msgstr ""
@@ -33,6 +33,7 @@ msgid "−> Compare %s to %s: %d\n"
 msgstr ""
 
 #: src/bplus_tree_lookup_example.c:105 src/bplus_tree_lookup_example.c:149
+#: src/bplus_tree_grow_example.c:138
 #, c-format
 msgid "adftool memory allocation problem detected.\n"
 msgstr ""
@@ -45,4 +46,14 @@ msgstr ""
 #: src/bplus_tree_lookup_example.c:127
 #, c-format
 msgid "Found %s.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_example.c:96
+#, c-format
+msgid "−> Allocate a new node: %u\n"
+msgstr ""
+
+#: src/bplus_tree_grow_example.c:111
+#, c-format
+msgid "−> Store %u, [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
 msgstr ""

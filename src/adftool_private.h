@@ -58,6 +58,10 @@ struct adftool_bplus_parameters
   int (*compare) (const struct adftool_bplus_key *,
 		  const struct adftool_bplus_key *, int *, void *);
   void *compare_context;
+  void (*allocate) (uint32_t *, void *);
+  void *allocate_context;
+  void (*store) (uint32_t, size_t, size_t, const uint32_t *, void *);
+  void *store_context;
 };
 
 struct node
@@ -135,12 +139,32 @@ node_is_leaf (const struct node *node)
   return (flags & flag_is_leaf) != 0;
 }
 
-static uint32_t
+static inline void
+node_set_leaf (struct node *node)
+{
+  uint32_t bit = 1;
+  uint32_t flag_is_leaf = bit << 31;
+  node->row[2 * node->order] = flag_is_leaf;
+}
+
+static inline void
+node_set_non_leaf (struct node *node)
+{
+  node->row[2 * node->order] = 0;
+}
+
+static inline uint32_t
 node_key (const struct node *node, size_t i)
 {
   assert (i + 1 < node->order);
-
   return node->row[i];
+}
+
+static inline void
+node_set_key (struct node *node, size_t i, uint32_t key)
+{
+  assert (i + 1 < node->order);
+  node->row[i] = key;
 }
 
 static inline uint32_t
@@ -148,6 +172,13 @@ node_value (const struct node *node, size_t i)
 {
   assert (i < node->order);
   return node->row[node->order - 1 + i];
+}
+
+static inline void
+node_set_value (struct node *node, size_t i, uint32_t value)
+{
+  assert (i < node->order);
+  node->row[node->order - 1 + i] = value;
 }
 
 static inline uint32_t
@@ -163,6 +194,13 @@ node_parent (const struct node *node)
 {
   assert (node->order > 0);
   return node->row[2 * node->order - 1];
+}
+
+static inline void
+node_set_parent (struct node *node, uint32_t parent)
+{
+  assert (node->order > 0);
+  node->row[2 * node->order - 1] = parent;
 }
 
 static inline int
@@ -245,6 +283,32 @@ adftool_bplus_parameters_compare (const struct adftool_bplus_parameters
   assert (parameters->compare != NULL);
   return parameters->compare (key_a, key_b, result,
 			      parameters->compare_context);
+}
+
+static inline void
+adftool_bplus_parameters_allocate (const struct adftool_bplus_parameters
+				   *parameters, uint32_t * node_id)
+{
+  assert (parameters->allocate != NULL);
+  parameters->allocate (node_id, parameters->allocate_context);
+}
+
+static inline void
+adftool_bplus_parameters_store (const struct adftool_bplus_parameters
+				*parameters,
+				uint32_t node_id, size_t start, size_t length,
+				const uint32_t * row)
+{
+  assert (parameters->store != NULL);
+  parameters->store (node_id, start, length, row, parameters->store_context);
+}
+
+static inline void
+node_store (const struct adftool_bplus_parameters *parameters,
+	    const struct node *node)
+{
+  adftool_bplus_parameters_store (parameters, node->id, 0,
+				  2 * node->order + 1, node->row);
 }
 
 void _adftool_ensure_init (void);

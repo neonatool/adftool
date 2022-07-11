@@ -99,6 +99,29 @@ extern "C"
 							       void *),
 					       void *context);
 
+  /* The allocation and storage should not signal errors, because
+     there’s no way to recover from a partially failing update. If you
+     cannot guarantee error-free updates in the backend, store the
+     updates in a cache and do them all at once. If you do that, make
+     sure to also tweak the "fetch" callback to first look in the
+     cache. */
+
+  extern LIBADFTOOL_API
+    void adftool_bplus_parameters_set_allocate (struct adftool_bplus_parameters
+						*parameters,
+						void (*allocate) (uint32_t *,
+								  void *),
+						void *context);
+
+  extern LIBADFTOOL_API
+    void adftool_bplus_parameters_set_store (struct adftool_bplus_parameters
+					     *parameters,
+					     void (*store) (uint32_t,
+							    size_t, size_t,
+							    const uint32_t *,
+							    void *),
+					     void *context);
+
   extern LIBADFTOOL_API
     void adftool_bplus_parameters_set_fetch_from_hdf5 (struct
 						       adftool_bplus_parameters
@@ -114,6 +137,13 @@ extern "C"
 			  struct adftool_bplus_parameters
 			  *parameters, size_t start, size_t max,
 			  size_t *n_results, uint32_t * results);
+
+  /* Add a parent to the root. The parameters "fetch", "compare",
+     "allocate" and "store" must be set. */
+  
+  extern LIBADFTOOL_API
+  int
+  adftool_bplus_grow (struct adftool_bplus_parameters *parameters);
 
 #ifdef __cplusplus
 }

@@ -49,3 +49,24 @@ adftool_bplus_parameters_set_compare (struct adftool_bplus_parameters
   parameters->compare = compare;
   parameters->compare_context = context;
 }
+
+void
+adftool_bplus_parameters_set_allocate (struct adftool_bplus_parameters
+				       *parameters,
+				       void (*allocate) (uint32_t *, void *),
+				       void *context)
+{
+  parameters->allocate = allocate;
+  parameters->allocate_context = context;
+}
+
+void
+adftool_bplus_parameters_set_store (struct adftool_bplus_parameters
+				    *parameters,
+				    void (*store) (uint32_t, size_t, size_t,
+						   const uint32_t *, void *),
+				    void *context)
+{
+  parameters->store = store;
+  parameters->store_context = context;
+}
