@@ -124,9 +124,9 @@ extern "C"
 					     void *context);
 
   extern LIBADFTOOL_API
-    void adftool_bplus_parameters_from_hdf5 (struct adftool_bplus_parameters
-					     *parameters, hid_t dataset,
-					     hid_t next_id_attribute);
+    int adftool_bplus_parameters_from_hdf5 (struct adftool_bplus_parameters
+					    *parameters, hid_t dataset,
+					    hid_t next_id_attribute);
 
   /* The lookup function. The parameters "fetch" and "compare" must be
      set. */
@@ -138,8 +138,8 @@ extern "C"
 			  *parameters, size_t start, size_t max,
 			  size_t *n_results, uint32_t * results);
 
-  /* Add a parent to the root. The parameters "fetch", "compare",
-     "allocate" and "store" must be set. */
+  /* Add a parent to the root. The parameters "fetch", "allocate" and
+     "store" must be set. */
 
   extern LIBADFTOOL_API
     int adftool_bplus_grow (struct adftool_bplus_parameters *parameters);

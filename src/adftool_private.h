@@ -195,6 +195,13 @@ node_next_leaf (const struct node *node)
   return node_value (node, node->order - 1);
 }
 
+static inline void
+node_set_next_leaf (struct node *node, uint32_t next_leaf)
+{
+  assert (node_is_leaf (node));
+  node_set_value (node, node->order - 1, next_leaf);
+}
+
 static inline uint32_t
 node_parent (const struct node *node)
 {
@@ -226,9 +233,8 @@ appropriate_context_argument (struct context *context)
 }
 
 static inline int
-adftool_bplus_parameters_fetch (const struct adftool_bplus_parameters
-				*parameters, uint32_t row_id,
-				size_t *actual_row_length,
+adftool_bplus_parameters_fetch (struct adftool_bplus_parameters *parameters,
+				uint32_t row_id, size_t *actual_row_length,
 				size_t request_start, size_t request_length,
 				uint32_t * response)
 {
@@ -239,8 +245,8 @@ adftool_bplus_parameters_fetch (const struct adftool_bplus_parameters
 }
 
 static inline int
-node_fetch (const struct adftool_bplus_parameters *parameters,
-	    uint32_t id, struct node *node)
+node_fetch (struct adftool_bplus_parameters *parameters, uint32_t id,
+	    struct node *node)
 {
   size_t actual_row_length;
   node->id = id;
@@ -296,7 +302,7 @@ adftool_bplus_parameters_compare (const struct adftool_bplus_parameters
 }
 
 static inline void
-adftool_bplus_parameters_allocate (const struct adftool_bplus_parameters
+adftool_bplus_parameters_allocate (struct adftool_bplus_parameters
 				   *parameters, uint32_t * node_id)
 {
   assert (parameters->allocate != NULL);
@@ -305,8 +311,7 @@ adftool_bplus_parameters_allocate (const struct adftool_bplus_parameters
 }
 
 static inline void
-adftool_bplus_parameters_store (const struct adftool_bplus_parameters
-				*parameters,
+adftool_bplus_parameters_store (struct adftool_bplus_parameters *parameters,
 				uint32_t node_id, size_t start, size_t length,
 				const uint32_t * row)
 {
@@ -316,7 +321,7 @@ adftool_bplus_parameters_store (const struct adftool_bplus_parameters
 }
 
 static inline void
-node_store (const struct adftool_bplus_parameters *parameters,
+node_store (struct adftool_bplus_parameters *parameters,
 	    const struct node *node)
 {
   adftool_bplus_parameters_store (parameters, node->id, 0,
