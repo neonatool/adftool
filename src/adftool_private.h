@@ -143,14 +143,14 @@ node_key (const struct node *node, size_t i)
   return node->row[i];
 }
 
-static uint32_t
+static inline uint32_t
 node_value (const struct node *node, size_t i)
 {
   assert (i < node->order);
   return node->row[node->order - 1 + i];
 }
 
-static uint32_t
+static inline uint32_t
 node_next_leaf (const struct node *node)
 {
   assert (node_is_leaf (node));
@@ -158,7 +158,7 @@ node_next_leaf (const struct node *node)
   return node_value (node, node->order - 1);
 }
 
-static uint32_t
+static inline uint32_t
 node_parent (const struct node *node)
 {
   assert (node->order > 0);
@@ -198,10 +198,10 @@ node_fetch (const struct adftool_bplus_parameters *parameters,
   node->id = id;
   while (1)
     {
-      int fetch_error =
-	adftool_bplus_parameters_fetch (parameters, node->id,
-					&actual_row_length, 0,
-					2 * node->order + 1, node->row);
+      int fetch_error = adftool_bplus_parameters_fetch (parameters, node->id,
+							&actual_row_length, 0,
+							2 * node->order + 1,
+							node->row);
       if (fetch_error)
 	{
 	  return 1;
@@ -252,7 +252,7 @@ void _adftool_ensure_init (void);
 static inline void
 ensure_init (void)
 {
-  static int is_initialized = 0;
+  static volatile int is_initialized = 0;
   if (!is_initialized)
     {
       _adftool_ensure_init ();
