@@ -4,7 +4,7 @@ variables:
 pages:
   script:
     - apt-get update -y
-    - apt-get install -y git python gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ cmake m4 libtinfo5 wine wine64 mingw-w64 binutils-mingw-w64 gcc-mingw-w64 g++-mingw-w64
+    - apt-get install -y git python gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ cmake m4 libtinfo5
     - git clone https://github.com/emscripten-core/emsdk.git
     - cd emsdk
     - ./emsdk install latest
@@ -12,7 +12,7 @@ pages:
     - source ./emsdk_env.sh
     - cd ..
     - export GNULIB_SRCDIR=$PWD/gnulib
-    - mkdir build-hdf5-with-node build-hdf5-emscripten build-hdf5-mingw32 build-hdf5-mingw64
+    - mkdir build-hdf5-with-node build-hdf5-emscripten
     - cd hdf5
     - ln -s /usr/bin/libtoolize ./libtoolize
     - cp src/H5make_libsettings.c src/H5make_libsettings-original.c
@@ -34,24 +34,6 @@ pages:
     - cp ../hdf5/src/H5Tinit.c-emscripten ../hdf5/src/H5Tinit.c
     - emmake make -j 8
     - emmake make install
-    - cd ../build-hdf5-mingw32
-    - ../hdf5/configure --target=i686-w64-mingw32 --enable-build-mode=production --prefix=$PWD/../public/mingw32 --disable-tools --disable-tests
-    - make -j 8 -k || true
-    - cd src
-    - wine ./H5make_libsettings.exe > ../../hdf5/src/H5lib_settings.c
-    - wine ./H5detect.exe > ../../hdf5/src/H5Tinit.c
-    - cd ..
-    - make -j 8
-    - make install
-    - cd ../build-hdf5-mingw64
-    - ../hdf5/configure --target=x86_64-w64-mingw32 --enable-build-mode=production --prefix=$PWD/../public/mingw64 --disable-tools --disable-tests
-    - make -j 8 -k || true
-    - cd src
-    - wine64 ./H5make_libsettings.exe > ../../hdf5/src/H5lib_settings.c
-    - wine64 ./H5detect.exe > ../../hdf5/src/H5Tinit.c
-    - cd ..
-    - make -j 8
-    - make install
     - cd ..
     - ./bootstrap --force --skip-po
     - ./configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
@@ -60,7 +42,7 @@ pages:
     - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
     - cp adftool-*.tar.gz public/adftool-latest.tar.gz
     - make distclean
-    - mkdir -p build-adftool-emscripten build-adftool-mingw32 build-adftool-mingw64
+    - mkdir -p build-adftool-emscripten
     - cd build-adftool-emscripten
     - emconfigure ../configure CPPFLAGS=-I$PWD/../public/emscripten/include LIBS=$PWD/../public/emscripten/lib/libhdf5.a --prefix=$PWD/../public/emscripten --enable-relocatable
     - emmake make -j
@@ -68,14 +50,6 @@ pages:
     - ./libtool --tag=CC --mode=link emcc -O3 libadftool.la -o index.html
     - ls -R .libs
     - cp -R .libs/ ../public
-    - cd ../build-adftool-mingw32
-    - ../configure CPPFLAGS=-I$PWD/../public/mingw32/include LDFLAGS=-L$PWD/../public/mingw32/lib LIBS=-lhdf5 --prefix=$PWD/../public/mingw32 --target=i686-w64-mingw32 --enable-relocatable
-    - make -j
-    - make -j install
-    - cd ../build-adftool-mingw64
-    - ../configure CPPFLAGS=-I$PWD/../public/mingw64/include LDFLAGS=-L$PWD/../public/mingw64/lib LIBS=-lhdf5 --prefix=$PWD/../public/mingw64 --target=x86_64-w64-mingw32 --enable-relocatable
-    - make -j
-    - make -j install
   artifacts:
     paths:
       - public
