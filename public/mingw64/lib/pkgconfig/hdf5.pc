@@ -1,4 +1,4 @@
-prefix=C:/Program
+prefix=/mingw64
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
@@ -10,5 +10,5 @@ Version: 1.12.2
 Cflags: -I${includedir}
 Libs: -L${libdir}  -lhdf5
 Requires: 
-Libs.private:  -lhdf5::zlib-static -lhdf5::sz-static -lhdf5::aec-static  -lhdf5
+Libs.private:  -lm -lws2_32 -lwsock32 -l/mingw64/lib/libz.dll.a -l/mingw64/lib/libsz.dll.a  -lhdf5
 Requires.private: 

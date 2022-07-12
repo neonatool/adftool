@@ -18,19 +18,19 @@
 #define H5_HAVE_WINDOWS 1
 
 /* Define if using MinGW */
-/* #undef H5_HAVE_MINGW */
+#define H5_HAVE_MINGW 1
 
 /* Define if on the Windows platform and default WIN32 API */
 #define H5_HAVE_WIN32_API 1
 
 /* Define if using a Windows compiler (i.e. Visual Studio) */
-#define H5_HAVE_VISUAL_STUDIO 1
+/* #undef H5_HAVE_VISUAL_STUDIO */
 
 /* Define the default plugins path to compile */
 #define H5_DEFAULT_PLUGINDIR "%ALLUSERSPROFILE%\\hdf5\\lib\\plugin"
 
 /* Define if dev_t is a scalar */
-/* #undef H5_DEV_T_IS_SCALAR */
+#define H5_DEV_T_IS_SCALAR 1
 
 /* Define if your system is IBM ppc64le and cannot convert some long double
    values correctly. */
@@ -45,13 +45,13 @@
 
 /* Define to a macro mangling the given C identifier (in lower and upper
    case), which must not contain underscores, for linking with Fortran. */
-#define H5_FC_FUNC(name,NAME) NAME
+#define H5_FC_FUNC(name,NAME) name##_
 
 /* As FC_FUNC, but for C identifiers containing underscores. */
-#define H5_FC_FUNC_(name,NAME) NAME
+#define H5_FC_FUNC_(name,NAME) name##_
 
 /* Define if Fortran C_LONG_DOUBLE is different from C_DOUBLE */
-#define H5_FORTRAN_C_LONG_DOUBLE_IS_UNIQUE 0
+#define H5_FORTRAN_C_LONG_DOUBLE_IS_UNIQUE 1
 
 /* Define if we have Fortran C_LONG_DOUBLE */
 #define H5_FORTRAN_HAVE_C_LONG_DOUBLE 1
@@ -66,47 +66,47 @@
 #define H5_FORTRAN_HAVE_STORAGE_SIZE 1
 
 /* Determine the size of C long double */
-#define H5_FORTRAN_SIZEOF_LONG_DOUBLE 8
+#define H5_FORTRAN_SIZEOF_LONG_DOUBLE 16
 
 /* Define Fortran compiler ID */
-#define H5_Fortran_COMPILER_ID Intel
+#define H5_Fortran_COMPILER_ID GNU
 
 /* Define number of valid Fortran INTEGER KINDs (must be defined before F_IKIND)*/
-#define H5_H5CONFIG_F_NUM_IKIND INTEGER, PARAMETER :: num_ikinds = 4
+#define H5_H5CONFIG_F_NUM_IKIND INTEGER, PARAMETER :: num_ikinds = 5
 
 /* Define valid Fortran INTEGER KINDs */
-#define H5_H5CONFIG_F_IKIND INTEGER, DIMENSION(1:num_ikinds) :: ikind = (/1,2,4,8/)
+#define H5_H5CONFIG_F_IKIND INTEGER, DIMENSION(1:num_ikinds) :: ikind = (/1,2,4,8,16/)
 
 /* Define number of valid Fortran REAL KINDs (must be defined before F_RKIND) */
-#define H5_H5CONFIG_F_NUM_RKIND INTEGER, PARAMETER :: num_rkinds = 3
+#define H5_H5CONFIG_F_NUM_RKIND INTEGER, PARAMETER :: num_rkinds = 4
 
 /* Define valid Fortran REAL KINDs */
-#define H5_H5CONFIG_F_RKIND INTEGER, DIMENSION(1:num_rkinds) :: rkind = (/4,8,16/)
+#define H5_H5CONFIG_F_RKIND INTEGER, DIMENSION(1:num_rkinds) :: rkind = (/4,8,10,16/)
 
 /* Define valid Fortran REAL KINDs Sizeof */
-#define H5_H5CONFIG_F_RKIND_SIZEOF INTEGER, DIMENSION(1:num_rkinds) :: rkind_sizeof = (/4,8,16/)
+#define H5_H5CONFIG_F_RKIND_SIZEOF INTEGER, DIMENSION(1:num_rkinds) :: rkind_sizeof = (/4,8,16,16/)
 
 /* Define to 1 if you have the `alarm' function. */
-/* #undef H5_HAVE_ALARM */
+#define H5_HAVE_ALARM 1
 
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 /* #undef H5_HAVE_ARPA_INET_H */
 
 /* Define to 1 if you have the `asprintf' function. */
-/* #undef H5_HAVE_ASPRINTF */
+#define H5_HAVE_ASPRINTF 1
 
 /* Define if the __attribute__(()) extension is present */
-/* #undef H5_HAVE_ATTRIBUTE */
+#define H5_HAVE_ATTRIBUTE 1
 
 /* Define if the compiler understands C99 designated initialization of structs
    and unions */
-/* #undef H5_HAVE_C99_DESIGNATED_INITIALIZER */
+#define H5_HAVE_C99_DESIGNATED_INITIALIZER 1
 
 /* Define if the compiler understands the __func__ keyword */
-/* #undef H5_HAVE_C99_FUNC */
+#define H5_HAVE_C99_FUNC 1
 
 /* Define to 1 if you have the `clock_gettime' function. */
-/* #undef H5_HAVE_CLOCK_GETTIME */
+#define H5_HAVE_CLOCK_GETTIME 1
 
 /* Define if the function stack tracing code is to be compiled in */
 /* #undef H5_HAVE_CODESTACK */
@@ -124,7 +124,7 @@
 /* #undef H5_HAVE_DIRECT */
 
 /* Define to 1 if you have the <dirent.h> header file. */
-/* #undef H5_HAVE_DIRENT_H */
+#define H5_HAVE_DIRENT_H 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 /* #undef H5_HAVE_DLFCN_H */
@@ -148,7 +148,7 @@
 #define H5_HAVE_FILTER_SZIP 1
 
 /* Determine if __float128 is available */
-/* #undef H5_HAVE_FLOAT128 */
+#define H5_HAVE_FLOAT128 1
 
 /* Define to 1 if you have the `flock' function. */
 /* #undef H5_HAVE_FLOCK */
@@ -157,25 +157,25 @@
 /* #undef H5_HAVE_FORK */
 
 /* Define to 1 if you have the `frexpf' function. */
-/* #undef H5_HAVE_FREXPF */
+#define H5_HAVE_FREXPF 1
 
 /* Define to 1 if you have the `frexpl' function. */
-/* #undef H5_HAVE_FREXPL */
+#define H5_HAVE_FREXPL 1
 
 /* Define to 1 if you have the `fseeko' function. */
-/* #undef H5_HAVE_FSEEKO */
+#define H5_HAVE_FSEEKO 1
 
 /* Define if the compiler understands the __FUNCTION__ keyword */
 #define H5_HAVE_FUNCTION 1
 
 /* Determine if INTEGER*16 is available */
-/* #undef H5_HAVE_Fortran_INTEGER_SIZEOF_16 */
+#define H5_HAVE_Fortran_INTEGER_SIZEOF_16 1
 
 /* Define to 1 if you have the `GetConsoleScreenBufferInfo' function. */
 #define H5_HAVE_GETCONSOLESCREENBUFFERINFO 1
 
 /* Define to 1 if you have the `gethostname' function. */
-#define H5_HAVE_GETHOSTNAME 1
+/* #undef H5_HAVE_GETHOSTNAME */
 
 /* Define to 1 if you have the `getpwuid' function. */
 /* #undef H5_HAVE_GETPWUID */
@@ -260,7 +260,7 @@
 #define H5_HAVE_LROUNDF 1
 
 /* Define to 1 if you have the `lseek64' function. */
-/* #undef H5_HAVE_LSEEK64 */
+#define H5_HAVE_LSEEK64 1
 
 /* Define to 1 if you have the `lstat' function. */
 /* #undef H5_HAVE_LSTAT */
@@ -311,13 +311,13 @@
 /* #undef H5_HAVE_PREADWRITE */
 
 /* Define to 1 if you have the <pthread.h> header file. */
-/* #undef H5_HAVE_PTHREAD_H */
+#define H5_HAVE_PTHREAD_H 1
 
 /* Define to 1 if you have the <pwd.h> header file. */
 /* #undef H5_HAVE_PWD_H */
 
 /* Define to 1 if you have the <quadmath.h> header file. */
-/* #undef H5_HAVE_QUADMATH_H */
+#define H5_HAVE_QUADMATH_H 1
 
 /* Define to 1 if you have the `random' function. */
 /* #undef H5_HAVE_RANDOM */
@@ -357,7 +357,7 @@
 /* #undef H5_HAVE_SIGSETJMP */
 
 /* Define to 1 if you have the `snprintf' function. */
-/* #undef H5_HAVE_SNPRINTF */
+#define H5_HAVE_SNPRINTF 1
 
 /* Define to 1 if you have the `srandom' function. */
 /* #undef H5_HAVE_SRANDOM */
@@ -387,7 +387,7 @@
 #define H5_HAVE_STRDUP 1
 
 /* Define to 1 if you have the <strings.h> header file. */
-/* #undef H5_HAVE_STRINGS_H */
+#define H5_HAVE_STRINGS_H 1
 
 /* Define to 1 if you have the <string.h> header file. */
 #define H5_HAVE_STRING_H 1
@@ -411,7 +411,7 @@
 #define H5_HAVE_SYSTEM 1
 
 /* Define to 1 if you have the <sys/file.h> header file. */
-/* #undef H5_HAVE_SYS_FILE_H */
+#define H5_HAVE_SYS_FILE_H 1
 
 /* Define to 1 if you have the <sys/ioctl.h> header file. */
 /* #undef H5_HAVE_SYS_IOCTL_H */
@@ -426,7 +426,7 @@
 #define H5_HAVE_SYS_STAT_H 1
 
 /* Define to 1 if you have the <sys/time.h> header file. */
-/* #undef H5_HAVE_SYS_TIME_H */
+#define H5_HAVE_SYS_TIME_H 1
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #define H5_HAVE_SYS_TYPES_H 1
@@ -458,13 +458,13 @@
 /* #undef H5_HAVE_TM_GMTOFF */
 
 /* Define to 1 if you have the <unistd.h> header file. */
-/* #undef H5_HAVE_UNISTD_H */
+#define H5_HAVE_UNISTD_H 1
 
 /* Define to 1 if you have the `vasprintf' function. */
-/* #undef H5_HAVE_VASPRINTF */
+#define H5_HAVE_VASPRINTF 1
 
 /* Define to 1 if you have the `vsnprintf' function. */
-/* #undef H5_HAVE_VSNPRINTF */
+#define H5_HAVE_VSNPRINTF 1
 
 /* Define to 1 if you have the `waitpid' function. */
 /* #undef H5_HAVE_WAITPID */
@@ -491,7 +491,7 @@
 #define H5_HAVE___INLINE 1
 
 /* Define if the compiler understands __inline__ */
-/* #undef H5_HAVE___INLINE__ */
+#define H5_HAVE___INLINE__ 1
 
 /* Define if the library will ignore file locks when disabled */
 #define H5_IGNORE_DISABLED_FILE_LOCKS 1
@@ -552,7 +552,7 @@
 #define H5_PACKAGE_VERSION "1.12.2"
 
 /* Determine the maximum decimal precision in C */
-#define H5_PAC_C_MAX_REAL_PRECISION 15
+#define H5_PAC_C_MAX_REAL_PRECISION 33
 
 /* Define Fortran Maximum Real Decimal Precision */
 #define H5_PAC_FC_MAX_REAL_PRECISION 33
@@ -588,7 +588,7 @@
 #define H5_SIZEOF_INT8_T 1
 
 /* The size of `int_fast16_t', as computed by sizeof. */
-#define H5_SIZEOF_INT_FAST16_T 4
+#define H5_SIZEOF_INT_FAST16_T 2
 
 /* The size of `int_fast32_t', as computed by sizeof. */
 #define H5_SIZEOF_INT_FAST32_T 4
@@ -617,13 +617,13 @@
 #define H5_SIZEOF_SIZE_T 8
 
 /* The size of `ssize_t', as computed by sizeof. */
-/* #undef H5_SIZEOF_SSIZE_T */
+#define H5_SIZEOF_SSIZE_T 8
 
 /* The size of `long', as computed by sizeof. */
 #define H5_SIZEOF_LONG 4
 
 /* The size of `long double', as computed by sizeof. */
-#define H5_SIZEOF_LONG_DOUBLE 8
+#define H5_SIZEOF_LONG_DOUBLE 16
 
 #else
 
@@ -647,7 +647,7 @@
   # elif defined(__aarch64__)
   #define H5_SIZEOF_LONG_DOUBLE 8
   # else
-  #define H5_SIZEOF_LONG_DOUBLE 8
+  #define H5_SIZEOF_LONG_DOUBLE 16
   # endif
 
 #endif
@@ -661,13 +661,13 @@
 #endif
 
 /* The size of `off64_t', as computed by sizeof. */
-/* #undef H5_SIZEOF_OFF64_T */
+#define H5_SIZEOF_OFF64_T 8
 
 /* The size of `off_t', as computed by sizeof. */
 #define H5_SIZEOF_OFF_T 4
 
 /* The size of `ptrdiff_t', as computed by sizeof. */
-/* #undef H5_SIZEOF_PTRDIFF_T */
+#define H5_SIZEOF_PTRDIFF_T 8
 
 /* The size of `short', as computed by sizeof. */
 #define H5_SIZEOF_SHORT 2
@@ -688,7 +688,7 @@
 #define H5_SIZEOF_UINT8_T 1
 
 /* The size of `uint_fast16_t', as computed by sizeof. */
-#define H5_SIZEOF_UINT_FAST16_T 4
+#define H5_SIZEOF_UINT_FAST16_T 2
 
 /* The size of `uint_fast32_t', as computed by sizeof. */
 #define H5_SIZEOF_UINT_FAST32_T 4
@@ -718,7 +718,7 @@
 #define H5_SIZEOF__QUAD 0
 
 /* The size of `__float128', as computed by sizeof. */
-#define H5_SIZEOF___FLOAT128 0
+#define H5_SIZEOF___FLOAT128 16
 
 /* The size of `__int64', as computed by sizeof. */
 #define H5_SIZEOF___INT64 8
@@ -731,10 +731,10 @@
 
 /* Define if your system supports pthread_attr_setscope(&attribute,
    PTHREAD_SCOPE_SYSTEM) call. */
-/* #undef H5_SYSTEM_SCOPE_THREADS */
+#define H5_SYSTEM_SCOPE_THREADS 1
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
-/* #undef H5_TIME_WITH_SYS_TIME */
+#define H5_TIME_WITH_SYS_TIME 1
 
 /* Define using v1.6 public API symbols by default */
 /* #undef H5_USE_16_API_DEFAULT */

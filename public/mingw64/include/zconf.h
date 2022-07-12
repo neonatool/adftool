@@ -7,8 +7,6 @@
 
 #ifndef ZCONF_H
 #define ZCONF_H
-/* #undef Z_PREFIX */
-/* #undef Z_HAVE_UNISTD_H */
 
 /*
  * If you *really* need a unique prefix for all types and library functions,
@@ -433,11 +431,11 @@ typedef uLong FAR uLongf;
    typedef unsigned long z_crc_t;
 #endif
 
-#ifdef HAVE_UNISTD_H    /* may be set to #if 1 by ./configure */
+#if 1    /* was set to #if 1 by ./configure */
 #  define Z_HAVE_UNISTD_H
 #endif
 
-#ifdef HAVE_STDARG_H    /* may be set to #if 1 by ./configure */
+#if 1    /* was set to #if 1 by ./configure */
 #  define Z_HAVE_STDARG_H
 #endif
 
@@ -506,7 +504,7 @@ typedef uLong FAR uLongf;
 #  define z_off_t long
 #endif
 
-#if !defined(_WIN32) && defined(Z_LARGE64)
+#if (defined(_WIN32) && defined(__GNUC__) && defined(_LARGEFILE64_SOURCE)) || defined(Z_LARGE64)
 #  define z_off64_t off64_t
 #else
 #  if defined(_WIN32) && !defined(__GNUC__) && !defined(Z_SOLO)
