@@ -5,8 +5,8 @@ true_fetch (uint32_t node_id, size_t *row_actual_length,
 	    size_t request_start, size_t request_length,
 	    uint32_t * response, void *ctx)
 {
-  hid_t *context = ctx;
-  hid_t dataset_space = H5Dget_space (*context);
+  struct context *context = ctx;
+  hid_t dataset_space = H5Dget_space (context->dataset);
   /* Get the true dimensions */
   int rank = H5Sget_simple_extent_ndims (dataset_space);
   if (rank < 0)
@@ -42,7 +42,7 @@ true_fetch (uint32_t node_id, size_t *row_actual_length,
       abort ();
     }
   herr_t read_error =
-    H5Dread (*context, H5T_NATIVE_B32, dataset_space, H5S_ALL,
+    H5Dread (context->dataset, H5T_NATIVE_B32, dataset_space, H5S_ALL,
 	     H5P_DEFAULT, full_row);
   H5Sclose (dataset_space);
   if (read_error < 0)
@@ -66,9 +66,10 @@ true_fetch (uint32_t node_id, size_t *row_actual_length,
 
 void
 adftool_bplus_parameters_from_hdf5 (struct adftool_bplus_parameters
-				    *parameters, hid_t dataset)
+				    *parameters, hid_t dataset, hid_t next_id)
 {
   parameters->fetch = true_fetch;
   parameters->fetch_context.type = HDF5;
-  parameters->fetch_context.arg.hdf5 = dataset;
+  parameters->fetch_context.arg.hdf5.dataset = dataset;
+  parameters->fetch_context.arg.hdf5.nextID = next_id;
 }

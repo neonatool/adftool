@@ -39,10 +39,16 @@ enum context_type
   HDF5
 };
 
+struct hdf5_context
+{
+  hid_t dataset;
+  hid_t nextID;
+};
+
 union context_arg
 {
   void *logical;
-  hid_t hdf5;
+  struct hdf5_context hdf5;
 };
 
 struct context

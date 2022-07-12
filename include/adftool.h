@@ -124,9 +124,9 @@ extern "C"
 					     void *context);
 
   extern LIBADFTOOL_API
-    void adftool_bplus_parameters_from_hdf5 (struct
-					     adftool_bplus_parameters
-					     *parameters, hid_t dataset);
+    void adftool_bplus_parameters_from_hdf5 (struct adftool_bplus_parameters
+					     *parameters, hid_t dataset,
+					     hid_t next_id_attribute);
 
   /* The lookup function. The parameters "fetch" and "compare" must be
      set. */
