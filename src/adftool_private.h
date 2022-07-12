@@ -32,36 +32,36 @@ struct adftool_bplus_key
   union adftool_bplus_key_arg arg;
 };
 
-enum adftool_bplus_fetch_context_type
+enum context_type
 {
-  ADFTOOL_BPLUS_FETCH_UNSET,
-  ADFTOOL_BPLUS_FETCH_LOGICAL,
-  ADFTOOL_BPLUS_FETCH_HDF5
+  UNSET,
+  LOGICAL,
+  HDF5
 };
 
-union adftool_bplus_fetch_context_arg
+union context_arg
 {
   void *logical;
   hid_t hdf5;
 };
 
-struct adftool_bplus_fetch_context
+struct context
 {
-  enum adftool_bplus_fetch_context_type type;
-  union adftool_bplus_fetch_context_arg arg;
+  enum context_type type;
+  union context_arg arg;
 };
 
 struct adftool_bplus_parameters
 {
   int (*fetch) (uint32_t, size_t *, size_t, size_t, uint32_t *, void *);
-  struct adftool_bplus_fetch_context fetch_context;
+  struct context fetch_context;
   int (*compare) (const struct adftool_bplus_key *,
 		  const struct adftool_bplus_key *, int *, void *);
   void *compare_context;
   void (*allocate) (uint32_t *, void *);
-  void *allocate_context;
+  struct context allocate_context;
   void (*store) (uint32_t, size_t, size_t, const uint32_t *, void *);
-  void *store_context;
+  struct context store_context;
 };
 
 struct node
@@ -203,6 +203,22 @@ node_set_parent (struct node *node, uint32_t parent)
   node->row[2 * node->order - 1] = parent;
 }
 
+static void *
+appropriate_context_argument (struct context *context)
+{
+  switch (context->type)
+    {
+    case UNSET:
+      break;
+    case LOGICAL:
+      return context->arg.logical;
+    case HDF5:
+      return (void *) (&(context->arg.hdf5));
+    }
+  assert (0);
+  return NULL;
+}
+
 static inline int
 adftool_bplus_parameters_fetch (const struct adftool_bplus_parameters
 				*parameters, uint32_t row_id,
@@ -210,22 +226,10 @@ adftool_bplus_parameters_fetch (const struct adftool_bplus_parameters
 				size_t request_start, size_t request_length,
 				uint32_t * response)
 {
-  switch (parameters->fetch_context.type)
-    {
-    case ADFTOOL_BPLUS_FETCH_UNSET:
-      break;
-    case ADFTOOL_BPLUS_FETCH_LOGICAL:
-      return parameters->fetch (row_id, actual_row_length, request_start,
-				request_length, response,
-				parameters->fetch_context.arg.logical);
-    case ADFTOOL_BPLUS_FETCH_HDF5:
-      return parameters->fetch (row_id, actual_row_length, request_start,
-				request_length, response,
-				(void
-				 *) (&(parameters->fetch_context.arg.hdf5)));
-    }
-  assert (0);
-  return 0;
+  assert (parameters->fetch != NULL);
+  void *ctx = appropriate_context_argument (&(parameters->fetch_context));
+  return parameters->fetch (row_id, actual_row_length, request_start,
+			    request_length, response, ctx);
 }
 
 static inline int
@@ -290,7 +294,8 @@ adftool_bplus_parameters_allocate (const struct adftool_bplus_parameters
 				   *parameters, uint32_t * node_id)
 {
   assert (parameters->allocate != NULL);
-  parameters->allocate (node_id, parameters->allocate_context);
+  void *ctx = appropriate_context_argument (&(parameters->allocate_context));
+  parameters->allocate (node_id, ctx);
 }
 
 static inline void
@@ -300,7 +305,8 @@ adftool_bplus_parameters_store (const struct adftool_bplus_parameters
 				const uint32_t * row)
 {
   assert (parameters->store != NULL);
-  parameters->store (node_id, start, length, row, parameters->store_context);
+  void *ctx = appropriate_context_argument (&(parameters->store_context));
+  parameters->store (node_id, start, length, row, ctx);
 }
 
 static inline void

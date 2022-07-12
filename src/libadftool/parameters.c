@@ -9,9 +9,13 @@ adftool_bplus_parameters_alloc (void)
   if (ret != NULL)
     {
       ret->fetch = NULL;
-      ret->fetch_context.type = ADFTOOL_BPLUS_FETCH_UNSET;
+      ret->fetch_context.type = UNSET;
       ret->compare = NULL;
       ret->compare_context = NULL;
+      ret->allocate = NULL;
+      ret->allocate_context.type = UNSET;
+      ret->store = NULL;
+      ret->store_context.type = UNSET;
     }
   return ret;
 }
@@ -32,7 +36,7 @@ adftool_bplus_parameters_set_fetch (struct adftool_bplus_parameters
 				    void *context)
 {
   parameters->fetch = fetch;
-  parameters->fetch_context.type = ADFTOOL_BPLUS_FETCH_LOGICAL;
+  parameters->fetch_context.type = LOGICAL;
   parameters->fetch_context.arg.logical = context;
 }
 
@@ -57,7 +61,8 @@ adftool_bplus_parameters_set_allocate (struct adftool_bplus_parameters
 				       void *context)
 {
   parameters->allocate = allocate;
-  parameters->allocate_context = context;
+  parameters->allocate_context.type = LOGICAL;
+  parameters->allocate_context.arg.logical = context;
 }
 
 void
@@ -68,5 +73,6 @@ adftool_bplus_parameters_set_store (struct adftool_bplus_parameters
 				    void *context)
 {
   parameters->store = store;
-  parameters->store_context = context;
+  parameters->store_context.type = LOGICAL;
+  parameters->store_context.arg.logical = context;
 }

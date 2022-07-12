@@ -65,10 +65,10 @@ true_fetch (uint32_t node_id, size_t *row_actual_length,
 }
 
 void
-adftool_bplus_parameters_set_fetch_from_hdf5 (struct adftool_bplus_parameters
-					      *parameters, hid_t dataset)
+adftool_bplus_parameters_from_hdf5 (struct adftool_bplus_parameters
+				    *parameters, hid_t dataset)
 {
   parameters->fetch = true_fetch;
-  parameters->fetch_context.type = ADFTOOL_BPLUS_FETCH_HDF5;
+  parameters->fetch_context.type = HDF5;
   parameters->fetch_context.arg.hdf5 = dataset;
 }
