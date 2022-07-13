@@ -74,6 +74,7 @@ endif
 bplus_tree_lookup_example_SOURCES = \
   src/bplus_tree_lookup_example.c
 bplus_tree_lookup_example_LDADD = \
+  libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
   @LTLIBOBJS@
@@ -81,6 +82,7 @@ bplus_tree_lookup_example_LDADD = \
 bplus_tree_grow_example_SOURCES = \
   src/bplus_tree_grow_example.c
 bplus_tree_grow_example_LDADD = \
+  libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
   @LTLIBOBJS@
@@ -88,6 +90,7 @@ bplus_tree_grow_example_LDADD = \
 bplus_tree_grow_file_example_SOURCES = \
   src/bplus_tree_grow_file_example.c
 bplus_tree_grow_file_example_LDADD = \
+  libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
   @LTLIBOBJS@
