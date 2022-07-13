@@ -4,13 +4,15 @@ variables:
 pages:
   script:
     - apt-get update -y
-    - apt-get install -y git python gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ cmake m4 libtinfo5 binutils-mingw-w64-x86-64 g++-mingw-w64 gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64
+    - apt-get install -y git python gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ cmake m4 libtinfo5 binutils-mingw-w64-x86-64 g++-mingw-w64 gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 wine
     - export GNULIB_SRCDIR=$PWD/gnulib
     - ./bootstrap --force --skip-po
     - mkdir -p build-adftool-mingw64
     - cd build-adftool-mingw64
     - "../configure CPPFLAGS=-I$PWD/../public/mingw64/include LIBS=-lhdf5 LDFLAGS=-L$PWD/../public/mingw64/lib --prefix=$PWD/../public/mingw64 --enable-relocatable --host=x86_64-w64-mingw32 || (cat config.log ; exit 1) || exit 1"
     - make -j
+    - make bplus_tree_grow_file_example.exe
+    - wine bplus_tree_grow_file_example.exe
     - make -j install
     - cd ..
     - git clone https://github.com/emscripten-core/emsdk.git
