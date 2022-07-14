@@ -88,6 +88,11 @@ adftool_bplus_lookup (const struct adftool_bplus_key *needle,
 	{
 	  current_key = 0;
 	  current_node = node_next_leaf (&node);
+	  if (current_node == 0)
+	    {
+	      /* The last leaf has been scanned. */
+	      break;
+	    }
 	  error = node_fetch (parameters, current_node, &node);
 	}
       if (!error)
