@@ -57,7 +57,7 @@ struct context
   union context_arg arg;
 };
 
-struct adftool_bplus_parameters
+struct adftool_bplus
 {
   int (*fetch) (uint32_t, size_t *, size_t, size_t, uint32_t *, void *);
   struct context fetch_context;
@@ -233,29 +233,28 @@ appropriate_context_argument (struct context *context)
 }
 
 static inline int
-adftool_bplus_parameters_fetch (struct adftool_bplus_parameters *parameters,
-				uint32_t row_id, size_t *actual_row_length,
-				size_t request_start, size_t request_length,
-				uint32_t * response)
+adftool_bplus_fetch (struct adftool_bplus *bplus,
+		     uint32_t row_id, size_t *actual_row_length,
+		     size_t request_start, size_t request_length,
+		     uint32_t * response)
 {
-  assert (parameters->fetch != NULL);
-  void *ctx = appropriate_context_argument (&(parameters->fetch_context));
-  return parameters->fetch (row_id, actual_row_length, request_start,
-			    request_length, response, ctx);
+  assert (bplus->fetch != NULL);
+  void *ctx = appropriate_context_argument (&(bplus->fetch_context));
+  return bplus->fetch (row_id, actual_row_length, request_start,
+		       request_length, response, ctx);
 }
 
 static inline int
-node_fetch (struct adftool_bplus_parameters *parameters, uint32_t id,
-	    struct node *node)
+node_fetch (struct adftool_bplus *bplus, uint32_t id, struct node *node)
 {
   size_t actual_row_length;
   node->id = id;
   while (1)
     {
-      int fetch_error = adftool_bplus_parameters_fetch (parameters, node->id,
-							&actual_row_length, 0,
-							2 * node->order + 1,
-							node->row);
+      int fetch_error = adftool_bplus_fetch (bplus, node->id,
+					     &actual_row_length, 0,
+					     2 * node->order + 1,
+					     node->row);
       if (fetch_error)
 	{
 	  return 1;
@@ -269,9 +268,9 @@ node_fetch (struct adftool_bplus_parameters *parameters, uint32_t id,
 	      return 1;
 	    }
 	  fetch_error =
-	    adftool_bplus_parameters_fetch (parameters, node->id,
-					    &actual_row_length, 0,
-					    2 * node->order + 1, node->row);
+	    adftool_bplus_fetch (bplus, node->id,
+				 &actual_row_length, 0,
+				 2 * node->order + 1, node->row);
 	  if (fetch_error)
 	    {
 	      return 1;
@@ -290,54 +289,48 @@ node_fetch (struct adftool_bplus_parameters *parameters, uint32_t id,
 }
 
 static inline int
-adftool_bplus_parameters_compare (const struct adftool_bplus_parameters
-				  *parameters,
-				  const struct adftool_bplus_key *key_a,
-				  const struct adftool_bplus_key *key_b,
-				  int *result)
+adftool_bplus_compare (const struct adftool_bplus *bplus,
+		       const struct adftool_bplus_key *key_a,
+		       const struct adftool_bplus_key *key_b, int *result)
 {
-  assert (parameters->compare != NULL);
-  return parameters->compare (key_a, key_b, result,
-			      parameters->compare_context);
+  assert (bplus->compare != NULL);
+  return bplus->compare (key_a, key_b, result, bplus->compare_context);
 }
 
 static inline int
-compare_known (const struct adftool_bplus_parameters
-	       *parameters, uint32_t key_a, uint32_t key_b, int *result)
+compare_known (const struct adftool_bplus
+	       *bplus, uint32_t key_a, uint32_t key_b, int *result)
 {
   struct adftool_bplus_key a, b;
   a.type = ADFTOOL_BPLUS_KEY_KNOWN;
   a.arg.known = key_a;
   b.type = ADFTOOL_BPLUS_KEY_KNOWN;
   b.arg.known = key_b;
-  return adftool_bplus_parameters_compare (parameters, &a, &b, result);
+  return adftool_bplus_compare (bplus, &a, &b, result);
 }
 
 static inline void
-adftool_bplus_parameters_allocate (struct adftool_bplus_parameters
-				   *parameters, uint32_t * node_id)
+adftool_bplus_allocate (struct adftool_bplus *bplus, uint32_t * node_id)
 {
-  assert (parameters->allocate != NULL);
-  void *ctx = appropriate_context_argument (&(parameters->allocate_context));
-  parameters->allocate (node_id, ctx);
+  assert (bplus->allocate != NULL);
+  void *ctx = appropriate_context_argument (&(bplus->allocate_context));
+  bplus->allocate (node_id, ctx);
 }
 
 static inline void
-adftool_bplus_parameters_store (struct adftool_bplus_parameters *parameters,
-				uint32_t node_id, size_t start, size_t length,
-				const uint32_t * row)
+adftool_bplus_store (struct adftool_bplus *bplus,
+		     uint32_t node_id, size_t start, size_t length,
+		     const uint32_t * row)
 {
-  assert (parameters->store != NULL);
-  void *ctx = appropriate_context_argument (&(parameters->store_context));
-  parameters->store (node_id, start, length, row, ctx);
+  assert (bplus->store != NULL);
+  void *ctx = appropriate_context_argument (&(bplus->store_context));
+  bplus->store (node_id, start, length, row, ctx);
 }
 
 static inline void
-node_store (struct adftool_bplus_parameters *parameters,
-	    const struct node *node)
+node_store (struct adftool_bplus *bplus, const struct node *node)
 {
-  adftool_bplus_parameters_store (parameters, node->id, 0,
-				  2 * node->order + 1, node->row);
+  adftool_bplus_store (bplus, node->id, 0, 2 * node->order + 1, node->row);
 }
 
 void _adftool_ensure_init (void);

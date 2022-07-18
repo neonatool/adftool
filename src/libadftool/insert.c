@@ -5,24 +5,24 @@
 
 static int
 fix_child (const struct node *node, size_t i, struct node *aux,
-	   struct adftool_bplus_parameters *parameters)
+	   struct adftool_bplus *bplus)
 {
   /* 0 can’t be a child of node. Helps detect if the result of a split
      has too many keys. */
   assert (node_value (node, i) != 0);
-  int error = node_fetch (parameters, node_value (node, i), aux);
+  int error = node_fetch (bplus, node_value (node, i), aux);
   if (error)
     {
       return 1;
     }
   node_set_parent (aux, node->id);
-  node_store (parameters, aux);
+  node_store (bplus, aux);
   return 0;
 }
 
 static int
 fix_children (const struct node *node, struct node *aux,
-	      struct adftool_bplus_parameters *parameters)
+	      struct adftool_bplus *bplus)
 {
   size_t n_fixed = 0;
   if (node_is_leaf (node))
@@ -33,12 +33,12 @@ fix_children (const struct node *node, struct node *aux,
        (n_fixed + 1 < node->order
 	&& node_key (node, n_fixed) != ((uint32_t) (-1))); n_fixed++)
     {
-      if (fix_child (node, n_fixed, aux, parameters) != 0)
+      if (fix_child (node, n_fixed, aux, bplus) != 0)
 	{
 	  return 1;
 	}
     }
-  if (fix_child (node, n_fixed, aux, parameters) != 0)
+  if (fix_child (node, n_fixed, aux, bplus) != 0)
     {
       return 1;
     }
@@ -48,7 +48,7 @@ fix_children (const struct node *node, struct node *aux,
 static int
 bubble_compare (struct node *node, uint32_t * key_to_add,
 		uint32_t * value_to_add, size_t *n_keys,
-		struct adftool_bplus_parameters *parameters)
+		struct adftool_bplus *bplus)
 {
   int error = 0;
   for (*n_keys = 0;
@@ -57,7 +57,7 @@ bubble_compare (struct node *node, uint32_t * key_to_add,
     {
       int comparison_result;
       error =
-	compare_known (parameters, *key_to_add, node_key (node, *n_keys),
+	compare_known (bplus, *key_to_add, node_key (node, *n_keys),
 		       &comparison_result);
       if (error)
 	{
@@ -113,7 +113,7 @@ bubble_after (struct node *node, uint32_t * key_to_add,
 static int
 recursive_insert (struct node *node, struct node *aux, uint32_t key_to_add,
 		  uint32_t value_to_add, uint32_t * after_sibling,
-		  struct adftool_bplus_parameters *parameters)
+		  struct adftool_bplus *bplus)
 {
   /* In this function, aux is used to hold a new node with half the
      keys. Once it is saved, it is used to fix the parent value of all
@@ -129,8 +129,7 @@ recursive_insert (struct node *node, struct node *aux, uint32_t key_to_add,
   size_t i;
   if (after_sibling == NULL)
     {
-      error =
-	bubble_compare (node, &key_to_add, &value_to_add, &i, parameters);
+      error = bubble_compare (node, &key_to_add, &value_to_add, &i, bplus);
     }
   else
     {
@@ -154,8 +153,8 @@ recursive_insert (struct node *node, struct node *aux, uint32_t key_to_add,
 	     bubbled the key/value to insert in the root. Otherwise,
 	     the growth operation won’t fix the correct children
 	     correctly. */
-	  node_store (parameters, node);
-	  int growth_error = adftool_bplus_grow (parameters);
+	  node_store (bplus, node);
+	  int growth_error = adftool_bplus_grow (bplus);
 	  if (growth_error)
 	    {
 	      error = 1;
@@ -164,7 +163,7 @@ recursive_insert (struct node *node, struct node *aux, uint32_t key_to_add,
 	  /* Now the node that we want to split is not 0 anymore,
 	     since 0 is the new root. However, the new 0 should have
 	     exactly 1 child, the one that we want to split. */
-	  int fetch_new_root_error = node_fetch (parameters, 0, node);
+	  int fetch_new_root_error = node_fetch (bplus, 0, node);
 	  if (fetch_new_root_error)
 	    {
 	      error = 1;
@@ -173,7 +172,7 @@ recursive_insert (struct node *node, struct node *aux, uint32_t key_to_add,
 	  assert (node_key (node, 0) == ((uint32_t) (-1)));
 	  assert (!node_is_leaf (node));
 	  int fetch_node_to_split_error =
-	    node_fetch (parameters, node_value (node, 0), node);
+	    node_fetch (bplus, node_value (node, 0), node);
 	  if (fetch_node_to_split_error)
 	    {
 	      error = 1;
@@ -186,19 +185,19 @@ recursive_insert (struct node *node, struct node *aux, uint32_t key_to_add,
 	    {
 	      /* value_to_add is a node ID, who still thinks its
 	         parent is 0, while in fact it is node->id. */
-	      error = node_fetch (parameters, value_to_add, aux);
+	      error = node_fetch (bplus, value_to_add, aux);
 	      if (error)
 		{
 		  goto cleanup;
 		}
 	      assert (node_parent (aux) == 0);
 	      node_set_parent (aux, node->id);
-	      node_store (parameters, aux);
+	      node_store (bplus, aux);
 	    }
 	}
       uint32_t old_node_id = node->id;
       uint32_t new_node_id;
-      adftool_bplus_parameters_allocate (parameters, &new_node_id);
+      adftool_bplus_allocate (bplus, &new_node_id);
       size_t n_given = node->order / 2;
       size_t n_kept = node->order - n_given;
       aux->id = new_node_id;
@@ -247,24 +246,24 @@ recursive_insert (struct node *node, struct node *aux, uint32_t key_to_add,
 	  node_set_key (node, n_kept - 1, (uint32_t) (-1));
 	}
       /* Save the nodes. */
-      node_store (parameters, node);
-      node_store (parameters, aux);
+      node_store (bplus, node);
+      node_store (bplus, aux);
       /* Now use the node pointer to fetch each child of new_node, so
          that we can fix their parent. */
-      error = fix_children (aux, node, parameters);
+      error = fix_children (aux, node, bplus);
       if (error)
 	{
 	  goto cleanup;
 	}
       /* Finally we insert to the parent of new_node (which was also
          the parent of node before we used node as a variable). */
-      error = node_fetch (parameters, node_parent (aux), node);
+      error = node_fetch (bplus, node_parent (aux), node);
       /* Recursive tail call, all arguments are meaningful. Since we
          insert an inner node, key-based comparisons are meaningless,
          so we rather insert the new node right after the node that we
          vampirised. */
       return recursive_insert (node, aux, key_to_add, value_to_add,
-			       &old_node_id, parameters);
+			       &old_node_id, bplus);
     }
   else
     {
@@ -280,7 +279,7 @@ recursive_insert (struct node *node, struct node *aux, uint32_t key_to_add,
 	{
 	  node_set_key (node, i + 1, (uint32_t) (-1));
 	}
-      node_store (parameters, node);
+      node_store (bplus, node);
     }
 cleanup:
   return error;
@@ -288,7 +287,7 @@ cleanup:
 
 static int
 recursive_insert_down (struct node *node, uint32_t key, uint32_t value,
-		       struct adftool_bplus_parameters *parameters)
+		       struct adftool_bplus *bplus)
 {
   if (node_is_leaf (node))
     {
@@ -298,7 +297,7 @@ recursive_insert_down (struct node *node, uint32_t key, uint32_t value,
 	{
 	  return 1;
 	}
-      error = recursive_insert (node, &aux, key, value, NULL, parameters);
+      error = recursive_insert (node, &aux, key, value, NULL, bplus);
       node_clean (&aux);
       return error;
     }
@@ -308,8 +307,7 @@ recursive_insert_down (struct node *node, uint32_t key, uint32_t value,
     {
       int comparison_result;
       int comparison_error =
-	compare_known (parameters, key, node_key (node, i),
-		       &comparison_result);
+	compare_known (bplus, key, node_key (node, i), &comparison_result);
       if (comparison_error)
 	{
 	  return 1;
@@ -323,17 +321,17 @@ recursive_insert_down (struct node *node, uint32_t key, uint32_t value,
   /* If we went through the whole loop, then i == order - 1 or i ==
      number of keys. Otherwise, it must go down child i. So in any
      case, it must go down child i. */
-  int fetch_error = node_fetch (parameters, node_value (node, i), node);
+  int fetch_error = node_fetch (bplus, node_value (node, i), node);
   if (fetch_error)
     {
       return 1;
     }
-  return recursive_insert_down (node, key, value, parameters);
+  return recursive_insert_down (node, key, value, bplus);
 }
 
 int
 adftool_bplus_insert (uint32_t key, uint32_t value,
-		      struct adftool_bplus_parameters *parameters)
+		      struct adftool_bplus *bplus)
 {
   int error = 0;
   struct node node;
@@ -342,12 +340,12 @@ adftool_bplus_insert (uint32_t key, uint32_t value,
     {
       goto cleanup;
     }
-  error = node_fetch (parameters, 0, &node);
+  error = node_fetch (bplus, 0, &node);
   if (error)
     {
       goto cleanup_node;
     }
-  error = recursive_insert_down (&node, key, value, parameters);
+  error = recursive_insert_down (&node, key, value, bplus);
 cleanup_node:
   node_clean (&node);
 cleanup:

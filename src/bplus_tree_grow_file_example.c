@@ -11,7 +11,7 @@ static hid_t file;
 static hid_t dataset;
 static hid_t nextID;
 
-static struct adftool_bplus_parameters *parameters = NULL;
+static struct adftool_bplus *bplus = NULL;
 
 static const char *filename = "bplus-tree-grow-file-example.hdf5";
 
@@ -110,17 +110,16 @@ the file with the initial data.\n"));
     }
   H5Sclose (initial_data_space);
   H5Sclose (selection_space);
-  parameters = adftool_bplus_parameters_alloc ();
-  if (parameters == NULL)
+  bplus = adftool_bplus_alloc ();
+  if (bplus == NULL)
     {
-      fprintf (stderr, _("Could not allocate the parameters.\n"));
+      fprintf (stderr, _("Could not allocate the bplus.\n"));
       abort ();
     }
-  int set_parameters_error =
-    adftool_bplus_parameters_from_hdf5 (parameters, dataset, nextID);
-  if (set_parameters_error)
+  int set_bplus_error = adftool_bplus_from_hdf5 (bplus, dataset, nextID);
+  if (set_bplus_error)
     {
-      fprintf (stderr, _("Could not set up the parameters.\n"));
+      fprintf (stderr, _("Could not set up the bplus.\n"));
       abort ();
     }
 }
@@ -128,7 +127,7 @@ the file with the initial data.\n"));
 static void
 finalize_file ()
 {
-  adftool_bplus_parameters_free (parameters);
+  adftool_bplus_free (bplus);
   H5Aclose (nextID);
   H5Dclose (dataset);
   H5Fclose (file);
@@ -251,7 +250,7 @@ main ()
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
   prepare_file ();
-  int error = adftool_bplus_grow (parameters);
+  int error = adftool_bplus_grow (bplus);
   if (error)
     {
       fprintf (stderr, _("Error growing the tree.\n"));

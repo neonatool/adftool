@@ -34,7 +34,7 @@ static const char *dictionary[] = {
 
 /* This is the parameters of the B+ tree: how we fetch rows, and how
    we compare keys. */
-static struct adftool_bplus_parameters *parameters = NULL;
+static struct adftool_bplus *bplus = NULL;
 
 /* This is how we look up something in the back-end. */
 static int
@@ -107,9 +107,8 @@ search_key (const char *key, size_t start, size_t max, uint32_t * results)
     }
   adftool_bplus_key_set_unknown (bplus_key, (void *) key);
   size_t n_results;
-  int error =
-    adftool_bplus_lookup (bplus_key, parameters, start, max, &n_results,
-			  results);
+  int error = adftool_bplus_lookup (bplus_key, bplus, start, max, &n_results,
+				    results);
   assert (!error);
   adftool_bplus_key_free (bplus_key);
   return n_results;
@@ -143,14 +142,14 @@ main ()
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
   /* We need to set the parameters. */
-  parameters = adftool_bplus_parameters_alloc ();
-  if (parameters == NULL)
+  bplus = adftool_bplus_alloc ();
+  if (bplus == NULL)
     {
       fprintf (stderr, _("adftool memory allocation problem detected.\n"));
       abort ();
     }
-  adftool_bplus_parameters_set_fetch (parameters, fetch, NULL);
-  adftool_bplus_parameters_set_compare (parameters, compare, NULL);
+  adftool_bplus_set_fetch (bplus, fetch, NULL);
+  adftool_bplus_set_compare (bplus, compare, NULL);
   int i;
   for (i = 0; i < 6; i++)
     {
@@ -163,6 +162,6 @@ main ()
   check_string_absent ("trombone");
   check_string_absent ("vibraslap");
   check_string_absent ("xylophone");
-  adftool_bplus_parameters_free (parameters);
+  adftool_bplus_free (bplus);
   return 0;
 }

@@ -2,8 +2,7 @@
 
 int
 adftool_bplus_lookup (const struct adftool_bplus_key *needle,
-		      struct adftool_bplus_parameters
-		      *parameters, size_t start, size_t max,
+		      struct adftool_bplus *bplus, size_t start, size_t max,
 		      size_t *n_results, uint32_t * results)
 {
   struct node node;
@@ -20,7 +19,7 @@ adftool_bplus_lookup (const struct adftool_bplus_key *needle,
   /* The first step is to find the first match. */
   do
     {
-      error = node_fetch (parameters, current_node, &node);
+      error = node_fetch (bplus, current_node, &node);
       if (!error)
 	{
 	  assert (node.order > 0);
@@ -33,8 +32,8 @@ adftool_bplus_lookup (const struct adftool_bplus_key *needle,
 	      cursor.type = ADFTOOL_BPLUS_KEY_KNOWN;
 	      cursor.arg.known = node_key (&node, current_key);
 	      error =
-		parameters->compare (needle, &cursor, &compared_to_current,
-				     parameters->compare_context);
+		bplus->compare (needle, &cursor, &compared_to_current,
+				bplus->compare_context);
 	      if (error)
 		{
 		  break;
@@ -57,7 +56,7 @@ adftool_bplus_lookup (const struct adftool_bplus_key *needle,
 	      current_node = node_value (&node, current_key);
 	      assert (current_node != 0);
 	      current_key = 0;
-	      error = node_fetch (parameters, current_node, &node);
+	      error = node_fetch (bplus, current_node, &node);
 	    }
 	}
     }
@@ -93,7 +92,7 @@ adftool_bplus_lookup (const struct adftool_bplus_key *needle,
 	      /* The last leaf has been scanned. */
 	      break;
 	    }
-	  error = node_fetch (parameters, current_node, &node);
+	  error = node_fetch (bplus, current_node, &node);
 	}
       if (!error)
 	{
@@ -101,8 +100,8 @@ adftool_bplus_lookup (const struct adftool_bplus_key *needle,
 	  cursor.type = ADFTOOL_BPLUS_KEY_KNOWN;
 	  cursor.arg.known = node_key (&node, current_key);
 	  error =
-	    parameters->compare (needle, &cursor, &compared_to_current,
-				 parameters->compare_context);
+	    bplus->compare (needle, &cursor, &compared_to_current,
+			    bplus->compare_context);
 	}
     }
   node_clean (&node);

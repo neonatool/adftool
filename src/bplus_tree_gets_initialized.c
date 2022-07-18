@@ -11,7 +11,7 @@ static hid_t file;
 static hid_t dataset;
 static hid_t nextID;
 
-static struct adftool_bplus_parameters *parameters = NULL;
+static struct adftool_bplus *bplus = NULL;
 
 static const char *filename = "bplus-tree-gets-initialized.hdf5";
 
@@ -65,14 +65,13 @@ prepare_file (void)
       abort ();
     }
   H5Sclose (fspace);
-  parameters = adftool_bplus_parameters_alloc ();
-  if (parameters == NULL)
+  bplus = adftool_bplus_alloc ();
+  if (bplus == NULL)
     {
-      fprintf (stderr, _("Could not create the parameters.\n"));
+      fprintf (stderr, _("Could not create the bplus.\n"));
       abort ();
     }
-  int error =
-    adftool_bplus_parameters_from_hdf5 (parameters, dataset, nextID);
+  int error = adftool_bplus_from_hdf5 (bplus, dataset, nextID);
   if (error)
     {
       fprintf (stderr, _("Could not use the file as the B+ backend.\n"));
@@ -83,7 +82,7 @@ prepare_file (void)
 static void
 finalize_file ()
 {
-  adftool_bplus_parameters_free (parameters);
+  adftool_bplus_free (bplus);
   H5Aclose (nextID);
   H5Dclose (dataset);
   H5Fclose (file);

@@ -97,7 +97,7 @@ store (uint32_t row_id, size_t start, size_t len, const uint32_t * to_store,
     }
 }
 
-static struct adftool_bplus_parameters *parameters = NULL;
+static struct adftool_bplus *bplus = NULL;
 static struct context ctx;
 
 static void
@@ -136,7 +136,7 @@ one_test (int order)
          insertions. It’s not great but it helps. */
       uint32_t number_of_values = (checksums[key] % 100) + 1;
       checksums[key] = value * 100 + number_of_values;
-      int error = adftool_bplus_insert (key, value, parameters);
+      int error = adftool_bplus_insert (key, value, bplus);
       assert (error == 0);
       /* Check consistency */
       for (uint32_t existing_key = 0; existing_key < 32; existing_key++)
@@ -144,7 +144,7 @@ one_test (int order)
 	  adftool_bplus_key_set_known (searched_key, existing_key);
 	  size_t n_results;
 	  int lookup_error =
-	    adftool_bplus_lookup (searched_key, parameters, 0, 100,
+	    adftool_bplus_lookup (searched_key, bplus, 0, 100,
 				  &n_results, lookup_results);
 	  assert (lookup_error == 0);
 	  assert (n_results <= 100);
@@ -174,11 +174,11 @@ main ()
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
-  parameters = adftool_bplus_parameters_alloc ();
-  adftool_bplus_parameters_set_fetch (parameters, fetch, &ctx);
-  adftool_bplus_parameters_set_compare (parameters, compare, &ctx);
-  adftool_bplus_parameters_set_allocate (parameters, allocate, &ctx);
-  adftool_bplus_parameters_set_store (parameters, store, &ctx);
+  bplus = adftool_bplus_alloc ();
+  adftool_bplus_set_fetch (bplus, fetch, &ctx);
+  adftool_bplus_set_compare (bplus, compare, &ctx);
+  adftool_bplus_set_allocate (bplus, allocate, &ctx);
+  adftool_bplus_set_store (bplus, store, &ctx);
   for (order = 3; order < 6; order++)
     {
       int repetition;
@@ -187,7 +187,7 @@ main ()
 	  one_test (order);
 	}
     }
-  adftool_bplus_parameters_free (parameters);
-  parameters = NULL;
+  adftool_bplus_free (bplus);
+  bplus = NULL;
   return 0;
 }

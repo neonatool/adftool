@@ -219,21 +219,21 @@ or it is not a matrix.\n"));
 }
 
 int
-adftool_bplus_parameters_from_hdf5 (struct adftool_bplus_parameters
-				    *parameters, hid_t dataset, hid_t next_id)
+adftool_bplus_from_hdf5 (struct adftool_bplus *bplus, hid_t dataset,
+			 hid_t next_id)
 {
-  parameters->fetch = true_fetch;
-  parameters->fetch_context.type = HDF5;
-  parameters->fetch_context.arg.hdf5.dataset = dataset;
-  parameters->fetch_context.arg.hdf5.nextID = next_id;
-  parameters->allocate = true_allocate;
-  parameters->allocate_context.type = HDF5;
-  parameters->allocate_context.arg.hdf5.dataset = dataset;
-  parameters->allocate_context.arg.hdf5.nextID = next_id;
-  parameters->store = true_store;
-  parameters->store_context.type = HDF5;
-  parameters->store_context.arg.hdf5.dataset = dataset;
-  parameters->store_context.arg.hdf5.nextID = next_id;
+  bplus->fetch = true_fetch;
+  bplus->fetch_context.type = HDF5;
+  bplus->fetch_context.arg.hdf5.dataset = dataset;
+  bplus->fetch_context.arg.hdf5.nextID = next_id;
+  bplus->allocate = true_allocate;
+  bplus->allocate_context.type = HDF5;
+  bplus->allocate_context.arg.hdf5.dataset = dataset;
+  bplus->allocate_context.arg.hdf5.nextID = next_id;
+  bplus->store = true_store;
+  bplus->store_context.type = HDF5;
+  bplus->store_context.arg.hdf5.dataset = dataset;
+  bplus->store_context.arg.hdf5.nextID = next_id;
   int next_id_value;
   if (H5Aread (next_id, H5T_NATIVE_INT, &next_id_value) < 0)
     {
@@ -244,11 +244,10 @@ adftool_bplus_parameters_from_hdf5 (struct adftool_bplus_parameters
       /* Allocate an empty root. */
       uint32_t new_root;
       struct node root_node;
-      adftool_bplus_parameters_allocate (parameters, &new_root);
+      adftool_bplus_allocate (bplus, &new_root);
       size_t row_length;
       int query_rank_error =
-	adftool_bplus_parameters_fetch (parameters, new_root, &row_length, 0,
-					0, NULL);
+	adftool_bplus_fetch (bplus, new_root, &row_length, 0, 0, NULL);
       if (query_rank_error)
 	{
 	  /* FIXME: revert next_id to 0? */
@@ -268,7 +267,7 @@ adftool_bplus_parameters_from_hdf5 (struct adftool_bplus_parameters
 	}
       node_set_next_leaf (&root_node, 0);
       node_set_parent (&root_node, ((uint32_t) (-1)));
-      node_store (parameters, &root_node);
+      node_store (bplus, &root_node);
       node_clean (&root_node);
     }
   return 0;

@@ -4,7 +4,7 @@
 #define N_(String) (String)
 
 int
-adftool_bplus_grow (struct adftool_bplus_parameters *parameters)
+adftool_bplus_grow (struct adftool_bplus *bplus)
 {
   struct node node, child;
   int error = 0;
@@ -22,17 +22,17 @@ adftool_bplus_grow (struct adftool_bplus_parameters *parameters)
 	}
       return 1;
     }
-  int fetch_root_error = node_fetch (parameters, 0, &node);
+  int fetch_root_error = node_fetch (bplus, 0, &node);
   if (fetch_root_error)
     {
       error = 1;
       goto cleanup;
     }
   uint32_t new_id;
-  adftool_bplus_parameters_allocate (parameters, &new_id);
+  adftool_bplus_allocate (bplus, &new_id);
   node.id = new_id;
   node_set_parent (&node, 0);
-  node_store (parameters, &node);
+  node_store (bplus, &node);
   /* Fix the old root children. */
   if (!node_is_leaf (&node))
     {
@@ -42,13 +42,13 @@ adftool_bplus_grow (struct adftool_bplus_parameters *parameters)
 	   i++)
 	{
 	  int fetch_child_error =
-	    node_fetch (parameters, node_value (&node, i), &child);
+	    node_fetch (bplus, node_value (&node, i), &child);
 	  if (fetch_child_error)
 	    {
 	      goto cleanup;
 	    }
 	  node_set_parent (&child, new_id);
-	  node_store (parameters, &child);
+	  node_store (bplus, &child);
 	}
     }
   /* Now create the root. */
@@ -62,7 +62,7 @@ adftool_bplus_grow (struct adftool_bplus_parameters *parameters)
     }
   node_set_parent (&node, (uint32_t) (-1));
   node_set_non_leaf (&node);
-  node_store (parameters, &node);
+  node_store (bplus, &node);
 cleanup:
   node_clean (&child);
   node_clean (&node);

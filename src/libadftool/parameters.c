@@ -1,11 +1,10 @@
 #include <adftool_private.h>
 
-struct adftool_bplus_parameters *
-adftool_bplus_parameters_alloc (void)
+struct adftool_bplus *
+adftool_bplus_alloc (void)
 {
   ensure_init ();
-  struct adftool_bplus_parameters *ret =
-    malloc (sizeof (struct adftool_bplus_parameters));
+  struct adftool_bplus *ret = malloc (sizeof (struct adftool_bplus));
   if (ret != NULL)
     {
       ret->fetch = NULL;
@@ -21,58 +20,48 @@ adftool_bplus_parameters_alloc (void)
 }
 
 void
-adftool_bplus_parameters_free (struct adftool_bplus_parameters *parameters)
+adftool_bplus_free (struct adftool_bplus *bplus)
 {
-  free (parameters);
+  free (bplus);
 }
 
 void
-adftool_bplus_parameters_set_fetch (struct adftool_bplus_parameters
-				    *parameters, int (*fetch) (uint32_t,
-							       size_t *,
-							       size_t, size_t,
-							       uint32_t *,
-							       void *),
-				    void *context)
+adftool_bplus_set_fetch (struct adftool_bplus *bplus,
+			 int (*fetch) (uint32_t, size_t *, size_t, size_t,
+				       uint32_t *, void *), void *context)
 {
-  parameters->fetch = fetch;
-  parameters->fetch_context.type = LOGICAL;
-  parameters->fetch_context.arg.logical = context;
+  bplus->fetch = fetch;
+  bplus->fetch_context.type = LOGICAL;
+  bplus->fetch_context.arg.logical = context;
 }
 
 void
-adftool_bplus_parameters_set_compare (struct adftool_bplus_parameters
-				      *parameters,
-				      int (*compare) (const struct
-						      adftool_bplus_key *,
-						      const struct
-						      adftool_bplus_key *,
-						      int *, void *),
-				      void *context)
+adftool_bplus_set_compare (struct adftool_bplus *bplus,
+			   int (*compare) (const struct adftool_bplus_key *,
+					   const struct adftool_bplus_key *,
+					   int *, void *), void *context)
 {
-  parameters->compare = compare;
-  parameters->compare_context = context;
+  bplus->compare = compare;
+  bplus->compare_context = context;
 }
 
 void
-adftool_bplus_parameters_set_allocate (struct adftool_bplus_parameters
-				       *parameters,
-				       void (*allocate) (uint32_t *, void *),
-				       void *context)
+adftool_bplus_set_allocate (struct adftool_bplus *bplus,
+			    void (*allocate) (uint32_t *, void *),
+			    void *context)
 {
-  parameters->allocate = allocate;
-  parameters->allocate_context.type = LOGICAL;
-  parameters->allocate_context.arg.logical = context;
+  bplus->allocate = allocate;
+  bplus->allocate_context.type = LOGICAL;
+  bplus->allocate_context.arg.logical = context;
 }
 
 void
-adftool_bplus_parameters_set_store (struct adftool_bplus_parameters
-				    *parameters,
-				    void (*store) (uint32_t, size_t, size_t,
-						   const uint32_t *, void *),
-				    void *context)
+adftool_bplus_set_store (struct adftool_bplus *bplus,
+			 void (*store) (uint32_t, size_t, size_t,
+					const uint32_t *, void *),
+			 void *context)
 {
-  parameters->store = store;
-  parameters->store_context.type = LOGICAL;
-  parameters->store_context.arg.logical = context;
+  bplus->store = store;
+  bplus->store_context.type = LOGICAL;
+  bplus->store_context.arg.logical = context;
 }

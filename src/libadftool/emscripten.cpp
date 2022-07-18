@@ -17,12 +17,10 @@ EMSCRIPTEN_BINDINGS (adftool)
   function ("bplus_key_get_unknown", &adftool_bplus_key_get_unknown);
   function ("bplus_key_set_known", &adftool_bplus_key_set_known);
   function ("bplus_key_set_unknown", &adftool_bplus_key_set_unknown);
-  function ("bplus_parameters_alloc", &adftool_bplus_parameters_alloc);
-  function ("bplus_parameters_free", &adftool_bplus_parameters_free);
-  function ("bplus_parameters_set_fetch",
-	    &adftool_bplus_parameters_set_fetch);
-  function ("bplus_parameters_set_compare",
-	    &adftool_bplus_parameters_set_compare);
+  function ("bplus_alloc", &adftool_bplus_alloc);
+  function ("bplus_free", &adftool_bplus_free);
+  function ("bplus_set_fetch", &adftool_bplus_set_fetch);
+  function ("bplus_set_compare", &adftool_bplus_set_compare);
   function ("bplus_lookup", &adftool_bplus_lookup);
 }
 
