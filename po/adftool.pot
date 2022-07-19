@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-07-18 16:38+0000\n"
+"POT-Creation-Date: 2022-07-19 16:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -163,17 +163,17 @@ msgstr ""
 msgid "Could not reopen nextID.\n"
 msgstr ""
 
-#: src/bplus_tree_grow_file_example.c:186 src/libadftool/hdf5.c:150
+#: src/bplus_tree_grow_file_example.c:186 src/libadftool/hdf5.c:147
 #, c-format
 msgid "Could not get a handle of the dataset space.\n"
 msgstr ""
 
-#: src/bplus_tree_grow_file_example.c:193 src/libadftool/hdf5.c:157
+#: src/bplus_tree_grow_file_example.c:193 src/libadftool/hdf5.c:154
 #, c-format
 msgid "Could not count the matrix dimensions, or it is not a matrix.\n"
 msgstr ""
 
-#: src/bplus_tree_grow_file_example.c:201 src/libadftool/hdf5.c:165
+#: src/bplus_tree_grow_file_example.c:201 src/libadftool/hdf5.c:162
 #, c-format
 msgid "Inconsistent number of dimensions.\n"
 msgstr ""
@@ -183,7 +183,7 @@ msgstr ""
 msgid "The matrix has not grown at all.\n"
 msgstr ""
 
-#: src/bplus_tree_grow_file_example.c:211 src/libadftool/hdf5.c:99
+#: src/bplus_tree_grow_file_example.c:211 src/libadftool/hdf5.c:96
 #, c-format
 msgid "Failed to read the next ID.\n"
 msgstr ""
@@ -228,42 +228,42 @@ msgstr ""
 msgid "Found %s.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:108
+#: src/libadftool/hdf5.c:105
 #, c-format
 msgid "The dataset must be a matrix.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:116
+#: src/libadftool/hdf5.c:113
 #, c-format
 msgid "Inconsistent result of the dataset dimensions.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:129
+#: src/libadftool/hdf5.c:126
 #, c-format
 msgid "Could not extend the dataset.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:136
+#: src/libadftool/hdf5.c:133
 #, c-format
 msgid "Failed to update the next ID.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:192
+#: src/libadftool/hdf5.c:189
 #, c-format
 msgid "Could not define the selection space.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:198
+#: src/libadftool/hdf5.c:195
 #, c-format
 msgid "Could not select that row.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:205
+#: src/libadftool/hdf5.c:202
 #, c-format
 msgid "Could not define the memory space.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:213
+#: src/libadftool/hdf5.c:210
 #, c-format
 msgid "Could not update the file.\n"
 msgstr ""

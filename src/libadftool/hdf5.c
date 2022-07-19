@@ -1,8 +1,5 @@
 #include <adftool_private.h>
 
-#define _(String) dgettext (PACKAGE, (String))
-#define N_(String) (String)
-
 /* FIXME: The data is read and written as H5T_NATIVE_B32, which is
    incorrect because there’s no endianness conversion. */
 

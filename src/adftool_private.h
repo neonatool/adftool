@@ -14,6 +14,14 @@
 
 #include "gettext.h"
 
+#ifdef BUILDING_LIBADFTOOL
+#define _(String) dgettext (PACKAGE, (String))
+#define N_(String) (String)
+#else
+#define _(String) gettext (PACKAGE)
+#define N_(String) (String)
+#endif
+
 enum adftool_bplus_key_type
 {
   ADFTOOL_BPLUS_KEY_KNOWN,

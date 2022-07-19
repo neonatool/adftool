@@ -1,8 +1,5 @@
 #include <adftool_private.h>
 
-#define _(String) dgettext (PACKAGE, (String))
-#define N_(String) (String)
-
 static int
 fix_child (const struct node *node, size_t i, struct node *aux,
 	   struct adftool_bplus *bplus)

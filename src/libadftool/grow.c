@@ -1,8 +1,5 @@
 #include <adftool_private.h>
 
-#define _(String) dgettext (PACKAGE, (String))
-#define N_(String) (String)
-
 int
 adftool_bplus_grow (struct adftool_bplus *bplus)
 {
