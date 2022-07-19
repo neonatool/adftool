@@ -85,6 +85,45 @@ struct node
   uint32_t *row;		/* 2 * order + 1 elements allocated. */
 };
 
+static inline int node_init (size_t order, uint32_t id, struct node *node);
+static inline void node_clean (struct node *node);
+static inline int node_set_order (struct node *node, size_t order);
+static inline int node_is_leaf (const struct node *node);
+static inline void node_set_leaf (struct node *node);
+static inline void node_set_non_leaf (struct node *node);
+static inline uint32_t node_key (const struct node *node, size_t i);
+static inline void node_set_key (struct node *node, size_t i, uint32_t key);
+static inline uint32_t node_value (const struct node *node, size_t i);
+static inline void node_set_value (struct node *node, size_t i,
+				   uint32_t value);
+static inline uint32_t node_next_leaf (const struct node *node);
+static inline void node_set_next_leaf (struct node *node, uint32_t next_leaf);
+static inline uint32_t node_parent (const struct node *node);
+static inline void node_set_parent (struct node *node, uint32_t parent);
+static inline int adftool_bplus_fetch (struct adftool_bplus *bplus,
+				       uint32_t row_id,
+				       size_t *actual_row_length,
+				       size_t request_start,
+				       size_t request_length,
+				       uint32_t * response);
+static inline int node_fetch (struct adftool_bplus *bplus, uint32_t id,
+			      struct node *node);
+static inline int adftool_bplus_compare (const struct adftool_bplus *bplus,
+					 const struct adftool_bplus_key
+					 *key_a,
+					 const struct adftool_bplus_key
+					 *key_b, int *result);
+static inline int compare_known (const struct adftool_bplus *bplus,
+				 uint32_t key_a, uint32_t key_b, int *result);
+static inline void adftool_bplus_allocate (struct adftool_bplus *bplus,
+					   uint32_t * node_id);
+static inline void adftool_bplus_store (struct adftool_bplus *bplus,
+					uint32_t node_id, size_t start,
+					size_t length, const uint32_t * row);
+static inline void node_store (struct adftool_bplus *bplus,
+			       const struct node *node);
+static inline void ensure_init (void);
+
 static inline int
 node_init (size_t order, uint32_t id, struct node *node)
 {
