@@ -36,6 +36,16 @@ extern "C"
 {
 #endif				/* __cplusplus */
 
+  struct adftool_file;
+
+  extern LIBADFTOOL_API struct adftool_file *adftool_file_alloc (void);
+  extern LIBADFTOOL_API void adftool_file_free (struct adftool_file *file);
+
+  extern LIBADFTOOL_API
+    int adftool_file_open (struct adftool_file *file, const char *filename,
+			   int write);
+  extern LIBADFTOOL_API void adftool_file_close (struct adftool_file *file);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */

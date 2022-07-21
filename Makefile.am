@@ -4,7 +4,10 @@ EXTRA_DIST = m4/gnulib-cache.m4 m4prog/gnulib-cache.m4
 
 CLEANFILES = \
   bplus-tree-grow-file-example.hdf5 \
-  bplus-tree-gets-initialized.hdf5
+  bplus-tree-gets-initialized.hdf5 \
+  corrupted.adf \
+  well-formed.adf \
+  non-existing.adf
 
 AM_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -28,14 +31,16 @@ check_PROGRAMS = \
   bplus_tree_grow_example \
   bplus_tree_grow_file_example \
   bplus_tree_gets_initialized \
-  bplus_tree_insert_example
+  bplus_tree_insert_example \
+  file_open_example
 
 TESTS = \
   bplus_tree_lookup_example \
   bplus_tree_grow_example \
   bplus_tree_grow_file_example \
   bplus_tree_gets_initialized \
-  bplus_tree_insert_example
+  bplus_tree_insert_example \
+  file_open_example
 LOG_COMPILER = $(LOG_VALGRIND)
 
 adftool_SOURCES = src/adftool.c
@@ -58,6 +63,7 @@ libadftool_la_SOURCES = \
   src/adftool_lookup.h \
   src/adftool_insert.h \
   src/libadftool/version.c \
+  src/libadftool/file.c \
   src/libadftool/emscripten.cpp
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -114,3 +120,17 @@ bplus_tree_insert_example_LDADD = \
   libadftool.la \
   $(LTLIBINTL) \
   @LTLIBOBJS@
+
+file_open_example_SOURCES = \
+  src/file_open_example.c
+file_open_example_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  @LTLIBOBJS@
+file_open_example_CPPFLAGS = \
+  -I include -I $(srcdir)/include \
+  -I libprog -I $(srcdir)/libprog \
+  -I src -I $(srcdir)/src \
+  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DINSTALLDIR=\"$(bindir)\"
