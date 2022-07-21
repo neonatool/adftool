@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([adftool], m4_esyscmd([sh build-aux/git-version-gen .tarball-version]), [vivien.kraus@univ-reims.fr])
-AC_CONFIG_SRCDIR([src/libadftool/lookup.c])
+AC_CONFIG_SRCDIR([include/adftool.h])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])

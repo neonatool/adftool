@@ -25,10 +25,9 @@ static inline uint32_t node_next_leaf (const struct node *node);
 static inline void node_set_next_leaf (struct node *node, uint32_t next_leaf);
 static inline uint32_t node_parent (const struct node *node);
 static inline void node_set_parent (struct node *node, uint32_t parent);
-static inline int node_fetch (struct adftool_bplus *bplus, uint32_t id,
+static inline int node_fetch (struct bplus *bplus, uint32_t id,
 			      struct node *node);
-static inline void node_store (struct adftool_bplus *bplus,
-			       const struct node *node);
+static inline void node_store (struct bplus *bplus, const struct node *node);
 
 static inline int
 node_init (size_t order, uint32_t id, struct node *node)
@@ -170,16 +169,14 @@ node_set_parent (struct node *node, uint32_t parent)
 }
 
 static inline int
-node_fetch (struct adftool_bplus *bplus, uint32_t id, struct node *node)
+node_fetch (struct bplus *bplus, uint32_t id, struct node *node)
 {
   size_t actual_row_length;
   node->id = id;
   while (1)
     {
-      int fetch_error = adftool_bplus_fetch (bplus, node->id,
-					     &actual_row_length, 0,
-					     2 * node->order + 1,
-					     node->row);
+      int fetch_error = bplus_fetch (bplus, node->id, &actual_row_length, 0,
+				     2 * node->order + 1, node->row);
       if (fetch_error)
 	{
 	  return 1;
@@ -193,9 +190,8 @@ node_fetch (struct adftool_bplus *bplus, uint32_t id, struct node *node)
 	      return 1;
 	    }
 	  fetch_error =
-	    adftool_bplus_fetch (bplus, node->id,
-				 &actual_row_length, 0,
-				 2 * node->order + 1, node->row);
+	    bplus_fetch (bplus, node->id, &actual_row_length, 0,
+			 2 * node->order + 1, node->row);
 	  if (fetch_error)
 	    {
 	      return 1;
@@ -214,9 +210,9 @@ node_fetch (struct adftool_bplus *bplus, uint32_t id, struct node *node)
 }
 
 static inline void
-node_store (struct adftool_bplus *bplus, const struct node *node)
+node_store (struct bplus *bplus, const struct node *node)
 {
-  adftool_bplus_store (bplus, node->id, 0, 2 * node->order + 1, node->row);
+  bplus_store (bplus, node->id, 0, 2 * node->order + 1, node->row);
 }
 
 #endif /* not H_ADFTOOL_BPLUS_NODE_INCLUDED */

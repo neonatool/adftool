@@ -1,10 +1,13 @@
+#ifndef H_ADFTOOL_LOOKUP_INCLUDED
+#define H_ADFTOOL_LOOKUP_INCLUDED
+
 #include <adftool_private.h>
+#include <adftool_bplus.h>
 #include <adftool_bplus_node.h>
 
-int
-adftool_bplus_lookup (const struct adftool_bplus_key *needle,
-		      struct adftool_bplus *bplus, size_t start, size_t max,
-		      size_t *n_results, uint32_t * results)
+static inline int
+bplus_lookup (const struct adftool_bplus_key *needle, struct bplus *bplus,
+	      size_t start, size_t max, size_t *n_results, uint32_t * results)
 {
   struct node node;
   int init_error = node_init (16, 0, &node);
@@ -108,3 +111,5 @@ adftool_bplus_lookup (const struct adftool_bplus_key *needle,
   node_clean (&node);
   return error;
 }
+
+#endif /* not H_ADFTOOL_LOOKUP_INCLUDED */

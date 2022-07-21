@@ -1,4 +1,5 @@
 #include <adftool_private.h>
+#include <adftool_bplus.h>
 #include <stdio.h>
 
 #define _(String) gettext (String)
@@ -55,7 +56,7 @@ static const uint32_t expected[][9] = {
 
 /* This is the parameters of the B+ tree: how we fetch rows, how we
    allocate nodes, and how we save nodes. */
-static struct adftool_bplus *bplus = NULL;
+static struct bplus *bplus = NULL;
 
 /* This is how we look up something in the back-end. */
 static int
@@ -121,7 +122,7 @@ static void
 grow (void)
 {
   /* We need to wrap key first. */
-  int error = adftool_bplus_grow (bplus);
+  int error = bplus_grow (bplus);
   assert (!error);
 }
 
@@ -132,15 +133,11 @@ main ()
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
   /* We need to set the parameters. */
-  bplus = adftool_bplus_alloc ();
-  if (bplus == NULL)
-    {
-      fprintf (stderr, _("adftool memory allocation problem detected.\n"));
-      abort ();
-    }
-  adftool_bplus_set_fetch (bplus, fetch, NULL);
-  adftool_bplus_set_allocate (bplus, allocate, NULL);
-  adftool_bplus_set_store (bplus, store, NULL);
+  static struct bplus my_bplus;
+  bplus = &my_bplus;
+  bplus_set_fetch (bplus, fetch, NULL);
+  bplus_set_allocate (bplus, allocate, NULL);
+  bplus_set_store (bplus, store, NULL);
   grow ();
   assert (n_nodes == sizeof (expected) / sizeof (expected[0]));
   for (size_t i = 0; i < n_nodes; i++)
@@ -153,6 +150,5 @@ main ()
 	  assert (data[i][j] == expected[i][j]);
 	}
     }
-  adftool_bplus_free (bplus);
   return 0;
 }

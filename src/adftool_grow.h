@@ -1,8 +1,12 @@
+#ifndef H_ADFTOOL_GROW_INCLUDED
+#define H_ADFTOOL_GROW_INCLUDED
+
 #include <adftool_private.h>
+#include <adftool_bplus.h>
 #include <adftool_bplus_node.h>
 
-int
-adftool_bplus_grow (struct adftool_bplus *bplus)
+static inline int
+bplus_grow (struct bplus *bplus)
 {
   struct node node, child;
   int error = 0;
@@ -27,7 +31,7 @@ adftool_bplus_grow (struct adftool_bplus *bplus)
       goto cleanup;
     }
   uint32_t new_id;
-  adftool_bplus_allocate (bplus, &new_id);
+  bplus_allocate (bplus, &new_id);
   node.id = new_id;
   node_set_parent (&node, 0);
   node_store (bplus, &node);
@@ -66,3 +70,5 @@ cleanup:
   node_clean (&node);
   return error;
 }
+
+#endif /* not H_ADFTOOL_GROW_INCLUDED */

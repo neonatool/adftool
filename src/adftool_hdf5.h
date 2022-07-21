@@ -1,4 +1,8 @@
+#ifndef H_ADFTOOL_HDF5_INCLUDED
+#define H_ADFTOOL_HDF5_INCLUDED
+
 #include <adftool_private.h>
+#include <adftool_bplus.h>
 #include <adftool_bplus_node.h>
 
 /* FIXME: The data is read and written as H5T_NATIVE_B32, which is
@@ -216,9 +220,8 @@ or it is not a matrix.\n"));
   H5Sclose (dataset_space);
 }
 
-int
-adftool_bplus_from_hdf5 (struct adftool_bplus *bplus, hid_t dataset,
-			 hid_t next_id)
+static inline int
+bplus_from_hdf5 (struct bplus *bplus, hid_t dataset, hid_t next_id)
 {
   bplus->fetch = true_fetch;
   bplus->fetch_context.type = HDF5;
@@ -242,10 +245,10 @@ adftool_bplus_from_hdf5 (struct adftool_bplus *bplus, hid_t dataset,
       /* Allocate an empty root. */
       uint32_t new_root;
       struct node root_node;
-      adftool_bplus_allocate (bplus, &new_root);
+      bplus_allocate (bplus, &new_root);
       size_t row_length;
       int query_rank_error =
-	adftool_bplus_fetch (bplus, new_root, &row_length, 0, 0, NULL);
+	bplus_fetch (bplus, new_root, &row_length, 0, 0, NULL);
       if (query_rank_error)
 	{
 	  /* FIXME: revert next_id to 0? */
@@ -270,3 +273,5 @@ adftool_bplus_from_hdf5 (struct adftool_bplus *bplus, hid_t dataset,
     }
   return 0;
 }
+
+#endif /* not H_ADFTOOL_HDF5_INCLUDED */

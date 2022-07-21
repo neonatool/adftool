@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-07-21 15:38+0000\n"
+"POT-Creation-Date: 2022-07-21 15:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,247 +22,237 @@ msgstr ""
 msgid "Hello, world!\n"
 msgstr ""
 
-#: src/bplus_tree_gets_initialized.c:24 src/bplus_tree_grow_file_example.c:24
-#, c-format
-msgid "Could not create the example file.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:34 src/bplus_tree_grow_file_example.c:34
-#, c-format
-msgid "Could not create the dataset space.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:42 src/bplus_tree_grow_file_example.c:42
-#, c-format
-msgid "Could not create the dataset within the file.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:49 src/bplus_tree_grow_file_example.c:49
-#, c-format
-msgid "Could not create the attribute space.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:57 src/bplus_tree_grow_file_example.c:57
-#, c-format
-msgid "Could not create the attribute.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:64
-#, c-format
-msgid "Could not set the attribute to 0.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:71
-#, c-format
-msgid "Could not create the bplus.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:77
-#, c-format
-msgid "Could not use the file as the B+ backend.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:102
-#, c-format
-msgid "Error reading nextID.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:107
-#, c-format
-msgid "The root has not been allocated.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:121
-#, c-format
-msgid "Cannot get the dataset dataspace.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:129
-#, c-format
-msgid "Cannot select the first row.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:136
-#, c-format
-msgid "Cannot create a simple dataspace.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:144
-#, c-format
-msgid "Cannot read the first row.\n"
-msgstr ""
-
-#: src/bplus_tree_gets_initialized.c:154
-#, c-format
-msgid "The matrix has not been initialized properly.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_example.c:74 src/bplus_tree_lookup_example.c:53
-#, c-format
-msgid "−> Load %u: [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
-msgstr ""
-
-#: src/bplus_tree_grow_example.c:96
-#, c-format
-msgid "−> Allocate a new node: %u\n"
-msgstr ""
-
-#: src/bplus_tree_grow_example.c:111
-#, c-format
-msgid "−> Store %u, [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
-msgstr ""
-
-#: src/bplus_tree_grow_example.c:138 src/bplus_tree_lookup_example.c:142
-#, c-format
-msgid "adftool memory allocation problem detected.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:64
-#, c-format
-msgid "Could not set the attribute to a scalar.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:88
-#, c-format
-msgid "Could not create the initialized file space.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:97
-#, c-format
-msgid "Could not create the initial data space.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:107
-#, c-format
-msgid "Could not initialize the file with the initial data.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:116
-#, c-format
-msgid "Could not allocate the bplus.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:122
-#, c-format
-msgid "Could not set up the bplus.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:168
-#, c-format
-msgid "Could not reopen the file for reading.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:174
-#, c-format
-msgid "Could not reopen the dataset.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:180
-#, c-format
-msgid "Could not reopen nextID.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:186 src/libadftool/hdf5.c:148
-#, c-format
-msgid "Could not get a handle of the dataset space.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:193 src/libadftool/hdf5.c:155
-#, c-format
-msgid "Could not count the matrix dimensions, or it is not a matrix.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:201 src/libadftool/hdf5.c:163
-#, c-format
-msgid "Inconsistent number of dimensions.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:206
-#, c-format
-msgid "The matrix has not grown at all.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:211 src/libadftool/hdf5.c:97
+#: src/adftool_hdf5.h:101 src/bplus_tree_grow_file_example.c:207
 #, c-format
 msgid "Failed to read the next ID.\n"
 msgstr ""
 
-#: src/bplus_tree_grow_file_example.c:220
-#, c-format
-msgid "Failed to allocate the buffer.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:226
-#, c-format
-msgid "Failed to read the data.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:237
-#, c-format
-msgid "There is a mismatch.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:256
-#, c-format
-msgid "Error growing the tree.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_file_example.c:261
-#, c-format
-msgid "Growing a tree in an HDF5 file is OK!\n"
-msgstr ""
-
-#: src/bplus_tree_lookup_example.c:92
-#, c-format
-msgid "−> Compare %s to %s: %d\n"
-msgstr ""
-
-#: src/bplus_tree_lookup_example.c:118
-#, c-format
-msgid "Finding %s…\n"
-msgstr ""
-
-#: src/bplus_tree_lookup_example.c:120
-#, c-format
-msgid "Found %s.\n"
-msgstr ""
-
-#: src/libadftool/hdf5.c:106
+#: src/adftool_hdf5.h:110
 #, c-format
 msgid "The dataset must be a matrix.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:114
+#: src/adftool_hdf5.h:118
 #, c-format
 msgid "Inconsistent result of the dataset dimensions.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:127
+#: src/adftool_hdf5.h:131
 #, c-format
 msgid "Could not extend the dataset.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:134
+#: src/adftool_hdf5.h:138
 #, c-format
 msgid "Failed to update the next ID.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:190
+#: src/adftool_hdf5.h:152 src/bplus_tree_grow_file_example.c:182
+#, c-format
+msgid "Could not get a handle of the dataset space.\n"
+msgstr ""
+
+#: src/adftool_hdf5.h:159 src/bplus_tree_grow_file_example.c:189
+#, c-format
+msgid "Could not count the matrix dimensions, or it is not a matrix.\n"
+msgstr ""
+
+#: src/adftool_hdf5.h:167 src/bplus_tree_grow_file_example.c:197
+#, c-format
+msgid "Inconsistent number of dimensions.\n"
+msgstr ""
+
+#: src/adftool_hdf5.h:194
 #, c-format
 msgid "Could not define the selection space.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:196
+#: src/adftool_hdf5.h:200
 #, c-format
 msgid "Could not select that row.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:203
+#: src/adftool_hdf5.h:207
 #, c-format
 msgid "Could not define the memory space.\n"
 msgstr ""
 
-#: src/libadftool/hdf5.c:211
+#: src/adftool_hdf5.h:215
 #, c-format
 msgid "Could not update the file.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:25 src/bplus_tree_grow_file_example.c:25
+#, c-format
+msgid "Could not create the example file.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:35 src/bplus_tree_grow_file_example.c:35
+#, c-format
+msgid "Could not create the dataset space.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:43 src/bplus_tree_grow_file_example.c:43
+#, c-format
+msgid "Could not create the dataset within the file.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:50 src/bplus_tree_grow_file_example.c:50
+#, c-format
+msgid "Could not create the attribute space.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:58 src/bplus_tree_grow_file_example.c:58
+#, c-format
+msgid "Could not create the attribute.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:65
+#, c-format
+msgid "Could not set the attribute to 0.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:74
+#, c-format
+msgid "Could not use the file as the B+ backend.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:98
+#, c-format
+msgid "Error reading nextID.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:103
+#, c-format
+msgid "The root has not been allocated.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:117
+#, c-format
+msgid "Cannot get the dataset dataspace.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:125
+#, c-format
+msgid "Cannot select the first row.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:132
+#, c-format
+msgid "Cannot create a simple dataspace.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:140
+#, c-format
+msgid "Cannot read the first row.\n"
+msgstr ""
+
+#: src/bplus_tree_gets_initialized.c:150
+#, c-format
+msgid "The matrix has not been initialized properly.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_example.c:75 src/bplus_tree_lookup_example.c:55
+#, c-format
+msgid "−> Load %u: [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
+msgstr ""
+
+#: src/bplus_tree_grow_example.c:97
+#, c-format
+msgid "−> Allocate a new node: %u\n"
+msgstr ""
+
+#: src/bplus_tree_grow_example.c:112
+#, c-format
+msgid "−> Store %u, [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:65
+#, c-format
+msgid "Could not set the attribute to a scalar.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:89
+#, c-format
+msgid "Could not create the initialized file space.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:98
+#, c-format
+msgid "Could not create the initial data space.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:108
+#, c-format
+msgid "Could not initialize the file with the initial data.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:119
+#, c-format
+msgid "Could not set up the bplus.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:164
+#, c-format
+msgid "Could not reopen the file for reading.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:170
+#, c-format
+msgid "Could not reopen the dataset.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:176
+#, c-format
+msgid "Could not reopen nextID.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:202
+#, c-format
+msgid "The matrix has not grown at all.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:216
+#, c-format
+msgid "Failed to allocate the buffer.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:222
+#, c-format
+msgid "Failed to read the data.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:233
+#, c-format
+msgid "There is a mismatch.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:252
+#, c-format
+msgid "Error growing the tree.\n"
+msgstr ""
+
+#: src/bplus_tree_grow_file_example.c:257
+#, c-format
+msgid "Growing a tree in an HDF5 file is OK!\n"
+msgstr ""
+
+#: src/bplus_tree_lookup_example.c:94
+#, c-format
+msgid "−> Compare %s to %s: %d\n"
+msgstr ""
+
+#: src/bplus_tree_lookup_example.c:120
+#, c-format
+msgid "Finding %s…\n"
+msgstr ""
+
+#: src/bplus_tree_lookup_example.c:122
+#, c-format
+msgid "Found %s.\n"
+msgstr ""
+
+#: src/bplus_tree_lookup_example.c:145
+#, c-format
+msgid "adftool memory allocation problem detected.\n"
 msgstr ""

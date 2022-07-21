@@ -1,9 +1,13 @@
+#ifndef H_ADFTOOL_INSERT_INCLUDED
+#define H_ADFTOOL_INSERT_INCLUDED
+
 #include <adftool_private.h>
+#include <adftool_bplus.h>
 #include <adftool_bplus_node.h>
 
 static int
 fix_child (const struct node *node, size_t i, struct node *aux,
-	   struct adftool_bplus *bplus)
+	   struct bplus *bplus)
 {
   /* 0 can’t be a child of node. Helps detect if the result of a split
      has too many keys. */
@@ -19,8 +23,7 @@ fix_child (const struct node *node, size_t i, struct node *aux,
 }
 
 static int
-fix_children (const struct node *node, struct node *aux,
-	      struct adftool_bplus *bplus)
+fix_children (const struct node *node, struct node *aux, struct bplus *bplus)
 {
   size_t n_fixed = 0;
   if (node_is_leaf (node))
@@ -45,8 +48,7 @@ fix_children (const struct node *node, struct node *aux,
 
 static int
 bubble_compare (struct node *node, uint32_t * key_to_add,
-		uint32_t * value_to_add, size_t *n_keys,
-		struct adftool_bplus *bplus)
+		uint32_t * value_to_add, size_t *n_keys, struct bplus *bplus)
 {
   int error = 0;
   for (*n_keys = 0;
@@ -55,8 +57,8 @@ bubble_compare (struct node *node, uint32_t * key_to_add,
     {
       int comparison_result;
       error =
-	compare_known (bplus, *key_to_add, node_key (node, *n_keys),
-		       &comparison_result);
+	bplus_compare_known (bplus, *key_to_add, node_key (node, *n_keys),
+			     &comparison_result);
       if (error)
 	{
 	  goto cleanup;
@@ -111,7 +113,7 @@ bubble_after (struct node *node, uint32_t * key_to_add,
 static int
 recursive_insert (struct node *node, struct node *aux, uint32_t key_to_add,
 		  uint32_t value_to_add, uint32_t * after_sibling,
-		  struct adftool_bplus *bplus)
+		  struct bplus *bplus)
 {
   /* In this function, aux is used to hold a new node with half the
      keys. Once it is saved, it is used to fix the parent value of all
@@ -152,7 +154,7 @@ recursive_insert (struct node *node, struct node *aux, uint32_t key_to_add,
 	     the growth operation won’t fix the correct children
 	     correctly. */
 	  node_store (bplus, node);
-	  int growth_error = adftool_bplus_grow (bplus);
+	  int growth_error = bplus_grow (bplus);
 	  if (growth_error)
 	    {
 	      error = 1;
@@ -195,7 +197,7 @@ recursive_insert (struct node *node, struct node *aux, uint32_t key_to_add,
 	}
       uint32_t old_node_id = node->id;
       uint32_t new_node_id;
-      adftool_bplus_allocate (bplus, &new_node_id);
+      bplus_allocate (bplus, &new_node_id);
       size_t n_given = node->order / 2;
       size_t n_kept = node->order - n_given;
       aux->id = new_node_id;
@@ -285,7 +287,7 @@ cleanup:
 
 static int
 recursive_insert_down (struct node *node, uint32_t key, uint32_t value,
-		       struct adftool_bplus *bplus)
+		       struct bplus *bplus)
 {
   if (node_is_leaf (node))
     {
@@ -305,7 +307,8 @@ recursive_insert_down (struct node *node, uint32_t key, uint32_t value,
     {
       int comparison_result;
       int comparison_error =
-	compare_known (bplus, key, node_key (node, i), &comparison_result);
+	bplus_compare_known (bplus, key, node_key (node, i),
+			     &comparison_result);
       if (comparison_error)
 	{
 	  return 1;
@@ -327,9 +330,8 @@ recursive_insert_down (struct node *node, uint32_t key, uint32_t value,
   return recursive_insert_down (node, key, value, bplus);
 }
 
-int
-adftool_bplus_insert (uint32_t key, uint32_t value,
-		      struct adftool_bplus *bplus)
+static inline int
+bplus_insert (uint32_t key, uint32_t value, struct bplus *bplus)
 {
   int error = 0;
   struct node node;
@@ -349,3 +351,5 @@ cleanup_node:
 cleanup:
   return error;
 }
+
+#endif /* not H_ADFTOOL_INSERT_INCLUDED */

@@ -1,4 +1,6 @@
 #include <adftool_private.h>
+#include <adftool_bplus_key.h>
+#include <adftool_bplus.h>
 #include <stdio.h>
 
 /* This example uses internal things of adftool. Thus it can just be
@@ -34,7 +36,7 @@ static const char *dictionary[] = {
 
 /* This is the parameters of the B+ tree: how we fetch rows, and how
    we compare keys. */
-static struct adftool_bplus *bplus = NULL;
+static struct bplus *bplus = NULL;
 
 /* This is how we look up something in the back-end. */
 static int
@@ -102,8 +104,8 @@ search_key (const char *key, size_t start, size_t max, uint32_t * results)
   struct adftool_bplus_key bplus_key;
   key_set_unknown (&bplus_key, (void *) key);
   size_t n_results;
-  int error = adftool_bplus_lookup (&bplus_key, bplus, start, max, &n_results,
-				    results);
+  int error =
+    bplus_lookup (&bplus_key, bplus, start, max, &n_results, results);
   assert (!error);
   return n_results;
 }
@@ -136,14 +138,15 @@ main ()
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
   /* We need to set the parameters. */
-  bplus = adftool_bplus_alloc ();
+  static struct bplus my_bplus;
+  bplus = &my_bplus;
   if (bplus == NULL)
     {
       fprintf (stderr, _("adftool memory allocation problem detected.\n"));
       abort ();
     }
-  adftool_bplus_set_fetch (bplus, fetch, NULL);
-  adftool_bplus_set_compare (bplus, compare, NULL);
+  bplus_set_fetch (bplus, fetch, NULL);
+  bplus_set_compare (bplus, compare, NULL);
   int i;
   for (i = 0; i < 6; i++)
     {
@@ -156,6 +159,5 @@ main ()
   check_string_absent ("trombone");
   check_string_absent ("vibraslap");
   check_string_absent ("xylophone");
-  adftool_bplus_free (bplus);
   return 0;
 }

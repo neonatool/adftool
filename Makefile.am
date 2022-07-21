@@ -52,12 +52,12 @@ libadftool_la_SOURCES = \
   src/adftool_private.h \
   src/adftool_bplus_node.h \
   src/adftool_bplus_key.h \
-  src/libadftool/lookup.c \
-  src/libadftool/parameters.c \
-  src/libadftool/hdf5.c \
+  src/adftool_bplus.h \
+  src/adftool_hdf5.h \
+  src/adftool_grow.h \
+  src/adftool_lookup.h \
+  src/adftool_insert.h \
   src/libadftool/version.c \
-  src/libadftool/grow.c \
-  src/libadftool/insert.c \
   src/libadftool/emscripten.cpp
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
