@@ -15,6 +15,7 @@
 int
 main (int argc, char *argv[])
 {
+  (void) argc;
   set_program_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
