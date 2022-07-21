@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-07-21 15:32+0000\n"
+"POT-Creation-Date: 2022-07-21 15:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,7 +97,7 @@ msgstr ""
 msgid "The matrix has not been initialized properly.\n"
 msgstr ""
 
-#: src/bplus_tree_grow_example.c:74 src/bplus_tree_lookup_example.c:50
+#: src/bplus_tree_grow_example.c:74 src/bplus_tree_lookup_example.c:53
 #, c-format
 msgid "−> Load %u: [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
 msgstr ""
@@ -112,8 +112,7 @@ msgstr ""
 msgid "−> Store %u, [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
 msgstr ""
 
-#: src/bplus_tree_grow_example.c:138 src/bplus_tree_lookup_example.c:102
-#: src/bplus_tree_lookup_example.c:145
+#: src/bplus_tree_grow_example.c:138 src/bplus_tree_lookup_example.c:142
 #, c-format
 msgid "adftool memory allocation problem detected.\n"
 msgstr ""
@@ -213,17 +212,17 @@ msgstr ""
 msgid "Growing a tree in an HDF5 file is OK!\n"
 msgstr ""
 
-#: src/bplus_tree_lookup_example.c:89
+#: src/bplus_tree_lookup_example.c:92
 #, c-format
 msgid "−> Compare %s to %s: %d\n"
 msgstr ""
 
-#: src/bplus_tree_lookup_example.c:121
+#: src/bplus_tree_lookup_example.c:118
 #, c-format
 msgid "Finding %s…\n"
 msgstr ""
 
-#: src/bplus_tree_lookup_example.c:123
+#: src/bplus_tree_lookup_example.c:120
 #, c-format
 msgid "Found %s.\n"
 msgstr ""

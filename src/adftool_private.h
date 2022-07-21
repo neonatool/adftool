@@ -22,24 +22,6 @@
 #define N_(String) (String)
 #endif
 
-enum adftool_bplus_key_type
-{
-  ADFTOOL_BPLUS_KEY_KNOWN,
-  ADFTOOL_BPLUS_KEY_UNKNOWN
-};
-
-union adftool_bplus_key_arg
-{
-  uint32_t known;
-  void *unknown;
-};
-
-struct adftool_bplus_key
-{
-  enum adftool_bplus_key_type type;
-  union adftool_bplus_key_arg arg;
-};
-
 enum context_type
 {
   UNSET,
@@ -64,6 +46,8 @@ struct context
   enum context_type type;
   union context_arg arg;
 };
+
+struct adftool_bplus_key;
 
 struct adftool_bplus
 {
@@ -97,6 +81,8 @@ static inline void adftool_bplus_store (struct adftool_bplus *bplus,
 					uint32_t node_id, size_t start,
 					size_t length, const uint32_t * row);
 static inline void ensure_init (void);
+
+#include "adftool_bplus_key.h"
 
 static void *
 appropriate_context_argument (struct context *context)
@@ -140,9 +126,9 @@ compare_known (const struct adftool_bplus
 	       *bplus, uint32_t key_a, uint32_t key_b, int *result)
 {
   struct adftool_bplus_key a, b;
-  a.type = ADFTOOL_BPLUS_KEY_KNOWN;
+  a.type = KEY_KNOWN;
   a.arg.known = key_a;
-  b.type = ADFTOOL_BPLUS_KEY_KNOWN;
+  b.type = KEY_KNOWN;
   b.arg.known = key_b;
   return adftool_bplus_compare (bplus, &a, &b, result);
 }

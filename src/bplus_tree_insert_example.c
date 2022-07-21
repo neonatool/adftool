@@ -1,8 +1,4 @@
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif /* HAVE_CONFIG_H */
-
-#include <adftool.h>
+#include <adftool_private.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -12,16 +8,13 @@
 #include "xalloc.h"
 #include "gettext.h"
 
-#define _(String) gettext (String)
-#define N_(String) (String)
-
 /* In this example, we maintain a map from uint32 to uint32, where the
    key is a number from 0 to 31, and the value is the iteration in
    which it has been included. We also maintain a static index, as a
    mapping from a key to the check sum of all values. We insert 100
    things in the index, checking for consistency. */
 
-struct context
+struct example_context
 {
   int order;
   size_t n_nodes;
@@ -34,7 +27,7 @@ fetch (uint32_t row_id, size_t *actual_row_length,
        size_t request_start, size_t request_length,
        uint32_t * response, void *ctx)
 {
-  struct context *context = ctx;
+  struct example_context *context = ctx;
   assert (row_id < context->n_nodes);
   const uint32_t *row = (context->data + (row_id * (2 * context->order + 1)));
   *actual_row_length = 2 * context->order + 1;
@@ -53,7 +46,7 @@ static uint32_t
 literal_key (const struct adftool_bplus_key *key)
 {
   uint32_t index;
-  int error = adftool_bplus_key_get_known (key, &index);
+  int error = key_get_known (key, &index);
   assert (error == 0);
   return index;
 }
@@ -70,7 +63,7 @@ compare (const struct adftool_bplus_key *key_1,
 static void
 allocate (uint32_t * result, void *ctx)
 {
-  struct context *context = ctx;
+  struct example_context *context = ctx;
   if (context->n_nodes == context->max_nodes)
     {
       context->max_nodes *= 2;
@@ -86,7 +79,7 @@ static void
 store (uint32_t row_id, size_t start, size_t len, const uint32_t * to_store,
        void *ctx)
 {
-  struct context *context = ctx;
+  struct example_context *context = ctx;
   assert (row_id < context->n_nodes);
   assert (start + len <= 2 * ((size_t) context->order) + 1);
   uint32_t *row = (context->data + (row_id * (2 * context->order + 1)));
@@ -98,7 +91,7 @@ store (uint32_t row_id, size_t start, size_t len, const uint32_t * to_store,
 }
 
 static struct adftool_bplus *bplus = NULL;
-static struct context ctx;
+static struct example_context ctx;
 
 static void
 one_test (int order)
@@ -123,11 +116,7 @@ one_test (int order)
   ctx.data[2 * order] = leaf_flag;
   uint32_t checksums[32] = { 0 };
   uint32_t *lookup_results = xmalloc (100 * sizeof (uint32_t));
-  struct adftool_bplus_key *searched_key = adftool_bplus_key_alloc ();
-  if (searched_key == NULL)
-    {
-      abort ();
-    }
+  struct adftool_bplus_key searched_key;
   for (uint32_t iteration = 0; iteration < 100; iteration++)
     {
       uint32_t key = rand () % 32;
@@ -141,11 +130,11 @@ one_test (int order)
       /* Check consistency */
       for (uint32_t existing_key = 0; existing_key < 32; existing_key++)
 	{
-	  adftool_bplus_key_set_known (searched_key, existing_key);
+	  key_set_known (&searched_key, existing_key);
 	  size_t n_results;
 	  int lookup_error =
-	    adftool_bplus_lookup (searched_key, bplus, 0, 100,
-				  &n_results, lookup_results);
+	    adftool_bplus_lookup (&searched_key, bplus, 0, 100, &n_results,
+				  lookup_results);
 	  assert (lookup_error == 0);
 	  assert (n_results <= 100);
 	  uint32_t n_values = 0;
@@ -162,7 +151,6 @@ one_test (int order)
 	  assert (n_values == checksums[existing_key] % 100);
 	}
     }
-  adftool_bplus_key_free (searched_key);
   free (lookup_results);
   free (ctx.data);
 }

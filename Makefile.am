@@ -51,9 +51,9 @@ adftool_LDFLAGS =
 libadftool_la_SOURCES = \
   src/adftool_private.h \
   src/adftool_bplus_node.h \
+  src/adftool_bplus_key.h \
   src/libadftool/lookup.c \
   src/libadftool/parameters.c \
-  src/libadftool/bplus_key.c \
   src/libadftool/hdf5.c \
   src/libadftool/version.c \
   src/libadftool/grow.c \

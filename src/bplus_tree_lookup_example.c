@@ -1,6 +1,9 @@
 #include <adftool_private.h>
 #include <stdio.h>
 
+/* This example uses internal things of adftool. Thus it can just be
+   compiled alongside it. */
+
 /* The API is storage-agnostic. Here we make storage for a 4-B+ with
    a root node and 2 leaves. */
 static const uint32_t data[][9] = {
@@ -65,11 +68,11 @@ literal_key (const struct adftool_bplus_key *key)
 {
   uint32_t index;
   void *value;
-  if (adftool_bplus_key_get_known (key, &index) == 0)
+  if (key_get_known (key, &index) == 0)
     {
       return dictionary[index];
     }
-  if (adftool_bplus_key_get_unknown (key, &value) == 0)
+  if (key_get_unknown (key, &value) == 0)
     {
       return (const char *) value;
     }
@@ -96,18 +99,12 @@ static size_t
 search_key (const char *key, size_t start, size_t max, uint32_t * results)
 {
   /* We need to wrap key first. */
-  struct adftool_bplus_key *bplus_key = adftool_bplus_key_alloc ();
-  if (bplus_key == NULL)
-    {
-      fprintf (stderr, _("adftool memory allocation problem detected.\n"));
-      abort ();
-    }
-  adftool_bplus_key_set_unknown (bplus_key, (void *) key);
+  struct adftool_bplus_key bplus_key;
+  key_set_unknown (&bplus_key, (void *) key);
   size_t n_results;
-  int error = adftool_bplus_lookup (bplus_key, bplus, start, max, &n_results,
+  int error = adftool_bplus_lookup (&bplus_key, bplus, start, max, &n_results,
 				    results);
   assert (!error);
-  adftool_bplus_key_free (bplus_key);
   return n_results;
 }
 

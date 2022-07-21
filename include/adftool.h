@@ -37,37 +37,7 @@ extern "C"
 {
 #endif				/* __cplusplus */
 
-  /* Keys are compared against each other in a B+ tree. However, since
-     we are defining an index, some keys are already known and so we
-     just use their index in the key table, or they are not known. For
-     instance, the key used in a query can be random and thus we know
-     its literal value, but it does not exist in the table. */
-
   struct adftool_bplus_key;
-
-  extern LIBADFTOOL_API
-    struct adftool_bplus_key *adftool_bplus_key_alloc (void);
-
-  extern LIBADFTOOL_API
-    void adftool_bplus_key_free (struct adftool_bplus_key *key);
-
-  /* Return 0 if no error, something else if the key is not of the
-     correct type. */
-  extern LIBADFTOOL_API
-    int adftool_bplus_key_get_known (const struct adftool_bplus_key *key,
-				     uint32_t * index);
-
-  extern LIBADFTOOL_API
-    int adftool_bplus_key_get_unknown (const struct adftool_bplus_key *key,
-				       void **key_value);
-
-  extern LIBADFTOOL_API
-    void adftool_bplus_key_set_known (struct adftool_bplus_key *key,
-				      uint32_t key_index);
-
-  extern LIBADFTOOL_API
-    void adftool_bplus_key_set_unknown (struct adftool_bplus_key *key,
-					void *key_value);
 
   struct adftool_bplus;
 

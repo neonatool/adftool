@@ -30,7 +30,7 @@ adftool_bplus_lookup (const struct adftool_bplus_key *needle,
 	       current_key++)
 	    {
 	      struct adftool_bplus_key cursor;
-	      cursor.type = ADFTOOL_BPLUS_KEY_KNOWN;
+	      cursor.type = KEY_KNOWN;
 	      cursor.arg.known = node_key (&node, current_key);
 	      error =
 		bplus->compare (needle, &cursor, &compared_to_current,
@@ -98,7 +98,7 @@ adftool_bplus_lookup (const struct adftool_bplus_key *needle,
       if (!error)
 	{
 	  struct adftool_bplus_key cursor;
-	  cursor.type = ADFTOOL_BPLUS_KEY_KNOWN;
+	  cursor.type = KEY_KNOWN;
 	  cursor.arg.known = node_key (&node, current_key);
 	  error =
 	    bplus->compare (needle, &cursor, &compared_to_current,
