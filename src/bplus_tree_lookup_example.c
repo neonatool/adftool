@@ -1,9 +1,6 @@
 #include <adftool_private.h>
 #include <stdio.h>
 
-#define _(String) gettext (String)
-#define N_(String) (String)
-
 /* The API is storage-agnostic. Here we make storage for a 4-B+ with
    a root node and 2 leaves. */
 static const uint32_t data[][9] = {

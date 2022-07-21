@@ -1,4 +1,5 @@
 #include <adftool_private.h>
+#include <adftool_bplus_node.h>
 
 int
 adftool_bplus_lookup (const struct adftool_bplus_key *needle,

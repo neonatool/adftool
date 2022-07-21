@@ -1,4 +1,5 @@
 #include <adftool_private.h>
+#include <adftool_bplus_node.h>
 
 /* FIXME: The data is read and written as H5T_NATIVE_B32, which is
    incorrect because there’s no endianness conversion. */

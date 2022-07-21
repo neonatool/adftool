@@ -1,4 +1,5 @@
 #include <adftool_private.h>
+#include <adftool_bplus_node.h>
 
 int
 adftool_bplus_grow (struct adftool_bplus *bplus)

@@ -1,4 +1,5 @@
 src/adftool.c
+src/adftool_bplus_node.h
 src/adftool_private.h
 src/bplus_tree_gets_initialized.c
 src/bplus_tree_grow_example.c

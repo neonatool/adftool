@@ -50,6 +50,7 @@ adftool_LDFLAGS =
 
 libadftool_la_SOURCES = \
   src/adftool_private.h \
+  src/adftool_bplus_node.h \
   src/libadftool/lookup.c \
   src/libadftool/parameters.c \
   src/libadftool/bplus_key.c \

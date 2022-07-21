@@ -1,4 +1,5 @@
 #include <adftool_private.h>
+#include <adftool_bplus_node.h>
 
 static int
 fix_child (const struct node *node, size_t i, struct node *aux,
