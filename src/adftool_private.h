@@ -18,7 +18,7 @@
 #define _(String) dgettext (PACKAGE, (String))
 #define N_(String) (String)
 #else
-#define _(String) gettext (PACKAGE)
+#define _(String) gettext (String)
 #define N_(String) (String)
 #endif
 
