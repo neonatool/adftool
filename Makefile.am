@@ -7,7 +7,8 @@ CLEANFILES = \
   bplus-tree-gets-initialized.hdf5 \
   corrupted.adf \
   well-formed.adf \
-  non-existing.adf
+  non-existing.adf \
+  dictionary_example.adf
 
 AM_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -33,7 +34,8 @@ check_PROGRAMS = \
   bplus_tree_grow_file_example \
   bplus_tree_gets_initialized \
   bplus_tree_insert_example \
-  file_open_example
+  file_open_example \
+  dictionary_example
 
 TESTS = \
   bplus_tree_lookup_example \
@@ -42,7 +44,8 @@ TESTS = \
   bplus_tree_grow_file_example \
   bplus_tree_gets_initialized \
   bplus_tree_insert_example \
-  file_open_example
+  file_open_example \
+  dictionary_example
 LOG_COMPILER = $(LOG_VALGRIND)
 
 adftool_SOURCES = src/adftool.c
@@ -66,6 +69,7 @@ libadftool_la_SOURCES = \
   src/adftool_insert.h \
   src/libadftool/version.c \
   src/libadftool/file.c \
+  src/libadftool/dictionary.c \
   src/libadftool/emscripten.cpp
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -139,6 +143,20 @@ file_open_example_LDADD = \
   $(LTLIBINTL) \
   @LTLIBOBJS@
 file_open_example_CPPFLAGS = \
+  -I include -I $(srcdir)/include \
+  -I libprog -I $(srcdir)/libprog \
+  -I src -I $(srcdir)/src \
+  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DINSTALLDIR=\"$(bindir)\"
+
+dictionary_example_SOURCES = \
+  src/dictionary_example.c
+dictionary_example_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  @LTLIBOBJS@
+dictionary_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \

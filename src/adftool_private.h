@@ -37,4 +37,30 @@ ensure_init (void)
     }
 }
 
+#include <hdf5.h>
+#include "adftool_bplus.h"
+
+struct literal
+{
+  /* This is the thing pointed to by "unknown" b+ keys. */
+  size_t length;
+  char *data;
+};
+
+struct adftool_dictionary
+{
+  hid_t group;
+  hid_t bplus_dataset;
+  hid_t bplus_nextid;
+  struct bplus bplus;
+  hid_t strings_dataset;
+  hid_t strings_nextid;
+};
+
+struct adftool_file
+{
+  hid_t hdf5_file;
+  struct adftool_dictionary dictionary;
+};
+
 #endif /* not H_ADFTOOL_PRIVATE_INCLUDED */

@@ -46,6 +46,19 @@ extern "C"
 			   int write);
   extern LIBADFTOOL_API void adftool_file_close (struct adftool_file *file);
 
+  extern LIBADFTOOL_API
+    int adftool_dictionary_get (const struct adftool_file *file, uint32_t id,
+				size_t start, size_t max, size_t *length,
+				char *dest);
+  extern LIBADFTOOL_API
+    int adftool_dictionary_lookup (const struct adftool_file *file,
+				   size_t length, const char *key, int *found,
+				   uint32_t * id);
+  /* insert will do nothing if the key is already present. */
+  extern LIBADFTOOL_API
+    int adftool_dictionary_insert (struct adftool_file *file, size_t length,
+				   const char *key, uint32_t * id);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */
