@@ -28,6 +28,7 @@ lib_LTLIBRARIES = libadftool.la
 dist_include_HEADERS = include/adftool.h
 check_PROGRAMS = \
   bplus_tree_lookup_example \
+  bplus_tree_empty_lookup_example \
   bplus_tree_grow_example \
   bplus_tree_grow_file_example \
   bplus_tree_gets_initialized \
@@ -36,6 +37,7 @@ check_PROGRAMS = \
 
 TESTS = \
   bplus_tree_lookup_example \
+  bplus_tree_empty_lookup_example \
   bplus_tree_grow_example \
   bplus_tree_grow_file_example \
   bplus_tree_gets_initialized \
@@ -84,6 +86,14 @@ endif
 bplus_tree_lookup_example_SOURCES = \
   src/bplus_tree_lookup_example.c
 bplus_tree_lookup_example_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  @LTLIBOBJS@
+
+bplus_tree_empty_lookup_example_SOURCES = \
+  src/bplus_tree_empty_lookup_example.c
+bplus_tree_empty_lookup_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \

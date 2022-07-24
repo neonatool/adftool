@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-07-21 15:41+0000\n"
+"POT-Creation-Date: 2022-07-24 19:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -82,6 +82,12 @@ msgstr ""
 msgid "Could not update the file.\n"
 msgstr ""
 
+#: src/bplus_tree_empty_lookup_example.c:34 src/bplus_tree_grow_example.c:75
+#: src/bplus_tree_lookup_example.c:55
+#, c-format
+msgid "−> Load %u: [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
+msgstr ""
+
 #: src/bplus_tree_gets_initialized.c:25 src/bplus_tree_grow_file_example.c:25
 #, c-format
 msgid "Could not create the example file.\n"
@@ -150,11 +156,6 @@ msgstr ""
 #: src/bplus_tree_gets_initialized.c:150
 #, c-format
 msgid "The matrix has not been initialized properly.\n"
-msgstr ""
-
-#: src/bplus_tree_grow_example.c:75 src/bplus_tree_lookup_example.c:55
-#, c-format
-msgid "−> Load %u: [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
 msgstr ""
 
 #: src/bplus_tree_grow_example.c:97

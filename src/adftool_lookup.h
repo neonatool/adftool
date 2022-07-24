@@ -17,7 +17,8 @@ bplus_lookup (const struct adftool_bplus_key *needle, struct bplus *bplus,
     }
   uint32_t current_node = 0;
   size_t current_key = 0;
-  int compared_to_current = 0;
+  /* If there are no keys, it’s as if needle is after all keys. */
+  int compared_to_current = +1;
   int error = 0;
   int first_found = 0;
   /* The first step is to find the first match. */
