@@ -55,6 +55,8 @@ struct adftool_dictionary
   struct bplus bplus;
   hid_t strings_dataset;
   hid_t strings_nextid;
+  hid_t bytes_dataset;
+  hid_t bytes_nextid;
 };
 
 struct adftool_file

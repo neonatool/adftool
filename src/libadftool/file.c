@@ -116,17 +116,22 @@ dictionary_compare (const struct adftool_bplus_key *key_a,
     }
   else
     {
-      if (a_length < b_length)
+      size_t common_length = a_length;
+      if (b_length < common_length)
 	{
-	  *result = -1;
+	  common_length = b_length;
 	}
-      else if (a_length > b_length)
+      *result = memcmp (a, b, common_length);
+      if (*result == 0)
 	{
-	  *result = 1;
-	}
-      else
-	{
-	  *result = memcmp (a, b, a_length);
+	  if (a_length < b_length)
+	    {
+	      *result = -1;
+	    }
+	  else if (a_length > b_length)
+	    {
+	      *result = 1;
+	    }
 	}
     }
   return (error_a || error_b);
@@ -143,6 +148,8 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
   hid_t dictionary_bplus_nextid = H5I_INVALID_HID;
   hid_t dictionary_strings_dataset = H5I_INVALID_HID;
   hid_t dictionary_strings_nextid = H5I_INVALID_HID;
+  hid_t dictionary_bytes_dataset = H5I_INVALID_HID;
+  hid_t dictionary_bytes_nextid = H5I_INVALID_HID;
   struct bplus dictionary_bplus;
   unsigned mode = H5F_ACC_RDONLY;
   if (write)
@@ -306,6 +313,70 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
 	  goto wrapup;
 	}
     }
+  dictionary_bytes_dataset =
+    H5Dopen2 (hdf5_file, "/dictionary/bytes", H5P_DEFAULT);
+  if (dictionary_bytes_dataset == H5I_INVALID_HID)
+    {
+      hsize_t minimum_dimensions[] = { 1 };
+      hsize_t maximum_dimensions[] = { H5S_UNLIMITED };
+      hsize_t chunk_dimensions[] = { 4096 };
+      hid_t fspace =
+	H5Screate_simple (1, minimum_dimensions, maximum_dimensions);
+      if (fspace == H5I_INVALID_HID)
+	{
+	  error = 1;
+	  goto wrapup;
+	}
+      hid_t dataset_creation_properties = H5Pcreate (H5P_DATASET_CREATE);
+      if (dataset_creation_properties == H5I_INVALID_HID)
+	{
+	  H5Sclose (fspace);
+	  error = 1;
+	  goto wrapup;
+	}
+      if (H5Pset_chunk (dataset_creation_properties, 1, chunk_dimensions) < 0)
+	{
+	  H5Sclose (fspace);
+	  error = 1;
+	  goto wrapup;
+	}
+      dictionary_bytes_dataset =
+	H5Dcreate2 (hdf5_file, "/dictionary/bytes", H5T_NATIVE_B8, fspace,
+		    H5P_DEFAULT, dataset_creation_properties, H5P_DEFAULT);
+      H5Pclose (dataset_creation_properties);
+      H5Sclose (fspace);
+      if (dictionary_bytes_dataset == H5I_INVALID_HID)
+	{
+	  error = 1;
+	  goto wrapup;
+	}
+    }
+  dictionary_bytes_nextid =
+    H5Aopen (dictionary_bytes_dataset, "nextID", H5P_DEFAULT);
+  if (dictionary_bytes_nextid == H5I_INVALID_HID)
+    {
+      hid_t fspace = H5Screate (H5S_SCALAR);
+      if (fspace == H5I_INVALID_HID)
+	{
+	  error = 1;
+	  goto wrapup;
+	}
+      dictionary_bytes_nextid =
+	H5Acreate2 (dictionary_bytes_dataset, "nextID", H5T_NATIVE_INT,
+		    fspace, H5P_DEFAULT, H5P_DEFAULT);
+      H5Sclose (fspace);
+      if (dictionary_bytes_nextid == H5I_INVALID_HID)
+	{
+	  error = 1;
+	  goto wrapup;
+	}
+      int zero = 0;
+      if (H5Awrite (dictionary_bytes_nextid, H5T_NATIVE_INT, &zero) < 0)
+	{
+	  error = 1;
+	  goto wrapup;
+	}
+    }
   error =
     bplus_from_hdf5 (&dictionary_bplus, dictionary_bplus_dataset,
 		     dictionary_bplus_nextid);
@@ -325,9 +396,19 @@ wrapup:
 	      sizeof (struct bplus));
       file->dictionary.strings_dataset = dictionary_strings_dataset;
       file->dictionary.strings_nextid = dictionary_strings_nextid;
+      file->dictionary.bytes_dataset = dictionary_bytes_dataset;
+      file->dictionary.bytes_nextid = dictionary_bytes_nextid;
     }
   else
     {
+      if (dictionary_bytes_nextid != H5I_INVALID_HID)
+	{
+	  H5Aclose (dictionary_bytes_nextid);
+	}
+      if (dictionary_bytes_dataset != H5I_INVALID_HID)
+	{
+	  H5Dclose (dictionary_bytes_dataset);
+	}
       if (dictionary_strings_nextid != H5I_INVALID_HID)
 	{
 	  H5Aclose (dictionary_strings_nextid);
@@ -361,6 +442,8 @@ adftool_file_close (struct adftool_file *file)
 {
   if (file->hdf5_file != H5I_INVALID_HID)
     {
+      H5Aclose (file->dictionary.bytes_nextid);
+      H5Dclose (file->dictionary.bytes_dataset);
       H5Aclose (file->dictionary.strings_nextid);
       H5Dclose (file->dictionary.strings_dataset);
       H5Aclose (file->dictionary.bplus_nextid);
