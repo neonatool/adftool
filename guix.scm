@@ -107,6 +107,8 @@
       (add-before
        'bootstrap 'set-gnulib-srcdir
        (lambda* (#:key inputs native-inputs #:allow-other-keys)
+         (patch-shebang "autopull.sh")
+         (patch-shebang "autogen.sh")
 	 (setenv "GNULIB_SRCDIR" #$gnulib-patched)))
       (add-after
        'bootstrap 'fix-/bin/sh-in-po
