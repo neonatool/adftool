@@ -61,7 +61,6 @@ bplus_lookup (const struct adftool_bplus_key *needle, struct bplus *bplus,
 	      current_node = node_value (&node, current_key);
 	      assert (current_node != 0);
 	      current_key = 0;
-	      error = node_fetch (bplus, current_node, &node);
 	    }
 	}
     }
