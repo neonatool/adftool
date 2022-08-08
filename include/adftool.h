@@ -109,6 +109,55 @@ extern "C"
 			     const struct adftool_term *term,
 			     uint64_t * encoded);
 
+  struct adftool_statement;
+  extern LIBADFTOOL_API
+    struct adftool_statement *adftool_statement_alloc (void);
+  extern LIBADFTOOL_API
+    void adftool_statement_free (struct adftool_statement *statement);
+
+  extern LIBADFTOOL_API
+    int adftool_statement_set_subject (struct adftool_statement *statement,
+				       const struct adftool_term *subject);
+  extern LIBADFTOOL_API
+    int adftool_statement_set_predicate (struct adftool_statement *statement,
+					 const struct adftool_term
+					 *predicate);
+  extern LIBADFTOOL_API
+    int adftool_statement_set_object (struct adftool_statement *statement,
+				      const struct adftool_term *object);
+  extern LIBADFTOOL_API
+    int adftool_statement_set_graph (struct adftool_statement *statement,
+				     const struct adftool_term *graph);
+  extern LIBADFTOOL_API
+    int adftool_statement_set_deletion_date (struct adftool_statement
+					     *statement,
+					     uint64_t deletion_date);
+
+  extern LIBADFTOOL_API
+    int adftool_statement_get_subject (const struct adftool_statement
+				       *statement, int *has_subject,
+				       struct adftool_term *term);
+  extern LIBADFTOOL_API
+    int adftool_statement_get_predicate (const struct adftool_statement
+					 *statement, int *has_predicate,
+					 struct adftool_term *term);
+  extern LIBADFTOOL_API
+    int adftool_statement_get_object (const struct adftool_statement
+				      *statement, int *has_object,
+				      struct adftool_term *term);
+  extern LIBADFTOOL_API
+    int adftool_statement_get_graph (const struct adftool_statement
+				     *statement, int *has_graph,
+				     struct adftool_term *term);
+  extern LIBADFTOOL_API
+    int adftool_statement_get_deletion_date (const struct adftool_statement
+					     *statement, int *has_date,
+					     uint64_t * date);
+
+  extern LIBADFTOOL_API int
+    adftool_statement_compare (const struct adftool_statement *reference,
+			       const struct adftool_statement *other);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */

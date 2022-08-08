@@ -80,4 +80,13 @@ struct adftool_term
   char *str2;
 };
 
+struct adftool_statement
+{
+  struct adftool_term *subject;
+  struct adftool_term *predicate;
+  struct adftool_term *object;
+  struct adftool_term *graph;
+  uint64_t deletion_date;
+};
+
 #endif /* not H_ADFTOOL_PRIVATE_INCLUDED */
