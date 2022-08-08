@@ -59,6 +59,43 @@ extern "C"
     int adftool_dictionary_insert (struct adftool_file *file, size_t length,
 				   const char *key, uint32_t * id);
 
+  struct adftool_term;
+  extern LIBADFTOOL_API struct adftool_term *adftool_term_alloc (void);
+  extern LIBADFTOOL_API void adftool_term_free (struct adftool_term *term);
+
+  extern LIBADFTOOL_API
+    int adftool_term_set_blank (struct adftool_term *term, const char *id);
+  extern LIBADFTOOL_API
+    int adftool_term_set_named (struct adftool_term *term, const char *id);
+  extern LIBADFTOOL_API
+    int adftool_term_set_literal (struct adftool_term *term,
+				  const char *value, const char *type,
+				  const char *lang);
+
+  extern LIBADFTOOL_API
+    int adftool_term_is_blank (const struct adftool_term *term);
+  extern LIBADFTOOL_API
+    int adftool_term_is_named (const struct adftool_term *term);
+  extern LIBADFTOOL_API
+    int adftool_term_is_literal (const struct adftool_term *term);
+
+  extern LIBADFTOOL_API
+    int adftool_term_is_typed_literal (const struct adftool_term *term);
+  extern LIBADFTOOL_API
+    int adftool_term_is_langstring (const struct adftool_term *term);
+
+  extern LIBADFTOOL_API
+    size_t adftool_term_value (const struct adftool_term *term, size_t start,
+			       size_t max, char *value);
+  /* meta gets the type or langtag of a literal */
+  extern LIBADFTOOL_API
+    size_t adftool_term_meta (const struct adftool_term *term, size_t start,
+			      size_t max, char *meta);
+
+  extern LIBADFTOOL_API
+    int adftool_term_compare (const struct adftool_term *reference,
+			      const struct adftool_term *other);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */

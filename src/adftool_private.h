@@ -65,4 +65,19 @@ struct adftool_file
   struct adftool_dictionary dictionary;
 };
 
+enum adftool_term_type
+{
+  TERM_BLANK = 0,
+  TERM_NAMED = 1,
+  TERM_TYPED = 2,
+  TERM_LANGSTRING = 3
+};
+
+struct adftool_term
+{
+  enum adftool_term_type type;
+  char *str1;
+  char *str2;
+};
+
 #endif /* not H_ADFTOOL_PRIVATE_INCLUDED */

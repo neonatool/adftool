@@ -17,3 +17,5 @@ src/file_open_example.c
 src/libadftool/dictionary.c
 src/libadftool/emscripten.cpp
 src/libadftool/file.c
+src/libadftool/term.c
+src/term_manipulation_example.c
