@@ -64,6 +64,10 @@ extern "C"
   extern LIBADFTOOL_API void adftool_term_free (struct adftool_term *term);
 
   extern LIBADFTOOL_API
+    int adftool_term_copy (struct adftool_term *dest,
+			   const struct adftool_term *src);
+
+  extern LIBADFTOOL_API
     int adftool_term_set_blank (struct adftool_term *term, const char *id);
   extern LIBADFTOOL_API
     int adftool_term_set_named (struct adftool_term *term, const char *id);

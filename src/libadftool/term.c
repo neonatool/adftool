@@ -603,3 +603,21 @@ wrapup:
   free (meta);
   return error;
 }
+
+int
+adftool_term_copy (struct adftool_term *dest, const struct adftool_term *src)
+{
+  switch (src->type)
+    {
+    case TERM_BLANK:
+      return adftool_term_set_blank (dest, src->str1);
+    case TERM_NAMED:
+      return adftool_term_set_named (dest, src->str1);
+    case TERM_TYPED:
+      return adftool_term_set_literal (dest, src->str1, src->str2, NULL);
+    case TERM_LANGSTRING:
+      return adftool_term_set_literal (dest, src->str1, NULL, src->str2);
+    default:
+      abort ();
+    }
+}
