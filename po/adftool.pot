@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-08-08 10:03+0000\n"
+"POT-Creation-Date: 2022-08-08 13:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -259,27 +259,67 @@ msgstr ""
 msgid "adftool memory allocation problem detected.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:121
+#: src/term_manipulation_example.c:126
 #, c-format
 msgid "Type %lu for number %lu is %d, should be %d.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:132
+#: src/term_manipulation_example.c:137
 #, c-format
 msgid "Value for number %lu is %s, should be %s.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:140
+#: src/term_manipulation_example.c:145
 #, c-format
 msgid "Meta for number %lu is %s, should be %s.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:157
+#: src/term_manipulation_example.c:162
 #, c-format
 msgid "Comparison between %lu and %lu should be %d, it is %d.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:171
+#: src/term_manipulation_example.c:182
+#, c-format
+msgid "Could not add %s to the dictionary.\n"
+msgstr ""
+
+#: src/term_manipulation_example.c:205
+#, c-format
+msgid "Not enough memory to allocate a term.\n"
+msgstr ""
+
+#: src/term_manipulation_example.c:210
+#, c-format
+msgid "Failed to encode term %lu.\n"
+msgstr ""
+
+#: src/term_manipulation_example.c:215
+#, c-format
+msgid "Encoding term %lu gives %016lx, not %016lx.\n"
+msgstr ""
+
+#: src/term_manipulation_example.c:221
+#, c-format
+msgid "Failed to decode term %lu (%016lx).\n"
+msgstr ""
+
+#: src/term_manipulation_example.c:237
+#, c-format
+msgid "%s:%d: Type %lu for number %lu is %d, should be %d.\n"
+msgstr ""
+
+#: src/term_manipulation_example.c:248
+#, c-format
+msgid "%s:%d: Value for number %lu is %s, should be %s.\n"
+msgstr ""
+
+#: src/term_manipulation_example.c:256
+#, c-format
+msgid "%s:%d: Meta for number %lu is %s, should be %s.\n"
+msgstr ""
+
+#: src/term_manipulation_example.c:270
 #, c-format
 msgid "The test failed, keeping term_example.adf around.\n"
 msgstr ""

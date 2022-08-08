@@ -96,6 +96,15 @@ extern "C"
     int adftool_term_compare (const struct adftool_term *reference,
 			      const struct adftool_term *other);
 
+  extern LIBADFTOOL_API
+    int adftool_term_decode (const struct adftool_file *file, uint64_t value,
+			     struct adftool_term *decoded);
+
+  extern LIBADFTOOL_API
+    int adftool_term_encode (struct adftool_file *file,
+			     const struct adftool_term *term,
+			     uint64_t * encoded);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */

@@ -16,6 +16,11 @@
 #define _(String) gettext(String)
 #define N_(String) (String)
 
+#define CHECK_PACK(value, meta, flags) \
+  ((((((uint64_t) (value)) << 31) | ((uint64_t) (meta))) << 2) | ((uint64_t) (flags)))
+
+#define EMPTY_TERM 0x7FFFFFFF
+
 int
 main (int argc, char *argv[])
 {
@@ -159,6 +164,100 @@ should be %d, it is %d.\n"), i, j, compare_table[i][j], cmp);
 	      goto failure;
 	    }
 	}
+    }
+  static const char *dict_terms[] = {
+    "hello", "world", "my-type", "en", "zz",
+    "http://www.w3.org/2001/XMLSchema#string"
+  };
+  uint32_t dict_term_ids[6];
+  assert (sizeof (dict_term_ids) / sizeof (dict_term_ids[0]) ==
+	  sizeof (dict_terms) / sizeof (dict_terms[0]));
+  for (size_t i = 0; i < sizeof (dict_terms) / sizeof (dict_terms[0]); i++)
+    {
+      int error = adftool_dictionary_insert (file, strlen (dict_terms[i]),
+					     dict_terms[i],
+					     &(dict_term_ids[i]));
+      if (error)
+	{
+	  fprintf (stderr, _("Could not add %s to the dictionary.\n"),
+		   dict_terms[i]);
+	  goto failure;
+	}
+      assert (dict_term_ids[i] == i);
+    }
+  static const uint64_t encoded_forms[] = {
+    CHECK_PACK (0, EMPTY_TERM, 0),	/* _:hello */
+    CHECK_PACK (1, EMPTY_TERM, 0),	/* _:world */
+    CHECK_PACK (0, EMPTY_TERM, 1),	/* <hello> */
+    CHECK_PACK (1, EMPTY_TERM, 1),	/* <world> */
+    CHECK_PACK (0, 5, 2),	/* "hello" */
+    CHECK_PACK (1, 2, 2),	/* "world"^^<my-type> */
+    CHECK_PACK (0, 3, 3),	/* "hello"@en */
+    CHECK_PACK (1, 4, 3)	/* "world"@zz */
+  };
+  assert (sizeof (encoded_forms) / sizeof (encoded_forms[0]) == n_terms);
+  for (size_t i = 0; i < n_terms; i++)
+    {
+      uint64_t encoded;
+      struct adftool_term *term = adftool_term_alloc ();
+      if (term == NULL)
+	{
+	  fprintf (stderr, _("Not enough memory to allocate a term.\n"));
+	  goto failure;
+	}
+      if (adftool_term_encode (file, all_terms[i], &encoded) != 0)
+	{
+	  fprintf (stderr, _("Failed to encode term %lu.\n"), i);
+	  goto failure;
+	}
+      if (encoded != encoded_forms[i])
+	{
+	  fprintf (stderr, _("Encoding term %lu gives %016lx, not %016lx.\n"),
+		   i, encoded, encoded_forms[i]);
+	  goto failure;
+	}
+      if (adftool_term_decode (file, encoded_forms[i], term) != 0)
+	{
+	  fprintf (stderr, _("Failed to decode term %lu (%016lx).\n"), i,
+		   encoded_forms[i]);
+	  goto failure;
+	}
+      int my_types[5];
+      my_types[0] = adftool_term_is_blank (term);
+      my_types[1] = adftool_term_is_named (term);
+      my_types[2] = adftool_term_is_literal (term);
+      my_types[3] = adftool_term_is_typed_literal (term);
+      my_types[4] = adftool_term_is_langstring (term);
+      assert (sizeof (my_types) / sizeof (my_types[0]) ==
+	      sizeof (types[0]) / sizeof (types[0][0]));
+      for (size_t j = 0; j < sizeof (my_types) / sizeof (my_types[0]); j++)
+	{
+	  if (types[i][j] != my_types[j])
+	    {
+	      fprintf (stderr, _("%s:%d: \
+Type %lu for number %lu is %d, should be %d.\n"), __FILE__, __LINE__, j, i, my_types[j], types[i][j]);
+	      goto failure;
+	    }
+	}
+      char buffer[40];
+      static const size_t max = sizeof (buffer) / sizeof (buffer[0]);
+      size_t n_used = adftool_term_value (term, 0, max, buffer);
+      if (n_used != strlen (expected_value[i])
+	  || strcmp (buffer, expected_value[i]) != 0)
+	{
+	  fprintf (stderr, _("%s:%d: \
+Value for number %lu is %s, should be %s.\n"), __FILE__, __LINE__, i, buffer, expected_value[i]);
+	  goto failure;
+	}
+      n_used = adftool_term_meta (term, 0, max, buffer);
+      if (n_used != strlen (expected_meta[i])
+	  || strcmp (buffer, expected_meta[i]) != 0)
+	{
+	  fprintf (stderr, _("%s:%d: \
+Meta for number %lu is %s, should be %s.\n"), __FILE__, __LINE__, i, buffer, expected_meta[i]);
+	  goto failure;
+	}
+      adftool_term_free (term);
     }
   for (size_t i = 0; i < n_terms; i++)
     {
