@@ -208,6 +208,7 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
 	}
       if (H5Pset_chunk (dataset_creation_properties, 2, chunk_dimensions) < 0)
 	{
+	  H5Pclose (dataset_creation_properties);
 	  H5Sclose (fspace);
 	  error = 1;
 	  goto wrapup;
@@ -272,6 +273,7 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
 	}
       if (H5Pset_chunk (dataset_creation_properties, 2, chunk_dimensions) < 0)
 	{
+	  H5Pclose (dataset_creation_properties);
 	  H5Sclose (fspace);
 	  error = 1;
 	  goto wrapup;
@@ -336,6 +338,7 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
 	}
       if (H5Pset_chunk (dataset_creation_properties, 1, chunk_dimensions) < 0)
 	{
+	  H5Pclose (dataset_creation_properties);
 	  H5Sclose (fspace);
 	  error = 1;
 	  goto wrapup;
