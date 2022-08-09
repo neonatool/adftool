@@ -154,9 +154,9 @@ extern "C"
 					     *statement, int *has_date,
 					     uint64_t * date);
 
-  extern LIBADFTOOL_API int
-    adftool_statement_compare (const struct adftool_statement *reference,
-			       const struct adftool_statement *other);
+  extern LIBADFTOOL_API
+    int adftool_statement_compare (const struct adftool_statement *reference,
+				   const struct adftool_statement *other);
 
 #ifdef __cplusplus
 }
