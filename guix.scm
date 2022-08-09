@@ -67,6 +67,40 @@
 	   "0.0.0"
 	   version)))))
 
+(define po-download
+  (program-file
+   "po-download"
+   (with-imported-modules
+    (source-module-closure '((guix build utils)))
+    #~(begin
+	(use-modules (guix build utils))
+	(use-modules (ice-9 match) (ice-9 ftw))
+	(match (command-line)
+	  ((_ subdir "adftool")
+	   (let ((enter? (lambda (name stat result) #t))
+		 (leaf (lambda (name stat result)
+			 (when (string-suffix? ".po" name)
+			   (copy-file
+			    name
+			    (string-append subdir "/" (basename name)))
+			   (chmod
+			    (string-append subdir "/" (basename name))
+			    #o644))))
+		 (down (const #t))
+		 (up (const #t))
+		 (skip (const #t))
+		 (error (const #t)))
+	     (file-system-fold
+	      enter? leaf down up skip error #t
+	      #$(local-file "./po" "adftool-po"
+			    #:recursive? #t
+			    #:select?
+			    (lambda (file stat)
+			      (string-suffix? ".po" file)))))))))))
+
+(define po-download-command-format
+  #~(format #f "~a %s %s" #$po-download))
+
 (package
  (name "adftool")
  (version adftool-version)
@@ -79,6 +113,8 @@
 		 (not (string-suffix? "/gnulib" file))
 		 (not (string-suffix? "~" file))
 		 (not (string-suffix? ".git" file))
+		 (not (string-suffix? ".pot" file))
+		 (not (string-suffix? ".po" file))
 		 ))))
  (build-system gnu-build-system)
  (outputs (list "out" "dist" "devel"))
@@ -94,22 +130,18 @@
 	   (lambda (port)
 	     (display #$adftool-version port)))))
       (add-after
-       'unpack 'bootstrap-force
+       'unpack 'setup-gnulib
        (lambda _
-	 (invoke "sh" "-c" "printf '\\ncheckout_only_file=\\n' >> bootstrap.conf")
-	 (invoke "sh" "-c" "printf '\\ngnulib_tool=\\\"bash $gnulib_tool\\\"\\n' >> bootstrap.conf")))
-      (add-after
-       'unpack 'save-po-files
-       (lambda _
-	 (mkdir-p ".download-po")
-	 (invoke "find" "po" "-name" "*.po" "-exec" "mv" "{}" ".download-po" ";")
-	 (invoke "sh" "-c" "printf '\\npo_download_command_format=\"mv .download-po/*.po %%s/ ; echo %%s\"\\n' >> bootstrap.conf")))
-      (add-before
-       'bootstrap 'set-gnulib-srcdir
-       (lambda* (#:key inputs native-inputs #:allow-other-keys)
+	 (setenv "GNULIB_SRCDIR" #$gnulib-patched)
+	 (rename-file "bootstrap.conf" "bootstrap-maintainer.conf")
+	 (call-with-output-file "bootstrap.conf"
+	   (lambda (port)
+	     (format port "po_download_command_format=~s\n"
+		     #$po-download-command-format)
+	     (format port "checkout_only_file=\n")
+	     (format port "source ./bootstrap-maintainer.conf\n")))
          (patch-shebang "autopull.sh")
-         (patch-shebang "autogen.sh")
-	 (setenv "GNULIB_SRCDIR" #$gnulib-patched)))
+         (patch-shebang "autogen.sh")))
       (add-after
        'bootstrap 'fix-/bin/sh-in-po
        (lambda _
@@ -162,7 +194,7 @@
 		   "/share/adftool/po/"))
 	 (let ((enter?
 		(lambda (name stat result)
-		  #t))
+		  (not (string-suffix? "/.reference" name))))
 	       (leaf
 		(lambda (name stat result)
 		  (when (and (or (string-suffix? ".po" name)
