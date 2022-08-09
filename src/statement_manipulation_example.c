@@ -70,6 +70,48 @@ main (int argc, char *argv[])
     {
       abort ();
     }
+  uint32_t statement_id = 42;
+  if (adftool_quads_insert (file, statement, &statement_id) != 0)
+    {
+      abort ();
+    }
+  struct adftool_statement *statement_zero = adftool_statement_alloc ();
+  if (statement_zero == NULL)
+    {
+      abort ();
+    }
+  if (statement_id != 0)
+    {
+      abort ();
+    }
+  if (adftool_quads_delete (file, 0, 0) != 0)
+    {
+      abort ();
+    }
+  if (adftool_quads_get (file, 0, statement_zero) != 0)
+    {
+      abort ();
+    }
+  int statement_zero_deleted;
+  uint64_t deletion_date;
+  if (adftool_statement_get_deletion_date
+      (statement_zero, &statement_zero_deleted, &deletion_date) != 0)
+    {
+      abort ();
+    }
+  if (!statement_zero_deleted)
+    {
+      abort ();
+    }
+  if (deletion_date != 0)
+    {
+      abort ();
+    }
+  if (adftool_statement_compare (statement, statement_zero, "SPOG") != 0)
+    {
+      abort ();
+    }
+  adftool_statement_free (statement_zero);
   adftool_term_free (term);
   adftool_statement_free (statement);
   adftool_file_close (file);

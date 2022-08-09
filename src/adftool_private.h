@@ -59,10 +59,23 @@ struct adftool_dictionary
   hid_t bytes_nextid;
 };
 
+struct adftool_quads
+{
+  hid_t dataset;
+  hid_t nextid;
+};
+
+struct adftool_data_description
+{
+  hid_t group;
+  struct adftool_quads quads;
+};
+
 struct adftool_file
 {
   hid_t hdf5_file;
   struct adftool_dictionary dictionary;
+  struct adftool_data_description data_description;
 };
 
 enum adftool_term_type

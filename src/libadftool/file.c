@@ -151,6 +151,9 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
   hid_t dictionary_bytes_dataset = H5I_INVALID_HID;
   hid_t dictionary_bytes_nextid = H5I_INVALID_HID;
   struct bplus dictionary_bplus;
+  hid_t data_description_group = H5I_INVALID_HID;
+  hid_t data_description_quads_dataset = H5I_INVALID_HID;
+  hid_t data_description_quads_nextid = H5I_INVALID_HID;
   unsigned mode = H5F_ACC_RDONLY;
   if (write)
     {
@@ -388,6 +391,85 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
       goto wrapup;
     }
   bplus_set_compare (&dictionary_bplus, dictionary_compare, (void *) file);
+  data_description_group =
+    H5Gopen2 (hdf5_file, "/data-description", H5P_DEFAULT);
+  if (data_description_group == H5I_INVALID_HID)
+    {
+      data_description_group =
+	H5Gcreate (hdf5_file, "/data-description", H5P_DEFAULT, H5P_DEFAULT,
+		   H5P_DEFAULT);
+      if (data_description_group == H5I_INVALID_HID)
+	{
+	  error = 1;
+	  goto wrapup;
+	}
+    }
+  data_description_quads_dataset =
+    H5Dopen2 (hdf5_file, "/data-description/quads", H5P_DEFAULT);
+  if (data_description_quads_dataset == H5I_INVALID_HID)
+    {
+      hsize_t minimum_dimensions[] = { 1, 5 };
+      hsize_t maximum_dimensions[] = { H5S_UNLIMITED, 5 };
+      hsize_t chunk_dimensions[] = { 1, 5 };
+      hid_t fspace =
+	H5Screate_simple (2, minimum_dimensions, maximum_dimensions);
+      if (fspace == H5I_INVALID_HID)
+	{
+	  error = 1;
+	  goto wrapup;
+	}
+      hid_t dataset_creation_properties = H5Pcreate (H5P_DATASET_CREATE);
+      if (dataset_creation_properties == H5I_INVALID_HID)
+	{
+	  H5Sclose (fspace);
+	  error = 1;
+	  goto wrapup;
+	}
+      if (H5Pset_chunk (dataset_creation_properties, 2, chunk_dimensions) < 0)
+	{
+	  H5Pclose (dataset_creation_properties);
+	  H5Sclose (fspace);
+	  error = 1;
+	  goto wrapup;
+	}
+      data_description_quads_dataset =
+	H5Dcreate2 (hdf5_file, "/data-description/quads", H5T_NATIVE_B64,
+		    fspace, H5P_DEFAULT, dataset_creation_properties,
+		    H5P_DEFAULT);
+      H5Pclose (dataset_creation_properties);
+      H5Sclose (fspace);
+      if (data_description_quads_dataset == H5I_INVALID_HID)
+	{
+	  error = 1;
+	  goto wrapup;
+	}
+    }
+  data_description_quads_nextid =
+    H5Aopen (data_description_quads_dataset, "nextID", H5P_DEFAULT);
+  if (data_description_quads_nextid == H5I_INVALID_HID)
+    {
+      hid_t fspace = H5Screate (H5S_SCALAR);
+      if (fspace == H5I_INVALID_HID)
+	{
+	  error = 1;
+	  goto wrapup;
+	}
+      data_description_quads_nextid =
+	H5Acreate2 (data_description_quads_dataset, "nextID", H5T_NATIVE_INT,
+		    fspace, H5P_DEFAULT, H5P_DEFAULT);
+      H5Sclose (fspace);
+      if (data_description_quads_nextid == H5I_INVALID_HID)
+	{
+	  error = 1;
+	  goto wrapup;
+	}
+      int zero = 0;
+      if (H5Awrite (data_description_quads_nextid, H5T_NATIVE_INT, &zero) < 0)
+	{
+	  error = 1;
+	  goto wrapup;
+	}
+    }
 wrapup:
   if (error == 0)
     {
@@ -401,9 +483,24 @@ wrapup:
       file->dictionary.strings_nextid = dictionary_strings_nextid;
       file->dictionary.bytes_dataset = dictionary_bytes_dataset;
       file->dictionary.bytes_nextid = dictionary_bytes_nextid;
+      file->data_description.group = data_description_group;
+      file->data_description.quads.dataset = data_description_quads_dataset;
+      file->data_description.quads.nextid = data_description_quads_nextid;
     }
   else
     {
+      if (data_description_quads_dataset != H5I_INVALID_HID)
+	{
+	  H5Dclose (data_description_quads_dataset);
+	}
+      if (data_description_quads_nextid != H5I_INVALID_HID)
+	{
+	  H5Aclose (data_description_quads_nextid);
+	}
+      if (data_description_group != H5I_INVALID_HID)
+	{
+	  H5Gclose (data_description_group);
+	}
       if (dictionary_bytes_nextid != H5I_INVALID_HID)
 	{
 	  H5Aclose (dictionary_bytes_nextid);
@@ -445,6 +542,9 @@ adftool_file_close (struct adftool_file *file)
 {
   if (file->hdf5_file != H5I_INVALID_HID)
     {
+      H5Dclose (file->data_description.quads.dataset);
+      H5Aclose (file->data_description.quads.nextid);
+      H5Gclose (file->data_description.group);
       H5Aclose (file->dictionary.bytes_nextid);
       H5Dclose (file->dictionary.bytes_dataset);
       H5Aclose (file->dictionary.strings_nextid);

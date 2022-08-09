@@ -156,7 +156,21 @@ extern "C"
 
   extern LIBADFTOOL_API
     int adftool_statement_compare (const struct adftool_statement *reference,
-				   const struct adftool_statement *other);
+				   const struct adftool_statement *other,
+				   const char *order);
+
+  extern LIBADFTOOL_API
+    int adftool_quads_get (const struct adftool_file *file, uint32_t id,
+			   struct adftool_statement *statement);
+
+  extern LIBADFTOOL_API
+    int adftool_quads_delete (struct adftool_file *file, uint32_t id,
+			      uint64_t deletion_date);
+
+  extern LIBADFTOOL_API
+    int adftool_quads_insert (struct adftool_file *file,
+			      const struct adftool_statement *statement,
+			      uint32_t * id);
 
 #ifdef __cplusplus
 }
