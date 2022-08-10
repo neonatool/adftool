@@ -318,17 +318,15 @@ update_quad (struct adftool_file *file, uint32_t id, int read,
       error = 1;
       goto clean_terms;
     }
-  if (has_graph)
+  if (!has_graph)
     {
-      if (adftool_term_encode (file, graph, &(memory[0])) != 0)
+      /* The empty string is the default graph. */
+      if (adftool_term_set_named (graph, "") != 0)
 	{
 	  error = 1;
 	  goto clean_terms;
 	}
-    }
-  else
-    {
-      memory[0] = ((uint64_t) (-1));
+      has_graph = 1;
     }
   if (!has_subject || !has_predicate || !has_object)
     {
@@ -337,7 +335,8 @@ update_quad (struct adftool_file *file, uint32_t id, int read,
     }
   if ((adftool_term_encode (file, subject, &(memory[1])) != 0)
       || (adftool_term_encode (file, predicate, &(memory[2])) != 0)
-      || (adftool_term_encode (file, object, &(memory[3])) != 0))
+      || (adftool_term_encode (file, object, &(memory[3])) != 0)
+      || (adftool_term_encode (file, graph, &(memory[0])) != 0))
     {
       error = 1;
       goto clean_terms;

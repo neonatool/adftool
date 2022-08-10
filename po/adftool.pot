@@ -38,7 +38,7 @@ msgid "Inconsistent result of the dataset dimensions.\n"
 msgstr ""
 
 #: src/adftool_hdf5.h:131 src/libadftool/dictionary.c:277
-#: src/libadftool/dictionary.c:372 src/libadftool/statement.c:574
+#: src/libadftool/dictionary.c:372 src/libadftool/statement.c:573
 #, c-format
 msgid "Could not extend the dataset.\n"
 msgstr ""
