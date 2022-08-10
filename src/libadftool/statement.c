@@ -239,10 +239,13 @@ update_quad (struct adftool_file *file, uint32_t id, int read,
       error = 1;
       goto clean_terms;
     }
-  if (read
-      && memory[0] != ((uint64_t) (-1))
-      && (adftool_term_decode (file, memory[0], graph) != 0))
+  if (read && memory[0] != ((uint64_t) (-1)))
     {
+      if (adftool_term_decode (file, memory[0], graph) != 0)
+	{
+	  error = 1;
+	  goto clean_terms;
+	}
       if (adftool_statement_set_graph (statement, graph) != 0)
 	{
 	  error = 1;

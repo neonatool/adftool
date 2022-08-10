@@ -122,6 +122,8 @@ dictionary_compare (const struct adftool_bplus_key *key_a,
 	  common_length = b_length;
 	}
       *result = memcmp (a, b, common_length);
+      free (a);
+      free (b);
       if (*result == 0)
 	{
 	  if (a_length < b_length)

@@ -498,6 +498,7 @@ adftool_term_decode (const struct adftool_file *file, uint64_t value,
 	      free (value);
 	      goto failure;
 	    }
+	  free (value);
 	}
       break;
     default:
