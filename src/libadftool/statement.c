@@ -252,7 +252,7 @@ update_quad (struct adftool_file *file, uint32_t id, int read,
 	  goto clean_terms;
 	}
     }
-  else
+  else if (read)
     {
       if (adftool_statement_set_graph (statement, NULL) != 0)
 	{
