@@ -646,3 +646,88 @@ adftool_statement_compare (const struct adftool_statement *reference,
     }
   return result;
 }
+
+int
+adftool_statement_copy (struct adftool_statement *dest,
+			const struct adftool_statement *source)
+{
+  struct adftool_term *my_subject = NULL;
+  struct adftool_term *my_predicate = NULL;
+  struct adftool_term *my_object = NULL;
+  struct adftool_term *my_graph = NULL;
+  if (source->subject)
+    {
+      my_subject = adftool_term_alloc ();
+      if (my_subject == NULL)
+	{
+	  goto fail;
+	}
+      if (adftool_term_copy (my_subject, source->subject) != 0)
+	{
+	  goto fail;
+	}
+    }
+  if (source->predicate)
+    {
+      my_predicate = adftool_term_alloc ();
+      if (my_predicate == NULL)
+	{
+	  goto fail;
+	}
+      if (adftool_term_copy (my_predicate, source->predicate) != 0)
+	{
+	  goto fail;
+	}
+    }
+  if (source->object)
+    {
+      my_object = adftool_term_alloc ();
+      if (my_object == NULL)
+	{
+	  goto fail;
+	}
+      if (adftool_term_copy (my_object, source->object) != 0)
+	{
+	  goto fail;
+	}
+    }
+  if (source->graph)
+    {
+      my_graph = adftool_term_alloc ();
+      if (my_graph == NULL)
+	{
+	  goto fail;
+	}
+      if (adftool_term_copy (my_graph, source->graph) != 0)
+	{
+	  goto fail;
+	}
+    }
+  adftool_term_free (dest->subject);
+  adftool_term_free (dest->predicate);
+  adftool_term_free (dest->object);
+  adftool_term_free (dest->graph);
+  dest->subject = my_subject;
+  dest->predicate = my_predicate;
+  dest->object = my_object;
+  dest->graph = my_graph;
+  dest->deletion_date = source->deletion_date;
+fail:
+  if (my_subject)
+    {
+      adftool_term_free (my_subject);
+    }
+  if (my_predicate)
+    {
+      adftool_term_free (my_predicate);
+    }
+  if (my_object)
+    {
+      adftool_term_free (my_object);
+    }
+  if (my_graph)
+    {
+      adftool_term_free (my_graph);
+    }
+  return 1;
+}

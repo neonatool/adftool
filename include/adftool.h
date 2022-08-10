@@ -155,6 +155,10 @@ extern "C"
 					     uint64_t * date);
 
   extern LIBADFTOOL_API
+    int adftool_statement_copy (struct adftool_statement *dest,
+				const struct adftool_statement *source);
+
+  extern LIBADFTOOL_API
     int adftool_statement_compare (const struct adftool_statement *reference,
 				   const struct adftool_statement *other,
 				   const char *order);
