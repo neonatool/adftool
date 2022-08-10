@@ -4,7 +4,7 @@ To build, run:
 
 ./bootstrap --bootstrap-sync --force --skip-po
 
-./configure CFLAGS="-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined -fsanitize-undefined-trap-on-error -Wall -Wextra"
+./configure CFLAGS="-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined -fsanitize-undefined-trap-on-error -fsanitize=address -Wall -Wextra"
 
 make -j
 
