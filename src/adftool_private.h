@@ -65,10 +65,18 @@ struct adftool_quads
   hid_t nextid;
 };
 
+struct adftool_index
+{
+  hid_t dataset;
+  hid_t nextid;
+  struct bplus bplus;
+};
+
 struct adftool_data_description
 {
   hid_t group;
   struct adftool_quads quads;
+  struct adftool_index indices[6];
 };
 
 struct adftool_file
@@ -100,6 +108,12 @@ struct adftool_statement
   struct adftool_term *object;
   struct adftool_term *graph;
   uint64_t deletion_date;
+};
+
+struct adftool_results
+{
+  size_t n_results;
+  struct adftool_statement **statements;
 };
 
 #endif /* not H_ADFTOOL_PRIVATE_INCLUDED */

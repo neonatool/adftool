@@ -139,6 +139,120 @@ dictionary_compare (const struct adftool_bplus_key *key_a,
   return (error_a || error_b);
 }
 
+static int
+index_get_key (const struct adftool_file *file,
+	       const struct adftool_bplus_key *key,
+	       struct adftool_statement *dest)
+{
+  int error = 0;
+  uint32_t known;
+  void *unknown;
+  if (key_get_unknown (key, &unknown) == 0)
+    {
+      /* The key is unknown. */
+      error = adftool_statement_copy (dest, unknown);
+    }
+  else if (key_get_known (key, &known) == 0)
+    {
+      error = adftool_quads_get (file, known, dest);
+    }
+  else
+    {
+      abort ();
+    }
+  return error;
+}
+
+static int
+index_compare (const struct adftool_bplus_key *key_a,
+	       const struct adftool_bplus_key *key_b,
+	       int *result, void *context, const char *order)
+{
+  int error = 0;
+  struct adftool_file *file = context;
+  struct adftool_statement *a;
+  struct adftool_statement *b;
+  a = adftool_statement_alloc ();
+  b = adftool_statement_alloc ();
+  if (a == NULL || b == NULL)
+    {
+      if (a)
+	{
+	  adftool_statement_free (a);
+	}
+      if (b)
+	{
+	  adftool_statement_free (b);
+	}
+      error = 1;
+      goto wrapup;
+    }
+  int error_a = index_get_key (file, key_a, a);
+  int error_b = index_get_key (file, key_b, b);
+  if (error_a || error_b)
+    {
+      error = 1;
+      goto clean_statements;
+    }
+  *result = adftool_statement_compare (a, b, order);
+clean_statements:
+  adftool_statement_free (b);
+  adftool_statement_free (a);
+wrapup:
+  return error;
+}
+
+static int
+index_GSPO_compare (const struct adftool_bplus_key *key_a,
+		    const struct adftool_bplus_key *key_b,
+		    int *result, void *context)
+{
+  return index_compare (key_a, key_b, result, context, "GSPO");
+}
+
+static int
+index_GPOS_compare (const struct adftool_bplus_key *key_a,
+		    const struct adftool_bplus_key *key_b,
+		    int *result, void *context)
+{
+  return index_compare (key_a, key_b, result, context, "GPOS");
+}
+
+static int
+index_GOSP_compare (const struct adftool_bplus_key *key_a,
+		    const struct adftool_bplus_key *key_b,
+		    int *result, void *context)
+{
+  return index_compare (key_a, key_b, result, context, "GOSP");
+}
+
+static int
+index_SPOG_compare (const struct adftool_bplus_key *key_a,
+		    const struct adftool_bplus_key *key_b,
+		    int *result, void *context)
+{
+  return index_compare (key_a, key_b, result, context, "SPOG");
+}
+
+static int
+index_POSG_compare (const struct adftool_bplus_key *key_a,
+		    const struct adftool_bplus_key *key_b,
+		    int *result, void *context)
+{
+  return index_compare (key_a, key_b, result, context, "POSG");
+}
+
+static int
+index_OSPG_compare (const struct adftool_bplus_key *key_a,
+		    const struct adftool_bplus_key *key_b,
+		    int *result, void *context)
+{
+  return index_compare (key_a, key_b, result, context, "OSPG");
+}
+
+typedef int (*comparator) (const struct adftool_bplus_key *,
+			   const struct adftool_bplus_key *, int *, void *);
+
 int
 adftool_file_open (struct adftool_file *file, const char *filename, int write)
 {
@@ -156,6 +270,12 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
   hid_t data_description_group = H5I_INVALID_HID;
   hid_t data_description_quads_dataset = H5I_INVALID_HID;
   hid_t data_description_quads_nextid = H5I_INVALID_HID;
+  struct adftool_index indices[6];
+  for (size_t i = 0; i < 6; i++)
+    {
+      indices[i].dataset = H5I_INVALID_HID;
+      indices[i].nextid = H5I_INVALID_HID;
+    }
   unsigned mode = H5F_ACC_RDONLY;
   if (write)
     {
@@ -472,6 +592,97 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
 	  goto wrapup;
 	}
     }
+  static const char *names[6] = {
+    "GSPO", "GPOS", "GOSP",
+    "SPOG", "POSG", "OSPG"
+  };
+  static const comparator comparators[6] = {
+    index_GSPO_compare,
+    index_GPOS_compare,
+    index_GOSP_compare,
+    index_SPOG_compare,
+    index_POSG_compare,
+    index_OSPG_compare
+  };
+  for (size_t i = 0; i < 6; i++)
+    {
+      char dataset_name[] = "/data-description/index_????";
+      sprintf (dataset_name, "/data-description/index_%s", names[i]);
+      indices[i].dataset = H5Dopen2 (hdf5_file, dataset_name, H5P_DEFAULT);
+      if (indices[i].dataset == H5I_INVALID_HID)
+	{
+	  hsize_t minimum_dimensions[] = { 1, (2 * DEFAULT_ORDER + 1) };
+	  hsize_t maximum_dimensions[] =
+	    { H5S_UNLIMITED, (2 * DEFAULT_ORDER + 1) };
+	  hsize_t chunk_dimensions[] = { 1, 2 * DEFAULT_ORDER + 1 };
+	  hid_t fspace =
+	    H5Screate_simple (2, minimum_dimensions, maximum_dimensions);
+	  if (fspace == H5I_INVALID_HID)
+	    {
+	      error = 1;
+	      goto wrapup;
+	    }
+	  hid_t dataset_creation_properties = H5Pcreate (H5P_DATASET_CREATE);
+	  if (dataset_creation_properties == H5I_INVALID_HID)
+	    {
+	      H5Sclose (fspace);
+	      error = 1;
+	      goto wrapup;
+	    }
+	  if (H5Pset_chunk (dataset_creation_properties, 2, chunk_dimensions)
+	      < 0)
+	    {
+	      H5Pclose (dataset_creation_properties);
+	      H5Sclose (fspace);
+	      error = 1;
+	      goto wrapup;
+	    }
+	  indices[i].dataset =
+	    H5Dcreate2 (hdf5_file, dataset_name, H5T_NATIVE_B32, fspace,
+			H5P_DEFAULT, dataset_creation_properties,
+			H5P_DEFAULT);
+	  H5Pclose (dataset_creation_properties);
+	  H5Sclose (fspace);
+	  if (dictionary_bplus_dataset == H5I_INVALID_HID)
+	    {
+	      error = 1;
+	      goto wrapup;
+	    }
+	}
+      indices[i].nextid = H5Aopen (indices[i].dataset, "nextID", H5P_DEFAULT);
+      if (indices[i].nextid == H5I_INVALID_HID)
+	{
+	  hid_t fspace = H5Screate (H5S_SCALAR);
+	  if (fspace == H5I_INVALID_HID)
+	    {
+	      error = 1;
+	      goto wrapup;
+	    }
+	  indices[i].nextid =
+	    H5Acreate2 (indices[i].dataset, "nextID", H5T_NATIVE_INT,
+			fspace, H5P_DEFAULT, H5P_DEFAULT);
+	  H5Sclose (fspace);
+	  if (indices[i].nextid == H5I_INVALID_HID)
+	    {
+	      error = 1;
+	      goto wrapup;
+	    }
+	  int zero = 0;
+	  if (H5Awrite (indices[i].nextid, H5T_NATIVE_INT, &zero) < 0)
+	    {
+	      error = 1;
+	      goto wrapup;
+	    }
+	}
+      error =
+	bplus_from_hdf5 (&(indices[i].bplus), indices[i].dataset,
+			 indices[i].nextid);
+      bplus_set_compare (&(indices[i].bplus), comparators[i], file);
+      if (error)
+	{
+	  goto wrapup;
+	}
+    }
 wrapup:
   if (error == 0)
     {
@@ -488,9 +699,25 @@ wrapup:
       file->data_description.group = data_description_group;
       file->data_description.quads.dataset = data_description_quads_dataset;
       file->data_description.quads.nextid = data_description_quads_nextid;
+      for (size_t i = 0; i < 6; i++)
+	{
+	  memcpy (&(file->data_description.indices[i]), &(indices[i]),
+		  sizeof (struct adftool_index));
+	}
     }
   else
     {
+      for (size_t i = 0; i < 6; i++)
+	{
+	  if (indices[i].dataset != H5I_INVALID_HID)
+	    {
+	      H5Dclose (indices[i].dataset);
+	    }
+	  if (indices[i].nextid != H5I_INVALID_HID)
+	    {
+	      H5Aclose (indices[i].nextid);
+	    }
+	}
       if (data_description_quads_dataset != H5I_INVALID_HID)
 	{
 	  H5Dclose (data_description_quads_dataset);

@@ -10,7 +10,8 @@ CLEANFILES = \
   non-existing.adf \
   dictionary_example.adf \
   term_example.adf \
-  statement_example.adf
+  statement_example.adf \
+  multi_statement_example.adf
 
 AM_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -39,7 +40,8 @@ check_PROGRAMS = \
   file_open_example \
   dictionary_example \
   term_manipulation_example \
-  statement_manipulation_example
+  statement_manipulation_example \
+  multi_statement_example
 
 TESTS = \
   bplus_tree_lookup_example \
@@ -51,7 +53,8 @@ TESTS = \
   file_open_example \
   dictionary_example \
   term_manipulation_example \
-  statement_manipulation_example
+  statement_manipulation_example \
+  multi_statement_example
 LOG_COMPILER = $(LOG_VALGRIND)
 
 adftool_SOURCES = src/adftool.c
@@ -78,6 +81,8 @@ libadftool_la_SOURCES = \
   src/libadftool/dictionary.c \
   src/libadftool/term.c \
   src/libadftool/statement.c \
+  src/libadftool/results.c \
+  src/libadftool/indices.c \
   src/libadftool/emscripten.cpp
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -193,6 +198,20 @@ statement_manipulation_example_LDADD = \
   $(LTLIBINTL) \
   @LTLIBOBJS@
 statement_manipulation_example_CPPFLAGS = \
+  -I include -I $(srcdir)/include \
+  -I libprog -I $(srcdir)/libprog \
+  -I src -I $(srcdir)/src \
+  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DINSTALLDIR=\"$(bindir)\"
+
+multi_statement_example_SOURCES = \
+  src/multi_statement_example.c
+multi_statement_example_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  @LTLIBOBJS@
+multi_statement_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \

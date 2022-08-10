@@ -712,6 +712,7 @@ adftool_statement_copy (struct adftool_statement *dest,
   dest->object = my_object;
   dest->graph = my_graph;
   dest->deletion_date = source->deletion_date;
+  return 0;
 fail:
   if (my_subject)
     {

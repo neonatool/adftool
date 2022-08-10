@@ -176,6 +176,42 @@ extern "C"
 			      const struct adftool_statement *statement,
 			      uint32_t * id);
 
+  struct adftool_results;
+
+  extern LIBADFTOOL_API struct adftool_results *adftool_results_alloc (void);
+
+  extern LIBADFTOOL_API
+    void adftool_results_free (struct adftool_results *results);
+
+  extern LIBADFTOOL_API
+    size_t adftool_results_count (const struct adftool_results *results);
+
+  extern LIBADFTOOL_API
+    const struct adftool_statement *adftool_results_get (const struct
+							 adftool_results
+							 *results, size_t i);
+
+  extern LIBADFTOOL_API
+    int adftool_results_resize (struct adftool_results *results, size_t size);
+
+  extern LIBADFTOOL_API
+    int adftool_results_set (struct adftool_results *results, size_t i,
+			     const struct adftool_statement *statement);
+
+  extern LIBADFTOOL_API
+    int adftool_lookup (const struct adftool_file *file,
+			const struct adftool_statement *pattern,
+			struct adftool_results *results);
+
+  extern LIBADFTOOL_API
+    int adftool_delete (struct adftool_file *file,
+			const struct adftool_statement *pattern,
+			uint64_t deletion_date);
+
+  extern LIBADFTOOL_API
+    int adftool_insert (struct adftool_file *file,
+			const struct adftool_statement *statement);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */
