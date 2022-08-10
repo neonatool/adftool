@@ -74,21 +74,21 @@ adftool_dictionary_get (const struct adftool_file *file, uint32_t id,
       error = 1;
       goto clean_memory_space;
     }
-  if (memory[12] == 0)
+  uint64_t bytes_start = 0;
+  uint32_t bytes_length = 0;
+  for (size_t i = 0; i < 8; i++)
+    {
+      bytes_start *= 256;
+      bytes_start += memory[i];
+    }
+  for (size_t i = 8; i < 12; i++)
+    {
+      bytes_length *= 256;
+      bytes_length += memory[i];
+    }
+  if (memory[12] == 0 && bytes_length != 0)
     {
       /* This is a long string. */
-      uint64_t bytes_start = 0;
-      uint32_t bytes_length = 0;
-      for (size_t i = 0; i < 8; i++)
-	{
-	  bytes_start *= 256;
-	  bytes_start += memory[i];
-	}
-      for (size_t i = 8; i < 12; i++)
-	{
-	  bytes_length *= 256;
-	  bytes_length += memory[i];
-	}
       *length = bytes_length;
       if (start < bytes_length)
 	{
