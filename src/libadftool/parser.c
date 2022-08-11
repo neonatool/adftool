@@ -367,8 +367,8 @@ parse_type_annotation (const char *text, size_t available, int atend,
 }
 
 static inline int
-parse_literal (const char *text, size_t available, int atend,
-	       size_t *consumed, struct adftool_term *term)
+parse_quoted_literal (const char *text, size_t available, int atend,
+		      size_t *consumed, struct adftool_term *term)
 {
   size_t naked_consumed = 0;
   char *value = NULL;
@@ -476,6 +476,221 @@ parse_named (const char *text, size_t available, int atend, size_t *consumed,
   return result;
 }
 
+static int
+parse_keyword (const char *keyword, const char *text, size_t available,
+	       int atend, size_t *consumed)
+{
+  size_t start = eat_up_whitespace (text, available);
+  if ((start + strlen (keyword) <= available
+       && memcmp (keyword, text, strlen (keyword)) == 0))
+    {
+      *consumed = start + strlen (keyword);
+      return 0;
+    }
+  else if ((available - start <= strlen (keyword)
+	    && memcmp (keyword, text, available - start) == 0 && !atend))
+    {
+      *consumed = available;
+      return 1;
+    }
+  else
+    {
+      *consumed = 0;
+      return 1;
+    }
+}
+
+static int
+parse_boolean (const char *text, size_t available, int atend,
+	       size_t *consumed, struct adftool_term *term)
+{
+  int result = 0;
+  *consumed = 0;
+  size_t my_consumed_true;
+  result = parse_keyword ("true", text, available, atend, &my_consumed_true);
+  if (result == 2)
+    {
+      return 2;
+    }
+  if (result == 0)
+    {
+      if (adftool_term_set_literal
+	  (term, "true", "http://www.w3.org/2001/XMLSchema#boolean",
+	   NULL) != 0)
+	{
+	  return 2;
+	}
+      *consumed = my_consumed_true;
+      return 0;
+    }
+  size_t my_consumed_false;
+  result =
+    parse_keyword ("false", text, available, atend, &my_consumed_false);
+  if (result == 2)
+    {
+      return 2;
+    }
+  if (result == 0)
+    {
+      if (adftool_term_set_literal
+	  (term, "false", "http://www.w3.org/2001/XMLSchema#boolean",
+	   NULL) != 0)
+	{
+	  return 2;
+	}
+      *consumed = my_consumed_false;
+      return 0;
+    }
+  *consumed = my_consumed_true;
+  if (my_consumed_false > *consumed)
+    {
+      *consumed = my_consumed_false;
+    }
+  return 1;
+}
+
+static size_t
+parse_as_integer (const char *str)
+{
+  char *end;
+  strtol (str, &end, 0);
+  return (end - str);
+}
+
+static size_t
+parse_as_double (const char *str)
+{
+  char *end;
+  strtod (str, &end);
+  return (end - str);
+}
+
+static size_t
+strtolord (const char *str, int *type)
+{
+  size_t as_integer = parse_as_integer (str);
+  size_t as_double = parse_as_double (str);
+  if (as_double > as_integer)
+    {
+      *type = 1;
+      return as_double;
+    }
+  *type = 0;
+  return as_integer;
+}
+
+static int
+parse_number (const char *text, size_t available, int atend,
+	      size_t *consumed, struct adftool_term *term)
+{
+  /* strtol does not take limited strings, so I have to work on a
+     copy. */
+  char *copy = malloc (available + 1);
+  if (copy == NULL)
+    {
+      return 2;
+    }
+  strncpy (copy, text, available);
+  copy[available] = '\0';
+  int is_double;
+  size_t best_length = strtolord (copy, &is_double);
+  char *best_type = "http://www.w3.org/2001/XMLSchema#integer";
+  if (is_double)
+    {
+      best_type = "http://www.w3.org/2001/XMLSchema#double";
+    }
+  if (best_length == 0)
+    {
+      /* Nothing parsed. */
+      *consumed = 0;
+      free (copy);
+      return 1;
+    }
+  else if (best_length == available && !atend)
+    {
+      /* Maybe more */
+      *consumed = available;
+      free (copy);
+      return 1;
+    }
+  else
+    {
+      /* Fully parsed. */
+      *consumed = best_length;
+      copy[best_length] = '\0';
+      if (adftool_term_set_literal (term, copy, best_type, NULL) != 0)
+	{
+	  free (copy);
+	  return 2;
+	}
+      free (copy);
+      return 0;
+    }
+}
+
+static int
+parse_literal (const char *text, size_t available, int atend,
+	       size_t *consumed, struct adftool_term *term)
+{
+  int result = 0;
+  size_t start = eat_up_whitespace (text, available);
+  size_t consumed_boolean = 0;
+  *consumed = 0;
+  result =
+    parse_boolean (text + start, available - start, atend, &consumed_boolean,
+		   term);
+  if (result == 2)
+    {
+      return 2;
+    }
+  if (result == 0)
+    {
+      *consumed = start + consumed_boolean;
+      return 0;
+    }
+  size_t consumed_number = 0;
+  result =
+    parse_number (text + start, available - start, atend, &consumed_number,
+		  term);
+  if (result == 2)
+    {
+      return 2;
+    }
+  if (result == 0)
+    {
+      *consumed = start + consumed_number;
+      return 0;
+    }
+  size_t consumed_quoted = 0;
+  result =
+    parse_quoted_literal (text + start, available, atend, &consumed_quoted,
+			  term);
+  if (result == 2)
+    {
+      return 2;
+    }
+  if (result == 0)
+    {
+      *consumed = start + consumed_quoted;
+      return 0;
+    }
+  /* Ambiguous… Is there hope for any still? */
+  *consumed = 0;
+  if (start + consumed_boolean > *consumed)
+    {
+      *consumed = start + consumed_boolean;
+    }
+  if (start + consumed_number > *consumed)
+    {
+      *consumed = start + consumed_number;
+    }
+  if (start + consumed_quoted > *consumed)
+    {
+      *consumed = start + consumed_quoted;
+    }
+  return 1;
+}
+
 int
 adftool_term_parse_n3 (const char *text, size_t available, int atend,
 		       size_t *consumed, struct adftool_term *term)
@@ -507,7 +722,7 @@ adftool_term_parse_n3 (const char *text, size_t available, int atend,
   if (result == 1)
     {
       /* I need to set consumed to either 0 or available. */
-      if (*consumed < available)
+      if (*consumed < available || atend)
 	{
 	  *consumed = 0;
 	}

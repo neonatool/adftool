@@ -196,6 +196,8 @@ main (int argc, char *argv[])
   (void) argc;
   set_program_name (argv[0]);
   setlocale (LC_ALL, "");
+  /* Parsing numbers is locale-dependent: */
+  setlocale (LC_NUMERIC, "en_US.UTF-8");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
   /* Parsing normally in any case. */
@@ -210,6 +212,14 @@ main (int argc, char *argv[])
   CHECK_TEST ("\"d\"^^<my-string>", 1, 1, 16, 16, 0, 0, 1, "d", "my-string",
 	      NULL);
   CHECK_TEST ("\"e\"@lang ", 1, 1, 8, 8, 0, 0, 1, "e", NULL, "lang");
+  CHECK_TEST ("true", 1, 1, 4, 4, 0, 0, 1, "true",
+	      "http://www.w3.org/2001/XMLSchema#boolean", NULL);
+  CHECK_TEST ("false", 1, 1, 5, 5, 0, 0, 1, "false",
+	      "http://www.w3.org/2001/XMLSchema#boolean", NULL);
+  CHECK_TEST ("1234 ", 1, 1, 4, 4, 0, 0, 1, "1234",
+	      "http://www.w3.org/2001/XMLSchema#integer", NULL);
+  CHECK_TEST ("1234.5 ", 1, 1, 6, 6, 0, 0, 1, "1234.5",
+	      "http://www.w3.org/2001/XMLSchema#double", NULL);
 
   /* If more data is available, the parsing might change. */
   CHECK_TEST ("_:f", 1, 0, 3, 3, 1, 0, 0, "f", NULL, NULL);
@@ -223,6 +233,10 @@ main (int argc, char *argv[])
   CHECK_TEST ("\"h\\\"\"^^", 1, 0, 5, 7, 0, 0, 1, "h\"",
 	      "http://www.w3.org/2001/XMLSchema#string", NULL);
   CHECK_TEST ("\"i\"@lang", 1, 0, 8, 8, 0, 0, 1, "i", NULL, "lang");
+  CHECK_TEST ("1234", 1, 0, 4, 4, 0, 0, 1, "1234",
+	      "http://www.w3.org/2001/XMLSchema#integer", NULL);
+  CHECK_TEST ("1234.5", 1, 0, 6, 6, 0, 0, 1, "1234.5",
+	      "http://www.w3.org/2001/XMLSchema#double", NULL);
 
   /* The parsing is incomplete. */
   CHECK_TEST (" ", 0, 0, 0, 1, 0, 0, 0, NULL, NULL, NULL);
@@ -231,5 +245,6 @@ main (int argc, char *argv[])
   CHECK_TEST ("_:", 0, 0, 0, 2, 0, 0, 0, NULL, NULL, NULL);
   CHECK_TEST ("\"", 0, 0, 0, 1, 0, 0, 0, NULL, NULL, NULL);
   CHECK_TEST ("\"k", 0, 0, 0, 2, 0, 0, 0, NULL, NULL, NULL);
+  CHECK_TEST ("tru", 0, 0, 0, 3, 0, 0, 0, NULL, NULL, NULL);
   return 0;
 }
