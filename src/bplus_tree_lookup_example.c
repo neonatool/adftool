@@ -78,7 +78,7 @@ literal_key (const struct adftool_bplus_key *key)
     {
       return (const char *) value;
     }
-  assert (0);
+  abort ();
 }
 
 /* WARNING: compare returns 0 on success. The result is passed as
