@@ -41,7 +41,8 @@ check_PROGRAMS = \
   dictionary_example \
   term_manipulation_example \
   statement_manipulation_example \
-  multi_statement_example
+  multi_statement_example \
+  term_parser_example
 
 TESTS = \
   bplus_tree_lookup_example \
@@ -54,7 +55,8 @@ TESTS = \
   dictionary_example \
   term_manipulation_example \
   statement_manipulation_example \
-  multi_statement_example
+  multi_statement_example \
+  term_parser_example
 LOG_COMPILER = $(LOG_VALGRIND)
 
 adftool_SOURCES = src/adftool.c
@@ -83,6 +85,7 @@ libadftool_la_SOURCES = \
   src/libadftool/statement.c \
   src/libadftool/results.c \
   src/libadftool/indices.c \
+  src/libadftool/parser.c \
   src/libadftool/emscripten.cpp
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -212,6 +215,20 @@ multi_statement_example_LDADD = \
   $(LTLIBINTL) \
   @LTLIBOBJS@
 multi_statement_example_CPPFLAGS = \
+  -I include -I $(srcdir)/include \
+  -I libprog -I $(srcdir)/libprog \
+  -I src -I $(srcdir)/src \
+  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DINSTALLDIR=\"$(bindir)\"
+
+term_parser_example_SOURCES = \
+  src/term_parser_example.c
+term_parser_example_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  @LTLIBOBJS@
+term_parser_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \

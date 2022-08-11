@@ -109,6 +109,17 @@ extern "C"
 			     const struct adftool_term *term,
 			     uint64_t * encoded);
 
+  /* FIXME: it only recognizes N-Triples, no namespace support, and
+     only double quotes for literal values. consumed is set to the
+     number of bytes that can be part of the literal. Return 0 (and
+     set term) if the term has been parsed, 1 if it cannot be parsed
+     or if the value may differ with more data available. If it cannot
+     be parsed, *consumed will be set to 0. If it can be parsed with
+     more data, *consumed will be set to available. */
+  extern LIBADFTOOL_API
+    int adftool_term_parse_n3 (const char *text, size_t available, int atend,
+			       size_t *consumed, struct adftool_term *term);
+
   struct adftool_statement;
   extern LIBADFTOOL_API
     struct adftool_statement *adftool_statement_alloc (void);

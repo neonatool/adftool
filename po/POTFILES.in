@@ -18,9 +18,11 @@ src/libadftool/dictionary.c
 src/libadftool/emscripten.cpp
 src/libadftool/file.c
 src/libadftool/indices.c
+src/libadftool/parser.c
 src/libadftool/results.c
 src/libadftool/statement.c
 src/libadftool/term.c
 src/multi_statement_example.c
 src/statement_manipulation_example.c
 src/term_manipulation_example.c
+src/term_parser_example.c
