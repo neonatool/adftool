@@ -1,4 +1,4 @@
-SUBDIRS = lib libprog po
+SUBDIRS = lib libprog . po
 ACLOCAL_AMFLAGS = -I m4 -I m4prog
 EXTRA_DIST = m4/gnulib-cache.m4 m4prog/gnulib-cache.m4
 
@@ -85,7 +85,7 @@ libadftool_la_SOURCES = \
   src/libadftool/statement.c \
   src/libadftool/results.c \
   src/libadftool/indices.c \
-  src/libadftool/parser.c \
+  src/libadftool/lexer.l \
   src/libadftool/emscripten.cpp
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -95,6 +95,7 @@ libadftool_la_CPPFLAGS = \
   -DBUILDING_LIBADFTOOL
 libadftool_la_CFLAGS = \
     $(CFLAG_VISIBILITY)
+libadftool_la_LFLAGS = --prefix=_adftool_lexer_
 libadftool_la_LIBADD = lib/libadftool.la @LTLIBOBJS@
 libadftool_la_LDFLAGS = -no-undefined $(LTLIBINTL)
 

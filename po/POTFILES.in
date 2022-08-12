@@ -18,7 +18,7 @@ src/libadftool/dictionary.c
 src/libadftool/emscripten.cpp
 src/libadftool/file.c
 src/libadftool/indices.c
-src/libadftool/parser.c
+src/libadftool/libadftool_la-lexer.c
 src/libadftool/results.c
 src/libadftool/statement.c
 src/libadftool/term.c

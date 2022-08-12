@@ -18,6 +18,12 @@ AC_PROG_CXX
 AM_INIT_AUTOMAKE([gnu -Wall -Werror subdir-objects])
 AM_PROG_AR
 LT_INIT([win32-dll])
+AM_PROG_LEX([noyywrap])
+if test "x$LEX" != xflex; then
+  AM_MISSING_PROG([LEX], [flex])
+  AC_SUBST([LEX_OUTPUT_ROOT], [lex.yy])
+  AC_SUBST([LEXLIB], [''])
+fi
 gl_INIT
 glprog_INIT
 

@@ -19,10 +19,8 @@
 struct test
 {
   const char *text;
-  int can_be_accepted_as_is;
-  int can_be_accepted_with_more_data;
-  size_t consumed_as_is;
-  size_t consumed_with_more_data;
+  int can_be_accepted;
+  size_t consumed;
   int accepted_as_blank;
   int accepted_as_named;
   int accepted_as_literal;
@@ -32,7 +30,7 @@ struct test
 };
 
 static void
-check_test_aux (const char *file, int line, int atend,
+check_test_aux (const char *file, int line,
 		const char *text, int can_be_accepted,
 		size_t expected_consumed, int accepted_as_blank,
 		int accepted_as_named, int accepted_as_literal,
@@ -46,7 +44,7 @@ check_test_aux (const char *file, int line, int atend,
     }
   size_t consumed;
   int parsing_error =
-    adftool_term_parse_n3 (text, strlen (text), atend, &consumed, term);
+    adftool_term_parse_n3 (text, strlen (text), &consumed, term);
   if (can_be_accepted && parsing_error)
     {
       fprintf (stderr, "%s:%d: `%s` should be accepted, but it is not.\n",
@@ -168,24 +166,18 @@ literal value metadata, but it is `%s`.\n", file, line, text, source, buffer);
 static void
 check_test (const char *file, int line, const struct test *test)
 {
-  check_test_aux (file, line, 1, test->text, test->can_be_accepted_as_is,
-		  test->consumed_as_is, test->accepted_as_blank,
-		  test->accepted_as_named, test->accepted_as_literal,
-		  test->expected_literal_value, test->expected_type,
-		  test->expected_langtag);
-  check_test_aux (file, line, 0, test->text,
-		  test->can_be_accepted_with_more_data,
-		  test->consumed_with_more_data, test->accepted_as_blank,
+  check_test_aux (file, line, test->text, test->can_be_accepted,
+		  test->consumed, test->accepted_as_blank,
 		  test->accepted_as_named, test->accepted_as_literal,
 		  test->expected_literal_value, test->expected_type,
 		  test->expected_langtag);
 }
 
-#define CHECK_TEST(a, b, c, d, e, f, g, h, i, j, k)     \
+#define CHECK_TEST(a, b, c, d, e, f, g, h, i)           \
   {                                                     \
     static const struct test __my_test =                \
       {                                                 \
-        a, b, c, d, e, f, g, h, i, j, k                 \
+        a, b, c, d, e, f, g, h, i                       \
       };                                                \
     check_test (__FILE__, __LINE__, &__my_test);        \
   }
@@ -196,55 +188,56 @@ main (int argc, char *argv[])
   (void) argc;
   set_program_name (argv[0]);
   setlocale (LC_ALL, "");
-  /* Parsing numbers is locale-dependent: */
-  setlocale (LC_NUMERIC, "en_US.UTF-8");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
   /* Parsing normally in any case. */
-  CHECK_TEST ("<a>", 1, 1, 3, 3, 0, 1, 0, "a", NULL, NULL);
-  CHECK_TEST ("_:b ", 1, 1, 3, 3, 1, 0, 0, "b", NULL, NULL);
-  CHECK_TEST ("\"c\" . ", 1, 1, 3, 3, 0, 0, 1, "c",
+  CHECK_TEST ("<a>", 1, 3, 0, 1, 0, "a", NULL, NULL);
+  CHECK_TEST ("_:b ", 1, 3, 1, 0, 0, "b", NULL, NULL);
+  CHECK_TEST ("\"c\" . ", 1, 3, 0, 0, 1, "c",
 	      "http://www.w3.org/2001/XMLSchema#string", NULL);
-  CHECK_TEST ("\"c'\"^ . ", 1, 1, 4, 4, 0, 0, 1, "c'",
+  CHECK_TEST ("\"c'\"^ . ", 1, 4, 0, 0, 1, "c'",
 	      "http://www.w3.org/2001/XMLSchema#string", NULL);
-  CHECK_TEST ("\"c\\\"\"^^ . ", 1, 1, 5, 5, 0, 0, 1, "c\"",
+  CHECK_TEST ("\"c\\\"\"^^ . ", 1, 5, 0, 0, 1, "c\"",
 	      "http://www.w3.org/2001/XMLSchema#string", NULL);
-  CHECK_TEST ("\"d\"^^<my-string>", 1, 1, 16, 16, 0, 0, 1, "d", "my-string",
-	      NULL);
-  CHECK_TEST ("\"e\"@lang ", 1, 1, 8, 8, 0, 0, 1, "e", NULL, "lang");
-  CHECK_TEST ("true", 1, 1, 4, 4, 0, 0, 1, "true",
+  CHECK_TEST ("\"d\"^^<my-string>", 1, 16, 0, 0, 1, "d", "my-string", NULL);
+  CHECK_TEST ("\"e\"@lang ", 1, 8, 0, 0, 1, "e", NULL, "lang");
+  CHECK_TEST ("true", 1, 4, 0, 0, 1, "true",
 	      "http://www.w3.org/2001/XMLSchema#boolean", NULL);
-  CHECK_TEST ("false", 1, 1, 5, 5, 0, 0, 1, "false",
+  CHECK_TEST ("false", 1, 5, 0, 0, 1, "false",
 	      "http://www.w3.org/2001/XMLSchema#boolean", NULL);
-  CHECK_TEST ("1234 ", 1, 1, 4, 4, 0, 0, 1, "1234",
+  CHECK_TEST ("1234 ", 1, 4, 0, 0, 1, "1234",
 	      "http://www.w3.org/2001/XMLSchema#integer", NULL);
-  CHECK_TEST ("1234.5 ", 1, 1, 6, 6, 0, 0, 1, "1234.5",
+  CHECK_TEST ("1234.5 ", 1, 6, 0, 0, 1, "1234.5",
+	      "http://www.w3.org/2001/XMLSchema#decimal", NULL);
+  CHECK_TEST ("1234.5e6 ", 1, 8, 0, 0, 1, "1234.5e6",
 	      "http://www.w3.org/2001/XMLSchema#double", NULL);
 
   /* If more data is available, the parsing might change. */
-  CHECK_TEST ("_:f", 1, 0, 3, 3, 1, 0, 0, "f", NULL, NULL);
-  CHECK_TEST ("\"g\"", 1, 0, 3, 3, 0, 0, 1, "g",
+  CHECK_TEST ("_:f", 1, 3, 1, 0, 0, "f", NULL, NULL);
+  CHECK_TEST ("\"g\"", 1, 3, 0, 0, 1, "g",
 	      "http://www.w3.org/2001/XMLSchema#string", NULL);
   /* Notice that if there won’t be more data, the `my-string' part is ignored. */
-  CHECK_TEST ("\"h\"^^<my-string", 1, 0, 3, 15, 0, 0, 1, "h",
+  CHECK_TEST ("\"h\"^^<my-string", 1, 3, 0, 0, 1, "h",
 	      "http://www.w3.org/2001/XMLSchema#string", NULL);
-  CHECK_TEST ("\"h'\"^^", 1, 0, 4, 6, 0, 0, 1, "h'",
+  CHECK_TEST ("\"h'\"^^", 1, 4, 0, 0, 1, "h'",
 	      "http://www.w3.org/2001/XMLSchema#string", NULL);
-  CHECK_TEST ("\"h\\\"\"^^", 1, 0, 5, 7, 0, 0, 1, "h\"",
+  CHECK_TEST ("\"h\\\"\"^^", 1, 5, 0, 0, 1, "h\"",
 	      "http://www.w3.org/2001/XMLSchema#string", NULL);
-  CHECK_TEST ("\"i\"@lang", 1, 0, 8, 8, 0, 0, 1, "i", NULL, "lang");
-  CHECK_TEST ("1234", 1, 0, 4, 4, 0, 0, 1, "1234",
+  CHECK_TEST ("\"i\"@lang", 1, 8, 0, 0, 1, "i", NULL, "lang");
+  CHECK_TEST ("1234", 1, 4, 0, 0, 1, "1234",
 	      "http://www.w3.org/2001/XMLSchema#integer", NULL);
-  CHECK_TEST ("1234.5", 1, 0, 6, 6, 0, 0, 1, "1234.5",
+  CHECK_TEST ("1234.5", 1, 6, 0, 0, 1, "1234.5",
+	      "http://www.w3.org/2001/XMLSchema#decimal", NULL);
+  CHECK_TEST ("1234.5e6", 1, 8, 0, 0, 1, "1234.5e6",
 	      "http://www.w3.org/2001/XMLSchema#double", NULL);
 
   /* The parsing is incomplete. */
-  CHECK_TEST (" ", 0, 0, 0, 1, 0, 0, 0, NULL, NULL, NULL);
-  CHECK_TEST ("<j", 0, 0, 0, 2, 0, 0, 0, NULL, NULL, NULL);
-  CHECK_TEST ("_", 0, 0, 0, 1, 0, 0, 0, NULL, NULL, NULL);
-  CHECK_TEST ("_:", 0, 0, 0, 2, 0, 0, 0, NULL, NULL, NULL);
-  CHECK_TEST ("\"", 0, 0, 0, 1, 0, 0, 0, NULL, NULL, NULL);
-  CHECK_TEST ("\"k", 0, 0, 0, 2, 0, 0, 0, NULL, NULL, NULL);
-  CHECK_TEST ("tru", 0, 0, 0, 3, 0, 0, 0, NULL, NULL, NULL);
+  CHECK_TEST (" ", 0, 0, 0, 0, 0, NULL, NULL, NULL);
+  CHECK_TEST ("<j", 0, 0, 0, 0, 0, NULL, NULL, NULL);
+  CHECK_TEST ("_", 0, 0, 0, 0, 0, NULL, NULL, NULL);
+  CHECK_TEST ("_:", 0, 0, 0, 0, 0, NULL, NULL, NULL);
+  CHECK_TEST ("\"", 0, 0, 0, 0, 0, NULL, NULL, NULL);
+  CHECK_TEST ("\"k", 0, 0, 0, 0, 0, NULL, NULL, NULL);
+  CHECK_TEST ("tru", 0, 0, 0, 0, 0, NULL, NULL, NULL);
   return 0;
 }

@@ -114,10 +114,11 @@ extern "C"
      number of bytes that can be part of the literal. Return 0 (and
      set term) if the term has been parsed, 1 if it cannot be parsed
      or if the value may differ with more data available. If it cannot
-     be parsed, *consumed will be set to 0. If it can be parsed with
-     more data, *consumed will be set to available. */
+     be parsed, *consumed will be set to 0. If a term has been parsed,
+     *consumed is set to the number of bytes used to parse the
+     term. */
   extern LIBADFTOOL_API
-    int adftool_term_parse_n3 (const char *text, size_t available, int atend,
+    int adftool_term_parse_n3 (const char *text, size_t available,
 			       size_t *consumed, struct adftool_term *term);
 
   struct adftool_statement;

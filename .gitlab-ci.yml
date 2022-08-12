@@ -4,7 +4,7 @@ variables:
 pages:
   script:
     - apt-get update -y
-    - apt-get install -y git python gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ cmake m4 libtinfo5 binutils-mingw-w64-x86-64 g++-mingw-w64 gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 wine
+    - apt-get install -y git python gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ cmake m4 libtinfo5 binutils-mingw-w64-x86-64 g++-mingw-w64 gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 wine flex
     - export GNULIB_SRCDIR=$PWD/gnulib
     - ./bootstrap --force --skip-po
     - mkdir -p build-adftool-mingw64
