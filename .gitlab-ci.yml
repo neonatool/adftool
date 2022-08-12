@@ -37,7 +37,7 @@ pages:
     - cd ../../hdf5
     - cp src/H5make_libsettings-original.c src/H5make_libsettings.c
     - cd ../build-hdf5-emscripten
-    - emconfigure ../hdf5/configure --enable-build-mode=production --prefix=$PWD/../public/emscripten --disable-tools --disable-tests
+    - emconfigure ../hdf5/configure --enable-build-mode=production --prefix=$PWD/../public/emscripten --disable-tools --disable-tests --disable-shared
     - emmake make -j 8 -k || true
     - cp ../hdf5/src/H5lib_settings.c-emscripten ../hdf5/src/H5lib_settings.c
     - cp ../hdf5/src/H5Tinit.c-emscripten ../hdf5/src/H5Tinit.c
