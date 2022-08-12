@@ -66,7 +66,7 @@ adftool_CPPFLAGS = \
   -I src -I $(srcdir)/src \
   -DLOCALEDIR=\"@localedir@\" \
   -DINSTALLDIR=\"$(bindir)\"
-adftool_LDADD = libprog/libgnu.la @LTLIBOBJS@ $(LTLIBINTL)
+adftool_LDADD = libprog/libgnu.la @LTLIBOBJS@ $(LTLIBINTL) libadftool.la
 adftool_LDFLAGS =
 
 libadftool_la_SOURCES = \

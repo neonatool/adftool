@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-08-10 15:16+0000\n"
-"PO-Revision-Date: 2022-06-27 11:47+0200\n"
+"POT-Creation-Date: 2022-08-12 18:19+0000\n"
+"PO-Revision-Date: 2022-08-12 20:00+0200\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -17,11 +17,201 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.2.4\n"
 
-#: src/adftool.c:23
+#: src/adftool.c:42
 #, c-format
-msgid "Hello, world!\n"
-msgstr "Bonjour, le monde !\n"
+msgid "Not enough memory.\n"
+msgstr "Pas assez de mémoire.\n"
+
+#: src/adftool.c:50 src/adftool.c:178
+msgctxt "Command-line|Option|"
+msgid "lookup"
+msgstr "chercher"
+
+#: src/adftool.c:52 src/adftool.c:179
+msgctxt "Command-line|Option|"
+msgid "add"
+msgstr "ajouter"
+
+#: src/adftool.c:54 src/adftool.c:180
+msgctxt "Command-line|Option|"
+msgid "remove"
+msgstr "enlever"
+
+#: src/adftool.c:56 src/adftool.c:174
+msgctxt "Command-line|Option|"
+msgid "subject"
+msgstr "sujet"
+
+#: src/adftool.c:58 src/adftool.c:175
+msgctxt "Command-line|Option|"
+msgid "predicate"
+msgstr "prédicat"
+
+#: src/adftool.c:60 src/adftool.c:176
+msgctxt "Command-line|Option|"
+msgid "object"
+msgstr "objet"
+
+#: src/adftool.c:62 src/adftool.c:177
+msgctxt "Command-line|Option|"
+msgid "graph"
+msgstr "graphe"
+
+#: src/adftool.c:64 src/adftool.c:181
+msgctxt "Command-line|Option|"
+msgid "deletion-date"
+msgstr "date-de-suppression"
+
+#: src/adftool.c:66 src/adftool.c:182
+msgctxt "Command-line|Option|"
+msgid "help"
+msgstr "aidez-moi"
+
+#: src/adftool.c:67 src/adftool.c:183
+msgctxt "Command-line|Option|"
+msgid "version"
+msgstr "version"
+
+#: src/adftool.c:96
+#, c-format
+msgid "The argument to \"%s\" cannot be parsed as a N-Triples term: \"%s\"\n"
+msgstr ""
+"L’argument de « %s » ne peut pas être compris comme un terme N-Triples : "
+"« %s »\n"
+
+#: src/adftool.c:112
+#, c-format
+msgid ""
+"Warning: the argument to \"%s\" can be parsed as a N-Triples term, but the "
+"trailing \"%s\" will be discarded.\n"
+msgstr ""
+"Attention : l’argument de « %s » peut être interprété comme un terme N-"
+"Triples, mais la fin « %s » sera ignorée.\n"
+
+#: src/adftool.c:137
+#, c-format
+msgid "The value for \"%s\" is invalid: \"%s\"\n"
+msgstr "La valeur de « %s » est invalide : « %s »\n"
+
+#: src/adftool.c:155
+#, c-format
+msgid ""
+"Usage: adftool [OPTION…] FILE\n"
+"\n"
+"Read or update FILE.\n"
+"\n"
+"You can set a pattern in N-Triples format:\n"
+"  -s NT, --%s=NT;\n"
+"  -p NT, --%s=NT;\n"
+"  -o NT, --%s=NT;\n"
+"  -g NT, --%s=NT;\n"
+"\n"
+"You use this pattern to:\n"
+"  --%s: print the data matching the pattern;\n"
+"  --%s: add the statement (only graph is optional);\n"
+"  --%s: remove all statements matching the pattern.\n"
+"\n"
+"There are other options:\n"
+"  -d DATE, --%s=DATE: use DATE instead of the current date when deleting "
+"statements.\n"
+"  -h, --%s: print this message and exit.\n"
+"  -V, --%s: print the package version and exit.\n"
+"\n"
+msgstr ""
+"Utilisation : adftool [OPTION…] FICHIER\n"
+"\n"
+"Lit ou modifie FICHIER.\n"
+"\n"
+"Vous pouvez sélectionner un motif au format N-Triples :\n"
+"  -s NT, --%s=NT ;\n"
+"  -p NT, --%s=NT ;\n"
+"  -o NT, --%s=NT ;\n"
+"  -g NT, --%s=NT ;\n"
+"\n"
+"Vous pouvez utiliser ce motif pour :\n"
+"  --%s : afficher les données qui correspondent au motif ;\n"
+"  --%s : ajouter la déclaration (seul le graphe est optionnel) :\n"
+"  --%s : enlever toutes les déclarations qui correspondent au motif.\n"
+"\n"
+"Il y a d’autres options :\n"
+"  -d DATE, --%s=DATE : utiliser la DATE à la place de la date courante pour "
+"la suppression de déclarations.\n"
+"  -h, --%s : afficher ce message et quitter.\n"
+"  -V, --%s : afficher la version du paquet et quitter.\n"
+"\n"
+
+#: src/adftool.c:186
+#, c-format
+msgid ""
+"%s\n"
+"\n"
+"Copyright status is unclear.\n"
+msgstr ""
+"%s\n"
+"\n"
+"Le copyright n’est pas clair.\n"
+
+#: src/adftool.c:197
+#, c-format
+msgid "No file to process.\n"
+msgstr "Aucun fichier à traiter.\n"
+
+#: src/adftool.c:202
+#, c-format
+msgid "Nothing to do.\n"
+msgstr "Rien à faire.\n"
+
+#: src/adftool.c:209
+#, c-format
+msgid ""
+"Conflicting operations: please pass either --lookup, --insert or --remove.\n"
+msgstr ""
+"Opérations conflictuelles : veuillez passer soit --chercher, soit --ajouter, "
+"soit --enlever.\n"
+
+#: src/adftool.c:218
+#, c-format
+msgid "The file \"%s\" could not be opened.\n"
+msgstr "Le fichier « %s » n’a pas pu être ouvert.\n"
+
+#: src/adftool.c:228 src/adftool.c:241 src/adftool.c:306
+#, c-format
+msgid "Cannot allocate memory to hold the results.\n"
+msgstr "Impossible d’allouer de la mémoire pour les résultats.\n"
+
+#: src/adftool.c:247
+#, c-format
+msgid "Cannot list the statements.\n"
+msgstr "Impossible de lister les déclarations.\n"
+
+#: src/adftool.c:262
+#, c-format
+msgid "I don’t know if the result has been deleted.\n"
+msgstr "Je ne sais pas si le résultat a été supprimé.\n"
+
+#: src/adftool.c:283
+#, c-format
+msgid "Error reading the file.\n"
+msgstr "Erreur de lecture du fichier.\n"
+
+#: src/adftool.c:329
+#, c-format
+msgid "I don’t support namespaced data yet.\n"
+msgstr "Je ne supporte pas encore les données avec un espace de nom.\n"
+
+#: src/adftool.c:406
+#, c-format
+msgid "Could not insert the data.\n"
+msgstr "Impossible d’ajouter les données.\n"
+
+#: src/adftool.c:413
+#, c-format
+msgid "Could not delete the data.\n"
+msgstr ""
+"Impossible de supprimer les données.\n"
+"\n"
 
 #: src/adftool_hdf5.h:101 src/bplus_tree_grow_file_example.c:207
 #, c-format
@@ -326,3 +516,11 @@ msgstr "%s:%d: La méta pour le numéro %lu est %s, mais devrait être %s.\n"
 #, c-format
 msgid "The test failed, keeping term_example.adf around.\n"
 msgstr "Le test a échoué, gardons term_exemple.adf.\n"
+
+#~ msgctxt "Command-line|Option|Mode|"
+#~ msgid "insert"
+#~ msgstr "ajouter"
+
+#, c-format
+#~ msgid "Hello, world!\n"
+#~ msgstr "Bonjour, le monde !\n"
