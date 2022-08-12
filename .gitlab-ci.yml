@@ -54,7 +54,7 @@ pages:
     - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
     - cp adftool-*.tar.gz ../public/adftool-latest.tar.gz
     - cd ../build-adftool-emscripten
-    - emconfigure ../configure CPPFLAGS=-I$PWD/../public/emscripten/include LIBS=$PWD/../public/emscripten/lib/libhdf5.a --prefix=$PWD/../public/emscripten --disable-relocatable
+    - emconfigure ../configure CPPFLAGS=-I$PWD/../public/emscripten/include LIBS=$PWD/../public/emscripten/lib/libhdf5.a --prefix=$PWD/../public/emscripten --disable-relocatable --disable-shared
     - emmake make -j
     - emmake make install
     - ./libtool --tag=CC --mode=link emcc -O3 libadftool.la -o index.html
