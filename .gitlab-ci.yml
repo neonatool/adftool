@@ -47,6 +47,8 @@ pages:
     - mkdir -p build-adftool-native build-adftool-emscripten
     - cd build-adftool-native
     - ../configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
+    - make -j src/libadftool/libadftool_la-lexer.c
+    - mv src/libadftool/libadftool_la-lexer.c ../src/libadftool/libadftool_la-lexer.c
     - make -j
     - make -j check
     - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
