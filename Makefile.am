@@ -17,7 +17,7 @@ AM_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I lib -I $(srcdir)/lib \
   -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"$(LOCALEDIR)\"
+  -DLOCALEDIR=\"@localedir@\"
 
 AM_DISTCHECK_CONFIGURE_FLAGS = \
   --disable-valgrind-tests \
@@ -64,7 +64,7 @@ adftool_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DLOCALEDIR=\"@localedir@\" \
   -DINSTALLDIR=\"$(bindir)\"
 adftool_LDADD = libprog/libgnu.la @LTLIBOBJS@ $(LTLIBINTL)
 adftool_LDFLAGS =
@@ -91,7 +91,7 @@ libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I lib -I $(srcdir)/lib \
   -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DLOCALEDIR=\"@localedir@\" \
   -DBUILDING_LIBADFTOOL
 libadftool_la_CFLAGS = \
     $(CFLAG_VISIBILITY)
@@ -163,7 +163,7 @@ file_open_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DLOCALEDIR=\"@localedir@\" \
   -DINSTALLDIR=\"$(bindir)\"
 
 dictionary_example_SOURCES = \
@@ -177,7 +177,7 @@ dictionary_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DLOCALEDIR=\"@localedir@\" \
   -DINSTALLDIR=\"$(bindir)\"
 
 term_manipulation_example_SOURCES = \
@@ -191,7 +191,7 @@ term_manipulation_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DLOCALEDIR=\"@localedir@\" \
   -DINSTALLDIR=\"$(bindir)\"
 
 statement_manipulation_example_SOURCES = \
@@ -205,7 +205,7 @@ statement_manipulation_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DLOCALEDIR=\"@localedir@\" \
   -DINSTALLDIR=\"$(bindir)\"
 
 multi_statement_example_SOURCES = \
@@ -219,7 +219,7 @@ multi_statement_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DLOCALEDIR=\"@localedir@\" \
   -DINSTALLDIR=\"$(bindir)\"
 
 term_parser_example_SOURCES = \
@@ -233,5 +233,5 @@ term_parser_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"$(LOCALEDIR)\" \
+  -DLOCALEDIR=\"@localedir@\" \
   -DINSTALLDIR=\"$(bindir)\"
