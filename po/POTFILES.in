@@ -12,8 +12,10 @@ src/bplus_tree_gets_initialized.c
 src/bplus_tree_grow_example.c
 src/bplus_tree_grow_file_example.c
 src/bplus_tree_lookup_example.c
+src/channel_metadata_example.c
 src/dictionary_example.c
 src/file_open_example.c
+src/libadftool/channel_metadata.c
 src/libadftool/dictionary.c
 src/libadftool/emscripten.cpp
 src/libadftool/file.c

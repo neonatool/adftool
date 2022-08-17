@@ -11,7 +11,8 @@ CLEANFILES = \
   dictionary_example.adf \
   term_example.adf \
   statement_example.adf \
-  multi_statement_example.adf
+  multi_statement_example.adf \
+  channel_metadata_example.adf
 
 AM_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -42,7 +43,8 @@ check_PROGRAMS = \
   term_manipulation_example \
   statement_manipulation_example \
   multi_statement_example \
-  term_parser_example
+  term_parser_example \
+  channel_metadata_example
 
 TESTS = \
   bplus_tree_lookup_example \
@@ -56,7 +58,9 @@ TESTS = \
   term_manipulation_example \
   statement_manipulation_example \
   multi_statement_example \
-  term_parser_example
+  term_parser_example \
+  channel_metadata_example
+
 LOG_COMPILER = $(LOG_VALGRIND)
 
 adftool_SOURCES = src/adftool.c
@@ -86,6 +90,7 @@ libadftool_la_SOURCES = \
   src/libadftool/results.c \
   src/libadftool/indices.c \
   src/libadftool/lexer.l \
+  src/libadftool/channel_metadata.c \
   src/libadftool/emscripten.cpp
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -230,6 +235,20 @@ term_parser_example_LDADD = \
   $(LTLIBINTL) \
   @LTLIBOBJS@
 term_parser_example_CPPFLAGS = \
+  -I include -I $(srcdir)/include \
+  -I libprog -I $(srcdir)/libprog \
+  -I src -I $(srcdir)/src \
+  -DLOCALEDIR=\"@localedir@\" \
+  -DINSTALLDIR=\"$(bindir)\"
+
+channel_metadata_example_SOURCES = \
+  src/channel_metadata_example.c
+channel_metadata_example_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  @LTLIBOBJS@
+channel_metadata_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \

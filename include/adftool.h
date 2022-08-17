@@ -224,6 +224,17 @@ extern "C"
     int adftool_insert (struct adftool_file *file,
 			const struct adftool_statement *statement);
 
+  extern LIBADFTOOL_API
+    int adftool_find_channel_identifier (const struct adftool_file *file,
+					 size_t channel_index,
+					 struct adftool_term *identifier);
+
+  extern LIBADFTOOL_API
+    int adftool_set_channel_identifier (struct adftool_file *file,
+					size_t channel_index,
+					const struct adftool_term
+					*identifier);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */
