@@ -84,6 +84,7 @@ struct adftool_file
   hid_t hdf5_file;
   struct adftool_dictionary dictionary;
   struct adftool_data_description data_description;
+  hid_t eeg_dataset;
 };
 
 enum adftool_term_type

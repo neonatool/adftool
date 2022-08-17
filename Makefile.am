@@ -12,7 +12,8 @@ CLEANFILES = \
   term_example.adf \
   statement_example.adf \
   multi_statement_example.adf \
-  channel_metadata_example.adf
+  channel_metadata_example.adf \
+  eeg_data_example.adf
 
 AM_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -22,7 +23,7 @@ AM_CPPFLAGS = \
 
 AM_DISTCHECK_CONFIGURE_FLAGS = \
   --disable-valgrind-tests \
-  "CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined -fsanitize-undefined-trap-on-error -fsanitize=address -Wall -Wextra" \
+  "CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined -fsanitize-undefined-trap-on-error -Wall -Wextra" \
   SHELL=$(SHELL)
 
 RELOCATABLE_LIBRARY_PATH = $(libdir)
@@ -44,7 +45,8 @@ check_PROGRAMS = \
   statement_manipulation_example \
   multi_statement_example \
   term_parser_example \
-  channel_metadata_example
+  channel_metadata_example \
+  eeg_data_example
 
 TESTS = \
   bplus_tree_lookup_example \
@@ -59,7 +61,8 @@ TESTS = \
   statement_manipulation_example \
   multi_statement_example \
   term_parser_example \
-  channel_metadata_example
+  channel_metadata_example \
+  eeg_data_example
 
 LOG_COMPILER = $(LOG_VALGRIND)
 
@@ -91,6 +94,7 @@ libadftool_la_SOURCES = \
   src/libadftool/indices.c \
   src/libadftool/lexer.l \
   src/libadftool/channel_metadata.c \
+  src/libadftool/eeg_data.c \
   src/libadftool/emscripten.cpp
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -249,6 +253,20 @@ channel_metadata_example_LDADD = \
   $(LTLIBINTL) \
   @LTLIBOBJS@
 channel_metadata_example_CPPFLAGS = \
+  -I include -I $(srcdir)/include \
+  -I libprog -I $(srcdir)/libprog \
+  -I src -I $(srcdir)/src \
+  -DLOCALEDIR=\"@localedir@\" \
+  -DINSTALLDIR=\"$(bindir)\"
+
+eeg_data_example_SOURCES = \
+  src/eeg_data_example.c
+eeg_data_example_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  @LTLIBOBJS@
+eeg_data_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \

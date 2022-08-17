@@ -276,6 +276,7 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
       indices[i].dataset = H5I_INVALID_HID;
       indices[i].nextid = H5I_INVALID_HID;
     }
+  hid_t eeg_dataset = H5I_INVALID_HID;
   unsigned mode = H5F_ACC_RDONLY;
   if (write)
     {
@@ -683,6 +684,7 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
 	  goto wrapup;
 	}
     }
+  eeg_dataset = H5Dopen2 (hdf5_file, "/eeg-data", H5P_DEFAULT);
 wrapup:
   if (error == 0)
     {
@@ -704,9 +706,14 @@ wrapup:
 	  memcpy (&(file->data_description.indices[i]), &(indices[i]),
 		  sizeof (struct adftool_index));
 	}
+      file->eeg_dataset = eeg_dataset;
     }
   else
     {
+      if (eeg_dataset != H5I_INVALID_HID)
+	{
+	  H5Dclose (eeg_dataset);
+	}
       for (size_t i = 0; i < 6; i++)
 	{
 	  if (indices[i].dataset != H5I_INVALID_HID)
@@ -771,6 +778,10 @@ adftool_file_close (struct adftool_file *file)
 {
   if (file->hdf5_file != H5I_INVALID_HID)
     {
+      if (file->eeg_dataset != H5I_INVALID_HID)
+	{
+	  H5Dclose (file->eeg_dataset);
+	}
       for (size_t i = 0; i < 6; i++)
 	{
 	  H5Dclose (file->data_description.indices[i].dataset);

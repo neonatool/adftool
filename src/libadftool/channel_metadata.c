@@ -386,7 +386,29 @@ term_make_literal_double (struct adftool_term *term, double value)
 {
   static const char *meta = "http://www.w3.org/2001/XMLSchema#double";
   char value_str[256];
-  sprintf (value_str, "%lf", value);
+  #ifdef HAVE_MPFR_STRTOFR
+  mpfr_t number;
+  mpfr_init2 (number, 53);
+  mpfr_set_d (number, value, MPFR_RNDN);
+  mpfr_exp_t exp;
+  char *the_value = mpfr_get_str (NULL, &exp, 10, 0, number, MPFR_RNDN);
+  assert (strlen (the_value) < sizeof (value_str));
+  assert (strlen (the_value) > 0);
+  if (the_value[0] == '-' || the_value[0] == '+')
+    {
+      assert (strlen (the_value) > 1);
+      sprintf (value_str, "%c%c.%sE%ld", the_value[0], the_value[1], the_value + 2, exp - 1);
+    }
+  else
+    {
+      sprintf (value_str, "%c.%sE%ld", the_value[0], the_value + 1, exp - 1);
+    }
+  mpfr_clear (number);
+  #else
+  char *old_locale = setlocale (LC_NUMERIC, "C");
+  sprintf (value_str, "%.20e", value);
+  setlocale (LC_NUMERIC, old_locale);
+  #endif
   return adftool_term_set_literal (term, value_str, meta, NULL);
 }
 

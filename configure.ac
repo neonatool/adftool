@@ -48,7 +48,7 @@ gl_VISIBILITY
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNC([H5open],, [AC_MSG_ERROR([I need the HDF5 library functions.])])
-AC_CHECK_FUNCS([mpfr_strtofr])
+AC_CHECK_FUNCS([mpfr_strtofr mpr_free_cache])
 
 AC_CONFIG_FILES([Makefile lib/Makefile libprog/Makefile po/Makefile.in])
 AC_OUTPUT
