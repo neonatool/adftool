@@ -11,6 +11,7 @@
 #include "relocatable.h"
 #include "progname.h"
 #include <locale.h>
+#include <assert.h>
 
 #define _(String) gettext(String)
 #define N_(String) (String)
@@ -56,6 +57,10 @@ main (int argc, char *argv[])
     {
       abort ();
     }
+  if (adftool_set_channel_decoder (file, identifier, 42, 18) != 0)
+    {
+      abort ();
+    }
   adftool_file_close (file);
   error = adftool_file_open (file, "channel_metadata_example.adf", 1);
   if (error)
@@ -79,6 +84,13 @@ main (int argc, char *argv[])
     {
       abort ();
     }
+  double scale, offset;
+  if (adftool_get_channel_decoder (file, identifier, &scale, &offset) != 0)
+    {
+      abort ();
+    }
+  assert (scale == 42);
+  assert (offset == 18);
   adftool_term_free (expected_identifier);
   adftool_term_free (identifier);
   adftool_file_close (file);

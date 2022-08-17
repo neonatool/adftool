@@ -235,6 +235,16 @@ extern "C"
 					const struct adftool_term
 					*identifier);
 
+  extern LIBADFTOOL_API
+    int adftool_get_channel_decoder (const struct adftool_file *file,
+				     const struct adftool_term *identifier,
+				     double *scale, double *offset);
+
+  extern LIBADFTOOL_API
+    int adftool_set_channel_decoder (struct adftool_file *file,
+				     const struct adftool_term *identifier,
+				     double scale, double offset);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */
