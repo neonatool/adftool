@@ -31,9 +31,10 @@ glprog_INIT
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19])
 AC_SEARCH_LIBS([H5open], [hdf5],,, [-lz])
+AC_SEARCH_LIBS([mpfr_strtofr], [mpfr],,, [-lgmp])
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdint.h emscripten.h emscripten/bind.h])
+AC_CHECK_HEADERS([stdint.h emscripten.h emscripten/bind.h mpfr.h])
 AC_CHECK_HEADER([hdf5.h],, [AC_MSG_ERROR([I need the HDF5 header.])])
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -47,6 +48,7 @@ gl_VISIBILITY
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNC([H5open],, [AC_MSG_ERROR([I need the HDF5 library functions.])])
+AC_CHECK_FUNCS([mpfr_strtofr])
 
 AC_CONFIG_FILES([Makefile lib/Makefile libprog/Makefile po/Makefile.in])
 AC_OUTPUT

@@ -222,7 +222,7 @@
 			     '()
 			     "po")))))))
  (inputs
-  (list gnu-gettext hdf5 zlib))
+  (list gnu-gettext hdf5 zlib mpfr))
  (native-inputs
   (list autoconf autoconf-archive automake libtool
 	valgrind

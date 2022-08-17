@@ -1,6 +1,10 @@
 #include <adftool_private.h>
 #include <time.h>
 
+#ifdef HAVE_MPFR_H
+#include <mpfr.h>
+#endif /* HAVE_MPFR_H */
+
 static struct adftool_statement *
 column_number_finder (size_t i)
 {
@@ -141,7 +145,7 @@ adftool_set_channel_identifier (struct adftool_file *file,
       error = 1;
       goto wrapup;
     }
-  if (adftool_delete (file, pattern, time (NULL)) != 0)
+  if (adftool_delete (file, pattern, time (NULL) * 1000) != 0)
     {
       error = 1;
       goto cleanup;
@@ -160,4 +164,22 @@ cleanup:
   adftool_statement_free (pattern);
 wrapup:
   return error;
+}
+
+static inline double
+locale_independent_strtod (const char *text, char **end)
+{
+#ifdef HAVE_MPFR_STRTOFR
+  mpfr_t number;
+  mpfr_init2 (number, 53);
+  mpfr_strtofr (number, text, end, 10, MPFR_RNDN);
+  const double ret = mpfr_get_d (number, MPFR_RNDN);
+  mpfr_clear (number);
+  return ret;
+#else
+  char *old_locale = setlocale (LC_NUMERIC, "C");
+  const double ret = strtod (text, end);
+  setlocale (LC_NUMERIC, old_locale);
+  return ret;
+#endif
 }
