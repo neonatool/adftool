@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-08-12 18:19+0000\n"
+"POT-Creation-Date: 2022-08-17 09:00+0000\n"
 "PO-Revision-Date: 2022-08-12 20:00+0200\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -19,69 +19,69 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 2.2.4\n"
 
-#: src/adftool.c:42
+#: src/adftool.c:43
 #, c-format
 msgid "Not enough memory.\n"
 msgstr "Pas assez de mémoire.\n"
 
-#: src/adftool.c:50 src/adftool.c:178
+#: src/adftool.c:51 src/adftool.c:179
 msgctxt "Command-line|Option|"
 msgid "lookup"
 msgstr "chercher"
 
-#: src/adftool.c:52 src/adftool.c:179
+#: src/adftool.c:53 src/adftool.c:180
 msgctxt "Command-line|Option|"
 msgid "add"
 msgstr "ajouter"
 
-#: src/adftool.c:54 src/adftool.c:180
+#: src/adftool.c:55 src/adftool.c:181
 msgctxt "Command-line|Option|"
 msgid "remove"
 msgstr "enlever"
 
-#: src/adftool.c:56 src/adftool.c:174
+#: src/adftool.c:57 src/adftool.c:175
 msgctxt "Command-line|Option|"
 msgid "subject"
 msgstr "sujet"
 
-#: src/adftool.c:58 src/adftool.c:175
+#: src/adftool.c:59 src/adftool.c:176
 msgctxt "Command-line|Option|"
 msgid "predicate"
 msgstr "prédicat"
 
-#: src/adftool.c:60 src/adftool.c:176
+#: src/adftool.c:61 src/adftool.c:177
 msgctxt "Command-line|Option|"
 msgid "object"
 msgstr "objet"
 
-#: src/adftool.c:62 src/adftool.c:177
+#: src/adftool.c:63 src/adftool.c:178
 msgctxt "Command-line|Option|"
 msgid "graph"
 msgstr "graphe"
 
-#: src/adftool.c:64 src/adftool.c:181
+#: src/adftool.c:65 src/adftool.c:182
 msgctxt "Command-line|Option|"
 msgid "deletion-date"
 msgstr "date-de-suppression"
 
-#: src/adftool.c:66 src/adftool.c:182
+#: src/adftool.c:67 src/adftool.c:183
 msgctxt "Command-line|Option|"
 msgid "help"
 msgstr "aidez-moi"
 
-#: src/adftool.c:67 src/adftool.c:183
+#: src/adftool.c:68 src/adftool.c:184
 msgctxt "Command-line|Option|"
 msgid "version"
 msgstr "version"
 
-#: src/adftool.c:96
+#: src/adftool.c:97
 #, c-format
 msgid "The argument to \"%s\" cannot be parsed as a N-Triples term: \"%s\"\n"
 msgstr ""
 "L’argument de « %s » ne peut pas être compris comme un terme N-Triples : "
 "« %s »\n"
 
-#: src/adftool.c:112
+#: src/adftool.c:113
 #, c-format
 msgid ""
 "Warning: the argument to \"%s\" can be parsed as a N-Triples term, but the "
@@ -90,12 +90,12 @@ msgstr ""
 "Attention : l’argument de « %s » peut être interprété comme un terme N-"
 "Triples, mais la fin « %s » sera ignorée.\n"
 
-#: src/adftool.c:137
+#: src/adftool.c:138
 #, c-format
 msgid "The value for \"%s\" is invalid: \"%s\"\n"
 msgstr "La valeur de « %s » est invalide : « %s »\n"
 
-#: src/adftool.c:155
+#: src/adftool.c:156
 #, c-format
 msgid ""
 "Usage: adftool [OPTION…] FILE\n"
@@ -142,7 +142,7 @@ msgstr ""
 "  -V, --%s : afficher la version du paquet et quitter.\n"
 "\n"
 
-#: src/adftool.c:186
+#: src/adftool.c:187
 #, c-format
 msgid ""
 "%s\n"
@@ -153,17 +153,17 @@ msgstr ""
 "\n"
 "Le copyright n’est pas clair.\n"
 
-#: src/adftool.c:197
+#: src/adftool.c:198
 #, c-format
 msgid "No file to process.\n"
 msgstr "Aucun fichier à traiter.\n"
 
-#: src/adftool.c:202
+#: src/adftool.c:203
 #, c-format
 msgid "Nothing to do.\n"
 msgstr "Rien à faire.\n"
 
-#: src/adftool.c:209
+#: src/adftool.c:210
 #, c-format
 msgid ""
 "Conflicting operations: please pass either --lookup, --insert or --remove.\n"
@@ -171,42 +171,42 @@ msgstr ""
 "Opérations conflictuelles : veuillez passer soit --chercher, soit --ajouter, "
 "soit --enlever.\n"
 
-#: src/adftool.c:218
+#: src/adftool.c:219
 #, c-format
 msgid "The file \"%s\" could not be opened.\n"
 msgstr "Le fichier « %s » n’a pas pu être ouvert.\n"
 
-#: src/adftool.c:228 src/adftool.c:241 src/adftool.c:306
+#: src/adftool.c:229 src/adftool.c:242 src/adftool.c:307
 #, c-format
 msgid "Cannot allocate memory to hold the results.\n"
 msgstr "Impossible d’allouer de la mémoire pour les résultats.\n"
 
-#: src/adftool.c:247
+#: src/adftool.c:248
 #, c-format
 msgid "Cannot list the statements.\n"
 msgstr "Impossible de lister les déclarations.\n"
 
-#: src/adftool.c:262
+#: src/adftool.c:263
 #, c-format
 msgid "I don’t know if the result has been deleted.\n"
 msgstr "Je ne sais pas si le résultat a été supprimé.\n"
 
-#: src/adftool.c:283
+#: src/adftool.c:284
 #, c-format
 msgid "Error reading the file.\n"
 msgstr "Erreur de lecture du fichier.\n"
 
-#: src/adftool.c:329
+#: src/adftool.c:330
 #, c-format
 msgid "I don’t support namespaced data yet.\n"
 msgstr "Je ne supporte pas encore les données avec un espace de nom.\n"
 
-#: src/adftool.c:406
+#: src/adftool.c:407
 #, c-format
 msgid "Could not insert the data.\n"
 msgstr "Impossible d’ajouter les données.\n"
 
-#: src/adftool.c:413
+#: src/adftool.c:414
 #, c-format
 msgid "Could not delete the data.\n"
 msgstr ""

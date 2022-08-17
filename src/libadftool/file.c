@@ -771,6 +771,11 @@ adftool_file_close (struct adftool_file *file)
 {
   if (file->hdf5_file != H5I_INVALID_HID)
     {
+      for (size_t i = 0; i < 6; i++)
+	{
+	  H5Dclose (file->data_description.indices[i].dataset);
+	  H5Aclose (file->data_description.indices[i].nextid);
+	}
       H5Dclose (file->data_description.quads.dataset);
       H5Aclose (file->data_description.quads.nextid);
       H5Gclose (file->data_description.group);
