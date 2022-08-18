@@ -16,11 +16,14 @@ src/channel_metadata_example.c
 src/dictionary_example.c
 src/eeg_data_example.c
 src/file_open_example.c
+src/filter_example.c
+src/filter_test_data.c
 src/libadftool/channel_metadata.c
 src/libadftool/dictionary.c
 src/libadftool/eeg_data.c
 src/libadftool/emscripten.cpp
 src/libadftool/file.c
+src/libadftool/fir.c
 src/libadftool/indices.c
 src/libadftool/libadftool_la-lexer.c
 src/libadftool/results.c

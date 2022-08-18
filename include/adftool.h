@@ -256,6 +256,23 @@ extern "C"
 			      size_t channel_length, size_t *channel_max,
 			      double *data);
 
+  struct adftool_fir;
+
+  extern LIBADFTOOL_API
+    struct adftool_fir *adftool_fir_alloc (double sfreq,
+					   double transition_bandwidth);
+
+  extern LIBADFTOOL_API void adftool_fir_free (struct adftool_fir *filter);
+
+  extern LIBADFTOOL_API
+    void adftool_fir_design_bandpass (struct adftool_fir *filter,
+				      double freq_low, double freq_high);
+
+  extern LIBADFTOOL_API
+    void adftool_fir_apply (const struct adftool_fir *filter,
+			    size_t signal_length, const double *signal,
+			    double *filtered);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */

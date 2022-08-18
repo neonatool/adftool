@@ -1,6 +1,7 @@
 SUBDIRS = lib libprog . po
 ACLOCAL_AMFLAGS = -I m4 -I m4prog
-EXTRA_DIST = m4/gnulib-cache.m4 m4prog/gnulib-cache.m4
+EXTRA_DIST = m4/gnulib-cache.m4 m4prog/gnulib-cache.m4 \
+  src/filter_test_data.c src/filter_test_data.R
 
 CLEANFILES = \
   bplus-tree-grow-file-example.hdf5 \
@@ -46,7 +47,8 @@ check_PROGRAMS = \
   multi_statement_example \
   term_parser_example \
   channel_metadata_example \
-  eeg_data_example
+  eeg_data_example \
+  filter_example
 
 TESTS = \
   bplus_tree_lookup_example \
@@ -62,7 +64,8 @@ TESTS = \
   multi_statement_example \
   term_parser_example \
   channel_metadata_example \
-  eeg_data_example
+  eeg_data_example \
+  filter_example
 
 LOG_COMPILER = $(LOG_VALGRIND)
 
@@ -95,6 +98,7 @@ libadftool_la_SOURCES = \
   src/libadftool/lexer.l \
   src/libadftool/channel_metadata.c \
   src/libadftool/eeg_data.c \
+  src/libadftool/fir.c \
   src/libadftool/emscripten.cpp
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -272,3 +276,23 @@ eeg_data_example_CPPFLAGS = \
   -I src -I $(srcdir)/src \
   -DLOCALEDIR=\"@localedir@\" \
   -DINSTALLDIR=\"$(bindir)\"
+
+filter_example_SOURCES = \
+  src/filter_example.c src/filter_test_data.c
+filter_example_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  @LTLIBOBJS@
+filter_example_CPPFLAGS = \
+  -I include -I $(srcdir)/include \
+  -I libprog -I $(srcdir)/libprog \
+  -I src -I $(srcdir)/src \
+  -DLOCALEDIR=\"@localedir@\" \
+  -DINSTALLDIR=\"$(bindir)\"
+
+BUILT_SOURCES = src/filter_test_data.c
+
+$(srcdir)/src/filter_test_data.c: src/filter_test_data.R
+	$(AM_V_GEN) $(RSCRIPT) $< > $@-t
+	@mv $@-t $@

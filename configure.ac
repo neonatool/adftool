@@ -26,12 +26,14 @@ if test "x$LEX" != xflex; then
 fi
 gl_INIT
 glprog_INIT
+AM_MISSING_PROG([RSCRIPT], [Rscript])
 
 # Checks for libraries.
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19])
 AC_SEARCH_LIBS([H5open], [hdf5],,, [-lz])
 AC_SEARCH_LIBS([mpfr_strtofr], [mpfr],,, [-lgmp])
+AC_SEARCH_LIBS([cos], [m])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h emscripten.h emscripten/bind.h mpfr.h])

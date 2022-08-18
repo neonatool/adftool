@@ -4,11 +4,13 @@
  (gnu packages bash)
  (gnu packages code)
  (gnu packages compression)
+ (gnu packages cran)
  (gnu packages flex)
  (gnu packages gettext)
  (gnu packages maths)
  (gnu packages multiprecision)
  (gnu packages node)
+ (gnu packages statistics)
  (gnu packages valgrind)
  (gnu packages version-control)
  (gnu packages web)
@@ -229,7 +231,7 @@
 	valgrind
 	;; valgrind needs to mess with strlen:
 	(list glibc "debug")
-	tar global gnu-gettext flex))
+	tar global gnu-gettext flex r))
  (home-page "https://localhost/adftool")
  (synopsis "Tool to parse and generate my ADF spec")
  (description "The ADF specification is slightly incomplete, so I made one in the

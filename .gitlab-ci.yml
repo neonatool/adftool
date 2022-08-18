@@ -20,7 +20,7 @@ before_script:
 dist:
   stage: dependencies
   script:
-    - apt-get install -y git gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ m4 libtinfo5 flex
+    - apt-get install -y git gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ m4 libtinfo5 flex r-base
     - mkdir -p public
     - export GNULIB_SRCDIR=$PWD/gnulib
     - ./bootstrap --force --skip-po

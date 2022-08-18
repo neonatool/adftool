@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.1.0-1-g9eee008\n"
+"Project-Id-Version: adftool 0.1.0-8-g1401560\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-08-17 09:00+0000\n"
+"POT-Creation-Date: 2022-08-19 09:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -414,6 +414,11 @@ msgstr ""
 #: src/bplus_tree_lookup_example.c:145
 #, c-format
 msgid "adftool memory allocation problem detected.\n"
+msgstr ""
+
+#: src/filter_example.c:63
+#, c-format
+msgid "The filter test failed at point %lu.\n"
 msgstr ""
 
 #: src/term_manipulation_example.c:126

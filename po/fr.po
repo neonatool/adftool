@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-08-17 09:00+0000\n"
-"PO-Revision-Date: 2022-08-12 20:00+0200\n"
+"POT-Creation-Date: 2022-08-19 09:52+0000\n"
+"PO-Revision-Date: 2022-08-19 11:54+0200\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -451,6 +451,11 @@ msgstr "%s trouvé.\n"
 #, c-format
 msgid "adftool memory allocation problem detected.\n"
 msgstr "problème d’allocation de mémoire pour adftool détecté.\n"
+
+#: src/filter_example.c:63
+#, c-format
+msgid "The filter test failed at point %lu.\n"
+msgstr "Le test du filtre a échoué au point %lu.\n"
 
 #: src/term_manipulation_example.c:126
 #, c-format
