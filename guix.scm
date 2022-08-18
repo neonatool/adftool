@@ -7,6 +7,7 @@
  (gnu packages flex)
  (gnu packages gettext)
  (gnu packages maths)
+ (gnu packages multiprecision)
  (gnu packages node)
  (gnu packages valgrind)
  (gnu packages version-control)

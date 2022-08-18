@@ -1,20 +1,35 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-pages:
+stages:
+  - dependencies
+  - build
+  - pages
+
+dist:
+  stage: dependencies
   script:
     - apt-get update -y
-    - apt-get install -y git python gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ cmake m4 libtinfo5 binutils-mingw-w64-x86-64 g++-mingw-w64 gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 wine flex
+    - apt-get install -y git gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ m4 libtinfo5 flex
+    - mkdir -p public
     - export GNULIB_SRCDIR=$PWD/gnulib
     - ./bootstrap --force --skip-po
-    - mkdir -p build-adftool-mingw64
-    - cd build-adftool-mingw64
-    - "../configure CPPFLAGS=-I$PWD/../public/mingw64/include LIBS=-lhdf5 LDFLAGS=-L$PWD/../public/mingw64/lib --prefix=$PWD/../public/mingw64 --enable-relocatable --host=x86_64-w64-mingw32 || (cat config.log ; exit 1) || exit 1"
+    - mkdir -p build-dist
+    - cd build-dist
+    - ../configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
     - make -j
-    - make bplus_tree_grow_file_example.exe
-    - wine bplus_tree_grow_file_example.exe
-    - make -j install
-    - cd ..
+    - mv src/libadftool/libadftool_la-lexer.c ../src/libadftool/
+    - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
+    - cp adftool-*.tar.gz ../public/adftool-latest.tar.gz
+  artifacts:
+    paths:
+      - public
+
+dep_hdf5_emscripten:
+  stage: dependencies
+  script:
+    - apt-get update -y
+    - apt-get install -y git python gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc g++ m4 libtinfo5
     - git clone https://github.com/emscripten-core/emsdk.git
     - cd emsdk
     - ./emsdk install latest
@@ -37,29 +52,87 @@ pages:
     - cd ../../hdf5
     - cp src/H5make_libsettings-original.c src/H5make_libsettings.c
     - cd ../build-hdf5-emscripten
-    - emconfigure ../hdf5/configure --enable-build-mode=production --prefix=$PWD/../public/emscripten --disable-tools --disable-tests --disable-shared
+    - emconfigure ../hdf5/configure --enable-build-mode=production --prefix=/emscripten --disable-tools --disable-tests --disable-shared
     - emmake make -j 8 -k || true
     - cp ../hdf5/src/H5lib_settings.c-emscripten ../hdf5/src/H5lib_settings.c
     - cp ../hdf5/src/H5Tinit.c-emscripten ../hdf5/src/H5Tinit.c
     - emmake make -j 8
-    - emmake make install
-    - cd ..
-    - mkdir -p build-adftool-native build-adftool-emscripten
-    - cd build-adftool-native
-    - ../configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
-    - make -j src/libadftool/libadftool_la-lexer.c
-    - mv src/libadftool/libadftool_la-lexer.c ../src/libadftool/libadftool_la-lexer.c
+    - emmake make DESTDIR=$PWD/../public install
+  artifacts:
+    paths:
+      - public
+
+build_mingw:
+  stage: build
+  script:
+    - apt-get update -y
+    - apt-get install -y tar make binutils-mingw-w64-x86-64 g++-mingw-w64 gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 wine
+    - tar xf public/adftool-latest.tar.gz
+    - mkdir -p build-mingw
+    - cd build-mingw
+    - ../adftool-*/configure CPPFLAGS=-I$PWD/../public/mingw64/include LIBS=-lhdf5 LDFLAGS=-L$PWD/../public/mingw64/lib --enable-relocatable --host=x86_64-w64-mingw32 --prefix=/mingw64
     - make -j
-    - make -j check
-    - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
-    - cp adftool-*.tar.gz ../public/adftool-latest.tar.gz
-    - cd ../build-adftool-emscripten
-    - emconfigure ../configure CPPFLAGS=-I$PWD/../public/emscripten/include LIBS=$PWD/../public/emscripten/lib/libhdf5.a --prefix=$PWD/../public/emscripten --disable-relocatable --disable-shared
+    - make bplus_tree_grow_file_example.exe
+    - wine bplus_tree_grow_file_example.exe
+    - make -j DESTDIR=$PWD/../public install
+  artifacts:
+    paths:
+      - public
+
+build_emscripten:
+  stage: build
+  script:
+    - apt-get update -y
+    - apt-get install -y git python gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc g++ m4 libtinfo5
+    - git clone https://github.com/emscripten-core/emsdk.git
+    - cd emsdk
+    - ./emsdk install latest
+    - ./emsdk activate latest
+    - source ./emsdk_env.sh
+    - cd ..
+    - tar xf public/adftool-latest.tar.gz
+    - mkdir -p build-emscripten
+    - cd build-emscripten
+    - emconfigure ../adftool-*/configure CPPFLAGS=-I$PWD/../public/emscripten/include LIBS=$PWD/../public/emscripten/lib/libhdf5.a LDFLAGS=-L$PWD/../public/emscripten/lib --disable-relocatable --disable-shared --prefix=/emscripten
     - emmake make -j
-    - emmake make install
+    - emmake make -j DESTDIR=$PWD/../public install
     - ./libtool --tag=CC --mode=link emcc -O3 libadftool.la -o ../public/index.html
     - ls -R .libs
     - cp -R .libs/ ../public
+  artifacts:
+    paths:
+      - public
+
+build_without_mpfr:
+  stage: build
+  script:
+    - apt-get update -y
+    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5
+    - tar xf public/adftool-latest.tar.gz
+    - mkdir -p build-without-mpfr
+    - cd build-without-mpfr
+    - ../adftool-*/configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
+    - make -j
+    - make -j check
+    - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
+
+build_with_mpfr:
+  stage: build
+  script:
+    - apt-get update -y
+    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 mpfr dibmpfr-dev
+    - tar xf public/adftool-latest.tar.gz
+    - mkdir -p build-with-mpfr
+    - cd build-with-mpfr
+    - ../adftool-*/configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
+    - make -j
+    - make -j check
+    - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
+
+pages:
+  stage: pages
+  script:
+    - echo "nothing to do"
   artifacts:
     paths:
       - public
