@@ -6,10 +6,20 @@ stages:
   - build
   - pages
 
+cache:
+  paths:
+    - .apt
+    - emsdk
+
+before_script:
+  - rm -f /etc/apt/apt.conf.d/docker-clean
+  - sed "s|@ABS_TOP_SRCDIR@|$PWD|g" gitlab-ci-apt-cache.conf > /etc/apt/apt.conf.d/gitlab-ci-cache
+  - mkdir -p .apt/archives/partial
+  - apt-get update -y
+
 dist:
   stage: dependencies
   script:
-    - apt-get update -y
     - apt-get install -y git gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ m4 libtinfo5 flex
     - mkdir -p public
     - export GNULIB_SRCDIR=$PWD/gnulib
@@ -28,10 +38,10 @@ dist:
 dep_hdf5_emscripten:
   stage: dependencies
   script:
-    - apt-get update -y
-    - apt-get install -y git python gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc g++ m4 libtinfo5
-    - git clone https://github.com/emscripten-core/emsdk.git
+    - apt-get install -y git python3 gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc g++ m4 libtinfo5 lbzip2
+    - test -d emsdk || git clone https://github.com/emscripten-core/emsdk.git
     - cd emsdk
+    - git pull
     - ./emsdk install latest
     - ./emsdk activate latest
     - source ./emsdk_env.sh
@@ -65,7 +75,6 @@ dep_hdf5_emscripten:
 build_mingw:
   stage: build
   script:
-    - apt-get update -y
     - apt-get install -y tar make binutils-mingw-w64-x86-64 g++-mingw-w64 gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 wine
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-mingw
@@ -82,10 +91,10 @@ build_mingw:
 build_emscripten:
   stage: build
   script:
-    - apt-get update -y
-    - apt-get install -y git python gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc g++ m4 libtinfo5
-    - git clone https://github.com/emscripten-core/emsdk.git
+    - apt-get install -y git python3 gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc g++ m4 libtinfo5 lbzip2
+    - test -d emsdk || git clone https://github.com/emscripten-core/emsdk.git
     - cd emsdk
+    - git pull
     - ./emsdk install latest
     - ./emsdk activate latest
     - source ./emsdk_env.sh
@@ -106,7 +115,6 @@ build_emscripten:
 build_without_mpfr:
   stage: build
   script:
-    - apt-get update -y
     - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-without-mpfr
@@ -119,8 +127,7 @@ build_without_mpfr:
 build_with_mpfr:
   stage: build
   script:
-    - apt-get update -y
-    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 mpfr dibmpfr-dev
+    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 libmpfr-dev
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-with-mpfr
     - cd build-with-mpfr
