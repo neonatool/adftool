@@ -20,7 +20,7 @@ before_script:
 dist:
   stage: dependencies
   script:
-    - apt-get install -y git gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ m4 libtinfo5 flex r-base
+    - apt-get install -y git gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ m4 libtinfo5 flex r-base texinfo texlive
     - mkdir -p public
     - export GNULIB_SRCDIR=$PWD/gnulib
     - ./bootstrap --force --skip-po
@@ -115,7 +115,7 @@ build_emscripten:
 build_without_mpfr:
   stage: build
   script:
-    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5
+    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 texinfo texlive
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-without-mpfr
     - cd build-without-mpfr
@@ -127,7 +127,7 @@ build_without_mpfr:
 build_with_mpfr:
   stage: build
   script:
-    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 libmpfr-dev
+    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 libmpfr-dev texinfo texlive
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-with-mpfr
     - cd build-with-mpfr
@@ -135,6 +135,36 @@ build_with_mpfr:
     - make -j
     - make -j check
     - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
+
+build_html:
+  stage: build
+  script:
+    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 libmpfr-dev texinfo
+    - tar xf public/adftool-latest.tar.gz
+    - mkdir -p build-html
+    - cd build-html
+    - ../adftool-*/configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial --prefix=/ --htmldir=/adftool
+    - make -j
+    - make -j html
+    - make -j DESTDIR=$PWD/../public install-html
+  artifacts:
+    paths:
+      - public
+
+build_pdf:
+  stage: build
+  script:
+    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 libmpfr-dev texinfo texlive
+    - tar xf public/adftool-latest.tar.gz
+    - mkdir -p build-pdf
+    - cd build-pdf
+    - ../adftool-*/configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial --prefix=/ --pdfdir=/
+    - make -j
+    - make -j pdf
+    - make -j DESTDIR=$PWD/../public install-pdf
+  artifacts:
+    paths:
+      - public
 
 pages:
   stage: pages

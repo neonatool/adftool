@@ -11,6 +11,8 @@
  (gnu packages multiprecision)
  (gnu packages node)
  (gnu packages statistics)
+ (gnu packages tex)
+ (gnu packages texinfo)
  (gnu packages valgrind)
  (gnu packages version-control)
  (gnu packages web)
@@ -123,7 +125,7 @@
 		 (not (string-suffix? ".po" file))
 		 ))))
  (build-system gnu-build-system)
- (outputs (list "out" "dist" "devel"))
+ (outputs (list "out" "dist" "devel" "html" "pdf"))
  (arguments
   (list
    #:phases
@@ -225,7 +227,25 @@
 		  result)))
 	   (file-system-fold enter? leaf down up skip error
 			     '()
-			     "po")))))))
+			     "po"))))
+      (add-after
+       'build 'pdf
+       (lambda _
+	 (invoke "make" "-j" "pdf")))
+      (add-after
+       'install 'install-pdf
+       (lambda* (#:key outputs #:allow-other-keys)
+	 (invoke "make" "-j" "install-pdf"
+		 (format #f "prefix = ~a" (assoc-ref outputs "pdf")))))
+      (add-after
+       'build 'html
+       (lambda _
+	 (invoke "make" "-j" "html")))
+      (add-after
+       'install 'install-html
+       (lambda* (#:key outputs #:allow-other-keys)
+	 (invoke "make" "-j" "install-html"
+		 (format #f "prefix = ~a" (assoc-ref outputs "html"))))))))
  (inputs
   (list gnu-gettext hdf5 zlib mpfr))
  (native-inputs
@@ -233,7 +253,9 @@
 	valgrind
 	;; valgrind needs to mess with strlen:
 	(list glibc "debug")
-	tar global gnu-gettext flex r))
+	tar global gnu-gettext flex r
+	texinfo
+	(texlive-updmap.cfg (list texlive-epsf texlive-tex-texinfo))))
  (home-page "https://localhost/adftool")
  (synopsis "Tool to parse and generate my ADF spec")
  (description "The ADF specification is slightly incomplete, so I made one in the

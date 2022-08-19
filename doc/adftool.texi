@@ -1,0 +1,120 @@
+\input texinfo
+@include version.texi
+@settitle Reading and writing data with adftool @value{VERSION}
+@syncodeindex pg cp
+@setfilename adftool.info
+
+@copying
+Huh… I’ll have to think about copying conditions…
+@end copying
+
+@dircategory Texinfo documentation system
+@direntry
+* adftool: (adftool)Invoking adftool.
+@end direntry
+
+@titlepage
+@title Reading and writing data with adftool
+@subtitle for version @value{VERSION}, @value{UPDATED}
+@author Vivien Kraus (@email{vivien.kraus@@univ-reims.fr})
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@contents
+
+@node Top
+@top Adftool
+
+This is the user manual for adftool (version @value{VERSION},
+@value{UPDATED}).
+
+@menu
+* The ADF file format::
+* Invoking adftool::
+* The libadftool API::
+* Index::
+@end menu
+
+@node The ADF file format
+@chapter The ADF file format
+
+@cindex linked data
+With the help of the World-wide Web, any dataset can be published in a
+form that can be understood both by humans and by machines. The most
+successful approach to that is @dfn{Linked Data}: each data point is
+assigned a URI, and it is possible to follow the links from one piece
+of data to another piece of data to build distributed knowledge
+graphs, in a very similar manner that the web of documents lets user
+click links to discover new pages. In that way, it is possible to
+augment any dataset with new information, without touching at how
+other systems use the same data.
+
+@cindex RDF
+@cindex subject
+@cindex predicate
+@cindex object
+@cindex graph
+@cindex triple
+@cindex quad
+@cindex statement
+To do this, the Resource Description Framework (@dfn{RDF}) has been
+introduced. It maps data to graphs. More specifically, a piece of data
+consists of a @dfn{subject}, a @dfn{predicate}, and an
+@dfn{object}. Each of them is a piece of data too. A later revision
+added the notion of @dfn{graphs}, to partition the data into different
+views. These four elements constitute a @dfn{quad}, or a @dfn{triple}
+if the graph is the default graph. This is also called a
+@dfn{statement}. So, good systems to store and query sets of quads or
+triples need to be used to process linked data.
+
+@cindex allotrope data format
+@cindex ADF
+@cindex hierarchical data format
+@cindex HDF
+This project is a more complete specification of the Allotrope Data
+Format Quad Store, defined at
+@url{https://docs.allotrope.org/ADF%20Quad%20Store%20API.html}. It is
+designed to work within a Hierarchical Data Format file.
+
+@menu
+* Overview of the quad store::
+* Building indices::
+* The dictionary::
+* Storage of statements::
+* Indexing statements::
+@end menu
+
+@node Overview of the quad store
+@section Overview of the quad store
+
+@node Building indices
+@section Building indices
+
+@node The dictionary
+@section The dictionary
+
+@node Storage of statements
+@section Storage of statements
+
+@node Indexing statements
+@section Indexing statements
+
+@node Invoking adftool
+@chapter Invoking adftool
+
+@pindex adftool
+@cindex invoking @command{adftool}
+
+@node The libadftool API
+@chapter The libadftool API
+
+@cindex API (libadftool)
+@cindex libadftool
+
+@node Index
+@unnumbered Index
+@printindex cp
+
+@bye

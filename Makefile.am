@@ -1,7 +1,10 @@
 SUBDIRS = lib libprog . po
 ACLOCAL_AMFLAGS = -I m4 -I m4prog
 EXTRA_DIST = m4/gnulib-cache.m4 m4prog/gnulib-cache.m4 \
-  src/filter_test_data.c src/filter_test_data.R
+  src/filter_test_data.c src/filter_test_data.R \
+  po/Rules-install-local
+
+info_TEXINFOS = doc/adftool.texi
 
 CLEANFILES = \
   bplus-tree-grow-file-example.hdf5 \
