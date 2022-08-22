@@ -2,6 +2,7 @@
 @include version.texi
 @settitle Reading and writing data with adftool @value{VERSION}
 @syncodeindex pg cp
+@syncodeindex tp fn
 @setfilename adftool.info
 
 @copying
@@ -35,6 +36,7 @@ This is the user manual for adftool (version @value{VERSION},
 * Invoking adftool::
 * The libadftool API::
 * Index::
+* Libadftool Index::
 @end menu
 
 @node The ADF file format
@@ -364,15 +366,398 @@ all statements matching a pattern by looking at any index.
 
 @pindex adftool
 @cindex invoking @command{adftool}
+The @command{adftool} program helps you create and manage ADF
+files. Please use the @command{-h} option to see the available
+behaviors.
 
 @node The libadftool API
 @chapter The libadftool API
 
 @cindex API (libadftool)
 @cindex libadftool
+The libadftool API is installed with the @code{<adftool.h>} header,
+that you must include. You must link @code{-ladftool} to your programs
+to use it.
+
+@menu
+* Manipulating terms::
+* Manipulating statements::
+* Query results::
+* Manipulating files::
+* EEG-specific API::
+* Data filtering::
+@end menu
+
+@node Manipulating terms
+@section Manipulating terms
+@deftp struct adftool_term
+The @code{adftool_term} abstract data type holds all the information
+related to one term. It is allocated with @code{adftool_term_alloc},
+and freed with @code{adftool_term_free}.
+@end deftp
+
+@deftypefun {struct adftool_term *} adftool_term_alloc (void)
+Allocate a new term. Return @code{NULL} if the allocation failed.
+@end deftypefun
+
+@deftypefun void adftool_term_free (struct adftool_term *@var{term})
+Free an allocated @var{term}.
+@end deftypefun
+
+@deftypefun int adftool_term_copy (struct adftool_term *@var{term}, const struct adftool_term *@var{source})
+@deftypefunx int adftool_term_set_named (struct adftool_term *@var{term}, const char *@var{id})
+@deftypefunx int adftool_term_set_blank (struct adftool_term *@var{term}, const char *@var{id})
+@deftypefunx int adftool_term_set_literal (struct adftool_term *@var{term}, const char *@var{value}, const char *@var{meta})
+Initialize @var{term}. The @code{adftool_term_copy} function
+initializes it with a fresh new copy of @var{source}. The
+@code{adftool_term_set_literal} function expects that at most one
+argument among @var{value} and @var{meta} is not NULL. In any case,
+@var{term} @strong{must} be already allocated. If the copy failed, for
+instance by lack of memory, @var{term} is unchanged and the function
+returns a non-zero value. Otherwise the function return 0.
+
+@var{id}, @var{value} and @var{meta} must be NUL-terminated strings.
+@end deftypefun
+
+@deftypefun int adftool_term_is_named (const struct adftool_term *@var{term})
+@deftypefunx int adftool_term_is_blank (const struct adftool_term *@var{term})
+@deftypefunx int adftool_term_is_literal (const struct adftool_term *@var{term})
+@deftypefunx int adftool_term_is_typed_literal (const struct adftool_term *@var{term})
+@deftypefunx int adftool_term_is_langstring (const struct adftool_term *@var{term})
+Return as a boolean value whether @var{term} is one of those types.
+@end deftypefun
+
+@deftypefun size_t adftool_term_value (const struct adftool_term *@var{term}, size_t @var{start}, size_t @var{max}, char *@var{value})
+@deftypefunx size_t adftool_term_meta (const struct adftool_term *@var{term}, size_t @var{start}, size_t @var{max}, char *@var{meta})
+Get the two components of @var{term}. If @var{max} is not 0, the first
+@var{start} bytes are ignored, then the next @var{max} are copied to
+@var{value} or @var{meta}. The total number of bytes is returned.
+
+It is admissible to pass a larger @var{max} value than required; in
+this case a NUL character will be added after the value. Also, if
+@var{max} is set to 0, then the @var{value} or @var{meta} pointers
+will never be dereferenced.
+
+You can use this to avoid transfering ownership of pointers while
+still copying the data only once:
+
+@example
+char first_data[80];
+size_t required =
+  adftool_term_value (@var{term},
+                      0, sizeof (first_data),
+                      first_data);
+if (required + 1 <= sizeof (first_data))
+  @{
+    /* Use first_data, it is NUL-terminated. */
+  @}
+else
+  @{
+    char *rest =
+      malloc (required - sizeof (first_data) + 1);
+    if (rest == NULL)
+      @{
+        abort ();
+      @}
+    size_t check =
+      adftool_term_value (@var{term},
+                          sizeof (first_data),
+                          required - sizeof (first_data) + 1,
+                          rest);
+    assert (check == required);
+    /* Do something. The first 80 characters are in first_data
+       (NOT NUL-terminated), and the rest are in rest
+       (NUL-terminated). */
+    free (rest);
+  @}
+@end example
+
+You can also simply do:
+
+@example
+size_t required =
+  adftool_term_value (@var{term}, 0, 0, NULL);
+char *value = malloc (required + 1);
+if (value == NULL)
+  @{
+    abort ();
+  @}
+size_t check =
+  adftool_term_value (@var{term}, 0, required + 1, value);
+assert (check == required);
+/* use value, it is NUL-terminated. */
+free (value);
+@end example
+@end deftypefun
+
+@deftypefun int adftool_term_compare (const struct adftool_term *@var{reference}, const struct adftool_term *@var{other})
+Compare the representation of @var{reference} and @var{other}, as with
+@code{strcmp}. Return 0 if both terms are equal, a negative value if
+@var{reference} comes before @var{other}, and a positive value
+otherwise. Think of it as the difference function.
+@end deftypefun
+
+@deftypefun int adftool_term_decode (const struct adftool_file *@var{file}, uint64_t @var{encoded}, struct adftool_term *@var{term})
+@deftypefunx int adftool_term_encode (struct adftool_file *@var{file}, const struct adftool_term *@var{term}, uint64_t *@var{encoded})
+Encode or decode a @var{term}. The @var{encoded} form uses 64 bits, as
+@math{31 + 31 + 2}. To encode a term, we must make sure that the
+dictionary is up to date, which is why we might modify @var{file}. In
+any case, @var{term} must be allocated.
+
+Return 0 on success, another value if an error occured.
+@end deftypefun
+
+@deftypefun int adftool_term_parse_n3 (const char *@var{text}, size_t @var{available}, size_t *@var{consumed}, struct adftool_term *@var{term})
+Initialize @var{term} with the next object in Notation-3 in
+@var{text}. @var{available} is the number of bytes in
+@var{text}. @var{consumed} is set to the number of bytes that have
+been read.
+
+Return 0 if a term has been parsed, or another value if no term has
+been parsed. If the return value is not 0, @var{consumed} is set to
+0. Otherwise, you can keep parsing things after discarding
+@var{consumed} bytes from @var{text}.
+@end deftypefun
+
+@node Manipulating statements
+@section Manipulating statements
+@deftp struct adftool_statement
+The @code{adftool_statement} abstract data type holds an optional
+subject, predicate, object, graph, and deletion date. It is allocated
+with @code{adftool_statemet_alloc}, and freed with
+@code{adftool_statement_free}.
+@end deftp
+
+@deftypefun {struct adftool_statement *} adftool_statement_alloc (void)
+Allocate a new pattern. Return @code{NULL} if the allocation failed.
+@end deftypefun
+
+@deftypefun void adftool_statement_free (struct adftool_statement *@var{statement})
+Free an allocated @var{statement}.
+@end deftypefun
+
+@deftypefun int adftool_statement_set_subject (struct adftool_statement *@var{statement}, const struct adftool_term *@var{subject})
+@deftypefunx int adftool_statement_set_predicate (struct adftool_statement *@var{statement}, const struct adftool_term *@var{predicate})
+@deftypefunx int adftool_statement_set_object (struct adftool_statement *@var{statement}, const struct adftool_term *@var{object})
+@deftypefunx int adftool_statement_set_graph (struct adftool_statement *@var{statement}, const struct adftool_term *@var{graph})
+@deftypefunx int adftool_statement_set_deletion_date (struct adftool_statement *@var{statement}, const uint64_t @var{deletion_date})
+@deftypefunx int adftool_statement_copy (struct adftool_statement *@var{statement}, const struct adftool_statement *@var{source})
+Initialize @var{statement}. In case of a lack of memory, return a
+non-null error code. Otherwise return 0.
+@end deftypefun
+
+@deftypefun int adftool_statement_get_subject (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
+@deftypefunx int adftool_statement_get_predicate (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
+@deftypefunx int adftool_statement_get_object (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
+@deftypefunx int adftool_statement_get_graph (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
+@deftypefunx int adftool_statement_get_deletion_date (const struct adftool_statement *@var{statement}, int *@var{is_set}, uint64_t *@var{date})
+Get the pattern field. Set @var{is_set} to whether it is set, and if
+so, set @var{term} or @var{date}. @var{term} must be allocated.
+
+Return 0 on success, or an error code if a copy failed.
+@end deftypefun
+
+@deftypefun int adftool_statement_compare (const struct adftool_statement *@var{reference}, const struct adftool_statement *@var{other}, const char *@var{order})
+Compare the representation of @var{reference} and @var{other},
+respecting the given @var{order}. @var{order} may be @code{"SPOG"} for
+instance.
+@end deftypefun
+
+@node Query results
+@section Query results
+
+@deftp struct adftool_results
+Query results is an array of statements. For a simpler function
+interface, the array is a reified thing. Otherwise, the query
+interface would be very hard to use. It is allocated with
+@code{adftool_results_alloc}, and freed with
+@code{adftool_results_free}.
+@end deftp
+
+@deftypefun {struct adftool_results *} adftool_results_alloc (void)
+Allocate a new empty set of results. Return @code{NULL} if the
+allocation failed.
+@end deftypefun
+
+@deftypefun void adftool_results_free (struct adftool_results *@var{results})
+Free an allocated set of @var{results}.
+@end deftypefun
+
+@deftypefun size_t adftool_results_count (const struct adftool_results *@var{results})
+Return the number of @var{results}.
+@end deftypefun
+
+@deftypefun {const struct adftool_statement *} adftool_results_get (const struct adftool_results *@var{results}, size_t @var{i})
+Return an unowned pointer to the @var{i}-th result in @var{results}.
+@end deftypefun
+
+@node Manipulating files
+@section Manipulating files
+
+@deftp struct adftool_file
+A file is the main handle to interact with an ADF/HDF5 file. It can be
+reused for multiple files in the file system. It is allocated with
+@code{adftool_file_alloc}, and freed with @code{adftool_file_free}.
+@end deftp
+
+@deftypefun {struct adftool_file *} adftool_file_alloc (void)
+Allocate a new empty file. Return @code{NULL} if the allocation
+failed. You @strong{must} open the returned file once it has been
+allocated before doing things with it.
+@end deftypefun
+
+@deftypefun void adftool_file_free (struct adftool_file *@var{file})
+Free an allocated @var{file}. You @strong{must} close the @var{file}
+before that.
+@end deftypefun
+
+@deftypefun int adftool_file_open (struct adftool_file *@var{file}, const char *@var{filename}, int @var{write})
+Open @var{filename}, and use the @strong{already allocated} @var{file}
+to access it. If @var{write} is set, request permission to update the
+file. This is required for inserting or deleting statements, or
+changing the EEG data.
+
+Return 0 on success, or a non-zero value if an error happened (invalid
+format, cannot respect the @var{write} preference, …).
+@end deftypefun
+
+@deftypefun void adftool_file_close (struct adftool_file *@var{file})
+Close @var{file}. Due to how HDF5 works, you must close the @var{file}
+at some point, otherwise it will be permanently locked.
+@end deftypefun
+
+@deftypefun {int} adftool_lookup (const struct adftool_file *@var{file}, const struct adftool_statement *@var{pattern}, struct adftool_results *@var{statements})
+Get all @var{statements} in @var{file} that match @var{pattern}. Some
+statements may be deleted, you can detect them with
+@code{adftool_statement_get_deletion_date}. Return 0 if no error
+happened, otherwise return a non-zero value.
+@end deftypefun
+
+@deftypefun {int} adftool_delete (struct adftool_file *@var{file}, const struct adftool_statement *@var{pattern}, uint64_t @var{deletion_date})
+Delete all statements in @var{file} that match @var{pattern}, by
+setting their @var{deletion_date}. Return 0 if no error happened,
+otherwise return a non-zero value.
+@end deftypefun
+
+@deftypefun {int} adftool_insert (struct adftool_file *@var{file}, const struct adftool_statement *@var{statement})
+Add @var{statement} to @var{file}. Return 0 if no error happened,
+otherwise return a non-zero value.
+@end deftypefun
+
+@node EEG-specific API
+@section EEG-specific API
+Raw EEG data is stored as long time series. It is much more efficient
+to use datasets than RDF to store these values.
+
+@deftypefun int adftool_find_channel_identifier (const struct adftool_file *@var{file}, size_t @var{j}, struct adftool_term *@var{identifier})
+Get the @var{identifier} of the @var{j}-th raw EEG channel in
+@var{file}. Return non-zero iff an error occurs: there is less than
+@var{j} channels, or a copy failed, for instance.
+@end deftypefun
+
+@deftypefun int adftool_set_channel_identifier (struct adftool_file *@var{file}, size_t @var{j}, const struct adftool_term *@var{identifier})
+Set the @var{identifier} of the @var{j}-th raw EEG channel in
+@var{file}. Return an error code.
+@end deftypefun
+
+@deftypefun int adftool_eeg_get_data (const struct adftool_file *@var{file}, size_t @var{time_start}, size_t @var{time_length}, size_t *@var{time_max}, size_t @var{channel_start}, size_t @var{channel_length}, size_t *@var{channel_max}, double *@var{data})
+Fetch the raw data from @var{file}. Consider @var{data} as a
+row-oriented storage of @var{time_length} rows by @var{channel_length}
+columns, and initialize it. Set @var{time_max} to the actual number of
+rows, and @var{channel_max} to the actual number of columns.
+
+Return an error code, or 0 if @var{data} has been loaded.
+
+You can use it like this:
+
+@example
+size_t time_length, n_channels;
+if (adftool_eeg_get_data (@var{file},
+                          0, 0, &time_length,
+                          0, 0, &n_channels,
+                          NULL) != 0)
+  @{
+    abort ();
+  @}
+double *data = calloc (time_length * n_channels,
+                       sizeof (double));
+if (data == NULL)
+  @{
+    abort ();
+  @}
+size_t check_time, check_channels;
+if (adftool_eeg_get_data (@var{file},
+                          0, time_length, &check_time,
+                          0, n_channels, &check_channels,
+                          data) != 0)
+  @{
+    abort ();
+  @}
+assert (check_time == time_length);
+assert (check_channels == n_channels);
+for (size_t time_point = 0;
+     time_point < time_length;
+     time_point++)
+  @{
+    for (size_t channel = 0;
+         channel < n_channels;
+         channel++)
+      @{
+        const double value =
+          data[time_point * n_channels + channel];
+        /* At time_point, the channel value is value. */
+      @}
+  @}
+free (data);
+@end example
+@end deftypefun
+
+@deftypefun int adtfool_eeg_set_data (struct adftool_file *@var{file}, size_t @var{n_points}, size_t @var{n_channels}, const double *@var{data})
+Change @strong{all} the raw @var{data} in @var{file}, discarding
+anything that was there before. @var{data} is row-oriented, with
+@var{n_points} rows and @var{n_channels} columns.
+
+Return 0 on success, or an error code.
+@end deftypefun
+
+@node Data filtering
+@section Data filtering
+For visualization, the bipolar reference or the data must be band-pass
+filtered.
+
+@deftp struct adftool_fir
+A simple Finite Impulse Response a-causal filter, that can be applied
+to a batch of data.
+@end deftp
+
+@deftypefun {struct adftool_fir *} adftool_fir_alloc (double @var{sampling_frequency}, double @var{transition_bandwidth})
+Allocate some storage for a new filter. The @var{number of components}
+of the filter depends of the @var{transition_bandwidth} (relative to
+the @var{sampling_frequency}), as @math{@var{number of components} = 4
+/ (@var{transition_bandwidth} / @var{sampling_frequency})}. Return
+@code{NULL} if the allocation failed, or the new filter.
+@end deftypefun
+
+@deftypefun void adftool_fir_free (struct adftool_fir *@var{filter})
+Free @var{filter}.
+@end deftypefun
+
+@deftypefun void adftool_fir_design_bandpass (struct adftool_fir *@var{filter}, double @var{lowest_frequency}, double @var{highest_frequency})
+Set @var{filter} to be a filter that lets the band between
+@var{lowest_frequency} and @var{highest_frequency} pass.
+@end deftypefun
+
+@deftypefun void adftool_fir_apply (const struct adftool_fir *@var{filter}, size_t @var{signal_length}, const double *@var{signal}, double *@var{filtered})
+Apply @var{filter} to @var{signal}, and store the @var{filtered}
+results. Both are arrays of length @var{signal_length}.
+@end deftypefun
 
 @node Index
 @unnumbered Index
 @printindex cp
+
+@node Libadftool Index
+@unnumbered Libadftool Index
+@printindex fn
 
 @bye
