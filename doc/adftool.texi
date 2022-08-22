@@ -202,6 +202,78 @@ that corresponds to the index.
 @node Building indices
 @section Building indices
 
+@cindex B+
+@cindex leaf
+@cindex non-leaf
+The file format uses B+ nodes to build indices. These are search trees
+that have been designed to work well on computers that have a
+cache. Each node in the tree is either a @dfn{leaf}, or a
+@dfn{non-leaf}. Only leaves contain the actual data. In this file
+format, a B+ tree is always associated with a table that stores
+things. The associated table can do a lookup operation efficiently:
+given a row index, it can return in constant time the content of the
+row. Also, the associated table can grow by adding items at the
+end. This is implemented by the HDFS file format.
+
+@cindex associated table
+So, for all uses of B+ trees here, both keys and values are actually
+indices in the @dfn{associated table}. In fact, in all uses of B+
+trees, the key is equal to the value. This is represented as a 32-bit
+unsigned integer value.
+
+The B+ trees are themselves stored in a 2D dataset in the file, each
+row corresponding to a tree node. The first row (number 0) is always
+the root of the tree.
+
+@cindex nextID
+Each dataset in this file format can grow, but no row is allowed to be
+missing if a row is used after it. Thus, all elements are
+contiguous. However, to get (amortized) logarithmic append time, the
+datasets are allowed to be larger than what is strictly required. In
+any case, each dataset has an attribute named @dfn{nextID} attached to
+it, that indicates the number of rows actually used.
+
+@cindex order
+@cindex node order
+The @dfn{node order} of a B+ tree is defined as one plus the number of
+keys that each node can hold. Each row of the storage dataset for a B+
+tree of a given @var{order} has @math{2 * @var{order} + 1}
+columns. They are of type unsigned 32-bit integer.
+
+The first @code{@var{order} - 1} columns are dedicated to the
+keys. The index of the first -1 value (modulo @math{2 ^ 32}) is the
+number of keys present in the node. The keys are indices in the
+associated dataset.
+
+For a leaf node, the next @code{@var{order} - 1} columns are dedicated
+to the associated values (so, the same as the key). An additional
+column is the node index (in the B+ dataset) of the next leaf, with 0
+meaning no next leaf. Since 0 is the root anyway, it can only be a
+leaf if it is the only node in the tree. If it is the only node, there
+are no next leaves.
+
+For a non-leaf node, the next @code{@var{order}} columns are dedicated
+to the children of the node, as indices in the B+ dataset. The first
+child contains only keys that are lesser than or equal to the first
+key. The last child contains all keys that are strictly greater than
+the last key in the node.
+
+The next column is the ID of the parent, as index in the B+
+dataset. The root has a value -1 (modulo @math{2 ^ 32}) for its
+parent.
+
+Finally, the last column contains node flags. If the most significant
+bit of the value is set (@math{2 ^ 31}), then the node is a
+leaf. Otherwise, it is not a leaf.
+
+In any situations, if there is at least 2 nodes in the tree, each node
+has at least @math{@var{order} / 2} children or values, which ensures
+that the tree is dense enough to guarantee fast traversal. To traverse
+a B+ node given a @var{key}, one must find the first key index @var{k}
+such that @math{@var{lookup} (@var{k}) >= @var{key}}, where
+@var{lookup} is the function that looks up a key index in the
+associated storage.
+
 @node The dictionary
 @section The dictionary
 
