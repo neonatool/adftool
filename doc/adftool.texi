@@ -311,8 +311,53 @@ index.
 @node Storage of statements
 @section Storage of statements
 
+@cindex encoding
+@cindex decoding
+@cindex value
+@cindex meta
+Each term of the statement is @dfn{encoded} as a 64-bit number. The
+first 31 bits in big-endian notation hold the dictionary index of the
+@dfn{value}, the next 31 bits hold the dictionary index of the
+@dfn{meta}-data, if the term is not a blank node, and the last 2 bits
+indicate the term type.
+
+@code{00} indicates a named node, @code{01} is a blank node, @code{10}
+is a typed literal, and @code{11} is a langstring.
+
+For named nodes, the @var{value} is the IRI reference. The @var{meta}
+field is an optional base of the IRI reference. The node IRI reference
+is thus @var{value} rebased on @var{meta}, or @var{value} if meta is
+the empty string.
+
+For blank nodes, the @var{value} is the identifier of the blank node.
+
+For typed literals, the @var{value} is the textual value, and
+@var{meta} is the full IRI reference of the type.
+
+For langstrings, the @var{value} is also the textual value, and
+@var{meta} is the langtag.
+
+@cindex deletion date
+Each statement is represented as 5 64-bit values: encodings of the
+graph, then subject, predicate, object, and finally a @dfn{deletion
+date}. The deletion date value is @math{2 ^ 64 - 1} for undeleted
+statements, or the number of milliseconds since the unix epoch for any
+other value. Please note that you cannot use dates before 1970 as
+deletion dates.
+
+The statement storage dataset is a 2D dataset with 5 columns of 64-bit
+integers, containing statements, under the HDF5 path
+@emph{/data-description/quads}.
+
 @node Indexing statements
 @section Indexing statements
+Each statement index is thus a new B+ tree, associated to the
+statement storage dataset. Each index is stored in
+@emph{/data-description/index_@var{order}} where @var{order} is the
+indexing order: @samp{GSPO}, @samp{GPOS}, @samp{GOSP}, @samp{SPOG},
+@samp{POSG}, or @samp{OSPG}. Each and every index contains exactly all
+the statements that are stored, so solving a query can iterate over
+all statements matching a pattern by looking at any index.
 
 @node Invoking adftool
 @chapter Invoking adftool
