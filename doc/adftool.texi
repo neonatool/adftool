@@ -277,6 +277,37 @@ associated storage.
 @node The dictionary
 @section The dictionary
 
+@cindex dictionary
+The dictionary is a specific index, for sequences of bytes. It is
+composed of a B+ tree, stored under @code{/dictionary/keys},
+associated to a storage under @code{/dictionary/strings}. An
+additional 1-dimensional storage of bytes under
+@code{/dictionary/bytes} stores long strings. For a dictionary, the
+associated storage is thus the strings dataset.
+
+The strings dataset has 13 columns, each as unsigned 8-bit
+numbers. Considering a big-endian virtual machine, these columns can
+also be interpreted as 3 columns, the first spanning 8 bytes, the
+second 4 bytes, and the last 1 byte. In any case, the last column can
+always be interpreted as a 8-bit number.
+
+If the value for the last column is 0, then the string is a long
+string. In that case, it must be interpreted as a 3-column
+dataset. The first big-endian 8 bytes indicate an @var{offset}, and
+the next 4 bytes indicate a @var{length}. If @var{length} is 0, then
+it represents the empty string. The empty string is used to mean the
+default graph. Otherwise, the string is composed of the @var{length}
+bytes that start at @var{offset} in the @emph{/dictionary/bytes}
+dataset.
+
+If the value for the last column is not 0, then it is at most 12. The
+dataset row must be interpreted as 12 bytes, and a string
+@var{length}. The string is thus the first @var{length} bytes of the
+row.
+
+Contrary to the storage of statements, the dictionary has only 1
+index.
+
 @node Storage of statements
 @section Storage of statements
 
