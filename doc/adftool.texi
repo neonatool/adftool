@@ -89,6 +89,116 @@ designed to work within a Hierarchical Data Format file.
 @node Overview of the quad store
 @section Overview of the quad store
 
+The quad store is a data structure to hold triples or quads, along
+with indices for efficient querying of the data set. The queries that
+can be solved by the file format are of the form:
+
+@example
+?@var{subject} ?@var{predicate} ?@var{object} ?@var{graph} .
+@end example
+
+where @var{subject}, @var{predicate}, @var{object} and @var{graph} can
+be defined as RDF nodes, or empty.
+
+Internally, statements, or quads, are stored as a set of tuples. Each
+element of the tuple may be a named node (IRI reference), a blank node
+with an identifier, a typed literal, or a literal with an localization
+mark.
+
+@cindex named node
+@cindex IRI reference
+A named node is a resource that one can try to dereference to access
+more data about the thing it represents. It is usually written between
+angle brackets, as an IRI or IRI reference:
+
+@example
+<https://example.org/resource?query-arguments#identifier>
+@end example
+
+Subjects, predicates, objects or graphs can be named nodes.
+
+@cindex blank node
+A blank node is an unnamed resource that can be used to link other
+resources together, scoped to the resource.
+
+@example
+<#me> <#knows> _:@var{someone} .
+_:@var{someone} <#knows> <#someone-else> .
+@end example
+
+In this example, there is no more information about the person
+identified as @var{someone}, than it is a link in my social
+network. Any other resource using @code{_:@var{someone}} will be
+interpreted as talking to someone else.
+
+Only subjects and objects may be blank nodes.
+
+@cindex literal
+@cindex typed literal
+@cindex type
+@cindex langstring
+@cindex langtag
+The literal is a piece of data that does not have further metadata. It
+is composed of a literal @dfn{value}, and an optional @dfn{type} or an
+optional @dfn{langtag}. The type is identified by an IRI reference,
+and it is usually expected to be one of the XML Schema Definition
+vocabulary. If no type is present, the
+@samp{<http://www.w3.org/2001/XMLSchema#string>} type is assumed. If the
+string is to be presented to a human, then it may have a localization
+tag, or langtag, indicating its locale.
+
+@example
+<#me> <#likes> "ananas"^^<http://www.w3.org/2001/XMLSchema#string> .
+<#me> <#likes> "pineapples"@@en .
+@end example
+
+Literals can only be used as objects.
+
+@cindex term ordering
+@cindex order
+We define an order on terms, as the byte lexicographic order of their
+UTF-8 encoding (which is the same as the unicode code point
+order). Each prefix of a term comes strictly before the term
+itself. The textual representation of a term is constructed as:
+
+@table @emph
+@item for a named node
+the IRI reference, without further percent-encoding, surrounded by
+angle brackets (no whitespace);
+@item for a blank node
+the string @code{_:} (underscore, colon) followed by the unescaped
+identifier of the blank node;
+@item for a typed literal
+a double quote, the escaped string (only the double quote character
+and backslash character require escaping), another double quote, the
+type marker @code{^^}, and the encoding of the type URI. If the type
+is missing, @samp{<http://www.w3.org/2001/XMLSchema#string>} is
+used. No extra whitespace is added;
+@item for a langstring
+a double quote, the escaped string, a double quote, the @code{@@}
+character, and the langtag.
+@end table
+
+@cindex pattern
+It is also possible to order statements, by using the lexicographic
+order of the terms. We extend the notion of statement or quad to that
+of @dfn{pattern}, by making the subject, predicate, object and graph
+optional, and by stating that a missing object compares equal to any
+term.
+
+For query answering, the specification maintains 6 indices of the
+data: @samp{GSPO}, @samp{GPOS}, @samp{GOSP}, @samp{SPOG}, @samp{POSG}
+and @samp{OSPG}. In these acronyms, @samp{G} means graph, @samp{S}
+means subject, @samp{P} means predicate and @samp{O} means object. Any
+of the 16 search patterns that can be formed by specifying some of the
+elements of the quad can be searched in one of these 6 indices. For
+instance, if @var{predicate} and @var{graph} are set, the query can be
+answered by using the @samp{GPOS} index.
+
+The algorithm is, given a search @var{pattern}, to find in an index
+all quads that compare equal to @var{pattern}, using the search order
+that corresponds to the index.
+
 @node Building indices
 @section Building indices
 
