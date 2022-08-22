@@ -115,6 +115,8 @@
 	      (lambda (file stat)
 		(and
 		 (not (string-suffix? "/gnulib" file))
+		 (not (string-suffix? "/hdf5" file))
+		 (not (string-suffix? "/public" file))
 		 (not (string-suffix? "~" file))
 		 (not (string-suffix? ".git" file))
 		 (not (string-suffix? ".pot" file))
