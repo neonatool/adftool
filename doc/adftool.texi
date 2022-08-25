@@ -621,9 +621,24 @@ Return 0 on success, or a non-zero value if an error happened (invalid
 format, cannot respect the @var{write} preference, …).
 @end deftypefun
 
+@deftypefun int adftool_file_open_data (struct adftool_file *@var{file}, size_t @var{nbytes}, const void *@var{bytes})
+Open an anonymous @var{file} (already allocated) initialized with the
+@var{nbytes} of @var{bytes}. The file can be closed by
+@code{adftool_file_close}.
+
+This function has been introduced for the emscripten back-end, so that
+the implementation details of the file system is not important.
+@end deftypefun
+
 @deftypefun void adftool_file_close (struct adftool_file *@var{file})
 Close @var{file}. Due to how HDF5 works, you must close the @var{file}
 at some point, otherwise it will be permanently locked.
+@end deftypefun
+
+@deftypefun size_t adftool_file_get_data (struct adftool_file *@var{file}, size_t @var{start}, size_t @var{max}, void *@var{bytes})
+Get the byte contents of @var{file}, ignoring the @var{start} first
+bytes, and writing the next @var{max} bytes to @var{bytes}. Return the
+total number of bytes.
 @end deftypefun
 
 @deftypefun {int} adftool_lookup (const struct adftool_file *@var{file}, const struct adftool_statement *@var{pattern}, struct adftool_results *@var{statements})

@@ -51,7 +51,8 @@ check_PROGRAMS = \
   term_parser_example \
   channel_metadata_example \
   eeg_data_example \
-  filter_example
+  filter_example \
+  data_file_example
 
 TESTS = \
   bplus_tree_lookup_example \
@@ -68,7 +69,8 @@ TESTS = \
   term_parser_example \
   channel_metadata_example \
   eeg_data_example \
-  filter_example
+  filter_example \
+  data_file_example
 
 LOG_COMPILER = $(LOG_VALGRIND)
 
@@ -293,6 +295,24 @@ filter_example_CPPFLAGS = \
   -I src -I $(srcdir)/src \
   -DLOCALEDIR=\"@localedir@\" \
   -DINSTALLDIR=\"$(bindir)\"
+
+data_file_example_SOURCES = \
+  src/data_file_example.c
+data_file_example_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  @LTLIBOBJS@
+data_file_example_CPPFLAGS = \
+  -I include -I $(srcdir)/include \
+  -I libprog -I $(srcdir)/libprog \
+  -I src -I $(srcdir)/src \
+  -DLOCALEDIR=\"@localedir@\" \
+  -DINSTALLDIR=\"$(bindir)\"
+
+AM_TESTS_ENVIRONMENT = \
+  mkdir -p $(abs_top_builddir)/.tmp ; \
+  export TMPDIR=$(abs_top_builddir)/.tmp ;
 
 BUILT_SOURCES = src/filter_test_data.c
 

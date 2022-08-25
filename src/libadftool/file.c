@@ -2,8 +2,15 @@
 #include <adftool_bplus.h>
 
 #include <hdf5.h>
+#include <unistd.h>
 
 #define DEFAULT_ORDER 16
+
+#if defined _WIN32
+#define OPEN_BINARY_SUFFIX "b"
+#else
+#define OPEN_BINARY_SUFFIX ""
+#endif
 
 struct adftool_file *
 adftool_file_alloc (void)
@@ -253,12 +260,11 @@ index_OSPG_compare (const struct adftool_bplus_key *key_a,
 typedef int (*comparator) (const struct adftool_bplus_key *,
 			   const struct adftool_bplus_key *, int *, void *);
 
-int
-adftool_file_open (struct adftool_file *file, const char *filename, int write)
+static int
+_adftool_file_do_open (struct adftool_file *file)
 {
   int error = 0;
-  adftool_file_close (file);
-  hid_t hdf5_file = H5I_INVALID_HID;
+  hid_t hdf5_file = file->hdf5_file;
   hid_t dictionary_group = H5I_INVALID_HID;
   hid_t dictionary_bplus_dataset = H5I_INVALID_HID;
   hid_t dictionary_bplus_nextid = H5I_INVALID_HID;
@@ -277,26 +283,6 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
       indices[i].nextid = H5I_INVALID_HID;
     }
   hid_t eeg_dataset = H5I_INVALID_HID;
-  unsigned mode = H5F_ACC_RDONLY;
-  if (write)
-    {
-      mode = H5F_ACC_RDWR;
-    }
-  hdf5_file = H5Fopen (filename, mode, H5P_DEFAULT);
-  if (hdf5_file == H5I_INVALID_HID)
-    {
-      if (write)
-	{
-	  /* Try creating it… */
-	  hdf5_file =
-	    H5Fcreate (filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-	}
-      if (hdf5_file == H5I_INVALID_HID)
-	{
-	  error = 1;
-	  goto wrapup;
-	}
-    }
   dictionary_group = H5Gopen2 (hdf5_file, "/dictionary", H5P_DEFAULT);
   if (dictionary_group == H5I_INVALID_HID)
     {
@@ -688,7 +674,6 @@ adftool_file_open (struct adftool_file *file, const char *filename, int write)
 wrapup:
   if (error == 0)
     {
-      file->hdf5_file = hdf5_file;
       file->dictionary.group = dictionary_group;
       file->dictionary.bplus_dataset = dictionary_bplus_dataset;
       file->dictionary.bplus_nextid = dictionary_bplus_nextid;
@@ -765,11 +750,128 @@ wrapup:
 	{
 	  H5Gclose (dictionary_group);
 	}
+    }
+  return error;
+}
+
+int
+adftool_file_open (struct adftool_file *file, const char *filename, int write)
+{
+  int error = 0;
+  adftool_file_close (file);
+  FILE *file_handle = NULL;
+  hid_t hdf5_file = H5I_INVALID_HID;
+  unsigned mode = H5F_ACC_RDONLY;
+  if (write)
+    {
+      mode = H5F_ACC_RDWR;
+    }
+  hdf5_file = H5Fopen (filename, mode, H5P_DEFAULT);
+  if (hdf5_file == H5I_INVALID_HID)
+    {
+      if (write)
+	{
+	  /* Try creating it… */
+	  hdf5_file =
+	    H5Fcreate (filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+	}
+      if (hdf5_file == H5I_INVALID_HID)
+	{
+	  error = 1;
+	  goto wrapup;
+	}
+    }
+  file_handle = fopen (filename, "r" OPEN_BINARY_SUFFIX);
+  if (file_handle == NULL)
+    {
+      error = 1;
+      goto wrapup;
+    }
+wrapup:
+  if (error == 0)
+    {
+      file->hdf5_file = hdf5_file;
+      file->file_handle = file_handle;
+      return _adftool_file_do_open (file);
+    }
+  else
+    {
+      if (file_handle != NULL)
+	{
+	  fclose (file_handle);
+	}
       if (hdf5_file != H5I_INVALID_HID)
 	{
 	  H5Fclose (hdf5_file);
 	}
     }
+  return error;
+}
+
+int
+adftool_file_open_data (struct adftool_file *file, size_t nbytes,
+			const void *bytes)
+{
+  /* Create a temporary file initially containing these bytes, open
+     the HDF5 file, and then unlink the file. So, the HDF5 file name
+     will not exist. To let users read the generated file, the
+     file_open function also opens it with a regular FILE* handle. */
+  int error = 0;
+  const char *tmpdir_var = getenv ("TMPDIR");
+  static const char *default_tmpdir = "/tmp";
+  if (tmpdir_var == NULL)
+    {
+      tmpdir_var = default_tmpdir;
+    }
+  char *filename =
+    malloc (strlen (tmpdir_var) + strlen ("/adftool-XXXXXX") + 1);
+  if (filename == NULL)
+    {
+      error = 1;
+      goto wrapup;
+    }
+  sprintf (filename, "%s/adftool-XXXXXX", tmpdir_var);
+  int descr = mkstemp (filename);
+  if (descr == -1)
+    {
+      error = 1;
+      goto free_filename;
+    }
+  FILE *f = fopen (filename, "w" OPEN_BINARY_SUFFIX);
+  if (f == NULL)
+    {
+      exit (49);
+      error = 1;
+      goto close_descriptor;
+    }
+  size_t n_written = 0;
+  if (nbytes != 0)
+    {
+      n_written = fwrite (bytes, 1, nbytes, f);
+    }
+  if (n_written != nbytes)
+    {
+      error = 1;
+      goto close_file;
+    }
+  if (fflush (f) != 0)
+    {
+      error = 1;
+      goto close_file;
+    }
+  error = adftool_file_open (file, filename, 1);
+  if (error)
+    {
+      goto close_file;
+    }
+close_file:
+  fclose (f);
+close_descriptor:
+  remove (filename);
+  close (descr);
+free_filename:
+  free (filename);
+wrapup:
   return error;
 }
 
@@ -798,6 +900,41 @@ adftool_file_close (struct adftool_file *file)
       H5Dclose (file->dictionary.bplus_dataset);
       H5Gclose (file->dictionary.group);
       H5Fclose (file->hdf5_file);
+      fclose (file->file_handle);
       file->hdf5_file = H5I_INVALID_HID;
     }
+}
+
+size_t
+adftool_file_get_data (struct adftool_file *file, size_t start, size_t max,
+		       void *bytes)
+{
+  if (H5Fflush (file->hdf5_file, H5F_SCOPE_GLOBAL) < 0)
+    {
+      return 0;
+    }
+  if (fseeko (file->file_handle, 0, SEEK_END) != 0)
+    {
+      return 0;
+    }
+  size_t file_length = ftello (file->file_handle);
+  if (start > file_length)
+    {
+      return file_length;
+    }
+  if (start + max > file_length)
+    {
+      assert (start <= file_length);
+      max = file_length - start;
+    }
+  if (fseeko (file->file_handle, start, SEEK_SET) != 0)
+    {
+      return 0;
+    }
+  size_t filled = fread (bytes, 1, max, file->file_handle);
+  if (filled != max)
+    {
+      return 0;
+    }
+  return file_length;
 }

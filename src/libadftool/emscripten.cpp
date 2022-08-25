@@ -16,6 +16,8 @@ EMSCRIPTEN_BINDINGS (adftool)
   EXPORT (adftool_file_free);
   EXPORT (adftool_file_open);
   EXPORT (adftool_file_close);
+  EXPORT (adftool_file_open_data);
+  EXPORT (adftool_file_get_data);
   EXPORT (adftool_term_alloc);
   EXPORT (adftool_term_free);
   EXPORT (adftool_term_copy);

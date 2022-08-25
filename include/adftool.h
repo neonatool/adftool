@@ -47,6 +47,14 @@ extern "C"
   extern LIBADFTOOL_API void adftool_file_close (struct adftool_file *file);
 
   extern LIBADFTOOL_API
+    int adftool_file_open_data (struct adftool_file *file, size_t nbytes,
+				const void *bytes);
+
+  extern LIBADFTOOL_API
+    size_t adftool_file_get_data (struct adftool_file *file, size_t start,
+				  size_t max, void *bytes);
+
+  extern LIBADFTOOL_API
     int adftool_dictionary_get (const struct adftool_file *file, uint32_t id,
 				size_t start, size_t max, size_t *length,
 				char *dest);
