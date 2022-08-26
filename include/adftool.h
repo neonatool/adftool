@@ -72,17 +72,17 @@ extern "C"
   extern LIBADFTOOL_API void adftool_term_free (struct adftool_term *term);
 
   extern LIBADFTOOL_API
-    int adftool_term_copy (struct adftool_term *dest,
-			   const struct adftool_term *src);
+    void adftool_term_copy (struct adftool_term *dest,
+			    const struct adftool_term *src);
 
   extern LIBADFTOOL_API
-    int adftool_term_set_blank (struct adftool_term *term, const char *id);
+    void adftool_term_set_blank (struct adftool_term *term, const char *id);
   extern LIBADFTOOL_API
-    int adftool_term_set_named (struct adftool_term *term, const char *id);
+    void adftool_term_set_named (struct adftool_term *term, const char *id);
   extern LIBADFTOOL_API
-    int adftool_term_set_literal (struct adftool_term *term,
-				  const char *value, const char *type,
-				  const char *lang);
+    void adftool_term_set_literal (struct adftool_term *term,
+				   const char *value, const char *type,
+				   const char *lang);
 
   extern LIBADFTOOL_API
     int adftool_term_is_blank (const struct adftool_term *term);
@@ -136,47 +136,47 @@ extern "C"
     void adftool_statement_free (struct adftool_statement *statement);
 
   extern LIBADFTOOL_API
-    int adftool_statement_set_subject (struct adftool_statement *statement,
-				       const struct adftool_term *subject);
+    void adftool_statement_set_subject (struct adftool_statement *statement,
+					const struct adftool_term *subject);
   extern LIBADFTOOL_API
-    int adftool_statement_set_predicate (struct adftool_statement *statement,
-					 const struct adftool_term
-					 *predicate);
+    void adftool_statement_set_predicate (struct adftool_statement *statement,
+					  const struct adftool_term
+					  *predicate);
   extern LIBADFTOOL_API
-    int adftool_statement_set_object (struct adftool_statement *statement,
-				      const struct adftool_term *object);
+    void adftool_statement_set_object (struct adftool_statement *statement,
+				       const struct adftool_term *object);
   extern LIBADFTOOL_API
-    int adftool_statement_set_graph (struct adftool_statement *statement,
-				     const struct adftool_term *graph);
+    void adftool_statement_set_graph (struct adftool_statement *statement,
+				      const struct adftool_term *graph);
   extern LIBADFTOOL_API
-    int adftool_statement_set_deletion_date (struct adftool_statement
-					     *statement,
-					     uint64_t deletion_date);
+    void adftool_statement_set_deletion_date (struct adftool_statement
+					      *statement,
+					      uint64_t deletion_date);
 
   extern LIBADFTOOL_API
-    int adftool_statement_get_subject (const struct adftool_statement
-				       *statement, int *has_subject,
+    void adftool_statement_get_subject (const struct adftool_statement
+					*statement, int *has_subject,
+					struct adftool_term *term);
+  extern LIBADFTOOL_API
+    void adftool_statement_get_predicate (const struct adftool_statement
+					  *statement, int *has_predicate,
+					  struct adftool_term *term);
+  extern LIBADFTOOL_API
+    void adftool_statement_get_object (const struct adftool_statement
+				       *statement, int *has_object,
 				       struct adftool_term *term);
   extern LIBADFTOOL_API
-    int adftool_statement_get_predicate (const struct adftool_statement
-					 *statement, int *has_predicate,
-					 struct adftool_term *term);
-  extern LIBADFTOOL_API
-    int adftool_statement_get_object (const struct adftool_statement
-				      *statement, int *has_object,
+    void adftool_statement_get_graph (const struct adftool_statement
+				      *statement, int *has_graph,
 				      struct adftool_term *term);
   extern LIBADFTOOL_API
-    int adftool_statement_get_graph (const struct adftool_statement
-				     *statement, int *has_graph,
-				     struct adftool_term *term);
-  extern LIBADFTOOL_API
-    int adftool_statement_get_deletion_date (const struct adftool_statement
-					     *statement, int *has_date,
-					     uint64_t * date);
+    void adftool_statement_get_deletion_date (const struct adftool_statement
+					      *statement, int *has_date,
+					      uint64_t * date);
 
   extern LIBADFTOOL_API
-    int adftool_statement_copy (struct adftool_statement *dest,
-				const struct adftool_statement *source);
+    void adftool_statement_copy (struct adftool_statement *dest,
+				 const struct adftool_statement *source);
 
   extern LIBADFTOOL_API
     int adftool_statement_compare (const struct adftool_statement *reference,
@@ -215,8 +215,8 @@ extern "C"
     int adftool_results_resize (struct adftool_results *results, size_t size);
 
   extern LIBADFTOOL_API
-    int adftool_results_set (struct adftool_results *results, size_t i,
-			     const struct adftool_statement *statement);
+    void adftool_results_set (struct adftool_results *results, size_t i,
+			      const struct adftool_statement *statement);
 
   extern LIBADFTOOL_API
     int adftool_lookup (const struct adftool_file *file,

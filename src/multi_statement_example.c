@@ -16,24 +16,15 @@
 #define _(String) gettext(String)
 #define N_(String) (String)
 
-#define BUILD_TERM(what, i)						\
-  if (quad[i] == NULL)							\
-    {									\
-      if (adftool_statement_set_##what (statement, NULL) != 0)		\
-	{								\
-	  abort ();							\
-	}								\
-    }									\
-  else									\
-    {									\
-      if (adftool_term_set_named (term, quad[i]) != 0)			\
-	{								\
-	  abort ();							\
-	}								\
-      if (adftool_statement_set_##what (statement, term) != 0)		\
-	{								\
-	  abort ();							\
-	}								\
+#define BUILD_TERM(what, i)				\
+  if (quad[i] == NULL)					\
+    {							\
+      adftool_statement_set_##what (statement, NULL);	\
+    }							\
+  else							\
+    {							\
+      adftool_term_set_named (term, quad[i]);		\
+      adftool_statement_set_##what (statement, term);	\
     }
 
 static struct adftool_statement *

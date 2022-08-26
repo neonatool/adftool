@@ -45,8 +45,7 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
       struct adftool_statement *new_channel = new_channel_statement (i);
       if (new_channel == NULL)
 	{
-	  error = 1;
-	  goto clean_dataset;
+	  abort ();
 	}
       if (adftool_insert (file, new_channel) != 0)
 	{
@@ -60,12 +59,7 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
 	  goto clean_new_channel;
 	}
       int has_object;
-      if (adftool_statement_get_object (new_channel, &has_object, identifier)
-	  != 0)
-	{
-	  error = 1;
-	  goto clean_identifier;
-	}
+      adftool_statement_get_object (new_channel, &has_object, identifier);
       assert (has_object);
       if (adftool_set_channel_identifier (file, i, identifier) != 0)
 	{
@@ -333,23 +327,12 @@ new_channel_statement (size_t i)
   static const char *pred = "https://localhost/lytonepal#has-channel";
   /* 64 chars is enough I guess. There are up to 64 digits in base 2,
      so around a third of that in base 10. */
-  if ((adftool_term_set_named (subject, "") != 0)
-      || (adftool_term_set_named (predicate, pred) != 0)
-      || (adftool_term_set_named (object, label) != 0))
-    {
-      adftool_statement_free (statement);
-      statement = NULL;
-      goto cleanup_object;
-    }
-  if ((adftool_statement_set_subject (statement, subject) != 0)
-      || (adftool_statement_set_predicate (statement, predicate) != 0)
-      || (adftool_statement_set_object (statement, object) != 0))
-    {
-      adftool_statement_free (statement);
-      statement = NULL;
-      goto cleanup_object;
-    }
-cleanup_object:
+  adftool_term_set_named (subject, "");
+  adftool_term_set_named (predicate, pred);
+  adftool_term_set_named (object, label);
+  adftool_statement_set_subject (statement, subject);
+  adftool_statement_set_predicate (statement, predicate);
+  adftool_statement_set_object (statement, object);
   adftool_term_free (object);
 cleanup_predicate:
   adftool_term_free (predicate);

@@ -32,26 +32,16 @@ column_number_finder (size_t i)
     }
   char column_number[256];
   sprintf (column_number, "%lu", i);
-  if ((adftool_term_set_named
-       (predicate, "https://localhost/lytonepal#column-number") != 0)
-      ||
-      (adftool_term_set_literal
-       (object, column_number, "http://www.w3.org/2001/XMLSchema#integer",
-	NULL) != 0))
-    {
-      error = 1;
-      goto cleanup;
-    }
-  if ((adftool_statement_set_predicate (pattern, predicate) != 0)
-      || (adftool_statement_set_object (pattern, object) != 0))
-    {
-      error = 1;
-      goto cleanup;
-    }
-cleanup:
+  adftool_term_set_named
+    (predicate, "https://localhost/lytonepal#column-number");
+  adftool_term_set_literal
+    (object, column_number, "http://www.w3.org/2001/XMLSchema#integer", NULL);
+  adftool_statement_set_predicate (pattern, predicate);
+  adftool_statement_set_object (pattern, object);
   if (error)
     {
       adftool_statement_free (pattern);
+      pattern = NULL;
     }
   adftool_term_free (predicate);
   adftool_term_free (object);
@@ -71,20 +61,7 @@ adftool_find_channel_identifier (const struct adftool_file *file,
   struct adftool_results *results = adftool_results_alloc ();
   if (pattern == NULL || subject == NULL || results == NULL)
     {
-      if (pattern)
-	{
-	  adftool_statement_free (pattern);
-	}
-      if (subject)
-	{
-	  adftool_term_free (subject);
-	}
-      if (results)
-	{
-	  adftool_results_free (results);
-	}
-      error = 1;
-      goto wrapup;
+      abort ();
     }
   if (adftool_lookup (file, pattern, results) != 0)
     {
@@ -100,24 +77,14 @@ adftool_find_channel_identifier (const struct adftool_file *file,
       int has_subject;
       int has_deletion_date;
       uint64_t deletion_date;
-      if ((adftool_statement_get_subject (candidate, &has_subject, subject) !=
-	   0)
-	  ||
-	  (adftool_statement_get_deletion_date
-	   (candidate, &has_deletion_date, &deletion_date) != 0))
-	{
-	  error = 1;
-	  goto cleanup;
-	}
+      adftool_statement_get_subject (candidate, &has_subject, subject);
+      adftool_statement_get_deletion_date
+	(candidate, &has_deletion_date, &deletion_date);
       assert (has_subject);
       if (!has_deletion_date)
 	{
 	  n_live_results++;
-	  if (adftool_term_copy (identifier, subject) != 0)
-	    {
-	      error = 1;
-	      goto cleanup;
-	    }
+	  adftool_term_copy (identifier, subject);
 	}
     }
   if (n_live_results != 1)
@@ -129,7 +96,6 @@ cleanup:
   adftool_statement_free (pattern);
   adftool_term_free (subject);
   adftool_results_free (results);
-wrapup:
   return error;
 }
 
@@ -142,19 +108,14 @@ adftool_set_channel_identifier (struct adftool_file *file,
   struct adftool_statement *pattern = column_number_finder (channel_index);
   if (pattern == NULL)
     {
-      error = 1;
-      goto wrapup;
+      abort ();
     }
   if (adftool_delete (file, pattern, time (NULL) * 1000) != 0)
     {
       error = 1;
       goto cleanup;
     }
-  if (adftool_statement_set_subject (pattern, identifier) != 0)
-    {
-      error = 1;
-      goto cleanup;
-    }
+  adftool_statement_set_subject (pattern, identifier);
   if (adftool_insert (file, pattern) != 0)
     {
       error = 1;
@@ -162,7 +123,6 @@ adftool_set_channel_identifier (struct adftool_file *file,
     }
 cleanup:
   adftool_statement_free (pattern);
-wrapup:
   return error;
 }
 
@@ -236,7 +196,6 @@ static struct adftool_statement *
 channel_decoder_finder (const struct adftool_term *identifier,
 			const char *scale_or_offset)
 {
-  int error = 0;
   /* Construct: identifier lyto:has-channel-decoder-scale/offset ? */
   struct adftool_statement *pattern = adftool_statement_alloc ();
   struct adftool_term *predicate = adftool_term_alloc ();
@@ -250,31 +209,16 @@ channel_decoder_finder (const struct adftool_term *identifier,
 	{
 	  adftool_term_free (predicate);
 	}
-      error = 1;
-      goto wrapup;
+      return NULL;
     }
   char predicate_str[256];
   sprintf (predicate_str,
 	   "https://localhost/lytonepal#has-channel-decoder-%s",
 	   scale_or_offset);
-  if (adftool_term_set_named (predicate, predicate_str) != 0)
-    {
-      error = 1;
-      goto cleanup;
-    }
-  if ((adftool_statement_set_subject (pattern, identifier) != 0)
-      || (adftool_statement_set_predicate (pattern, predicate) != 0))
-    {
-      error = 1;
-      goto cleanup;
-    }
-cleanup:
-  if (error)
-    {
-      adftool_statement_free (pattern);
-    }
+  adftool_term_set_named (predicate, predicate_str);
+  adftool_statement_set_subject (pattern, identifier);
+  adftool_statement_set_predicate (pattern, predicate);
   adftool_term_free (predicate);
-wrapup:
   return pattern;
 }
 
@@ -286,27 +230,16 @@ channel_decoder_find (struct adftool_file *file,
   int error = 0;
   struct adftool_statement *pattern =
     channel_decoder_finder (identifier, scale_or_offset);
-  if (pattern == NULL)
-    {
-      error = 1;
-      goto wrapup;
-    }
   struct adftool_results *results = adftool_results_alloc ();
-  if (results == NULL)
-    {
-      error = 1;
-      goto cleanup_pattern;
-    }
   struct adftool_term *literal_value = adftool_term_alloc ();
-  if (literal_value == NULL)
+  if (pattern == NULL || results == NULL || literal_value == NULL)
     {
-      error = 1;
-      goto cleanup_results;
+      abort ();
     }
   if (adftool_lookup (file, pattern, results) != 0)
     {
       error = 1;
-      goto cleanup_literal;
+      goto cleanup;
     }
   size_t n_results = adftool_results_count (results);
   size_t i;
@@ -317,32 +250,23 @@ channel_decoder_find (struct adftool_file *file,
       int has_object;
       int has_deletion_date;
       uint64_t deletion_date;
-      if ((adftool_statement_get_object
-	   (candidate, &has_object, literal_value) != 0)
-	  ||
-	  (adftool_statement_get_deletion_date
-	   (candidate, &has_deletion_date, &deletion_date) != 0))
-	{
-	  error = 1;
-	  goto cleanup_literal;
-	}
+      adftool_statement_get_object (candidate, &has_object, literal_value);
+      adftool_statement_get_deletion_date
+	(candidate, &has_deletion_date, &deletion_date);
       assert (has_object);
       if (!has_deletion_date
 	  && term_to_literal_double (literal_value, value) == 0)
 	{
 	  error = 0;
-	  goto cleanup_literal;
+	  goto cleanup;
 	}
     }
   /* No value. */
   error = 1;
-cleanup_literal:
+cleanup:
   adftool_term_free (literal_value);
-cleanup_results:
   adftool_results_free (results);
-cleanup_pattern:
   adftool_statement_free (pattern);
-wrapup:
   return error;
 }
 
@@ -357,19 +281,14 @@ channel_decoder_replace (struct adftool_file *file,
     channel_decoder_finder (identifier, scale_or_offset);
   if (pattern == NULL)
     {
-      error = 1;
-      goto wrapup;
+      abort ();
     }
   if (adftool_delete (file, pattern, time (NULL) * 1000) != 0)
     {
       error = 1;
       goto cleanup;
     }
-  if (adftool_statement_set_object (pattern, replacement) != 0)
-    {
-      error = 1;
-      goto cleanup;
-    }
+  adftool_statement_set_object (pattern, replacement);
   if (adftool_insert (file, pattern) != 0)
     {
       error = 1;
@@ -377,16 +296,15 @@ channel_decoder_replace (struct adftool_file *file,
     }
 cleanup:
   adftool_statement_free (pattern);
-wrapup:
   return error;
 }
 
-static inline int
+static inline void
 term_make_literal_double (struct adftool_term *term, double value)
 {
   static const char *meta = "http://www.w3.org/2001/XMLSchema#double";
   char value_str[256];
-  #ifdef HAVE_MPFR_STRTOFR
+#ifdef HAVE_MPFR_STRTOFR
   mpfr_t number;
   mpfr_init2 (number, 53);
   mpfr_set_d (number, value, MPFR_RNDN);
@@ -397,19 +315,20 @@ term_make_literal_double (struct adftool_term *term, double value)
   if (the_value[0] == '-' || the_value[0] == '+')
     {
       assert (strlen (the_value) > 1);
-      sprintf (value_str, "%c%c.%sE%ld", the_value[0], the_value[1], the_value + 2, exp - 1);
+      sprintf (value_str, "%c%c.%sE%ld", the_value[0], the_value[1],
+	       the_value + 2, exp - 1);
     }
   else
     {
       sprintf (value_str, "%c.%sE%ld", the_value[0], the_value + 1, exp - 1);
     }
   mpfr_clear (number);
-  #else
+#else
   char *old_locale = setlocale (LC_NUMERIC, "C");
   sprintf (value_str, "%.20e", value);
   setlocale (LC_NUMERIC, old_locale);
-  #endif
-  return adftool_term_set_literal (term, value_str, meta, NULL);
+#endif
+  adftool_term_set_literal (term, value_str, meta, NULL);
 }
 
 int
@@ -450,12 +369,8 @@ adftool_set_channel_decoder (struct adftool_file *file,
 	}
       return 1;
     }
-  if ((term_make_literal_double (literal_scale, scale) != 0)
-      || (term_make_literal_double (literal_offset, offset) != 0))
-    {
-      error = 1;
-      goto wrapup;
-    }
+  term_make_literal_double (literal_scale, scale);
+  term_make_literal_double (literal_offset, offset);
   int scale_error =
     channel_decoder_replace (file, identifier, "scale", literal_scale);
   int offset_error =

@@ -68,9 +68,11 @@ main (int argc, char *argv[])
     {NP_ ("Command-line|Option|", "version"), no_argument, 0, 'V'},
     {0, 0, 0, 0}
   };
-  for (size_t i = 0; i + 1 < sizeof (long_options) / sizeof (long_options[0]); i++)
+  for (size_t i = 0; i + 1 < sizeof (long_options) / sizeof (long_options[0]);
+       i++)
     {
-      long_options[i].name = adftool_pgettext ("Command-line|Option|", long_options[i].name);
+      long_options[i].name =
+	adftool_pgettext ("Command-line|Option|", long_options[i].name);
     }
   while (1)
     {
@@ -96,8 +98,7 @@ main (int argc, char *argv[])
 	      fprintf (stderr,
 		       _("The argument to \"%s\" "
 			 "cannot be parsed as a N-Triples term: \"%s\"\n"),
-		       long_options[option_index].name,
-		       optarg);
+		       long_options[option_index].name, optarg);
 	      exit (1);
 	    }
 	  while (consumed < strlen (optarg)
@@ -113,33 +114,22 @@ main (int argc, char *argv[])
 		       _("Warning: the argument to \"%s\" "
 			 "can be parsed as a N-Triples term, "
 			 "but the trailing \"%s\" will be discarded.\n"),
-		       long_options[option_index].name,
-		       optarg + consumed);
+		       long_options[option_index].name, optarg + consumed);
 	    }
-	  int error = 0;
 	  switch (c)
 	    {
 	    case 's':
-	      error = adftool_statement_set_subject (pattern, term);
+	      adftool_statement_set_subject (pattern, term);
 	      break;
 	    case 'p':
-	      error = adftool_statement_set_predicate (pattern, term);
+	      adftool_statement_set_predicate (pattern, term);
 	      break;
 	    case 'o':
-	      error = adftool_statement_set_object (pattern, term);
+	      adftool_statement_set_object (pattern, term);
 	      break;
 	    case 'g':
-	      error = adftool_statement_set_graph (pattern, term);
+	      adftool_statement_set_graph (pattern, term);
 	      break;
-	    }
-	  if (error != 0)
-	    {
-	      fprintf (stderr,
-		       _("The value for \"%s\" "
-			 "is invalid: \"%s\"\n"),
-		       long_options[option_index].name,
-		       optarg);
-	      exit (1);
 	    }
 	  break;
 	case 'd':
@@ -172,16 +162,16 @@ main (int argc, char *argv[])
 		    "  -h, --%s: print this message and exit.\n"
 		    "  -V, --%s: print the package version and exit.\n"
 		    "\n"),
-		  P_("Command-line|Option|", "subject"),
-		  P_("Command-line|Option|", "predicate"),
-		  P_("Command-line|Option|", "object"),
-		  P_("Command-line|Option|", "graph"),
-		  P_("Command-line|Option|", "lookup"),
-		  P_("Command-line|Option|", "add"),
-		  P_("Command-line|Option|", "remove"),
-		  P_("Command-line|Option|", "deletion-date"),
-		  P_("Command-line|Option|", "help"),
-		  P_("Command-line|Option|", "version"));
+		  P_ ("Command-line|Option|", "subject"),
+		  P_ ("Command-line|Option|", "predicate"),
+		  P_ ("Command-line|Option|", "object"),
+		  P_ ("Command-line|Option|", "graph"),
+		  P_ ("Command-line|Option|", "lookup"),
+		  P_ ("Command-line|Option|", "add"),
+		  P_ ("Command-line|Option|", "remove"),
+		  P_ ("Command-line|Option|", "deletion-date"),
+		  P_ ("Command-line|Option|", "help"),
+		  P_ ("Command-line|Option|", "version"));
 	  exit (0);
 	case 'V':
 	  printf (_("%s\n"
@@ -255,35 +245,25 @@ main (int argc, char *argv[])
 		adftool_results_get (results, i);
 	      uint64_t deletion_date;
 	      int has_deletion_date;
-	      if (adftool_statement_get_deletion_date
-		  (statement, &has_deletion_date, &deletion_date) != 0)
-		{
-		  fprintf (stderr,
-			   _
-			   ("I don’t know if the result has been deleted.\n"));
-		  exit (1);
-		}
+	      adftool_statement_get_deletion_date (statement,
+						   &has_deletion_date,
+						   &deletion_date);
 	      if (has_deletion_date && deletion_date <= current_time)
 		{
 		  /* Skip this statement. */
 		}
 	      else
 		{
-		  if ((adftool_statement_get_subject
-		       (statement, &(term_present[0]), terms[0]) != 0)
-		      ||
-		      (adftool_statement_get_predicate
-		       (statement, &(term_present[1]), terms[1]) != 0)
-		      ||
-		      (adftool_statement_get_object
-		       (statement, &(term_present[2]), terms[2]) != 0)
-		      ||
-		      (adftool_statement_get_graph
-		       (statement, &(term_present[3]), terms[3]) != 0))
-		    {
-		      fprintf (stderr, _("Error reading the file.\n"));
-		      exit (1);
-		    }
+		  adftool_statement_get_subject (statement,
+						 &(term_present[0]),
+						 terms[0]);
+		  adftool_statement_get_predicate (statement,
+						   &(term_present[1]),
+						   terms[1]);
+		  adftool_statement_get_object (statement, &(term_present[2]),
+						terms[2]);
+		  adftool_statement_get_graph (statement, &(term_present[3]),
+					       terms[3]);
 		  if (term_present[0] && term_present[1] && term_present[2])
 		    {
 		      for (size_t i = 0; i < 4; i++)

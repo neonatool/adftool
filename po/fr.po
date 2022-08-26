@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-08-19 09:52+0000\n"
+"POT-Creation-Date: 2022-08-26 14:56+0000\n"
 "PO-Revision-Date: 2022-08-19 11:54+0200\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -24,64 +24,64 @@ msgstr ""
 msgid "Not enough memory.\n"
 msgstr "Pas assez de mémoire.\n"
 
-#: src/adftool.c:51 src/adftool.c:179
+#: src/adftool.c:51 src/adftool.c:169
 msgctxt "Command-line|Option|"
 msgid "lookup"
 msgstr "chercher"
 
-#: src/adftool.c:53 src/adftool.c:180
+#: src/adftool.c:53 src/adftool.c:170
 msgctxt "Command-line|Option|"
 msgid "add"
 msgstr "ajouter"
 
-#: src/adftool.c:55 src/adftool.c:181
+#: src/adftool.c:55 src/adftool.c:171
 msgctxt "Command-line|Option|"
 msgid "remove"
 msgstr "enlever"
 
-#: src/adftool.c:57 src/adftool.c:175
+#: src/adftool.c:57 src/adftool.c:165
 msgctxt "Command-line|Option|"
 msgid "subject"
 msgstr "sujet"
 
-#: src/adftool.c:59 src/adftool.c:176
+#: src/adftool.c:59 src/adftool.c:166
 msgctxt "Command-line|Option|"
 msgid "predicate"
 msgstr "prédicat"
 
-#: src/adftool.c:61 src/adftool.c:177
+#: src/adftool.c:61 src/adftool.c:167
 msgctxt "Command-line|Option|"
 msgid "object"
 msgstr "objet"
 
-#: src/adftool.c:63 src/adftool.c:178
+#: src/adftool.c:63 src/adftool.c:168
 msgctxt "Command-line|Option|"
 msgid "graph"
 msgstr "graphe"
 
-#: src/adftool.c:65 src/adftool.c:182
+#: src/adftool.c:65 src/adftool.c:172
 msgctxt "Command-line|Option|"
 msgid "deletion-date"
 msgstr "date-de-suppression"
 
-#: src/adftool.c:67 src/adftool.c:183
+#: src/adftool.c:67 src/adftool.c:173
 msgctxt "Command-line|Option|"
 msgid "help"
 msgstr "aidez-moi"
 
-#: src/adftool.c:68 src/adftool.c:184
+#: src/adftool.c:68 src/adftool.c:174
 msgctxt "Command-line|Option|"
 msgid "version"
 msgstr "version"
 
-#: src/adftool.c:97
+#: src/adftool.c:99
 #, c-format
 msgid "The argument to \"%s\" cannot be parsed as a N-Triples term: \"%s\"\n"
 msgstr ""
 "L’argument de « %s » ne peut pas être compris comme un terme N-Triples : "
 "« %s »\n"
 
-#: src/adftool.c:113
+#: src/adftool.c:114
 #, c-format
 msgid ""
 "Warning: the argument to \"%s\" can be parsed as a N-Triples term, but the "
@@ -90,12 +90,7 @@ msgstr ""
 "Attention : l’argument de « %s » peut être interprété comme un terme N-"
 "Triples, mais la fin « %s » sera ignorée.\n"
 
-#: src/adftool.c:138
-#, c-format
-msgid "The value for \"%s\" is invalid: \"%s\"\n"
-msgstr "La valeur de « %s » est invalide : « %s »\n"
-
-#: src/adftool.c:156
+#: src/adftool.c:146
 #, c-format
 msgid ""
 "Usage: adftool [OPTION…] FILE\n"
@@ -142,7 +137,7 @@ msgstr ""
 "  -V, --%s : afficher la version du paquet et quitter.\n"
 "\n"
 
-#: src/adftool.c:187
+#: src/adftool.c:177
 #, c-format
 msgid ""
 "%s\n"
@@ -153,17 +148,17 @@ msgstr ""
 "\n"
 "Le copyright n’est pas clair.\n"
 
-#: src/adftool.c:198
+#: src/adftool.c:188
 #, c-format
 msgid "No file to process.\n"
 msgstr "Aucun fichier à traiter.\n"
 
-#: src/adftool.c:203
+#: src/adftool.c:193
 #, c-format
 msgid "Nothing to do.\n"
 msgstr "Rien à faire.\n"
 
-#: src/adftool.c:210
+#: src/adftool.c:200
 #, c-format
 msgid ""
 "Conflicting operations: please pass either --lookup, --insert or --remove.\n"
@@ -171,42 +166,32 @@ msgstr ""
 "Opérations conflictuelles : veuillez passer soit --chercher, soit --ajouter, "
 "soit --enlever.\n"
 
-#: src/adftool.c:219
+#: src/adftool.c:209
 #, c-format
 msgid "The file \"%s\" could not be opened.\n"
 msgstr "Le fichier « %s » n’a pas pu être ouvert.\n"
 
-#: src/adftool.c:229 src/adftool.c:242 src/adftool.c:307
+#: src/adftool.c:219 src/adftool.c:232 src/adftool.c:287
 #, c-format
 msgid "Cannot allocate memory to hold the results.\n"
 msgstr "Impossible d’allouer de la mémoire pour les résultats.\n"
 
-#: src/adftool.c:248
+#: src/adftool.c:238
 #, c-format
 msgid "Cannot list the statements.\n"
 msgstr "Impossible de lister les déclarations.\n"
 
-#: src/adftool.c:263
-#, c-format
-msgid "I don’t know if the result has been deleted.\n"
-msgstr "Je ne sais pas si le résultat a été supprimé.\n"
-
-#: src/adftool.c:284
-#, c-format
-msgid "Error reading the file.\n"
-msgstr "Erreur de lecture du fichier.\n"
-
-#: src/adftool.c:330
+#: src/adftool.c:310
 #, c-format
 msgid "I don’t support namespaced data yet.\n"
 msgstr "Je ne supporte pas encore les données avec un espace de nom.\n"
 
-#: src/adftool.c:407
+#: src/adftool.c:387
 #, c-format
 msgid "Could not insert the data.\n"
 msgstr "Impossible d’ajouter les données.\n"
 
-#: src/adftool.c:414
+#: src/adftool.c:394
 #, c-format
 msgid "Could not delete the data.\n"
 msgstr ""
@@ -229,7 +214,7 @@ msgid "Inconsistent result of the dataset dimensions.\n"
 msgstr "Dimensioins du jeu de données incompatibles.\n"
 
 #: src/adftool_hdf5.h:131 src/libadftool/dictionary.c:277
-#: src/libadftool/dictionary.c:372 src/libadftool/statement.c:573
+#: src/libadftool/dictionary.c:372 src/libadftool/statement.c:501
 #, c-format
 msgid "Could not extend the dataset.\n"
 msgstr "Impossible d’étendre le jeu de données.\n"
@@ -457,70 +442,82 @@ msgstr "problème d’allocation de mémoire pour adftool détecté.\n"
 msgid "The filter test failed at point %lu.\n"
 msgstr "Le test du filtre a échoué au point %lu.\n"
 
-#: src/term_manipulation_example.c:126
+#: src/term_manipulation_example.c:123
 #, c-format
 msgid "Type %lu for number %lu is %d, should be %d.\n"
 msgstr "Le type %lu pour le numéro %lu est %d, mais devrait être %d.\n"
 
-#: src/term_manipulation_example.c:137
+#: src/term_manipulation_example.c:134
 #, c-format
 msgid "Value for number %lu is %s, should be %s.\n"
 msgstr "La valeur pour le numéro %lu est %s, mais devrait être %s.\n"
 
-#: src/term_manipulation_example.c:145
+#: src/term_manipulation_example.c:142
 #, c-format
 msgid "Meta for number %lu is %s, should be %s.\n"
 msgstr "La méta pour le numéro %lu est %s, mais devrait être %s.\n"
 
-#: src/term_manipulation_example.c:162
+#: src/term_manipulation_example.c:159
 #, c-format
 msgid "Comparison between %lu and %lu should be %d, it is %d.\n"
 msgstr "La comparaison entre %lu et %lu devrait être %d, c’est %d.\n"
 
-#: src/term_manipulation_example.c:182
+#: src/term_manipulation_example.c:179
 #, c-format
 msgid "Could not add %s to the dictionary.\n"
 msgstr "Impossible d’ajouter %s au dictionnaire.\n"
 
-#: src/term_manipulation_example.c:205
+#: src/term_manipulation_example.c:202
 #, c-format
 msgid "Not enough memory to allocate a term.\n"
 msgstr "Pas assez de mémoire pour allouer un terme.\n"
 
-#: src/term_manipulation_example.c:210
+#: src/term_manipulation_example.c:207
 #, c-format
 msgid "Failed to encode term %lu.\n"
 msgstr "Impossible d’encoder le terme %lu.\n"
 
-#: src/term_manipulation_example.c:215
+#: src/term_manipulation_example.c:212
 #, c-format
 msgid "Encoding term %lu gives %016lx, not %016lx.\n"
 msgstr "L’encodage du terme %lu donne %016lx, pas %016lx.\n"
 
-#: src/term_manipulation_example.c:221
+#: src/term_manipulation_example.c:218
 #, c-format
 msgid "Failed to decode term %lu (%016lx).\n"
 msgstr "Impossible de décoder le terme %lu (%016lx).\n"
 
-#: src/term_manipulation_example.c:237
+#: src/term_manipulation_example.c:234
 #, c-format
 msgid "%s:%d: Type %lu for number %lu is %d, should be %d.\n"
 msgstr "%s:%d: Le type %lu du numéro %lu est %d, mais devrait être %d.\n"
 
-#: src/term_manipulation_example.c:248
+#: src/term_manipulation_example.c:245
 #, c-format
 msgid "%s:%d: Value for number %lu is %s, should be %s.\n"
 msgstr "%s:%d: La valeur pour le numéro %lu est %s, mais devrait être %s.\n"
 
-#: src/term_manipulation_example.c:256
+#: src/term_manipulation_example.c:253
 #, c-format
 msgid "%s:%d: Meta for number %lu is %s, should be %s.\n"
 msgstr "%s:%d: La méta pour le numéro %lu est %s, mais devrait être %s.\n"
 
-#: src/term_manipulation_example.c:270
+#: src/term_manipulation_example.c:267
 #, c-format
 msgid "The test failed, keeping term_example.adf around.\n"
 msgstr "Le test a échoué, gardons term_exemple.adf.\n"
+
+#, c-format
+#~ msgid "The value for \"%s\" is invalid: \"%s\"\n"
+#~ msgstr "La valeur de « %s » est invalide : « %s »\n"
+
+#, c-format
+#~ msgid "I don’t know if the result has been deleted.\n"
+#~ msgstr "Je ne sais pas si le résultat a été supprimé.\n"
+
+#, c-format
+#~ msgid "Error reading the file.\n"
+#~ msgstr "Erreur de lecture du fichier.\n"
 
 #~ msgctxt "Command-line|Option|Mode|"
 #~ msgid "insert"

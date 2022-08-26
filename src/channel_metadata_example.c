@@ -40,19 +40,13 @@ main (int argc, char *argv[])
     {
       abort ();
     }
-  if (adftool_term_set_named (identifier, "initial-name") != 0)
-    {
-      abort ();
-    }
+  adftool_term_set_named (identifier, "initial-name");
   if (adftool_set_channel_identifier (file, 42, identifier) != 0)
     {
       abort ();
     }
   /* Woops, it was in fact <the-name>. */
-  if (adftool_term_set_named (identifier, "the-name") != 0)
-    {
-      abort ();
-    }
+  adftool_term_set_named (identifier, "the-name");
   if (adftool_set_channel_identifier (file, 42, identifier) != 0)
     {
       abort ();
@@ -72,10 +66,7 @@ main (int argc, char *argv[])
     {
       abort ();
     }
-  if (adftool_term_set_named (expected_identifier, "the-name") != 0)
-    {
-      abort ();
-    }
+  adftool_term_set_named (expected_identifier, "the-name");
   if (adftool_find_channel_identifier (file, 42, identifier) != 0)
     {
       abort ();

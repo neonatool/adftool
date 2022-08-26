@@ -97,17 +97,14 @@ main (int argc, char *argv[])
     {
       all_terms[i] = adftool_term_alloc ();
     }
-  if (adftool_term_set_blank (all_terms[0], "hello")
-      || adftool_term_set_blank (all_terms[1], "world")
-      || adftool_term_set_named (all_terms[2], "hello")
-      || adftool_term_set_named (all_terms[3], "world")
-      || adftool_term_set_literal (all_terms[4], "hello", NULL, NULL)
-      || adftool_term_set_literal (all_terms[5], "world", "my-type", NULL)
-      || adftool_term_set_literal (all_terms[6], "hello", NULL, "en")
-      || adftool_term_set_literal (all_terms[7], "world", NULL, "zz"))
-    {
-      goto failure;
-    }
+  adftool_term_set_blank (all_terms[0], "hello");
+  adftool_term_set_blank (all_terms[1], "world");
+  adftool_term_set_named (all_terms[2], "hello");
+  adftool_term_set_named (all_terms[3], "world");
+  adftool_term_set_literal (all_terms[4], "hello", NULL, NULL);
+  adftool_term_set_literal (all_terms[5], "world", "my-type", NULL);
+  adftool_term_set_literal (all_terms[6], "hello", NULL, "en");
+  adftool_term_set_literal (all_terms[7], "world", NULL, "zz");
   for (size_t i = 0; i < n_terms; i++)
     {
       int my_types[5];

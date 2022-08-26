@@ -47,22 +47,16 @@ main (int argc, char *argv[])
 	}
       char name[2] = "a";
       name[0] = 'a' + i;
-      if (adftool_term_set_named (terms[i], name) != 0)
-	{
-	  abort ();
-	}
+      adftool_term_set_named (terms[i], name);
     }
   struct adftool_statement *statement = adftool_statement_alloc ();
   if (statement == NULL)
     {
       abort ();
     }
-  if ((adftool_statement_set_subject (statement, terms[0]) != 0)
-      || (adftool_statement_set_predicate (statement, terms[1]) != 0)
-      || (adftool_statement_set_object (statement, terms[2]) != 0))
-    {
-      abort ();
-    }
+  adftool_statement_set_subject (statement, terms[0]);
+  adftool_statement_set_predicate (statement, terms[1]);
+  adftool_statement_set_object (statement, terms[2]);
   if (adftool_insert (file, statement) != 0)
     {
       abort ();
@@ -118,13 +112,9 @@ main (int argc, char *argv[])
       terms[i] = adftool_term_alloc ();
     }
   int has_subject, has_predicate, has_object;
-  if ((adftool_statement_get_subject (result, &has_subject, terms[0]) != 0)
-      || (adftool_statement_get_predicate (result, &has_predicate, terms[1])
-	  != 0)
-      || (adftool_statement_get_object (result, &has_object, terms[2]) != 0))
-    {
-      abort ();
-    }
+  adftool_statement_get_subject (result, &has_subject, terms[0]);
+  adftool_statement_get_predicate (result, &has_predicate, terms[1]);
+  adftool_statement_get_object (result, &has_object, terms[2]);
   if (!has_subject || !has_predicate || !has_object)
     {
       abort ();

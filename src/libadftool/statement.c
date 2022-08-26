@@ -29,7 +29,7 @@ adftool_statement_free (struct adftool_statement *statement)
   free (statement);
 }
 
-static int
+static void
 copy_to (struct adftool_term **dest, const struct adftool_term *source)
 {
   if (*dest && source == NULL)
@@ -42,65 +42,62 @@ copy_to (struct adftool_term **dest, const struct adftool_term *source)
       *dest = adftool_term_alloc ();
       if (*dest == NULL)
 	{
-	  return 1;
+	  abort ();
 	}
     }
   if (source)
     {
-      return adftool_term_copy (*dest, source);
+      adftool_term_copy (*dest, source);
     }
-  return 0;
 }
 
-int
+void
 adftool_statement_set_subject (struct adftool_statement *statement,
 			       const struct adftool_term *subject)
 {
-  return copy_to (&(statement->subject), subject);
+  copy_to (&(statement->subject), subject);
 }
 
-int
+void
 adftool_statement_set_predicate (struct adftool_statement *statement,
 				 const struct adftool_term *predicate)
 {
-  return copy_to (&(statement->predicate), predicate);
+  copy_to (&(statement->predicate), predicate);
 }
 
-int
+void
 adftool_statement_set_object (struct adftool_statement *statement,
 			      const struct adftool_term *object)
 {
-  return copy_to (&(statement->object), object);
+  copy_to (&(statement->object), object);
 }
 
-int
+void
 adftool_statement_set_graph (struct adftool_statement *statement,
 			     const struct adftool_term *graph)
 {
-  return copy_to (&(statement->graph), graph);
+  copy_to (&(statement->graph), graph);
 }
 
-int
+void
 adftool_statement_set_deletion_date (struct adftool_statement *statement,
 				     uint64_t deletion_date)
 {
   statement->deletion_date = deletion_date;
-  return 0;
 }
 
-int
+void
 adftool_statement_get_subject (const struct adftool_statement *statement,
 			       int *has_subject, struct adftool_term *subject)
 {
   *has_subject = (statement->subject != NULL);
   if (statement->subject)
     {
-      return adftool_term_copy (subject, statement->subject);
+      adftool_term_copy (subject, statement->subject);
     }
-  return 0;
 }
 
-int
+void
 adftool_statement_get_predicate (const struct adftool_statement *statement,
 				 int *has_predicate,
 				 struct adftool_term *predicate)
@@ -108,36 +105,33 @@ adftool_statement_get_predicate (const struct adftool_statement *statement,
   *has_predicate = (statement->predicate != NULL);
   if (statement->predicate)
     {
-      return adftool_term_copy (predicate, statement->predicate);
+      adftool_term_copy (predicate, statement->predicate);
     }
-  return 0;
 }
 
-int
+void
 adftool_statement_get_object (const struct adftool_statement *statement,
 			      int *has_object, struct adftool_term *object)
 {
   *has_object = (statement->object != NULL);
   if (statement->object)
     {
-      return adftool_term_copy (object, statement->object);
+      adftool_term_copy (object, statement->object);
     }
-  return 0;
 }
 
-int
+void
 adftool_statement_get_graph (const struct adftool_statement *statement,
 			     int *has_graph, struct adftool_term *graph)
 {
   *has_graph = (statement->graph != NULL);
   if (statement->graph)
     {
-      return adftool_term_copy (graph, statement->graph);
+      adftool_term_copy (graph, statement->graph);
     }
-  return 0;
 }
 
-int
+void
 adftool_statement_get_deletion_date (const struct adftool_statement
 				     *statement, int *has_date,
 				     uint64_t * date)
@@ -147,7 +141,6 @@ adftool_statement_get_deletion_date (const struct adftool_statement
     {
       *date = statement->deletion_date;
     }
-  return 0;
 }
 
 static int
@@ -236,8 +229,7 @@ update_quad (struct adftool_file *file, uint32_t id, int read,
   if (subject == NULL || predicate == NULL || object == NULL || graph == NULL
       || statement == NULL || updated_statement == NULL)
     {
-      error = 1;
-      goto clean_terms;
+      abort ();
     }
   if (read && memory[0] != ((uint64_t) (-1)))
     {
@@ -246,19 +238,11 @@ update_quad (struct adftool_file *file, uint32_t id, int read,
 	  error = 1;
 	  goto clean_terms;
 	}
-      if (adftool_statement_set_graph (statement, graph) != 0)
-	{
-	  error = 1;
-	  goto clean_terms;
-	}
+      adftool_statement_set_graph (statement, graph);
     }
   else if (read)
     {
-      if (adftool_statement_set_graph (statement, NULL) != 0)
-	{
-	  error = 1;
-	  goto clean_terms;
-	}
+      adftool_statement_set_graph (statement, NULL);
     }
   if (read)
     {
@@ -269,30 +253,17 @@ update_quad (struct adftool_file *file, uint32_t id, int read,
 	  error = 1;
 	  goto clean_terms;
 	}
-      if ((adftool_statement_set_subject (statement, subject) != 0)
-	  || (adftool_statement_set_predicate (statement, predicate) != 0)
-	  || (adftool_statement_set_object (statement, object) != 0))
-	{
-	  error = 1;
-	  goto clean_terms;
-	}
-      if (adftool_statement_set_deletion_date (statement, memory[4]) != 0)
-	{
-	  error = 1;
-	  goto clean_terms;
-	}
+      adftool_statement_set_subject (statement, subject);
+      adftool_statement_set_predicate (statement, predicate);
+      adftool_statement_set_object (statement, object);
+      adftool_statement_set_deletion_date (statement, memory[4]);
     }
   else
     {
-      if ((adftool_statement_set_subject (statement, NULL) != 0)
-	  || (adftool_statement_set_predicate (statement, NULL) != 0)
-	  || (adftool_statement_set_object (statement, NULL) != 0)
-	  || (adftool_statement_set_deletion_date (statement, (uint64_t) (-1))
-	      != 0))
-	{
-	  error = 1;
-	  goto clean_terms;
-	}
+      adftool_statement_set_subject (statement, NULL);
+      adftool_statement_set_predicate (statement, NULL);
+      adftool_statement_set_object (statement, NULL);
+      adftool_statement_set_deletion_date (statement, (uint64_t) (-1));
     }
   if (update (context, statement, updated_statement) != 0)
     {
@@ -301,31 +272,17 @@ update_quad (struct adftool_file *file, uint32_t id, int read,
       goto clean_terms;
     }
   int has_subject, has_predicate, has_object, has_graph, has_deletion_date;
-  if ((adftool_statement_get_subject
-       (updated_statement, &has_subject, subject) != 0)
-      ||
-      (adftool_statement_get_predicate
-       (updated_statement, &has_predicate, predicate) != 0)
-      ||
-      (adftool_statement_get_object (updated_statement, &has_object, object)
-       != 0)
-      || (adftool_statement_get_graph (updated_statement, &has_graph, graph)
-	  != 0)
-      ||
-      (adftool_statement_get_deletion_date
-       (updated_statement, &has_deletion_date, &(memory[4])) != 0))
-    {
-      error = 1;
-      goto clean_terms;
-    }
+  adftool_statement_get_subject (updated_statement, &has_subject, subject);
+  adftool_statement_get_predicate (updated_statement, &has_predicate,
+				   predicate);
+  adftool_statement_get_object (updated_statement, &has_object, object);
+  adftool_statement_get_graph (updated_statement, &has_graph, graph);
+  adftool_statement_get_deletion_date (updated_statement, &has_deletion_date,
+				       &(memory[4]));
   if (!has_graph)
     {
       /* The empty string is the default graph. */
-      if (adftool_term_set_named (graph, "") != 0)
-	{
-	  error = 1;
-	  goto clean_terms;
-	}
+      adftool_term_set_named (graph, "");
       has_graph = 1;
     }
   if (!has_subject || !has_predicate || !has_object)
@@ -371,14 +328,14 @@ wrapup:
 
 struct deletion_context
 {
-  int error;
   uint64_t deletion_date;
 };
 
 struct term_handler
 {
-  int (*get) (const struct adftool_statement *, int *, struct adftool_term *);
-  int (*set) (struct adftool_statement *, const struct adftool_term *);
+  void (*get) (const struct adftool_statement *, int *,
+	       struct adftool_term *);
+  void (*set) (struct adftool_statement *, const struct adftool_term *);
 };
 
 static int
@@ -386,13 +343,11 @@ deletion_updater (void *ctx, const struct adftool_statement *original,
 		  struct adftool_statement *updated)
 {
   struct deletion_context *context = ctx;
-  context->error = 0;
   struct adftool_term *term = adftool_term_alloc ();
   int term_set;
   if (term == NULL)
     {
-      context->error = 1;
-      goto wrapup;
+      abort ();
     }
   struct term_handler handlers[4];
   handlers[0].get = adftool_statement_get_subject;
@@ -405,38 +360,19 @@ deletion_updater (void *ctx, const struct adftool_statement *original,
   handlers[3].set = adftool_statement_set_graph;
   for (size_t i = 0; i < 4; i++)
     {
-      if (handlers[i].get (original, &term_set, term) != 0)
-	{
-	  context->error = 1;
-	  goto clean_term;
-	}
+      handlers[i].get (original, &term_set, term);
       if (term_set)
 	{
-	  if (handlers[i].set (updated, term) != 0)
-	    {
-	      context->error = 1;
-	      goto clean_term;
-	    }
+	  handlers[i].set (updated, term);
 	}
       else
 	{
-	  if (handlers[i].set (updated, NULL) != 0)
-	    {
-	      context->error = 1;
-	      goto clean_term;
-	    }
+	  handlers[i].set (updated, NULL);
 	}
     }
-  if (adftool_statement_set_deletion_date (updated, context->deletion_date) !=
-      0)
-    {
-      context->error = 1;
-      goto clean_term;
-    }
-clean_term:
+  adftool_statement_set_deletion_date (updated, context->deletion_date);
   adftool_term_free (term);
-wrapup:
-  return context->error;
+  return 0;
 }
 
 struct initialization_context
@@ -453,15 +389,10 @@ initialization_updater (void *ctx, const struct adftool_statement *original,
   struct initialization_context *context = ctx;
   context->error = 0;
   struct deletion_context del;
-  del.error = 0;
   int reference_has_deletion_date = 0;
-  if (adftool_statement_get_deletion_date
-      (context->reference, &reference_has_deletion_date,
-       &(del.deletion_date)) != 0)
-    {
-      context->error = 1;
-      goto wrapup;
-    }
+  adftool_statement_get_deletion_date (context->reference,
+				       &reference_has_deletion_date,
+				       &(del.deletion_date));
   if (!reference_has_deletion_date)
     {
       del.deletion_date = ((uint64_t) (-1));
@@ -469,8 +400,6 @@ initialization_updater (void *ctx, const struct adftool_statement *original,
   /* The hack there is to use the deletion_updater callback because it
      copies statements. */
   context->error = deletion_updater (&del, context->reference, updated);
-  assert (context->error == del.error);
-wrapup:
   return context->error;
 }
 
@@ -512,10 +441,9 @@ adftool_quads_delete (struct adftool_file *file, uint32_t id,
 		      uint64_t deletion_date)
 {
   struct deletion_context ctx;
-  ctx.error = 0;
   ctx.deletion_date = deletion_date;
   int global_error = update_quad (file, id, 1, deletion_updater, &ctx);
-  return global_error || ctx.error;
+  return global_error;
 }
 
 static int
@@ -647,7 +575,7 @@ adftool_statement_compare (const struct adftool_statement *reference,
   return result;
 }
 
-int
+void
 adftool_statement_copy (struct adftool_statement *dest,
 			const struct adftool_statement *source)
 {
@@ -660,48 +588,36 @@ adftool_statement_copy (struct adftool_statement *dest,
       my_subject = adftool_term_alloc ();
       if (my_subject == NULL)
 	{
-	  goto fail;
+	  abort ();
 	}
-      if (adftool_term_copy (my_subject, source->subject) != 0)
-	{
-	  goto fail;
-	}
+      adftool_term_copy (my_subject, source->subject);
     }
   if (source->predicate)
     {
       my_predicate = adftool_term_alloc ();
       if (my_predicate == NULL)
 	{
-	  goto fail;
+	  abort ();
 	}
-      if (adftool_term_copy (my_predicate, source->predicate) != 0)
-	{
-	  goto fail;
-	}
+      adftool_term_copy (my_predicate, source->predicate);
     }
   if (source->object)
     {
       my_object = adftool_term_alloc ();
       if (my_object == NULL)
 	{
-	  goto fail;
+	  abort ();
 	}
-      if (adftool_term_copy (my_object, source->object) != 0)
-	{
-	  goto fail;
-	}
+      adftool_term_copy (my_object, source->object);
     }
   if (source->graph)
     {
       my_graph = adftool_term_alloc ();
       if (my_graph == NULL)
 	{
-	  goto fail;
+	  abort ();
 	}
-      if (adftool_term_copy (my_graph, source->graph) != 0)
-	{
-	  goto fail;
-	}
+      adftool_term_copy (my_graph, source->graph);
     }
   adftool_term_free (dest->subject);
   adftool_term_free (dest->predicate);
@@ -712,23 +628,4 @@ adftool_statement_copy (struct adftool_statement *dest,
   dest->object = my_object;
   dest->graph = my_graph;
   dest->deletion_date = source->deletion_date;
-  return 0;
-fail:
-  if (my_subject)
-    {
-      adftool_term_free (my_subject);
-    }
-  if (my_predicate)
-    {
-      adftool_term_free (my_predicate);
-    }
-  if (my_object)
-    {
-      adftool_term_free (my_object);
-    }
-  if (my_graph)
-    {
-      adftool_term_free (my_graph);
-    }
-  return 1;
 }

@@ -69,10 +69,10 @@ adftool_results_resize (struct adftool_results *results, size_t size)
   return 0;
 }
 
-int
+void
 adftool_results_set (struct adftool_results *results, size_t i,
 		     const struct adftool_statement *statement)
 {
   assert (i < results->n_results);
-  return adftool_statement_copy (results->statements[i], statement);
+  adftool_statement_copy (results->statements[i], statement);
 }

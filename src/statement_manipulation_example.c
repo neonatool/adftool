@@ -46,30 +46,12 @@ main (int argc, char *argv[])
     {
       abort ();
     }
-  if (adftool_term_set_named (term, "a") != 0)
-    {
-      abort ();
-    }
-  if (adftool_statement_set_subject (statement, term) != 0)
-    {
-      abort ();
-    }
-  if (adftool_term_set_named (term, "b") != 0)
-    {
-      abort ();
-    }
-  if (adftool_statement_set_predicate (statement, term) != 0)
-    {
-      abort ();
-    }
-  if (adftool_term_set_named (term, "c") != 0)
-    {
-      abort ();
-    }
-  if (adftool_statement_set_object (statement, term) != 0)
-    {
-      abort ();
-    }
+  adftool_term_set_named (term, "a");
+  adftool_statement_set_subject (statement, term);
+  adftool_term_set_named (term, "b");
+  adftool_statement_set_predicate (statement, term);
+  adftool_term_set_named (term, "c");
+  adftool_statement_set_object (statement, term);
   uint32_t statement_id = 42;
   if (adftool_quads_insert (file, statement, &statement_id) != 0)
     {
@@ -94,11 +76,8 @@ main (int argc, char *argv[])
     }
   int statement_zero_deleted;
   uint64_t deletion_date;
-  if (adftool_statement_get_deletion_date
-      (statement_zero, &statement_zero_deleted, &deletion_date) != 0)
-    {
-      abort ();
-    }
+  adftool_statement_get_deletion_date
+    (statement_zero, &statement_zero_deleted, &deletion_date);
   if (!statement_zero_deleted)
     {
       abort ();

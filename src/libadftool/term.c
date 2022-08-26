@@ -36,13 +36,13 @@ adftool_term_free (struct adftool_term *term)
   free (term);
 }
 
-int
+void
 adftool_term_set_blank (struct adftool_term *term, const char *id)
 {
   char *copy = malloc (strlen (id) + 1);
   if (copy == NULL)
     {
-      return 1;
+      abort ();
     }
   strcpy (copy, id);
   copy[strlen (id)] = '\0';
@@ -51,16 +51,15 @@ adftool_term_set_blank (struct adftool_term *term, const char *id)
   free (term->str2);
   term->str1 = copy;
   term->str2 = NULL;
-  return 0;
 }
 
-int
+void
 adftool_term_set_named (struct adftool_term *term, const char *id)
 {
   char *copy = malloc (strlen (id) + 1);
   if (copy == NULL)
     {
-      return 1;
+      abort ();
     }
   strcpy (copy, id);
   copy[strlen (id)] = '\0';
@@ -69,10 +68,9 @@ adftool_term_set_named (struct adftool_term *term, const char *id)
   free (term->str2);
   term->str1 = copy;
   term->str2 = NULL;
-  return 0;
 }
 
-int
+void
 adftool_term_set_literal (struct adftool_term *term, const char *value,
 			  const char *type, const char *lang)
 {
@@ -80,7 +78,7 @@ adftool_term_set_literal (struct adftool_term *term, const char *value,
   char *copy = malloc (strlen (value) + 1);
   if (copy == NULL)
     {
-      return 1;
+      abort ();
     }
   strcpy (copy, value);
   copy[strlen (value)] = '\0';
@@ -99,8 +97,7 @@ adftool_term_set_literal (struct adftool_term *term, const char *value,
   char *meta = malloc (strlen (meta_source) + 1);
   if (meta == NULL)
     {
-      free (copy);
-      return 1;
+      abort ();
     }
   strcpy (meta, meta_source);
   meta[strlen (meta_source)] = '\0';
@@ -109,7 +106,6 @@ adftool_term_set_literal (struct adftool_term *term, const char *value,
   free (term->str2);
   term->str1 = copy;
   term->str2 = meta;
-  return 0;
 }
 
 int
@@ -438,10 +434,7 @@ adftool_term_decode (const struct adftool_file *file, uint64_t value,
 	{
 	  goto failure;
 	}
-      if (adftool_term_set_blank (decoded, buffer) != 0)
-	{
-	  goto failure;
-	}
+      adftool_term_set_blank (decoded, buffer);
       break;
     case TERM_NAMED:
       if (dict_get (file, meta, &buffer_size, &buffer) != 0)
@@ -458,10 +451,7 @@ adftool_term_decode (const struct adftool_file *file, uint64_t value,
 	{
 	  goto failure;
 	}
-      if (adftool_term_set_named (decoded, buffer) != 0)
-	{
-	  goto failure;
-	}
+      adftool_term_set_named (decoded, buffer);
       break;
     case TERM_TYPED:
     case TERM_LANGSTRING:
@@ -493,11 +483,7 @@ adftool_term_decode (const struct adftool_file *file, uint64_t value,
 	    {
 	      langtag = buffer;
 	    }
-	  if (adftool_term_set_literal (decoded, value, type, langtag) != 0)
-	    {
-	      free (value);
-	      goto failure;
-	    }
+	  adftool_term_set_literal (decoded, value, type, langtag);
 	  free (value);
 	}
       break;
@@ -605,19 +591,23 @@ wrapup:
   return error;
 }
 
-int
+void
 adftool_term_copy (struct adftool_term *dest, const struct adftool_term *src)
 {
   switch (src->type)
     {
     case TERM_BLANK:
-      return adftool_term_set_blank (dest, src->str1);
+      adftool_term_set_blank (dest, src->str1);
+      break;
     case TERM_NAMED:
-      return adftool_term_set_named (dest, src->str1);
+      adftool_term_set_named (dest, src->str1);
+      break;
     case TERM_TYPED:
-      return adftool_term_set_literal (dest, src->str1, src->str2, NULL);
+      adftool_term_set_literal (dest, src->str1, src->str2, NULL);
+      break;
     case TERM_LANGSTRING:
-      return adftool_term_set_literal (dest, src->str1, NULL, src->str2);
+      adftool_term_set_literal (dest, src->str1, NULL, src->str2);
+      break;
     default:
       abort ();
     }

@@ -379,6 +379,43 @@ The libadftool API is installed with the @code{<adftool.h>} header,
 that you must include. You must link @code{-ladftool} to your programs
 to use it.
 
+@cindex out of memory
+@cindex memory allocation errors
+@cindex handling memory allocation failure
+@cindex error handling
+@cindex programming errors
+@cindex file i/o errors
+@cindex i/o errors
+Within the library, there are different kinds of errors: the
+@dfn{programming errors} (passing both a type and a langstring to a
+literal, for instance), the @dfn{file i/o errors} (the file is not
+writable, for instance), and the @dfn{memory allocation errors}.
+
+The programming errors lead to a run-time call to @code{abort}, in the
+best case, or undefined behavior in some places. This is up to the
+library user to respect the function contracts. Obviously bugs in
+libadftool are treated the same way.
+
+The file i/o errors lead to the libadftool function returning an error
+flag as an integer: 0 means no error, any other value means an error.
+
+The memory allocation errors are treated in two different ways: if the
+allocated memory is transferred back to the caller, any memory
+allocation error that is bound to the transferred object will free all
+memory owned by that object, and that object will be set to
+@code{NULL}. If the allocated memory is used internally by the
+function, a failure will lead to early program termination. You cannot
+recover from the latter errors, because as the libadftool developer, I
+could allocate everything on the stack anyway and you would not be
+able to recover anything. However, if the memory is transferred, this
+is probably where it would hold unusually huge user inputs, so you can
+still detect most of the out of memory situations. I hope. There are
+situations where user inputs are copied in a non-transferring
+function, but I believe that could be fixed with shared pointers and
+other tricks. Anyway, this stuff is complex and there is little hope
+to recover from memory exhaustion anyway, due to the optimistic
+over-allocation strategy that the kernel may implement.
+
 @menu
 * Manipulating terms::
 * Manipulating statements::
@@ -404,17 +441,15 @@ Allocate a new term. Return @code{NULL} if the allocation failed.
 Free an allocated @var{term}.
 @end deftypefun
 
-@deftypefun int adftool_term_copy (struct adftool_term *@var{term}, const struct adftool_term *@var{source})
-@deftypefunx int adftool_term_set_named (struct adftool_term *@var{term}, const char *@var{id})
-@deftypefunx int adftool_term_set_blank (struct adftool_term *@var{term}, const char *@var{id})
-@deftypefunx int adftool_term_set_literal (struct adftool_term *@var{term}, const char *@var{value}, const char *@var{meta})
+@deftypefun void adftool_term_copy (struct adftool_term *@var{term}, const struct adftool_term *@var{source})
+@deftypefunx void adftool_term_set_named (struct adftool_term *@var{term}, const char *@var{id})
+@deftypefunx void adftool_term_set_blank (struct adftool_term *@var{term}, const char *@var{id})
+@deftypefunx void adftool_term_set_literal (struct adftool_term *@var{term}, const char *@var{value}, const char *@var{meta})
 Initialize @var{term}. The @code{adftool_term_copy} function
 initializes it with a fresh new copy of @var{source}. The
 @code{adftool_term_set_literal} function expects that at most one
 argument among @var{value} and @var{meta} is not NULL. In any case,
-@var{term} @strong{must} be already allocated. If the copy failed, for
-instance by lack of memory, @var{term} is unchanged and the function
-returns a non-zero value. Otherwise the function return 0.
+@var{term} @strong{must} be already allocated.
 
 @var{id}, @var{value} and @var{meta} must be NUL-terminated strings.
 @end deftypefun
@@ -536,25 +571,23 @@ Allocate a new pattern. Return @code{NULL} if the allocation failed.
 Free an allocated @var{statement}.
 @end deftypefun
 
-@deftypefun int adftool_statement_set_subject (struct adftool_statement *@var{statement}, const struct adftool_term *@var{subject})
-@deftypefunx int adftool_statement_set_predicate (struct adftool_statement *@var{statement}, const struct adftool_term *@var{predicate})
-@deftypefunx int adftool_statement_set_object (struct adftool_statement *@var{statement}, const struct adftool_term *@var{object})
-@deftypefunx int adftool_statement_set_graph (struct adftool_statement *@var{statement}, const struct adftool_term *@var{graph})
-@deftypefunx int adftool_statement_set_deletion_date (struct adftool_statement *@var{statement}, const uint64_t @var{deletion_date})
-@deftypefunx int adftool_statement_copy (struct adftool_statement *@var{statement}, const struct adftool_statement *@var{source})
+@deftypefun void adftool_statement_set_subject (struct adftool_statement *@var{statement}, const struct adftool_term *@var{subject})
+@deftypefunx void adftool_statement_set_predicate (struct adftool_statement *@var{statement}, const struct adftool_term *@var{predicate})
+@deftypefunx void adftool_statement_set_object (struct adftool_statement *@var{statement}, const struct adftool_term *@var{object})
+@deftypefunx void adftool_statement_set_graph (struct adftool_statement *@var{statement}, const struct adftool_term *@var{graph})
+@deftypefunx void adftool_statement_set_deletion_date (struct adftool_statement *@var{statement}, const uint64_t @var{deletion_date})
+@deftypefunx void adftool_statement_copy (struct adftool_statement *@var{statement}, const struct adftool_statement *@var{source})
 Initialize @var{statement}. In case of a lack of memory, return a
 non-null error code. Otherwise return 0.
 @end deftypefun
 
-@deftypefun int adftool_statement_get_subject (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
-@deftypefunx int adftool_statement_get_predicate (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
-@deftypefunx int adftool_statement_get_object (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
-@deftypefunx int adftool_statement_get_graph (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
-@deftypefunx int adftool_statement_get_deletion_date (const struct adftool_statement *@var{statement}, int *@var{is_set}, uint64_t *@var{date})
+@deftypefun void adftool_statement_get_subject (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
+@deftypefunx void adftool_statement_get_predicate (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
+@deftypefunx void adftool_statement_get_object (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
+@deftypefunx void adftool_statement_get_graph (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
+@deftypefunx void adftool_statement_get_deletion_date (const struct adftool_statement *@var{statement}, int *@var{is_set}, uint64_t *@var{date})
 Get the pattern field. Set @var{is_set} to whether it is set, and if
 so, set @var{term} or @var{date}. @var{term} must be allocated.
-
-Return 0 on success, or an error code if a copy failed.
 @end deftypefun
 
 @deftypefun int adftool_statement_compare (const struct adftool_statement *@var{reference}, const struct adftool_statement *@var{other}, const char *@var{order})

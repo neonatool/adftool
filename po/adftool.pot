@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.1.0-8-g1401560\n"
+"Project-Id-Version: adftool 0.1.0-18-gc5050ee\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-08-19 09:52+0000\n"
+"POT-Creation-Date: 2022-08-26 14:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,74 +22,69 @@ msgstr ""
 msgid "Not enough memory.\n"
 msgstr ""
 
-#: src/adftool.c:51 src/adftool.c:179
+#: src/adftool.c:51 src/adftool.c:169
 msgctxt "Command-line|Option|"
 msgid "lookup"
 msgstr ""
 
-#: src/adftool.c:53 src/adftool.c:180
+#: src/adftool.c:53 src/adftool.c:170
 msgctxt "Command-line|Option|"
 msgid "add"
 msgstr ""
 
-#: src/adftool.c:55 src/adftool.c:181
+#: src/adftool.c:55 src/adftool.c:171
 msgctxt "Command-line|Option|"
 msgid "remove"
 msgstr ""
 
-#: src/adftool.c:57 src/adftool.c:175
+#: src/adftool.c:57 src/adftool.c:165
 msgctxt "Command-line|Option|"
 msgid "subject"
 msgstr ""
 
-#: src/adftool.c:59 src/adftool.c:176
+#: src/adftool.c:59 src/adftool.c:166
 msgctxt "Command-line|Option|"
 msgid "predicate"
 msgstr ""
 
-#: src/adftool.c:61 src/adftool.c:177
+#: src/adftool.c:61 src/adftool.c:167
 msgctxt "Command-line|Option|"
 msgid "object"
 msgstr ""
 
-#: src/adftool.c:63 src/adftool.c:178
+#: src/adftool.c:63 src/adftool.c:168
 msgctxt "Command-line|Option|"
 msgid "graph"
 msgstr ""
 
-#: src/adftool.c:65 src/adftool.c:182
+#: src/adftool.c:65 src/adftool.c:172
 msgctxt "Command-line|Option|"
 msgid "deletion-date"
 msgstr ""
 
-#: src/adftool.c:67 src/adftool.c:183
+#: src/adftool.c:67 src/adftool.c:173
 msgctxt "Command-line|Option|"
 msgid "help"
 msgstr ""
 
-#: src/adftool.c:68 src/adftool.c:184
+#: src/adftool.c:68 src/adftool.c:174
 msgctxt "Command-line|Option|"
 msgid "version"
 msgstr ""
 
-#: src/adftool.c:97
+#: src/adftool.c:99
 #, c-format
 msgid "The argument to \"%s\" cannot be parsed as a N-Triples term: \"%s\"\n"
 msgstr ""
 
-#: src/adftool.c:113
+#: src/adftool.c:114
 #, c-format
 msgid ""
 "Warning: the argument to \"%s\" can be parsed as a N-Triples term, but the "
 "trailing \"%s\" will be discarded.\n"
 msgstr ""
 
-#: src/adftool.c:138
-#, c-format
-msgid "The value for \"%s\" is invalid: \"%s\"\n"
-msgstr ""
-
-#: src/adftool.c:156
+#: src/adftool.c:146
 #, c-format
 msgid ""
 "Usage: adftool [OPTION…] FILE\n"
@@ -115,7 +110,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/adftool.c:187
+#: src/adftool.c:177
 #, c-format
 msgid ""
 "%s\n"
@@ -123,58 +118,48 @@ msgid ""
 "Copyright status is unclear.\n"
 msgstr ""
 
-#: src/adftool.c:198
+#: src/adftool.c:188
 #, c-format
 msgid "No file to process.\n"
 msgstr ""
 
-#: src/adftool.c:203
+#: src/adftool.c:193
 #, c-format
 msgid "Nothing to do.\n"
 msgstr ""
 
-#: src/adftool.c:210
+#: src/adftool.c:200
 #, c-format
 msgid ""
 "Conflicting operations: please pass either --lookup, --insert or --remove.\n"
 msgstr ""
 
-#: src/adftool.c:219
+#: src/adftool.c:209
 #, c-format
 msgid "The file \"%s\" could not be opened.\n"
 msgstr ""
 
-#: src/adftool.c:229 src/adftool.c:242 src/adftool.c:307
+#: src/adftool.c:219 src/adftool.c:232 src/adftool.c:287
 #, c-format
 msgid "Cannot allocate memory to hold the results.\n"
 msgstr ""
 
-#: src/adftool.c:248
+#: src/adftool.c:238
 #, c-format
 msgid "Cannot list the statements.\n"
 msgstr ""
 
-#: src/adftool.c:263
-#, c-format
-msgid "I don’t know if the result has been deleted.\n"
-msgstr ""
-
-#: src/adftool.c:284
-#, c-format
-msgid "Error reading the file.\n"
-msgstr ""
-
-#: src/adftool.c:330
+#: src/adftool.c:310
 #, c-format
 msgid "I don’t support namespaced data yet.\n"
 msgstr ""
 
-#: src/adftool.c:407
+#: src/adftool.c:387
 #, c-format
 msgid "Could not insert the data.\n"
 msgstr ""
 
-#: src/adftool.c:414
+#: src/adftool.c:394
 #, c-format
 msgid "Could not delete the data.\n"
 msgstr ""
@@ -195,7 +180,7 @@ msgid "Inconsistent result of the dataset dimensions.\n"
 msgstr ""
 
 #: src/adftool_hdf5.h:131 src/libadftool/dictionary.c:277
-#: src/libadftool/dictionary.c:372 src/libadftool/statement.c:573
+#: src/libadftool/dictionary.c:372 src/libadftool/statement.c:501
 #, c-format
 msgid "Could not extend the dataset.\n"
 msgstr ""
@@ -421,67 +406,67 @@ msgstr ""
 msgid "The filter test failed at point %lu.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:126
+#: src/term_manipulation_example.c:123
 #, c-format
 msgid "Type %lu for number %lu is %d, should be %d.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:137
+#: src/term_manipulation_example.c:134
 #, c-format
 msgid "Value for number %lu is %s, should be %s.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:145
+#: src/term_manipulation_example.c:142
 #, c-format
 msgid "Meta for number %lu is %s, should be %s.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:162
+#: src/term_manipulation_example.c:159
 #, c-format
 msgid "Comparison between %lu and %lu should be %d, it is %d.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:182
+#: src/term_manipulation_example.c:179
 #, c-format
 msgid "Could not add %s to the dictionary.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:205
+#: src/term_manipulation_example.c:202
 #, c-format
 msgid "Not enough memory to allocate a term.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:210
+#: src/term_manipulation_example.c:207
 #, c-format
 msgid "Failed to encode term %lu.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:215
+#: src/term_manipulation_example.c:212
 #, c-format
 msgid "Encoding term %lu gives %016lx, not %016lx.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:221
+#: src/term_manipulation_example.c:218
 #, c-format
 msgid "Failed to decode term %lu (%016lx).\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:237
+#: src/term_manipulation_example.c:234
 #, c-format
 msgid "%s:%d: Type %lu for number %lu is %d, should be %d.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:248
+#: src/term_manipulation_example.c:245
 #, c-format
 msgid "%s:%d: Value for number %lu is %s, should be %s.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:256
+#: src/term_manipulation_example.c:253
 #, c-format
 msgid "%s:%d: Meta for number %lu is %s, should be %s.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:270
+#: src/term_manipulation_example.c:267
 #, c-format
 msgid "The test failed, keeping term_example.adf around.\n"
 msgstr ""

@@ -156,8 +156,8 @@ index_get_key (const struct adftool_file *file,
   void *unknown;
   if (key_get_unknown (key, &unknown) == 0)
     {
-      /* The key is unknown. */
-      error = adftool_statement_copy (dest, unknown);
+      /* The key is the unknown variable. */
+      adftool_statement_copy (dest, unknown);
     }
   else if (key_get_known (key, &known) == 0)
     {

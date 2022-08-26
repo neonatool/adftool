@@ -46,10 +46,7 @@ if (decoded_uri == NULL)
   {
     abort ();
   }
-if (adftool_term_set_named (term, decoded_uri) != 0)
-  {
-    abort ();
-  }
+adftool_term_set_named (term, decoded_uri);
 free (decoded_uri);
 return 1;
 /* *INDENT-OFF* */
@@ -57,10 +54,7 @@ return 1;
 
 "_:"({PN_CHARS_U}|[0-9])(({PN_CHARS}|".")*{PN_CHARS})? {
 /* *INDENT-ON* */
-if (adftool_term_set_blank (term, yytext + strlen ("_:")) != 0)
-  {
-    abort ();
-  }
+adftool_term_set_blank (term, yytext + strlen ("_:"));
 return 1;
 /* *INDENT-OFF* */
 }
@@ -72,10 +66,7 @@ if (unescaped == NULL)
   {
     abort ();
   }
-if (adftool_term_set_literal (term, unescaped, NULL, NULL) != 0)
-  {
-    abort ();
-  }
+adftool_term_set_literal (term, unescaped, NULL, NULL);
 free (unescaped);
 return 1;
 /* *INDENT-OFF* */
@@ -100,10 +91,7 @@ if (type == NULL)
   {
     abort ();
   }
-if (adftool_term_set_literal (term, unescaped, type, NULL) != 0)
-  {
-    abort ();
-  }
+adftool_term_set_literal (term, unescaped, type, NULL);
 free (type);
 free (unescaped);
 return 1;
@@ -128,10 +116,7 @@ if (langtag == NULL)
   {
     abort ();
   }
-if (adftool_term_set_literal (term, unescaped, NULL, langtag) != 0)
-  {
-    abort ();
-  }
+adftool_term_set_literal (term, unescaped, NULL, langtag);
 free (langtag);
 free (unescaped);
 return 1;
@@ -140,55 +125,40 @@ return 1;
 
 "true" {
 /* *INDENT-ON* */
-if (adftool_term_set_literal
-    (term, "true", "http://www.w3.org/2001/XMLSchema#boolean", NULL) != 0)
-  {
-    abort ();
-  }
+adftool_term_set_literal
+  (term, "true", "http://www.w3.org/2001/XMLSchema#boolean", NULL);
 return 1;
 /* *INDENT-OFF* */
 }
 
 "false" {
 /* *INDENT-ON* */
-if (adftool_term_set_literal
-    (term, "false", "http://www.w3.org/2001/XMLSchema#boolean", NULL) != 0)
-  {
-    abort ();
-  }
+adftool_term_set_literal
+  (term, "false", "http://www.w3.org/2001/XMLSchema#boolean", NULL);
 return 1;
 /* *INDENT-OFF* */
 }
 
 [+-]?[0-9]+ {
 /* *INDENT-ON* */
-if (adftool_term_set_literal
-    (term, yytext, "http://www.w3.org/2001/XMLSchema#integer", NULL) != 0)
-  {
-    abort ();
-  }
+adftool_term_set_literal
+  (term, yytext, "http://www.w3.org/2001/XMLSchema#integer", NULL);
 return 1;
 /* *INDENT-OFF* */
 }
 
 [+-]?[0-9]*"."[0-9]+ {
 /* *INDENT-ON* */
-if (adftool_term_set_literal
-    (term, yytext, "http://www.w3.org/2001/XMLSchema#decimal", NULL) != 0)
-  {
-    abort ();
-  }
+adftool_term_set_literal
+  (term, yytext, "http://www.w3.org/2001/XMLSchema#decimal", NULL);
 return 1;
 /* *INDENT-OFF* */
 }
 
 [+-]?([0-9]+"."[0-9]*{EXPONENT}|"."[0-9]+{EXPONENT}|[0-9]+{EXPONENT}) {
 /* *INDENT-ON* */
-if (adftool_term_set_literal
-    (term, yytext, "http://www.w3.org/2001/XMLSchema#double", NULL) != 0)
-  {
-    abort ();
-  }
+adftool_term_set_literal
+  (term, yytext, "http://www.w3.org/2001/XMLSchema#double", NULL);
 return 1;
 /* *INDENT-OFF* */
 }
