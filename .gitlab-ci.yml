@@ -81,9 +81,9 @@ build_mingw:
     - cd build-mingw
     - ../adftool-*/configure CPPFLAGS=-I$PWD/../public/mingw64/include LIBS=-lhdf5 LDFLAGS=-L$PWD/../public/mingw64/lib --enable-relocatable --host=x86_64-w64-mingw32 --prefix=/mingw64
     - make -j
-    - make bplus_tree_grow_file_example.exe
-    - wine bplus_tree_grow_file_example.exe
     - make -j DESTDIR=$PWD/../public install
+    - cp ../public/mingw64/bin/*.dll .
+    - make -j check "LOG_COMPILER = ./libtool --mode=execute wine"
   artifacts:
     paths:
       - public
