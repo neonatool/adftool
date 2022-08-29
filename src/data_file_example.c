@@ -54,9 +54,8 @@ main (int argc, char *argv[])
     {
       abort ();
     }
-  adftool_statement_set_subject (statement, terms[0]);
-  adftool_statement_set_predicate (statement, terms[1]);
-  adftool_statement_set_object (statement, terms[2]);
+  adftool_statement_set (statement, &(terms[0]), &(terms[1]), &(terms[2]),
+			 NULL, NULL);
   if (adftool_insert (file, statement) != 0)
     {
       abort ();
@@ -111,29 +110,37 @@ main (int argc, char *argv[])
     {
       terms[i] = adftool_term_alloc ();
     }
-  int has_subject, has_predicate, has_object;
-  adftool_statement_get_subject (result, &has_subject, terms[0]);
-  adftool_statement_get_predicate (result, &has_predicate, terms[1]);
-  adftool_statement_get_object (result, &has_object, terms[2]);
-  if (!has_subject || !has_predicate || !has_object)
+  const struct adftool_term *s, *p, *o;
+  adftool_statement_get (result, (struct adftool_term **) &s,
+			 (struct adftool_term **) &p,
+			 (struct adftool_term **) &o, NULL, NULL);
+  if (s == NULL || p == NULL || o == NULL)
     {
       abort ();
     }
+  const struct adftool_term *result_terms[3];
+  result_terms[0] = s;
+  result_terms[1] = p;
+  result_terms[2] = o;
   char *term_values[3];
+  assert ((sizeof (result_terms) / sizeof (result_terms[0]))
+	  == (sizeof (terms) / sizeof (terms[0])));
+  assert ((sizeof (term_values) / sizeof (term_values[0]))
+	  == (sizeof (terms) / sizeof (terms[0])));
   for (size_t i = 0; i < sizeof (terms) / sizeof (terms[0]); i++)
     {
-      if (!adftool_term_is_named (terms[i]))
+      if (!adftool_term_is_named (result_terms[i]))
 	{
 	  abort ();
 	}
-      size_t length = adftool_term_value (terms[i], 0, 0, NULL);
+      size_t length = adftool_term_value (result_terms[i], 0, 0, NULL);
       term_values[i] = malloc (length + 1);
       if (term_values[i] == NULL)
 	{
 	  abort ();
 	}
       size_t check_length =
-	adftool_term_value (terms[i], 0, length + 1, term_values[i]);
+	adftool_term_value (result_terms[i], 0, length + 1, term_values[i]);
       assert (length == check_length);
     }
   if ((strcmp (term_values[0], "a") != 0)

@@ -16,17 +16,6 @@
 #define _(String) gettext(String)
 #define N_(String) (String)
 
-#define BUILD_TERM(what, i)				\
-  if (quad[i] == NULL)					\
-    {							\
-      adftool_statement_set_##what (statement, NULL);	\
-    }							\
-  else							\
-    {							\
-      adftool_term_set_named (term, quad[i]);		\
-      adftool_statement_set_##what (statement, term);	\
-    }
-
 static struct adftool_statement *
 build_statement (const char **quad)
 {
@@ -35,16 +24,30 @@ build_statement (const char **quad)
     {
       abort ();
     }
-  struct adftool_term *term = adftool_term_alloc ();
-  if (term == NULL)
+  struct adftool_term *terms[4];
+  for (size_t i = 0; i < sizeof (terms) / sizeof (terms[0]); i++)
     {
-      abort ();
+      if (quad[i] == NULL)
+	{
+	  terms[i] = NULL;
+	}
+      else
+	{
+	  terms[i] = adftool_term_alloc ();
+	  if (terms[i] == NULL)
+	    {
+	      abort ();
+	    }
+	  adftool_term_set_named (terms[i], quad[i]);
+	}
     }
-  BUILD_TERM (subject, 0);
-  BUILD_TERM (predicate, 1);
-  BUILD_TERM (object, 2);
-  BUILD_TERM (graph, 3);
-  adftool_term_free (term);
+  adftool_statement_set (statement, &(terms[0]), &(terms[1]), &(terms[2]),
+			 &(terms[3]), NULL);
+  for (size_t i = 0; i < sizeof (terms) / sizeof (terms[0]); i++)
+    {
+      /* It even works when NULL */
+      adftool_term_free (terms[i]);
+    }
   return statement;
 }
 

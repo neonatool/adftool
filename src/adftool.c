@@ -119,16 +119,16 @@ main (int argc, char *argv[])
 	  switch (c)
 	    {
 	    case 's':
-	      adftool_statement_set_subject (pattern, term);
+	      adftool_statement_set (pattern, &term, NULL, NULL, NULL, NULL);
 	      break;
 	    case 'p':
-	      adftool_statement_set_predicate (pattern, term);
+	      adftool_statement_set (pattern, NULL, &term, NULL, NULL, NULL);
 	      break;
 	    case 'o':
-	      adftool_statement_set_object (pattern, term);
+	      adftool_statement_set (pattern, NULL, NULL, &term, NULL, NULL);
 	      break;
 	    case 'g':
-	      adftool_statement_set_graph (pattern, term);
+	      adftool_statement_set (pattern, NULL, NULL, NULL, &term, NULL);
 	      break;
 	    }
 	  break;
@@ -220,19 +220,6 @@ main (int argc, char *argv[])
 	      exit (1);
 	    }
 	  uint64_t current_time = ((uint64_t) time (NULL)) * 1000;
-	  struct adftool_term *terms[4];
-	  int term_present[4];
-	  for (size_t i = 0; i < 4; i++)
-	    {
-	      terms[i] = adftool_term_alloc ();
-	      if (terms[i] == NULL)
-		{
-		  fprintf (stderr,
-			   _
-			   ("Cannot allocate memory to hold the results.\n"));
-		  exit (1);
-		}
-	    }
 	  if (adftool_lookup (file, pattern, results) != 0)
 	    {
 	      fprintf (stderr, _("Cannot list the statements.\n"));
@@ -244,31 +231,25 @@ main (int argc, char *argv[])
 	      const struct adftool_statement *statement =
 		adftool_results_get (results, i);
 	      uint64_t deletion_date;
-	      int has_deletion_date;
-	      adftool_statement_get_deletion_date (statement,
-						   &has_deletion_date,
-						   &deletion_date);
+	      adftool_statement_get (statement, NULL, NULL, NULL, NULL,
+				     &deletion_date);
+	      const int has_deletion_date =
+		(deletion_date != ((uint64_t) (-1)));
 	      if (has_deletion_date && deletion_date <= current_time)
 		{
 		  /* Skip this statement. */
 		}
 	      else
 		{
-		  adftool_statement_get_subject (statement,
-						 &(term_present[0]),
-						 terms[0]);
-		  adftool_statement_get_predicate (statement,
-						   &(term_present[1]),
-						   terms[1]);
-		  adftool_statement_get_object (statement, &(term_present[2]),
-						terms[2]);
-		  adftool_statement_get_graph (statement, &(term_present[3]),
-					       terms[3]);
-		  if (term_present[0] && term_present[1] && term_present[2])
+		  struct adftool_term *terms[4];
+		  adftool_statement_get (statement, &(terms[0]), &(terms[1]),
+					 &(terms[2]), &(terms[3]), NULL);
+		  if (terms[0] != NULL && terms[1] != NULL
+		      && terms[2] != NULL)
 		    {
 		      for (size_t i = 0; i < 4; i++)
 			{
-			  if (term_present[i])
+			  if (terms[i] != NULL)
 			    {
 			      char *value = NULL;
 			      char *meta = NULL;
@@ -282,9 +263,8 @@ main (int argc, char *argv[])
 			      meta = malloc (n_meta + 1);
 			      if (value == NULL || meta == NULL)
 				{
-				  fprintf (stderr,
-					   _
-					   ("Cannot allocate memory to hold the results.\n"));
+				  fprintf (stderr, _("\
+Cannot allocate memory to hold the results.\n"));
 				  exit (1);
 				}
 			      n_value_check =
@@ -373,10 +353,6 @@ main (int argc, char *argv[])
 		      printf (".\n");
 		    }
 		}
-	    }
-	  for (size_t i = 0; i < 4; i++)
-	    {
-	      adftool_term_free (terms[i]);
 	    }
 	  adftool_results_free (results);
 	}

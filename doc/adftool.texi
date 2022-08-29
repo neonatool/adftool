@@ -571,23 +571,36 @@ Allocate a new pattern. Return @code{NULL} if the allocation failed.
 Free an allocated @var{statement}.
 @end deftypefun
 
-@deftypefun void adftool_statement_set_subject (struct adftool_statement *@var{statement}, const struct adftool_term *@var{subject})
-@deftypefunx void adftool_statement_set_predicate (struct adftool_statement *@var{statement}, const struct adftool_term *@var{predicate})
-@deftypefunx void adftool_statement_set_object (struct adftool_statement *@var{statement}, const struct adftool_term *@var{object})
-@deftypefunx void adftool_statement_set_graph (struct adftool_statement *@var{statement}, const struct adftool_term *@var{graph})
-@deftypefunx void adftool_statement_set_deletion_date (struct adftool_statement *@var{statement}, const uint64_t @var{deletion_date})
-@deftypefunx void adftool_statement_copy (struct adftool_statement *@var{statement}, const struct adftool_statement *@var{source})
-Initialize @var{statement}. In case of a lack of memory, return a
-non-null error code. Otherwise return 0.
+@deftypefun void adftool_statement_set (struct adftool_statement *@var{statement}, struct adftool_term **@var{subject}, struct adftool_term **@var{predicate}, struct adftool_term **@var{object}, struct adftool_term **@var{graph}, const uint64_t *@var{deletion_date})
+Initialize @var{statement}. For each statement @var{term}, which can
+be @var{subject}, @var{predicate}, @var{object}, @var{graph} and
+@var{deletion_date}, if @var{term} is @code{NULL}, then don’t set
+@var{term}. If it is not @code{NULL}, and @code{*@var{term}} is
+@code{NULL}, then undefine @var{term}. If @code{@var{term}} and
+@code{*@var{term}} are not @code{NULL}, then set the corresponding
+statement term to @code{*@var{term}}.
+
+The deletion date is a bit special in that the special value to
+indicate to reset the deletion date (undelete the statement) is
+@code{((uint64_t) (-1))} instead of @code{NULL}.
+
+It is not very convenient to pass constant double-pointers in C,
+because conversions are not automatic. This is why @var{subject},
+@var{predicate}, @var{object} and @var{graph} do not have the
+@code{const} decorator. Despite this, neither pointer layer get
+modified by the function, and the memory ownership is not transferred.
 @end deftypefun
 
-@deftypefun void adftool_statement_get_subject (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
-@deftypefunx void adftool_statement_get_predicate (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
-@deftypefunx void adftool_statement_get_object (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
-@deftypefunx void adftool_statement_get_graph (const struct adftool_statement *@var{statement}, int *@var{is_set}, struct adftool_term *@var{term})
-@deftypefunx void adftool_statement_get_deletion_date (const struct adftool_statement *@var{statement}, int *@var{is_set}, uint64_t *@var{date})
-Get the pattern field. Set @var{is_set} to whether it is set, and if
-so, set @var{term} or @var{date}. @var{term} must be allocated.
+@deftypefun void adftool_statement_get (const struct adftool_statement *@var{statement}, struct adftool_term **@var{subject}, struct adftool_term **@var{predicate}, struct adftool_term **@var{object}, struct adftool_term **@var{graph}, uint64_t *@var{deletion_date})
+For each statement @var{term}, which can be @var{subject},
+@var{predicate}, @var{object}, @var{graph} and @var{deletion_date}, if
+@var{term} is @code{NULL}, then don’t get it. Otherwise, fill the
+function argument to an @strong{unowned} (non-transferred), constant
+pointer to the corresponding term in @var{statement} if it is set, or
+@code{NULL} otherwise (@code{((uint64_t) (-1))} for the deletion
+date). You @strong{must not} free the argument, and you @strong{must
+not} modify it. The @code{const} modifier is not specified because
+it’s easier to use that way.
 @end deftypefun
 
 @deftypefun int adftool_statement_compare (const struct adftool_statement *@var{reference}, const struct adftool_statement *@var{other}, const char *@var{order})

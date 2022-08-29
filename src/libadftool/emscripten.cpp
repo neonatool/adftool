@@ -37,16 +37,8 @@ EMSCRIPTEN_BINDINGS (adftool)
   EXPORT (adftool_term_parse_n3);
   EXPORT (adftool_statement_alloc);
   EXPORT (adftool_statement_free);
-  EXPORT (adftool_statement_set_subject);
-  EXPORT (adftool_statement_set_predicate);
-  EXPORT (adftool_statement_set_object);
-  EXPORT (adftool_statement_set_graph);
-  EXPORT (adftool_statement_set_deletion_date);
-  EXPORT (adftool_statement_get_subject);
-  EXPORT (adftool_statement_get_predicate);
-  EXPORT (adftool_statement_get_object);
-  EXPORT (adftool_statement_get_graph);
-  EXPORT (adftool_statement_get_deletion_date);
+  EXPORT (adftool_statement_set);
+  EXPORT (adftool_statement_get);
   EXPORT (adftool_statement_copy);
   EXPORT (adftool_statement_compare);
   EXPORT (adftool_quads_get);

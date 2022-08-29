@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-08-26 14:56+0000\n"
+"POT-Creation-Date: 2022-08-29 08:09+0000\n"
 "PO-Revision-Date: 2022-08-19 11:54+0200\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -171,27 +171,27 @@ msgstr ""
 msgid "The file \"%s\" could not be opened.\n"
 msgstr "Le fichier « %s » n’a pas pu être ouvert.\n"
 
-#: src/adftool.c:219 src/adftool.c:232 src/adftool.c:287
+#: src/adftool.c:219 src/adftool.c:266
 #, c-format
 msgid "Cannot allocate memory to hold the results.\n"
 msgstr "Impossible d’allouer de la mémoire pour les résultats.\n"
 
-#: src/adftool.c:238
+#: src/adftool.c:225
 #, c-format
 msgid "Cannot list the statements.\n"
 msgstr "Impossible de lister les déclarations.\n"
 
-#: src/adftool.c:310
+#: src/adftool.c:290
 #, c-format
 msgid "I don’t support namespaced data yet.\n"
 msgstr "Je ne supporte pas encore les données avec un espace de nom.\n"
 
-#: src/adftool.c:387
+#: src/adftool.c:363
 #, c-format
 msgid "Could not insert the data.\n"
 msgstr "Impossible d’ajouter les données.\n"
 
-#: src/adftool.c:394
+#: src/adftool.c:370
 #, c-format
 msgid "Could not delete the data.\n"
 msgstr ""
@@ -214,7 +214,7 @@ msgid "Inconsistent result of the dataset dimensions.\n"
 msgstr "Dimensioins du jeu de données incompatibles.\n"
 
 #: src/adftool_hdf5.h:131 src/libadftool/dictionary.c:277
-#: src/libadftool/dictionary.c:372 src/libadftool/statement.c:501
+#: src/libadftool/dictionary.c:372 src/libadftool/statement.c:397
 #, c-format
 msgid "Could not extend the dataset.\n"
 msgstr "Impossible d’étendre le jeu de données.\n"

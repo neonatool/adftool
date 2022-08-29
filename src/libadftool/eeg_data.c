@@ -52,24 +52,20 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
 	  error = 1;
 	  goto clean_new_channel;
 	}
-      struct adftool_term *identifier = adftool_term_alloc ();
-      if (identifier == NULL)
+      const struct adftool_term *identifier;
+      adftool_statement_get (new_channel, NULL, NULL,
+			     (struct adftool_term **) &identifier, NULL,
+			     NULL);
+      assert (identifier != NULL);
+      if (adftool_set_channel_identifier (file, i, identifier) != 0)
 	{
 	  error = 1;
 	  goto clean_new_channel;
 	}
-      int has_object;
-      adftool_statement_get_object (new_channel, &has_object, identifier);
-      assert (has_object);
-      if (adftool_set_channel_identifier (file, i, identifier) != 0)
-	{
-	  error = 1;
-	  goto clean_identifier;
-	}
       if (adftool_set_channel_decoder (file, identifier, scale, offset) != 0)
 	{
 	  error = 1;
-	  goto clean_identifier;
+	  goto clean_new_channel;
 	}
       hid_t selection_space = H5Screate_simple (2, dimensions, NULL);
       if (selection_space == H5I_INVALID_HID)
@@ -123,8 +119,6 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
       H5Sclose (memspace);
     clean_selection_space:
       H5Sclose (selection_space);
-    clean_identifier:
-      adftool_term_free (identifier);
     clean_new_channel:
       adftool_statement_free (new_channel);
       if (error)
@@ -330,9 +324,10 @@ new_channel_statement (size_t i)
   adftool_term_set_named (subject, "");
   adftool_term_set_named (predicate, pred);
   adftool_term_set_named (object, label);
-  adftool_statement_set_subject (statement, subject);
-  adftool_statement_set_predicate (statement, predicate);
-  adftool_statement_set_object (statement, object);
+  struct adftool_term *graph = NULL;
+  uint64_t deletion_date = ((uint64_t) (-1));
+  adftool_statement_set (statement, &subject, &predicate, &object, &graph,
+			 &deletion_date);
   adftool_term_free (object);
 cleanup_predicate:
   adftool_term_free (predicate);

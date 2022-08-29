@@ -41,17 +41,17 @@ main (int argc, char *argv[])
     {
       abort ();
     }
-  struct adftool_term *term = adftool_term_alloc ();
-  if (term == NULL)
+  struct adftool_term *term_a = adftool_term_alloc ();
+  struct adftool_term *term_b = adftool_term_alloc ();
+  struct adftool_term *term_c = adftool_term_alloc ();
+  if (term_a == NULL || term_b == NULL || term_c == NULL)
     {
       abort ();
     }
-  adftool_term_set_named (term, "a");
-  adftool_statement_set_subject (statement, term);
-  adftool_term_set_named (term, "b");
-  adftool_statement_set_predicate (statement, term);
-  adftool_term_set_named (term, "c");
-  adftool_statement_set_object (statement, term);
+  adftool_term_set_named (term_a, "a");
+  adftool_term_set_named (term_b, "b");
+  adftool_term_set_named (term_c, "c");
+  adftool_statement_set (statement, &term_a, &term_b, &term_c, NULL, NULL);
   uint32_t statement_id = 42;
   if (adftool_quads_insert (file, statement, &statement_id) != 0)
     {
@@ -74,10 +74,10 @@ main (int argc, char *argv[])
     {
       abort ();
     }
-  int statement_zero_deleted;
   uint64_t deletion_date;
-  adftool_statement_get_deletion_date
-    (statement_zero, &statement_zero_deleted, &deletion_date);
+  adftool_statement_get (statement_zero, NULL, NULL, NULL, NULL,
+			 &deletion_date);
+  const int statement_zero_deleted = (deletion_date != ((uint64_t) (-1)));
   if (!statement_zero_deleted)
     {
       abort ();
@@ -91,7 +91,9 @@ main (int argc, char *argv[])
       abort ();
     }
   adftool_statement_free (statement_zero);
-  adftool_term_free (term);
+  adftool_term_free (term_c);
+  adftool_term_free (term_b);
+  adftool_term_free (term_a);
   adftool_statement_free (statement);
   adftool_file_close (file);
   adftool_file_free (file);

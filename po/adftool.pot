@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.1.0-18-gc5050ee\n"
+"Project-Id-Version: adftool 0.1.0-22-g7f0b5e6\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-08-26 14:56+0000\n"
+"POT-Creation-Date: 2022-08-29 08:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -139,27 +139,27 @@ msgstr ""
 msgid "The file \"%s\" could not be opened.\n"
 msgstr ""
 
-#: src/adftool.c:219 src/adftool.c:232 src/adftool.c:287
+#: src/adftool.c:219 src/adftool.c:266
 #, c-format
 msgid "Cannot allocate memory to hold the results.\n"
 msgstr ""
 
-#: src/adftool.c:238
+#: src/adftool.c:225
 #, c-format
 msgid "Cannot list the statements.\n"
 msgstr ""
 
-#: src/adftool.c:310
+#: src/adftool.c:290
 #, c-format
 msgid "I don’t support namespaced data yet.\n"
 msgstr ""
 
-#: src/adftool.c:387
+#: src/adftool.c:363
 #, c-format
 msgid "Could not insert the data.\n"
 msgstr ""
 
-#: src/adftool.c:394
+#: src/adftool.c:370
 #, c-format
 msgid "Could not delete the data.\n"
 msgstr ""
@@ -180,7 +180,7 @@ msgid "Inconsistent result of the dataset dimensions.\n"
 msgstr ""
 
 #: src/adftool_hdf5.h:131 src/libadftool/dictionary.c:277
-#: src/libadftool/dictionary.c:372 src/libadftool/statement.c:501
+#: src/libadftool/dictionary.c:372 src/libadftool/statement.c:397
 #, c-format
 msgid "Could not extend the dataset.\n"
 msgstr ""

@@ -8,11 +8,13 @@
 static struct adftool_statement *
 column_number_finder (size_t i)
 {
-  int error = 0;
   /* Construct: ? lyto:column-number "…"^^xsd:integer */
   struct adftool_statement *pattern = adftool_statement_alloc ();
+  struct adftool_term *subject = NULL;
   struct adftool_term *predicate = adftool_term_alloc ();
   struct adftool_term *object = adftool_term_alloc ();
+  struct adftool_term *graph = NULL;
+  uint64_t deletion_date = (uint64_t) (-1);
   if (pattern == NULL || predicate == NULL || object == NULL)
     {
       if (pattern)
@@ -27,8 +29,7 @@ column_number_finder (size_t i)
 	{
 	  adftool_term_free (object);
 	}
-      error = 1;
-      goto wrapup;
+      return NULL;
     }
   char column_number[256];
   sprintf (column_number, "%lu", i);
@@ -36,16 +37,10 @@ column_number_finder (size_t i)
     (predicate, "https://localhost/lytonepal#column-number");
   adftool_term_set_literal
     (object, column_number, "http://www.w3.org/2001/XMLSchema#integer", NULL);
-  adftool_statement_set_predicate (pattern, predicate);
-  adftool_statement_set_object (pattern, object);
-  if (error)
-    {
-      adftool_statement_free (pattern);
-      pattern = NULL;
-    }
+  adftool_statement_set (pattern, &subject, &predicate, &object, &graph,
+			 &deletion_date);
   adftool_term_free (predicate);
   adftool_term_free (object);
-wrapup:
   return pattern;
 }
 
@@ -57,9 +52,8 @@ adftool_find_channel_identifier (const struct adftool_file *file,
   int error = 0;
   /* Construct: ? lyto:column-number "…"^^xsd:integer */
   struct adftool_statement *pattern = column_number_finder (channel_index);
-  struct adftool_term *subject = adftool_term_alloc ();
   struct adftool_results *results = adftool_results_alloc ();
-  if (pattern == NULL || subject == NULL || results == NULL)
+  if (pattern == NULL || results == NULL)
     {
       abort ();
     }
@@ -72,14 +66,14 @@ adftool_find_channel_identifier (const struct adftool_file *file,
   size_t n_live_results = 0;
   for (size_t i = 0; i < n_results; i++)
     {
+      struct adftool_term *subject;
       const struct adftool_statement *candidate =
 	adftool_results_get (results, i);
-      int has_subject;
-      int has_deletion_date;
       uint64_t deletion_date;
-      adftool_statement_get_subject (candidate, &has_subject, subject);
-      adftool_statement_get_deletion_date
-	(candidate, &has_deletion_date, &deletion_date);
+      adftool_statement_get (candidate, &subject, NULL, NULL, NULL,
+			     &deletion_date);
+      const int has_subject = (subject != NULL);
+      const int has_deletion_date = (deletion_date != ((uint64_t) (-1)));
       assert (has_subject);
       if (!has_deletion_date)
 	{
@@ -94,7 +88,6 @@ adftool_find_channel_identifier (const struct adftool_file *file,
     }
 cleanup:
   adftool_statement_free (pattern);
-  adftool_term_free (subject);
   adftool_results_free (results);
   return error;
 }
@@ -115,7 +108,8 @@ adftool_set_channel_identifier (struct adftool_file *file,
       error = 1;
       goto cleanup;
     }
-  adftool_statement_set_subject (pattern, identifier);
+  adftool_statement_set (pattern, (struct adftool_term **) &identifier, NULL,
+			 NULL, NULL, NULL);
   if (adftool_insert (file, pattern) != 0)
     {
       error = 1;
@@ -216,8 +210,8 @@ channel_decoder_finder (const struct adftool_term *identifier,
 	   "https://localhost/lytonepal#has-channel-decoder-%s",
 	   scale_or_offset);
   adftool_term_set_named (predicate, predicate_str);
-  adftool_statement_set_subject (pattern, identifier);
-  adftool_statement_set_predicate (pattern, predicate);
+  adftool_statement_set (pattern, (struct adftool_term **) &identifier,
+			 &predicate, NULL, NULL, NULL);
   adftool_term_free (predicate);
   return pattern;
 }
@@ -247,12 +241,12 @@ channel_decoder_find (struct adftool_file *file,
     {
       const struct adftool_statement *candidate =
 	adftool_results_get (results, i);
-      int has_object;
-      int has_deletion_date;
+      struct adftool_term *literal_value;
       uint64_t deletion_date;
-      adftool_statement_get_object (candidate, &has_object, literal_value);
-      adftool_statement_get_deletion_date
-	(candidate, &has_deletion_date, &deletion_date);
+      adftool_statement_get (candidate, NULL, NULL, &literal_value, NULL,
+			     &deletion_date);
+      const int has_object = (literal_value != NULL);
+      const int has_deletion_date = (deletion_date != ((uint64_t) (-1)));
       assert (has_object);
       if (!has_deletion_date
 	  && term_to_literal_double (literal_value, value) == 0)
@@ -288,7 +282,8 @@ channel_decoder_replace (struct adftool_file *file,
       error = 1;
       goto cleanup;
     }
-  adftool_statement_set_object (pattern, replacement);
+  adftool_statement_set (pattern, NULL, NULL,
+			 (struct adftool_term **) &replacement, NULL, NULL);
   if (adftool_insert (file, pattern) != 0)
     {
       error = 1;
