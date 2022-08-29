@@ -105,7 +105,7 @@ build_emscripten:
     - emconfigure ../adftool-*/configure CPPFLAGS=-I$PWD/../public/emscripten/include LIBS=$PWD/../public/emscripten/lib/libhdf5.a LDFLAGS=-L$PWD/../public/emscripten/lib --disable-relocatable --disable-shared --prefix=/emscripten
     - emmake make -j
     - emmake make -j DESTDIR=$PWD/../public install
-    - ./libtool --tag=CC --mode=link emcc -O3 libadftool.la -o ../public/index.html
+    - ./libtool --tag=CC --mode=link emcc -O3 libadftool.la -sEXPORT_ALL=1 -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -sEXPORTED_FUNCTIONS=_malloc,_free,_adftool_file_open $PWD/../public/emscripten/lib/libhdf5.a -o ../public/index.html
     - ls -R .libs
     - cp -R .libs/ ../public
   artifacts:
