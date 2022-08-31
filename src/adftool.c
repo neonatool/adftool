@@ -143,7 +143,7 @@ main (int argc, char *argv[])
 	  }
 	  break;
 	case 'h':
-	  printf (_("Usage: adftool [OPTION…] FILE\n\n"
+	  printf (_("Usage: [ENVIRONMENT…] adftool [OPTION…] FILE\n\n"
 		    "Read or update FILE.\n\n"
 		    "You can set a pattern in N-Triples format:\n"
 		    "  -s NT, --%s=NT;\n"
@@ -161,6 +161,12 @@ main (int argc, char *argv[])
 		    "the current date when deleting statements.\n"
 		    "  -h, --%s: print this message and exit.\n"
 		    "  -V, --%s: print the package version and exit.\n"
+		    "\n"
+		    "The following environment variables can change the "
+		    "behavior of the program:\n"
+		    "  LANG: change the localization. Set it as \"LANG=C\" "
+		    "in the environment or \"LANG=en_US.UTF-8\" to disable "
+		    "localization.\n"
 		    "\n"),
 		  P_ ("Command-line|Option|", "subject"),
 		  P_ ("Command-line|Option|", "predicate"),
@@ -172,6 +178,25 @@ main (int argc, char *argv[])
 		  P_ ("Command-line|Option|", "deletion-date"),
 		  P_ ("Command-line|Option|", "help"),
 		  P_ ("Command-line|Option|", "version"));
+	  static const char *env_names[] = {
+	    "LANG"
+	  };
+	  static const size_t n_env =
+	    (sizeof (env_names) / sizeof (env_names[0]));
+	  printf (_("Here is a summary of the current values "
+		    "of the main environment variables:\n"));
+	  for (size_t i = 0; i < n_env; i++)
+	    {
+	      char *value = getenv (env_names[i]);
+	      if (value)
+		{
+		  printf (_("  %s: \"%s\"\n"), env_names[i], value);
+		}
+	      else
+		{
+		  printf (_("  %s is unset\n"), env_names[i]);
+		}
+	    }
 	  exit (0);
 	case 'V':
 	  printf (_("%s\n"

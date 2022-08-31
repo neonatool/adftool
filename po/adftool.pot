@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.1.0-22-g2dd027a\n"
+"Project-Id-Version: adftool 0.1.0-23-gf1cb9ce\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-08-31 08:15+0000\n"
+"POT-Creation-Date: 2022-08-31 08:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,52 +22,52 @@ msgstr ""
 msgid "Not enough memory.\n"
 msgstr ""
 
-#: src/adftool.c:51 src/adftool.c:169 src/adftool.c:200
+#: src/adftool.c:51 src/adftool.c:175 src/adftool.c:225
 msgctxt "Command-line|Option|"
 msgid "lookup"
 msgstr ""
 
-#: src/adftool.c:53 src/adftool.c:170
+#: src/adftool.c:53 src/adftool.c:176
 msgctxt "Command-line|Option|"
 msgid "add"
 msgstr ""
 
-#: src/adftool.c:55 src/adftool.c:171 src/adftool.c:202
+#: src/adftool.c:55 src/adftool.c:177 src/adftool.c:227
 msgctxt "Command-line|Option|"
 msgid "remove"
 msgstr ""
 
-#: src/adftool.c:57 src/adftool.c:165
+#: src/adftool.c:57 src/adftool.c:171
 msgctxt "Command-line|Option|"
 msgid "subject"
 msgstr ""
 
-#: src/adftool.c:59 src/adftool.c:166
+#: src/adftool.c:59 src/adftool.c:172
 msgctxt "Command-line|Option|"
 msgid "predicate"
 msgstr ""
 
-#: src/adftool.c:61 src/adftool.c:167
+#: src/adftool.c:61 src/adftool.c:173
 msgctxt "Command-line|Option|"
 msgid "object"
 msgstr ""
 
-#: src/adftool.c:63 src/adftool.c:168
+#: src/adftool.c:63 src/adftool.c:174
 msgctxt "Command-line|Option|"
 msgid "graph"
 msgstr ""
 
-#: src/adftool.c:65 src/adftool.c:172
+#: src/adftool.c:65 src/adftool.c:178
 msgctxt "Command-line|Option|"
 msgid "deletion-date"
 msgstr ""
 
-#: src/adftool.c:67 src/adftool.c:173
+#: src/adftool.c:67 src/adftool.c:179
 msgctxt "Command-line|Option|"
 msgid "help"
 msgstr ""
 
-#: src/adftool.c:68 src/adftool.c:174
+#: src/adftool.c:68 src/adftool.c:180
 msgctxt "Command-line|Option|"
 msgid "version"
 msgstr ""
@@ -87,7 +87,7 @@ msgstr ""
 #: src/adftool.c:146
 #, c-format
 msgid ""
-"Usage: adftool [OPTION…] FILE\n"
+"Usage: [ENVIRONMENT…] adftool [OPTION…] FILE\n"
 "\n"
 "Read or update FILE.\n"
 "\n"
@@ -108,9 +108,29 @@ msgid ""
 "  -h, --%s: print this message and exit.\n"
 "  -V, --%s: print the package version and exit.\n"
 "\n"
+"The following environment variables can change the behavior of the program:\n"
+"  LANG: change the localization. Set it as \"LANG=C\" in the environment or "
+"\"LANG=en_US.UTF-8\" to disable localization.\n"
+"\n"
 msgstr ""
 
-#: src/adftool.c:177
+#: src/adftool.c:186
+#, c-format
+msgid ""
+"Here is a summary of the current values of the main environment variables:\n"
+msgstr ""
+
+#: src/adftool.c:193
+#, c-format
+msgid "  %s: \"%s\"\n"
+msgstr ""
+
+#: src/adftool.c:197
+#, c-format
+msgid "  %s is unset\n"
+msgstr ""
+
+#: src/adftool.c:202
 #, c-format
 msgid ""
 "%s\n"
@@ -118,52 +138,52 @@ msgid ""
 "Copyright status is unclear.\n"
 msgstr ""
 
-#: src/adftool.c:188
+#: src/adftool.c:213
 #, c-format
 msgid "No file to process.\n"
 msgstr ""
 
-#: src/adftool.c:193
+#: src/adftool.c:218
 #, c-format
 msgid "Nothing to do.\n"
 msgstr ""
 
-#: src/adftool.c:198
+#: src/adftool.c:223
 #, c-format
 msgid "Conflicting operations: please pass either --%s, --%s or --%s.\n"
 msgstr ""
 
-#: src/adftool.c:201
+#: src/adftool.c:226
 msgctxt "Command-line|Option|"
 msgid "insert"
 msgstr ""
 
-#: src/adftool.c:211
+#: src/adftool.c:236
 #, c-format
 msgid "The file \"%s\" could not be opened.\n"
 msgstr ""
 
-#: src/adftool.c:221 src/adftool.c:268
+#: src/adftool.c:246 src/adftool.c:293
 #, c-format
 msgid "Cannot allocate memory to hold the results.\n"
 msgstr ""
 
-#: src/adftool.c:227
+#: src/adftool.c:252
 #, c-format
 msgid "Cannot list the statements.\n"
 msgstr ""
 
-#: src/adftool.c:292
+#: src/adftool.c:317
 #, c-format
 msgid "I don’t support namespaced data yet.\n"
 msgstr ""
 
-#: src/adftool.c:365
+#: src/adftool.c:390
 #, c-format
 msgid "Could not insert the data.\n"
 msgstr ""
 
-#: src/adftool.c:372
+#: src/adftool.c:397
 #, c-format
 msgid "Could not delete the data.\n"
 msgstr ""
