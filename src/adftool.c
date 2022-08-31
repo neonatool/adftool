@@ -47,6 +47,7 @@ main (int argc, char *argv[])
   static int lookup = 0;
   static int insert = 0;
   static int remove = 0;
+  static int get_eeg_data = 0;
   static int set_eeg_data = 0;
   static struct option long_options[] = {
     {NP_ ("Command-line|Option|", "lookup"), no_argument, &lookup,
@@ -54,6 +55,8 @@ main (int argc, char *argv[])
     {NP_ ("Command-line|Option|", "add"), no_argument, &insert,
      1},
     {NP_ ("Command-line|Option|", "remove"), no_argument, &remove,
+     1},
+    {NP_ ("Command-line|Option|", "get-eeg-data"), no_argument, &get_eeg_data,
      1},
     {NP_ ("Command-line|Option|", "set-eeg-data"), no_argument, &set_eeg_data,
      1},
@@ -167,9 +170,12 @@ main (int argc, char *argv[])
 		  P_ ("Command-line|Option|", "add"),
 		  P_ ("Command-line|Option|", "remove"));
 	  printf (_("There are other operation modes for adftool:\n"
-		    "  --%s: set the raw EEG sensor data (in Tab-Separated "
-		    "Value [TSV] format) from the standard input.\n"
-		    "\n"), P_ ("Command-line|Option|", "set-eeg-data"));
+		    "  --%s: read the raw EEG sensor data (in Tab-Separated "
+		    "Value [TSV] format);\n"
+		    "  --%s: set the raw EEG sensor data (in TSV format) "
+		    "from the standard input.\n"
+		    "\n"), P_ ("Command-line|Option|", "get-eeg-data"),
+		  P_ ("Command-line|Option|", "set-eeg-data"));
 	  printf (_("There are other options:\n"
 		    "  -d DATE, --%s=DATE: use DATE instead of "
 		    "the current date when deleting statements.\n"
@@ -239,18 +245,20 @@ main (int argc, char *argv[])
       fprintf (stderr, _("No file to process.\n"));
       exit (0);
     }
-  if (!lookup && !insert && !remove && !set_eeg_data)
+  if (!lookup && !insert && !remove && !get_eeg_data && !set_eeg_data)
     {
       fprintf (stderr, _("Nothing to do.\n"));
       exit (0);
     }
-  if (lookup + insert + remove + set_eeg_data > 1)
+  if (lookup + insert + remove + get_eeg_data + set_eeg_data > 1)
     {
       fprintf (stderr,
 	       _("Conflicting operations: please pass either --%s, --%s, "
-		 "--%s or --%s.\n"), P_ ("Command-line|Option|", "lookup"),
+		 "--%s, --%s or --%s.\n"), P_ ("Command-line|Option|",
+					       "lookup"),
 	       P_ ("Command-line|Option|", "insert"),
 	       P_ ("Command-line|Option|", "remove"),
+	       P_ ("Command-line|Option|", "get-eeg-data"),
 	       P_ ("Command-line|Option|", "set-eeg-data"));
       exit (0);
     }
@@ -423,6 +431,45 @@ Cannot allocate memory to hold the results.\n"));
 	    {
 	      fprintf (stderr, _("Could not delete the data.\n"));
 	    }
+	}
+      if (get_eeg_data)
+	{
+	  size_t n_lines, n_columns;
+	  int error =
+	    adftool_eeg_get_data (file, 0, 0, &n_lines, 0, 0, &n_columns,
+				  NULL);
+	  if (error != 0)
+	    {
+	      fprintf (stderr, _("Could not read the EEG data.\n"));
+	      exit (1);
+	    }
+	  double *data = calloc (n_lines * n_columns, sizeof (double));
+	  if (data == NULL)
+	    {
+	      abort ();
+	    }
+	  size_t ck_n_lines, ck_n_columns;
+	  if (adftool_eeg_get_data
+	      (file, 0, n_lines, &ck_n_lines, 0, n_columns, &ck_n_columns,
+	       data) != 0)
+	    {
+	      abort ();
+	    }
+	  assert (n_lines == ck_n_lines);
+	  assert (n_columns == ck_n_columns);
+	  for (size_t i = 0; i < n_lines; i++)
+	    {
+	      for (size_t j = 0; j < n_columns; j++)
+		{
+		  if (j != 0)
+		    {
+		      printf ("\t");
+		    }
+		  printf ("%.8f", data[i * n_columns + j]);
+		}
+	      printf ("\n");
+	    }
+	  free (data);
 	}
       if (set_eeg_data)
 	{
