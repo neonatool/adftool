@@ -195,9 +195,11 @@ main (int argc, char *argv[])
     }
   if (lookup + insert + remove > 1)
     {
-      fprintf (stderr,
-	       _
-	       ("Conflicting operations: please pass either --lookup, --insert or --remove.\n"));
+      fprintf (stderr, _ ("Conflicting operations: \
+please pass either --%s, --%s or --%s.\n"),
+	       P_ ("Command-line|Option|", "lookup"),
+	       P_ ("Command-line|Option|", "insert"),
+	       P_ ("Command-line|Option|", "remove"));
       exit (0);
     }
   while (optind < argc)

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.1.0-22-g7f0b5e6\n"
+"Project-Id-Version: adftool 0.1.0-22-g2dd027a\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-08-29 08:09+0000\n"
+"POT-Creation-Date: 2022-08-31 08:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Not enough memory.\n"
 msgstr ""
 
-#: src/adftool.c:51 src/adftool.c:169
+#: src/adftool.c:51 src/adftool.c:169 src/adftool.c:200
 msgctxt "Command-line|Option|"
 msgid "lookup"
 msgstr ""
@@ -32,7 +32,7 @@ msgctxt "Command-line|Option|"
 msgid "add"
 msgstr ""
 
-#: src/adftool.c:55 src/adftool.c:171
+#: src/adftool.c:55 src/adftool.c:171 src/adftool.c:202
 msgctxt "Command-line|Option|"
 msgid "remove"
 msgstr ""
@@ -128,38 +128,42 @@ msgstr ""
 msgid "Nothing to do.\n"
 msgstr ""
 
-#: src/adftool.c:200
+#: src/adftool.c:198
 #, c-format
-msgid ""
-"Conflicting operations: please pass either --lookup, --insert or --remove.\n"
+msgid "Conflicting operations: please pass either --%s, --%s or --%s.\n"
 msgstr ""
 
-#: src/adftool.c:209
+#: src/adftool.c:201
+msgctxt "Command-line|Option|"
+msgid "insert"
+msgstr ""
+
+#: src/adftool.c:211
 #, c-format
 msgid "The file \"%s\" could not be opened.\n"
 msgstr ""
 
-#: src/adftool.c:219 src/adftool.c:266
+#: src/adftool.c:221 src/adftool.c:268
 #, c-format
 msgid "Cannot allocate memory to hold the results.\n"
 msgstr ""
 
-#: src/adftool.c:225
+#: src/adftool.c:227
 #, c-format
 msgid "Cannot list the statements.\n"
 msgstr ""
 
-#: src/adftool.c:290
+#: src/adftool.c:292
 #, c-format
 msgid "I don’t support namespaced data yet.\n"
 msgstr ""
 
-#: src/adftool.c:363
+#: src/adftool.c:365
 #, c-format
 msgid "Could not insert the data.\n"
 msgstr ""
 
-#: src/adftool.c:370
+#: src/adftool.c:372
 #, c-format
 msgid "Could not delete the data.\n"
 msgstr ""
