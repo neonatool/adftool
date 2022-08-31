@@ -47,12 +47,15 @@ main (int argc, char *argv[])
   static int lookup = 0;
   static int insert = 0;
   static int remove = 0;
+  static int set_eeg_data = 0;
   static struct option long_options[] = {
     {NP_ ("Command-line|Option|", "lookup"), no_argument, &lookup,
      1},
     {NP_ ("Command-line|Option|", "add"), no_argument, &insert,
      1},
     {NP_ ("Command-line|Option|", "remove"), no_argument, &remove,
+     1},
+    {NP_ ("Command-line|Option|", "set-eeg-data"), no_argument, &set_eeg_data,
      1},
     {NP_ ("Command-line|Option|", "subject"), required_argument,
      0, 's'},
@@ -144,29 +147,17 @@ main (int argc, char *argv[])
 	  break;
 	case 'h':
 	  printf (_("Usage: [ENVIRONMENT…] adftool [OPTION…] FILE\n\n"
-		    "Read or update FILE.\n\n"
-		    "You can set a pattern in N-Triples format:\n"
+		    "Read or update FILE.\n\n"));
+	  printf (_("You can set a pattern in N-Triples format:\n"
 		    "  -s NT, --%s=NT;\n"
 		    "  -p NT, --%s=NT;\n"
 		    "  -o NT, --%s=NT;\n"
-		    "  -g NT, --%s=NT;\n"
+		    "  -g NT, --%s=NT.\n"
 		    "\n"
 		    "You use this pattern to:\n"
 		    "  --%s: print the data matching the pattern;\n"
 		    "  --%s: add the statement (only graph is optional);\n"
 		    "  --%s: remove all statements matching the pattern.\n"
-		    "\n"
-		    "There are other options:\n"
-		    "  -d DATE, --%s=DATE: use DATE instead of "
-		    "the current date when deleting statements.\n"
-		    "  -h, --%s: print this message and exit.\n"
-		    "  -V, --%s: print the package version and exit.\n"
-		    "\n"
-		    "The following environment variables can change the "
-		    "behavior of the program:\n"
-		    "  LANG: change the localization. Set it as \"LANG=C\" "
-		    "in the environment or \"LANG=en_US.UTF-8\" to disable "
-		    "localization.\n"
 		    "\n"),
 		  P_ ("Command-line|Option|", "subject"),
 		  P_ ("Command-line|Option|", "predicate"),
@@ -174,12 +165,47 @@ main (int argc, char *argv[])
 		  P_ ("Command-line|Option|", "graph"),
 		  P_ ("Command-line|Option|", "lookup"),
 		  P_ ("Command-line|Option|", "add"),
-		  P_ ("Command-line|Option|", "remove"),
+		  P_ ("Command-line|Option|", "remove"));
+	  printf (_("There are other operation modes for adftool:\n"
+		    "  --%s: set the raw EEG sensor data (in Tab-Separated "
+		    "Value [TSV] format) from the standard input.\n"
+		    "\n"), P_ ("Command-line|Option|", "set-eeg-data"));
+	  printf (_("There are other options:\n"
+		    "  -d DATE, --%s=DATE: use DATE instead of "
+		    "the current date when deleting statements.\n"
+		    "  -h, --%s: print this message and exit.\n"
+		    "  -V, --%s: print the package version and exit.\n"
+		    "\n"),
 		  P_ ("Command-line|Option|", "deletion-date"),
 		  P_ ("Command-line|Option|", "help"),
 		  P_ ("Command-line|Option|", "version"));
+	  printf (_("The following environment variables can change the "
+		    "behavior of the program:\n"
+		    "  LANG: change the localization. Set it as \"LANG=C\" "
+		    "in the environment or \"LANG=en_US.UTF-8\" to disable "
+		    "localization.\n"
+		    "  LC_NUMERIC: change the expected number format to "
+		    "input and output numbers. Set it as \"LC_NUMERIC=C\" "
+		    "or \"LC_NUMERIC=en_US.UTF-8\" to use the English notation.\n"
+		    "\n"));
+	  printf (_("Please note that TSV exchange of raw EEG data uses "
+		    "the current numeric locale format. For instance, "
+		    "here is an approximation of π: \"%f\". You can control "
+		    "the numeric format by setting the LC_NUMERIC environment "
+		    "variable.\n"
+		    "\n"
+		    "For instance, if the EEG data has been generated within the "
+		    "English locale, you would set it with the following "
+		    "command-line:\n"
+		    "  LC_NUMERIC=en_US.UTF-8 adftool --%s file.adf\n"
+		    "And then specify the data in this format:\n"
+		    "  0.01\t3.42e-4\t-1.18e2\n"
+		    "  3.1416\t…\t…\n"
+		    "\n"),
+		  3.1416, P_ ("Command-line|Option|", "set-eeg-data"));
 	  static const char *env_names[] = {
-	    "LANG"
+	    "LANG",
+	    "LC_NUMERIC"
 	  };
 	  static const size_t n_env =
 	    (sizeof (env_names) / sizeof (env_names[0]));
@@ -213,23 +239,24 @@ main (int argc, char *argv[])
       fprintf (stderr, _("No file to process.\n"));
       exit (0);
     }
-  if (!lookup && !insert && !remove)
+  if (!lookup && !insert && !remove && !set_eeg_data)
     {
       fprintf (stderr, _("Nothing to do.\n"));
       exit (0);
     }
-  if (lookup + insert + remove > 1)
+  if (lookup + insert + remove + set_eeg_data > 1)
     {
-      fprintf (stderr, _ ("Conflicting operations: \
-please pass either --%s, --%s or --%s.\n"),
-	       P_ ("Command-line|Option|", "lookup"),
+      fprintf (stderr,
+	       _("Conflicting operations: please pass either --%s, --%s, "
+		 "--%s or --%s.\n"), P_ ("Command-line|Option|", "lookup"),
 	       P_ ("Command-line|Option|", "insert"),
-	       P_ ("Command-line|Option|", "remove"));
+	       P_ ("Command-line|Option|", "remove"),
+	       P_ ("Command-line|Option|", "set-eeg-data"));
       exit (0);
     }
   while (optind < argc)
     {
-      int write = insert || remove;
+      int write = insert || remove || set_eeg_data;
       const char *filename = argv[optind++];
       if (adftool_file_open (file, filename, write) != 0)
 	{
@@ -396,6 +423,94 @@ Cannot allocate memory to hold the results.\n"));
 	    {
 	      fprintf (stderr, _("Could not delete the data.\n"));
 	    }
+	}
+      if (set_eeg_data)
+	{
+	  size_t n_columns = 0;
+	  size_t max = 1;
+	  double *buffer = malloc (max * sizeof (double));
+	  if (buffer == NULL)
+	    {
+	      abort ();
+	    }
+	  size_t current_line = 0;
+	  size_t current_column = 0;
+	  char *line = NULL;
+	  size_t current_line_length = 0;
+	  ssize_t n_read;
+	  size_t i = 0;
+	  while ((n_read = getline (&line, &current_line_length, stdin)) >= 0)
+	    {
+	      current_column = 0;
+	      char *beginning;
+	      char *end = line;
+	      while (*end == ' ' || *end == '\r' || *end == '\n')
+		{
+		  end++;
+		}
+	      do
+		{
+		  beginning = end;
+		  const double next_value = strtod (beginning, &end);
+		  while (*end == ' ' || *end == '\r' || *end == '\n')
+		    {
+		      end++;
+		    }
+		  if (end != beginning)
+		    {
+		      if (i >= max)
+			{
+			  max *= 2;
+			  buffer = realloc (buffer, max * sizeof (double));
+			  if (buffer == NULL)
+			    {
+			      abort ();
+			    }
+			}
+		      buffer[i] = next_value;
+		      i++;
+		      current_column++;
+		    }
+		}
+	      while (end != beginning);
+	      if (strcmp (end, "") != 0)
+		{
+		  fprintf (stderr, _("Error: \
+input line %lu contains \"%s\", which cannot be parsed \
+as a number.\n"), current_line + 1, end);
+		  if (*end == '.' && current_line == 0)
+		    {
+		      fprintf (stderr, _("You may need to set \
+LC_NUMERIC. Please run adftool --%s to read more about numeric \
+data formats.\n"), P_ ("Command-line|Option|", "help"));
+		    }
+		  exit (1);
+		}
+	      if (current_line == 0)
+		{
+		  n_columns = current_column;
+		}
+	      else if (current_column != n_columns)
+		{
+		  fprintf (stderr,
+			   _("Error: input line %lu has %lu values, "
+			     "but there are %lu columns.\n"),
+			   current_line + 1, current_column, n_columns);
+		  exit (1);
+		}
+	      free (line);
+	      line = NULL;
+	      current_line_length = 0;
+	      current_line++;
+	    }
+	  int error =
+	    adftool_eeg_set_data (file, current_line, n_columns, buffer);
+	  if (error != 0)
+	    {
+	      fprintf (stderr, _("Error: cannot set the EEG data.\n"));
+	      exit (1);
+	    }
+	  free (buffer);
 	}
       adftool_file_close (file);
     }

@@ -71,7 +71,7 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
       if (selection_space == H5I_INVALID_HID)
 	{
 	  error = 1;
-	  goto clean_dataset;
+	  goto clean_fspace;
 	}
       hsize_t start[] = { 0, 0 };
       hsize_t count[] = { 0, 1 };
@@ -123,11 +123,9 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
       adftool_statement_free (new_channel);
       if (error)
 	{
-	  goto clean_dataset;
+	  goto clean_fspace;
 	}
     }
-clean_dataset:
-  H5Dclose (file->eeg_dataset);
 clean_fspace:
   H5Sclose (fspace);
 wrapup:
