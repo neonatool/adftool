@@ -57,7 +57,10 @@ main (int argc, char *argv[])
   static size_t channel_column = 0;
   struct adftool_term *channel_identifier = adftool_term_alloc ();
   static int get_channel_metadata = 0;
-  if (channel_identifier == NULL)
+  static int add_channel_type = 0;
+  struct adftool_term *channel_type = adftool_term_alloc ();
+  static int list_channels_of_type = 0;
+  if (channel_identifier == NULL || channel_type == NULL)
     {
       abort ();
     }
@@ -78,6 +81,10 @@ main (int argc, char *argv[])
      required_argument, NULL, 257},
     {NP_ ("Command-line|Option|", "channel-metadata"),
      required_argument, NULL, 258},
+    {NP_ ("Command-line|Option|", "add-channel-type"),
+     required_argument, NULL, 259},
+    {NP_ ("Command-line|Option|", "channels-of-type"),
+     required_argument, NULL, 260},
     {NP_ ("Command-line|Option|", "subject"), required_argument,
      0, 's'},
     {NP_ ("Command-line|Option|", "predicate"),
@@ -223,6 +230,99 @@ main (int argc, char *argv[])
 	    get_channel_metadata = 1;
 	  }
 	  break;
+	case 259:
+	  {
+	    /* --add-channel-type=IDENTIFIER=TYPE */
+	    size_t consumed;
+	    int parse_error =
+	      adftool_term_parse_n3 (optarg, strlen (optarg), &consumed,
+				     channel_identifier);
+	    if (parse_error)
+	      {
+		fprintf (stderr, _("The argument to \"%s\" "
+				   "must be in the form of "
+				   "IDENTIFIER=TYPE.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    while (consumed < strlen (optarg)
+		   && (optarg[consumed] == ' '
+		       || optarg[consumed] == '\r'
+		       || optarg[consumed] == '\t'
+		       || optarg[consumed] == '\n'))
+	      {
+		consumed++;
+	      }
+	    if (consumed >= strlen (optarg) || optarg[consumed] != '=')
+	      {
+		fprintf (stderr, _("The argument to \"%s\" "
+				   "must be in the form of "
+				   "IDENTIFIER=TYPE.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    char *rest = optarg + consumed + strlen ("=");
+	    parse_error =
+	      adftool_term_parse_n3 (rest, strlen (rest), &consumed,
+				     channel_type);
+	    if (parse_error)
+	      {
+		fprintf (stderr, _("The argument to \"%s\" "
+				   "must be in the form of "
+				   "IDENTIFIER=TYPE.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    while (consumed < strlen (rest)
+		   && (rest[consumed] == ' '
+		       || rest[consumed] == '\r'
+		       || rest[consumed] == '\t' || rest[consumed] == '\n'))
+	      {
+		consumed++;
+	      }
+	    if (consumed != strlen (rest))
+	      {
+		fprintf (stderr, _("The argument to \"%s\" "
+				   "must be in the form of "
+				   "IDENTIFIER=TYPE.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    add_channel_type = 1;
+	  }
+	  break;
+	case 260:
+	  {
+	    /* --channels-of-type=TYPE */
+	    size_t consumed;
+	    int parse_error =
+	      adftool_term_parse_n3 (optarg, strlen (optarg), &consumed,
+				     channel_type);
+	    if (parse_error)
+	      {
+		fprintf (stderr, _("The argument to \"%s\" "
+				   "must be a N3 identifier.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    while (consumed < strlen (optarg)
+		   && (optarg[consumed] == ' '
+		       || optarg[consumed] == '\r'
+		       || optarg[consumed] == '\t'
+		       || optarg[consumed] == '\n'))
+	      {
+		consumed++;
+	      }
+	    if (consumed < strlen (optarg))
+	      {
+		fprintf (stderr, _("The argument to \"%s\" "
+				   "must be a N3 identifier.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    list_channels_of_type = 1;
+	  }
+	  break;
 	case 's':
 	case 'p':
 	case 'o':
@@ -313,8 +413,14 @@ main (int argc, char *argv[])
 		    "IDENTIFIER (in N3);\n"),
 		  P_ ("Command-line|Option|", "set-channel-identifier"));
 	  printf (_("  --%s=IDENTIFIER: read the channel metadata "
-		    "for IDENTIFIER (in N3).\n"),
+		    "for IDENTIFIER (in N3);\n"),
 		  P_ ("Command-line|Option|", "channel-metadata"));
+	  printf (_("  --%s=IDENTIFIER=TYPE: add TYPE to the list of "
+		    "types for IDENTIFIER (both in N3);\n"),
+		  P_ ("Command-line|Option|", "add-channel-type"));
+	  printf (_("  --%s=TYPE: print the list of channels of type "
+		    "TYPE (in N3).\n"),
+		  P_ ("Command-line|Option|", "channels-of-type"));
 	  printf ("\n");
 	  printf (_("There are other options:\n"
 		    "  -d DATE, --%s=DATE: use DATE instead of "
@@ -387,7 +493,7 @@ main (int argc, char *argv[])
     }
   if (!lookup && !insert && !remove && !get_eeg_data && !set_eeg_data
       && !find_channel_identifier && !set_channel_identifier
-      && !get_channel_metadata)
+      && !get_channel_metadata && !add_channel_type && !list_channels_of_type)
     {
       fprintf (stderr, _("Nothing to do.\n"));
       exit (0);
@@ -405,20 +511,23 @@ main (int argc, char *argv[])
       exit (0);
     }
   if (find_channel_identifier + set_channel_identifier +
-      get_channel_metadata > 1)
+      get_channel_metadata + add_channel_type + list_channels_of_type > 1)
     {
       fprintf (stderr,
 	       _("Conflicting operations: please pass either --%s, "
-		 "%s "
+		 "--%s, --%s, --%s "
 		 "or --%s.\n"),
 	       P_ ("Command-line|Option|", "find-channel-identifier"),
 	       P_ ("Command-line|Option|", "set-channel-identifier"),
-	       P_ ("Command-line|Option|", "channel-metadata"));
+	       P_ ("Command-line|Option|", "channel-metadata"),
+	       P_ ("Command-line|Option|", "add-channel-type"),
+	       P_ ("Command-line|Option|", "channels-of-type"));
       exit (0);
     }
   while (optind < argc)
     {
-      int write = insert || remove || set_eeg_data || set_channel_identifier;
+      int write = insert || remove || set_eeg_data || set_channel_identifier
+	|| add_channel_type;
       const char *filename = argv[optind++];
       if (adftool_file_open (file, filename, write) != 0)
 	{
@@ -668,16 +777,118 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
 	    adftool_get_channel_column (file, channel_identifier, &column);
 	  if (error == 0)
 	    {
-	      printf (_("  - its data are in column %lu.\n"), column);
+	      printf (_("  - its data are in column %lu;\n"), column);
 	    }
 	  else
 	    {
-	      printf (_("  - its data cannot be found.\n"));
+	      printf (_("  - its data cannot be found;\n"));
 	    }
+	  size_t n_types =
+	    adftool_get_channel_types (file, channel_identifier, 0, 0, NULL);
+	  struct adftool_term **types =
+	    malloc (n_types * sizeof (struct adftool_term *));
+	  if (types == NULL)
+	    {
+	      abort ();
+	    }
+	  for (size_t i = 0; i < n_types; i++)
+	    {
+	      types[i] = adftool_term_alloc ();
+	      if (types[i] == NULL)
+		{
+		  abort ();
+		}
+	    }
+	  adftool_get_channel_types (file, channel_identifier, 0, n_types,
+				     types);
+	  if (n_types == 0)
+	    {
+	      printf (_("  - it has no types.\n"));
+	    }
+	  else
+	    {
+	      printf (ngettext ("  - it has %lu type:\n",
+				"  - it has %lu types:\n", n_types), n_types);
+	      for (size_t i = 0; i < n_types; i++)
+		{
+		  size_t n3_length =
+		    adftool_term_to_n3 (types[i], 0, 0, NULL);
+		  char *n3 = malloc (n3_length + 1);
+		  if (n3 == NULL)
+		    {
+		      abort ();
+		    }
+		  if (adftool_term_to_n3 (types[i], 0, n3_length + 1, n3) !=
+		      n3_length)
+		    {
+		      abort ();
+		    }
+		  printf (_("    %s\n"), n3);
+		  free (n3);
+		}
+	    }
+	  for (size_t i = 0; i < n_types; i++)
+	    {
+	      adftool_term_free (types[i]);
+	    }
+	  free (types);
 	  free (identifier);
+	}
+      if (add_channel_type)
+	{
+	  int error =
+	    adftool_add_channel_type (file, channel_identifier, channel_type);
+	  if (error)
+	    {
+	      fprintf (stderr, _("Error: could not add a new type.\n"));
+	      exit (1);
+	    }
+	}
+      if (list_channels_of_type)
+	{
+	  size_t n_channels =
+	    adftool_find_channels_by_type (file, channel_type, 0, 0, NULL);
+	  struct adftool_term **channels =
+	    malloc (n_channels * sizeof (struct adftool_term *));
+	  if (channels == NULL)
+	    {
+	      abort ();
+	    }
+	  for (size_t i = 0; i < n_channels; i++)
+	    {
+	      channels[i] = adftool_term_alloc ();
+	      if (channels[i] == NULL)
+		{
+		  abort ();
+		}
+	    }
+	  adftool_find_channels_by_type (file, channel_type, 0, n_channels,
+					 channels);
+	  for (size_t i = 0; i < n_channels; i++)
+	    {
+	      size_t n3_length = adftool_term_to_n3 (channels[i], 0, 0, NULL);
+	      char *n3 = malloc (n3_length + 1);
+	      if (n3 == NULL)
+		{
+		  abort ();
+		}
+	      if (adftool_term_to_n3 (channels[i], 0, n3_length + 1, n3) !=
+		  n3_length)
+		{
+		  abort ();
+		}
+	      printf (_("%s\n"), n3);
+	      free (n3);
+	    }
+	  for (size_t i = 0; i < n_channels; i++)
+	    {
+	      adftool_term_free (channels[i]);
+	    }
+	  free (channels);
 	}
       adftool_file_close (file);
     }
+  adftool_term_free (channel_type);
   adftool_term_free (channel_identifier);
   adftool_file_free (file);
   adftool_term_free (term);

@@ -357,3 +357,124 @@ adftool_get_channel_column (const struct adftool_file *file,
   mpz_clear (integer);
   return error;
 }
+
+int
+adftool_add_channel_type (struct adftool_file *file,
+			  const struct adftool_term *channel,
+			  const struct adftool_term *type)
+{
+  struct adftool_statement *statement = adftool_statement_alloc ();
+  struct adftool_term *predicate = adftool_term_alloc ();
+  if (statement == NULL || predicate == NULL)
+    {
+      abort ();
+    }
+  adftool_term_set_named (predicate,
+			  "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+  adftool_statement_set (statement, (struct adftool_term **) &channel,
+			 &predicate, (struct adftool_term **) &type, NULL,
+			 NULL);
+  int error = adftool_insert (file, statement);
+  adftool_term_free (predicate);
+  adftool_statement_free (statement);
+  return error;
+}
+
+size_t
+adftool_get_channel_types (const struct adftool_file *file,
+			   const struct adftool_term *channel, size_t start,
+			   size_t max, struct adftool_term **types)
+{
+  struct adftool_statement *pattern = adftool_statement_alloc ();
+  struct adftool_results *results = adftool_results_alloc ();
+  struct adftool_term *rdf_type = adftool_term_alloc ();
+  if (pattern == NULL || results == NULL || rdf_type == NULL)
+    {
+      abort ();
+    }
+  adftool_term_set_named (rdf_type,
+			  "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+  adftool_statement_set (pattern, (struct adftool_term **) &channel,
+			 &rdf_type, NULL, NULL, NULL);
+  size_t n_results = 0;
+  if (adftool_lookup (file, pattern, results) == 0)
+    {
+      size_t total_results = adftool_results_count (results);
+      for (size_t i = 0; i < total_results; i++)
+	{
+	  const struct adftool_statement *candidate =
+	    adftool_results_get (results, i);
+	  const struct adftool_term *object;
+	  uint64_t deletion_date;
+	  adftool_statement_get (candidate, NULL, NULL,
+				 (struct adftool_term **) &object, NULL,
+				 &deletion_date);
+	  assert (object != NULL);
+	  if (deletion_date == ((size_t) (-1)))
+	    {
+	      if (n_results >= start)
+		{
+		  const size_t i_out = n_results - start;
+		  if (i_out < max)
+		    {
+		      adftool_term_copy (types[i_out], object);
+		    }
+		}
+	      n_results++;
+	    }
+	}
+    }
+  adftool_term_free (rdf_type);
+  adftool_results_free (results);
+  adftool_statement_free (pattern);
+  return n_results;
+}
+
+size_t
+adftool_find_channels_by_type (const struct adftool_file *file,
+			       const struct adftool_term *type, size_t start,
+			       size_t max, struct adftool_term **channels)
+{
+  struct adftool_statement *pattern = adftool_statement_alloc ();
+  struct adftool_results *results = adftool_results_alloc ();
+  struct adftool_term *rdf_type = adftool_term_alloc ();
+  if (pattern == NULL || results == NULL || rdf_type == NULL)
+    {
+      abort ();
+    }
+  adftool_term_set_named (rdf_type,
+			  "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+  adftool_statement_set (pattern, NULL, &rdf_type,
+			 (struct adftool_term **) &type, NULL, NULL);
+  size_t n_results = 0;
+  if (adftool_lookup (file, pattern, results) == 0)
+    {
+      size_t total_results = adftool_results_count (results);
+      for (size_t i = 0; i < total_results; i++)
+	{
+	  const struct adftool_statement *candidate =
+	    adftool_results_get (results, i);
+	  const struct adftool_term *subject;
+	  uint64_t deletion_date;
+	  adftool_statement_get (candidate, (struct adftool_term **) &subject,
+				 NULL, NULL, NULL, &deletion_date);
+	  assert (subject != NULL);
+	  if (deletion_date == ((size_t) (-1)))
+	    {
+	      if (n_results >= start)
+		{
+		  const size_t i_out = n_results - start;
+		  if (i_out < max)
+		    {
+		      adftool_term_copy (channels[i_out], subject);
+		    }
+		}
+	      n_results++;
+	    }
+	}
+    }
+  adftool_term_free (rdf_type);
+  adftool_results_free (results);
+  adftool_statement_free (pattern);
+  return n_results;
+}

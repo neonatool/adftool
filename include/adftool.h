@@ -243,6 +243,23 @@ extern "C"
 				    size_t *column);
 
   extern LIBADFTOOL_API
+    int adftool_add_channel_type (struct adftool_file *file,
+				  const struct adftool_term *channel,
+				  const struct adftool_term *type);
+
+  extern LIBADFTOOL_API
+    size_t adftool_get_channel_types (const struct adftool_file *file,
+				      const struct adftool_term *channel,
+				      size_t start, size_t max,
+				      struct adftool_term **types);
+
+  extern LIBADFTOOL_API
+    size_t adftool_find_channels_by_type (const struct adftool_file *file,
+					  const struct adftool_term *type,
+					  size_t start, size_t max,
+					  struct adftool_term **identifiers);
+
+  extern LIBADFTOOL_API
     int adftool_get_channel_decoder (const struct adftool_file *file,
 				     const struct adftool_term *identifier,
 				     double *scale, double *offset);

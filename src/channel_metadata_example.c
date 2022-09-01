@@ -55,6 +55,16 @@ main (int argc, char *argv[])
     {
       abort ();
     }
+  struct adftool_term *type_channel = adftool_term_alloc ();
+  if (type_channel == NULL)
+    {
+      abort ();
+    }
+  adftool_term_set_named (type_channel, "https://example.com/channel-type");
+  if (adftool_add_channel_type (file, identifier, type_channel) != 0)
+    {
+      abort ();
+    }
   adftool_file_close (file);
   error = adftool_file_open (file, "channel_metadata_example.adf", 1);
   if (error)
@@ -88,6 +98,30 @@ main (int argc, char *argv[])
     }
   assert (scale == 42);
   assert (offset == 18);
+  struct adftool_term *one_result = adftool_term_alloc ();
+  if (one_result == NULL)
+    {
+      abort ();
+    }
+  if (adftool_get_channel_types (file, identifier, 0, 1, &one_result) != 1)
+    {
+      abort ();
+    }
+  if (adftool_term_compare (one_result, type_channel) != 0)
+    {
+      abort ();
+    }
+  if (adftool_find_channels_by_type (file, type_channel, 0, 1, &one_result) !=
+      1)
+    {
+      abort ();
+    }
+  if (adftool_term_compare (one_result, identifier) != 0)
+    {
+      abort ();
+    }
+  adftool_term_free (one_result);
+  adftool_term_free (type_channel);
   adftool_term_free (expected_identifier);
   adftool_term_free (identifier);
   adftool_file_close (file);

@@ -751,6 +751,23 @@ Set the @var{identifier} of the @var{j}-th raw EEG channel in
 Get the @var{column} index for @var{channel} in @var{file}.
 @end deftypefun
 
+@deftypefun int adftool_add_channel_type (struct adftool_file *@var{file}, const struct adftool_term *@var{channel}, const struct adftool_term *@var{type})
+Add that @var{channel} in @var{file} is of the given
+@var{type}. Return 0 if the file has been updated successfully, or an
+error code otherwise.
+@end deftypefun
+
+@deftypefun size_t adftool_get_channel_types (const struct adftool_file *@var{file}, const struct adftool_term *@var{channel}, size_t @var{start}, size_t @var{max}, struct adftool_term **@var{types})
+Discard the first @var{start} types that appear if @var{file} for
+@var{channel}, and initialize at most the next @var{max} @var{types}
+with the type values. Return the total number of types.
+@end deftypefun
+
+@deftypefun size_t adftool_find_channels_by_type (const struct adftool_file *@var{file}, const struct adftool_term *@var{type}, size_t @var{start}, size_t @var{max}, struct adftool_term **@var{identifiers})
+Build the list of channel @var{identifiers} that are of the given
+@var{types}.
+@end deftypefun
+
 @deftypefun int adftool_eeg_get_data (const struct adftool_file *@var{file}, size_t @var{time_start}, size_t @var{time_length}, size_t *@var{time_max}, size_t @var{channel_start}, size_t @var{channel_length}, size_t *@var{channel_max}, double *@var{data})
 Fetch the raw data from @var{file}. Consider @var{data} as a
 row-oriented storage of @var{time_length} rows by @var{channel_length}
