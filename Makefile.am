@@ -103,8 +103,7 @@ libadftool_la_SOURCES = \
   src/libadftool/lexer.l \
   src/libadftool/channel_metadata.c \
   src/libadftool/eeg_data.c \
-  src/libadftool/fir.c \
-  src/libadftool/emscripten.cpp
+  src/libadftool/fir.c
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I lib -I $(srcdir)/lib \

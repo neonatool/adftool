@@ -21,7 +21,7 @@ before_script:
 dist:
   stage: dependencies
   script:
-    - apt-get install -y git gettext libgmp-dev libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ m4 libtinfo5 flex r-base texinfo texlive
+    - apt-get install -y git gettext libgmp-dev libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc m4 libtinfo5 flex r-base texinfo texlive
     - mkdir -p public
     - export GNULIB_SRCDIR=$PWD/gnulib
     - ./bootstrap --force --skip-po
@@ -39,7 +39,7 @@ dist:
 dep_hdf5_emscripten:
   stage: dependencies
   script:
-    - apt-get install -y git python3 gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc g++ m4 libtinfo5 lbzip2
+    - apt-get install -y git python3 gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc m4 libtinfo5 lbzip2
     - test -d emsdk || git clone https://github.com/emscripten-core/emsdk.git
     - cd emsdk
     - git pull
@@ -98,7 +98,7 @@ dep_gmp_emscripten:
 dep_gmp_mingw:
   stage: dependencies
   script:
-    - apt-get install -y tar make binutils-mingw-w64-x86-64 g++-mingw-w64 gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 wget lzip gcc m4
+    - apt-get install -y tar make binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64 wget lzip gcc m4
     - "[ -f gmp-6.1.2.tar.lz ] || wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.lz"
     - tar xf gmp-6.1.2.tar.lz
     - mkdir build-gmp-mingw
@@ -113,7 +113,7 @@ dep_gmp_mingw:
 build_mingw:
   stage: build
   script:
-    - apt-get install -y tar make binutils-mingw-w64-x86-64 g++-mingw-w64 gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 wine
+    - apt-get install -y tar make binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64 wine
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-mingw
     - cd build-mingw
@@ -129,7 +129,7 @@ build_mingw:
 build_emscripten:
   stage: build
   script:
-    - apt-get install -y git python3 gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc g++ m4 libtinfo5 lbzip2
+    - apt-get install -y git python3 gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc m4 libtinfo5 lbzip2
     - test -d emsdk || git clone https://github.com/emscripten-core/emsdk.git
     - cd emsdk
     - git pull
@@ -153,7 +153,7 @@ build_emscripten:
 build_html:
   stage: build
   script:
-    - apt-get install -y gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 libmpfr-dev texinfo
+    - apt-get install -y gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc libtinfo5 libmpfr-dev texinfo
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-html
     - cd build-html
@@ -168,7 +168,7 @@ build_html:
 build_pdf:
   stage: build
   script:
-    - apt-get install -y gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 libmpfr-dev texinfo texlive
+    - apt-get install -y gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc libtinfo5 libmpfr-dev texinfo texlive
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-pdf
     - cd build-pdf

@@ -14,7 +14,6 @@ AM_CONDITIONAL([SHLIBS_IN_BINDIR],
 AC_PROG_CC
 gl_EARLY
 glprog_EARLY
-AC_PROG_CXX
 AM_INIT_AUTOMAKE([gnu -Wall -Werror subdir-objects])
 AM_PROG_AR
 LT_INIT([win32-dll])
@@ -36,7 +35,7 @@ AC_SEARCH_LIBS([__gmpz_init], [gmp])
 AC_SEARCH_LIBS([cos], [m])
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdint.h emscripten.h emscripten/bind.h])
+AC_CHECK_HEADERS([stdint.h emscripten.h])
 AC_CHECK_HEADER([hdf5.h],, [AC_MSG_ERROR([I need the HDF5 header.])])
 AC_CHECK_HEADER([gmp.h],, [AC_MSG_ERROR([I need the gmp.h header.])])
 

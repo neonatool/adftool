@@ -21,7 +21,6 @@ src/filter_test_data.c
 src/libadftool/channel_metadata.c
 src/libadftool/dictionary.c
 src/libadftool/eeg_data.c
-src/libadftool/emscripten.cpp
 src/libadftool/file.c
 src/libadftool/fir.c
 src/libadftool/indices.c
