@@ -75,6 +75,12 @@ main (int argc, char *argv[])
     {
       abort ();
     }
+  size_t column_index;
+  if (adftool_get_channel_column (file, identifier, &column_index) != 0)
+    {
+      abort ();
+    }
+  assert (column_index == 42);
   double scale, offset;
   if (adftool_get_channel_decoder (file, identifier, &scale, &offset) != 0)
     {

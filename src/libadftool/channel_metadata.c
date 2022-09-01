@@ -301,3 +301,59 @@ wrapup:
   adftool_term_free (literal_offset);
   return error;
 }
+
+int
+adftool_get_channel_column (const struct adftool_file *file,
+			    const struct adftool_term *identifier,
+			    size_t *column)
+{
+  mpz_t integer;
+  mpz_init (integer);
+  /* Construct: identifier lyto:column-number ? */
+  struct adftool_statement *pattern = adftool_statement_alloc ();
+  struct adftool_term *predicate = adftool_term_alloc ();
+  struct adftool_results *results = adftool_results_alloc ();
+  if (pattern == NULL || predicate == NULL || results == NULL)
+    {
+      abort ();
+    }
+  adftool_term_set_named (predicate,
+			  "https://localhost/lytonepal#column-number");
+  adftool_statement_set (pattern, (struct adftool_term **) &identifier,
+			 &predicate, NULL, NULL, NULL);
+  int error = adftool_lookup (file, pattern, results);
+  int initialized = 0;
+  if (error == 0)
+    {
+      const size_t n_results = adftool_results_count (results);
+      for (size_t i = 0; i < n_results && !initialized; i++)
+	{
+	  const struct adftool_statement *candidate =
+	    adftool_results_get (results, i);
+	  const struct adftool_term *object;
+	  uint64_t deletion_date;
+	  adftool_statement_get (candidate, NULL, NULL,
+				 (struct adftool_term **) &object, NULL,
+				 &deletion_date);
+	  assert (object != NULL);
+	  if (deletion_date == ((uint64_t) (-1)))
+	    {
+	      if (adftool_term_as_integer (object, integer) == 0)
+		{
+		  initialized = 1;
+		}
+	    }
+	}
+    }
+  if (!initialized)
+    {
+      /* Not found. */
+      error = 1;
+    }
+  adftool_results_free (results);
+  adftool_term_free (predicate);
+  adftool_statement_free (pattern);
+  *column = mpz_get_ui (integer);
+  mpz_clear (integer);
+  return error;
+}

@@ -747,6 +747,10 @@ Set the @var{identifier} of the @var{j}-th raw EEG channel in
 @var{file}. Return an error code.
 @end deftypefun
 
+@deftypefun int adftool_get_channel_column (const struct adftool_file *@var{file}, const struct adftool_term *@var{channel}, size_t *@var{column})
+Get the @var{column} index for @var{channel} in @var{file}.
+@end deftypefun
+
 @deftypefun int adftool_eeg_get_data (const struct adftool_file *@var{file}, size_t @var{time_start}, size_t @var{time_length}, size_t *@var{time_max}, size_t @var{channel_start}, size_t @var{channel_length}, size_t *@var{channel_max}, double *@var{data})
 Fetch the raw data from @var{file}. Consider @var{data} as a
 row-oriented storage of @var{time_length} rows by @var{channel_length}

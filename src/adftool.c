@@ -56,6 +56,7 @@ main (int argc, char *argv[])
   static int set_channel_identifier = 0;
   static size_t channel_column = 0;
   struct adftool_term *channel_identifier = adftool_term_alloc ();
+  static int get_channel_metadata = 0;
   if (channel_identifier == NULL)
     {
       abort ();
@@ -75,6 +76,8 @@ main (int argc, char *argv[])
      required_argument, NULL, 256},
     {NP_ ("Command-line|Option|", "set-channel-identifier"),
      required_argument, NULL, 257},
+    {NP_ ("Command-line|Option|", "channel-metadata"),
+     required_argument, NULL, 258},
     {NP_ ("Command-line|Option|", "subject"), required_argument,
      0, 's'},
     {NP_ ("Command-line|Option|", "predicate"),
@@ -192,6 +195,34 @@ main (int argc, char *argv[])
 	    set_channel_identifier = 1;
 	  }
 	  break;
+	case 258:
+	  {
+	    /* --channel-metadata=IDENTIFIER */
+	    size_t consumed;
+	    int parse_error =
+	      adftool_term_parse_n3 (optarg, strlen (optarg), &consumed,
+				     channel_identifier);
+	    if (parse_error == 0)
+	      {
+		while (consumed < strlen (optarg)
+		       && (optarg[consumed] == ' '
+			   || optarg[consumed] == '\r'
+			   || optarg[consumed] == '\t'
+			   || optarg[consumed] == '\n'))
+		  {
+		    consumed++;
+		  }
+	      }
+	    if (parse_error != 0 || consumed != strlen (optarg))
+	      {
+		fprintf (stderr, _("The argument to \"%s\" "
+				   "must be a N3 identifier.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    get_channel_metadata = 1;
+	  }
+	  break;
 	case 's':
 	case 'p':
 	case 'o':
@@ -279,8 +310,11 @@ main (int argc, char *argv[])
 		  P_ ("Command-line|Option|", "find-channel-identifier"));
 	  printf (_("  --%s=COLUMN=IDENTIFIER: set the channel identifier "
 		    "for the raw sensor data in COLUMN (an integer) to "
-		    "IDENTIFIER (in N3).\n"),
+		    "IDENTIFIER (in N3);\n"),
 		  P_ ("Command-line|Option|", "set-channel-identifier"));
+	  printf (_("  --%s=IDENTIFIER: read the channel metadata "
+		    "for IDENTIFIER (in N3).\n"),
+		  P_ ("Command-line|Option|", "channel-metadata"));
 	  printf ("\n");
 	  printf (_("There are other options:\n"
 		    "  -d DATE, --%s=DATE: use DATE instead of "
@@ -352,7 +386,8 @@ main (int argc, char *argv[])
       exit (0);
     }
   if (!lookup && !insert && !remove && !get_eeg_data && !set_eeg_data
-      && !find_channel_identifier && !set_channel_identifier)
+      && !find_channel_identifier && !set_channel_identifier
+      && !get_channel_metadata)
     {
       fprintf (stderr, _("Nothing to do.\n"));
       exit (0);
@@ -369,13 +404,16 @@ main (int argc, char *argv[])
 	       P_ ("Command-line|Option|", "set-eeg-data"));
       exit (0);
     }
-  if (find_channel_identifier + set_channel_identifier > 1)
+  if (find_channel_identifier + set_channel_identifier +
+      get_channel_metadata > 1)
     {
       fprintf (stderr,
-	       _("Conflicting operations: please pass either --%s "
+	       _("Conflicting operations: please pass either --%s, "
+		 "%s "
 		 "or --%s.\n"),
 	       P_ ("Command-line|Option|", "find-channel-identifier"),
-	       P_ ("Command-line|Option|", "set-channel-identifier"));
+	       P_ ("Command-line|Option|", "set-channel-identifier"),
+	       P_ ("Command-line|Option|", "channel-metadata"));
       exit (0);
     }
   while (optind < argc)
@@ -611,6 +649,32 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
 		       channel_column);
 	      exit (1);
 	    }
+	}
+      if (get_channel_metadata)
+	{
+	  size_t column;
+	  int error = 0;
+	  size_t required =
+	    adftool_term_to_n3 (channel_identifier, 0, 0, NULL);
+	  char *identifier = malloc (required + 1);
+	  if (identifier == NULL)
+	    {
+	      abort ();
+	    }
+	  adftool_term_to_n3 (channel_identifier, 0, required + 1,
+			      identifier);
+	  printf (_("Metadata of channel %s:\n"), identifier);
+	  error =
+	    adftool_get_channel_column (file, channel_identifier, &column);
+	  if (error == 0)
+	    {
+	      printf (_("  - its data are in column %lu.\n"), column);
+	    }
+	  else
+	    {
+	      printf (_("  - its data cannot be found.\n"));
+	    }
+	  free (identifier);
 	}
       adftool_file_close (file);
     }
