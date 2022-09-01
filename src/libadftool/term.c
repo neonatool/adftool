@@ -612,3 +612,185 @@ adftool_term_copy (struct adftool_term *dest, const struct adftool_term *src)
       abort ();
     }
 }
+
+void
+adftool_term_set_integer (struct adftool_term *term, mpz_t value)
+{
+  void (*the_free) (void *, size_t);
+  mp_get_memory_functions (NULL, NULL, &the_free);
+  char *str = mpz_get_str (NULL, 10, value);
+  if (str == NULL)
+    {
+      abort ();
+    }
+  adftool_term_set_literal (term, str,
+			    "http://www.w3.org/2001/XMLSchema#integer", NULL);
+  the_free (str, strlen (str) + 1);
+}
+
+void
+adftool_term_set_double (struct adftool_term *term, mpf_t value)
+{
+  void (*the_free) (void *, size_t);
+  mp_get_memory_functions (NULL, NULL, &the_free);
+  mp_exp_t exponent;
+  char *str = mpf_get_str (NULL, &exponent, 10, 0, value);
+  if (str == NULL)
+    {
+      abort ();
+    }
+  exponent--;
+  /* formatted as: x.yyyyyennn */
+  char x[3] = " ";
+  if (str[0] == '-' || str[0] == '+')
+    {
+      memcpy (x, str, 2);
+      x[2] = '\0';
+    }
+  else
+    {
+      x[0] = str[0];
+      x[1] = '\0';
+    }
+  char *y = malloc (strlen (str) - strlen (x) + 1);
+  if (y == NULL)
+    {
+      abort ();
+    }
+  strcpy (y, str + strlen (x));
+  mpz_t exp;
+  mpz_init_set_si (exp, exponent);
+  char *n = mpz_get_str (NULL, 10, exp);
+  if (n == NULL)
+    {
+      abort ();
+    }
+  char *literal =
+    malloc (strlen (x) + strlen (".") + strlen (y) + strlen ("e") +
+	    strlen (n) + 1);
+  if (literal == NULL)
+    {
+      abort ();
+    }
+  strcpy (literal, x);
+  strcat (literal, ".");
+  strcat (literal, y);
+  if (exponent != 0)
+    {
+      strcat (literal, "e");
+      strcat (literal, n);
+    }
+  adftool_term_set_literal (term, literal,
+			    "http://www.w3.org/2001/XMLSchema#double", NULL);
+  free (literal);
+  the_free (n, strlen (n) + 1);
+  mpz_clear (exp);
+  free (y);
+  the_free (str, strlen (str) + 1);
+}
+
+int
+adftool_term_as_integer (const struct adftool_term *term, mpz_t value)
+{
+  if (!adftool_term_is_typed_literal (term))
+    {
+      return 1;
+    }
+  if (strcmp (term->str2, "http://www.w3.org/2001/XMLSchema#integer") == 0)
+    {
+      if (mpz_set_str (value, term->str1, 10) != 0)
+	{
+	  return 1;
+	}
+      return 0;
+    }
+  else
+    if ((strcmp (term->str2, "http://www.w3.org/2001/XMLSchema#double") == 0)
+	|| (strcmp (term->str2, "http://www.w3.org/2001/XMLSchema#decimal") ==
+	    0))
+    {
+      mpf_t double_value;
+      mpf_init (double_value);
+      int error = adftool_term_as_double (term, double_value);
+      if (error == 0)
+	{
+	  mpz_set_f (value, double_value);
+	}
+      mpf_clear (double_value);
+      return error;
+    }
+  return 1;
+}
+
+static char *
+localize_decimal_point (const char *str)
+{
+  static const char *default_decimal_point = ".";
+  const char *decimal_point = default_decimal_point;
+#ifdef HAVE_LOCALECONV
+  struct lconv *lc = localeconv ();
+  decimal_point = lc->decimal_point;
+#endif
+  const char *start_decimal_point = strchr (str, '.');
+  if (start_decimal_point == NULL)
+    {
+      char *ret = malloc (strlen (str) + 1);
+      if (ret != NULL)
+	{
+	  strcpy (ret, str);
+	}
+      return ret;
+    }
+  const size_t n_before_decimal_point = start_decimal_point - str;
+  const size_t n_after_decimal_point = strlen (start_decimal_point + 1);
+  char *ret =
+    malloc (n_before_decimal_point + strlen (decimal_point) +
+	    n_after_decimal_point + 1);
+  if (ret != NULL)
+    {
+      strncpy (ret, str, n_before_decimal_point);
+      strcpy (ret + n_before_decimal_point, decimal_point);
+      strcat (ret, start_decimal_point + 1);
+    }
+  return ret;
+}
+
+int
+adftool_term_as_double (const struct adftool_term *term, mpf_t value)
+{
+  if (!adftool_term_is_typed_literal (term))
+    {
+      return 1;
+    }
+  if ((strcmp (term->str2, "http://www.w3.org/2001/XMLSchema#double") == 0)
+      || (strcmp (term->str2, "http://www.w3.org/2001/XMLSchema#decimal") ==
+	  0))
+    {
+      char *fixed = localize_decimal_point (term->str1);
+      if (fixed == NULL)
+	{
+	  abort ();
+	}
+      if (mpf_set_str (value, fixed, 10) != 0)
+	{
+	  free (fixed);
+	  return 1;
+	}
+      free (fixed);
+      return 0;
+    }
+  else if (strcmp (term->str2, "http://www.w3.org/2001/XMLSchema#integer") ==
+	   0)
+    {
+      mpz_t integer_value;
+      mpz_init (integer_value);
+      int error = adftool_term_as_integer (term, integer_value);
+      if (error == 0)
+	{
+	  mpf_set_z (value, integer_value);
+	}
+      mpz_clear (integer_value);
+      return error;
+    }
+  return 1;
+}

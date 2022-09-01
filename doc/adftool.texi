@@ -454,6 +454,12 @@ argument among @var{value} and @var{meta} is not NULL. In any case,
 @var{id}, @var{value} and @var{meta} must be NUL-terminated strings.
 @end deftypefun
 
+@deftypefun void adftool_term_set_integer (struct adftool_term *@var{term}, mpz_t @var{value})
+@deftypefunx void adftool_term_set_double (struct adftool_term *@var{term}, mpf_t @var{value})
+Initialize @var{term} with the numeric @var{value}, with an
+appropriate type.
+@end deftypefun
+
 @deftypefun int adftool_term_is_named (const struct adftool_term *@var{term})
 @deftypefunx int adftool_term_is_blank (const struct adftool_term *@var{term})
 @deftypefunx int adftool_term_is_literal (const struct adftool_term *@var{term})
@@ -467,6 +473,18 @@ Return as a boolean value whether @var{term} is one of those types.
 Get the two components of @var{term}. If @var{max} is not 0, the first
 @var{start} bytes are ignored, then the next @var{max} are copied to
 @var{value} or @var{meta}. The total number of bytes is returned.
+
+@deftypefun int adftool_term_as_integer (const struct adftool_term *@var{term}, mpz_t @var{value})
+@deftypefunx int adftool_term_as_double (const struct adftool_term *@var{term}, mpf_t @var{value})
+Try and parse @var{term} as a numeric value. Return 0 on success,
+another value if an error happens.
+
+These functions may perform conversions. For instance, if you ask for
+an integer when the literal is a double, then @var{value} will be set
+to its integer part.
+
+The double conversion might lose precision!
+@end deftypefun
 
 It is admissible to pass a larger @var{max} value than required; in
 this case a NUL character will be added after the value. Also, if

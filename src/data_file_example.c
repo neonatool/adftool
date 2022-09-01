@@ -13,10 +13,6 @@
 #include <locale.h>
 #include <assert.h>
 
-#ifdef HAVE_MPFR_H
-#include <mpfr.h>
-#endif /* HAVE_MPFR_H */
-
 #define _(String) gettext(String)
 #define N_(String) (String)
 
@@ -159,8 +155,5 @@ main (int argc, char *argv[])
   adftool_file_close (file);
   adftool_file_free (file);
   free (file_data);
-#ifdef HAVE_MPFR_FREE_CACHE
-  mpfr_free_cache ();
-#endif
   return 0;
 }

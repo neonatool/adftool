@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <gmp.h>
 
 #if BUILDING_LIBADFTOOL && HAVE_EMSCRIPTEN_H
 #include "emscripten.h"
@@ -83,6 +84,10 @@ extern "C"
     void adftool_term_set_literal (struct adftool_term *term,
 				   const char *value, const char *type,
 				   const char *lang);
+  extern LIBADFTOOL_API
+    void adftool_term_set_integer (struct adftool_term *term, mpz_t value);
+  extern LIBADFTOOL_API
+    void adftool_term_set_double (struct adftool_term *term, mpf_t value);
 
   extern LIBADFTOOL_API
     int adftool_term_is_blank (const struct adftool_term *term);
@@ -103,6 +108,12 @@ extern "C"
   extern LIBADFTOOL_API
     size_t adftool_term_meta (const struct adftool_term *term, size_t start,
 			      size_t max, char *meta);
+
+  extern LIBADFTOOL_API
+    int adftool_term_as_integer (const struct adftool_term *term,
+				 mpz_t value);
+  extern LIBADFTOOL_API
+    int adftool_term_as_double (const struct adftool_term *term, mpf_t value);
 
   extern LIBADFTOOL_API
     int adftool_term_compare (const struct adftool_term *reference,

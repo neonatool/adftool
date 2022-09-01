@@ -247,7 +247,7 @@
 	 (invoke "make" "-j" "install-html"
 		 (format #f "prefix = ~a" (assoc-ref outputs "html"))))))))
  (inputs
-  (list gnu-gettext hdf5 zlib mpfr))
+  (list gnu-gettext hdf5 zlib gmp))
  (native-inputs
   (list autoconf autoconf-archive automake libtool
 	valgrind

@@ -9,6 +9,3 @@ To build, run:
 make -j
 
 make -j check
-
-Unfortunately address sanitizer detects memory leaks in mpfr, so we
-can’t use it.

@@ -27,7 +27,7 @@ AM_CPPFLAGS = \
 
 AM_DISTCHECK_CONFIGURE_FLAGS = \
   --disable-valgrind-tests \
-  "CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined -fsanitize-undefined-trap-on-error -Wall -Wextra" \
+  "CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined -fsanitize-undefined-trap-on-error -fsanitize=address -Wall -Wextra" \
   SHELL=$(SHELL)
 
 RELOCATABLE_LIBRARY_PATH = $(libdir)

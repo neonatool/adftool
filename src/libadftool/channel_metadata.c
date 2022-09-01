@@ -1,10 +1,6 @@
 #include <adftool_private.h>
 #include <time.h>
 
-#ifdef HAVE_MPFR_H
-#include <mpfr.h>
-#endif /* HAVE_MPFR_H */
-
 static struct adftool_statement *
 column_number_finder (size_t i)
 {
@@ -120,69 +116,17 @@ cleanup:
   return error;
 }
 
-static inline double
-locale_independent_strtod (const char *text, char **end)
-{
-#ifdef HAVE_MPFR_STRTOFR
-  mpfr_t number;
-  mpfr_init2 (number, 53);
-  mpfr_strtofr (number, text, end, 10, MPFR_RNDN);
-  const double ret = mpfr_get_d (number, MPFR_RNDN);
-  mpfr_clear (number);
-  return ret;
-#else
-  char *old_locale = setlocale (LC_NUMERIC, "C");
-  const double ret = strtod (text, end);
-  setlocale (LC_NUMERIC, old_locale);
-  return ret;
-#endif
-}
-
 static inline int
 term_to_literal_double (const struct adftool_term *term, double *value)
 {
-  int error = 0;
-  if (!adftool_term_is_typed_literal (term))
+  mpf_t double_value;
+  mpf_init (double_value);
+  int error = adftool_term_as_double (term, double_value);
+  if (error == 0)
     {
-      error = 1;
-      goto wrapup;
+      *value = mpf_get_d (double_value);
     }
-  size_t value_length = adftool_term_value (term, 0, 0, NULL);
-  char *value_str = malloc (value_length + 1);
-  if (value_str == NULL)
-    {
-      error = 1;
-      goto wrapup;
-    }
-  if (adftool_term_value (term, 0, value_length + 1, value_str) !=
-      value_length)
-    {
-      abort ();
-    }
-  char meta[256];
-  size_t meta_length = adftool_term_meta (term, 0, sizeof (meta), meta);
-  if (meta_length > 255)
-    {
-      /* Not xsd:double. */
-      error = 1;
-      goto cleanup_value;
-    }
-  meta[meta_length] = '\0';
-  if (strcmp (meta, "http://www.w3.org/2001/XMLSchema#double") != 0)
-    {
-      error = 1;
-      goto cleanup_value;
-    }
-  char *end;
-  *value = locale_independent_strtod (value_str, &end);
-  if (end == value_str)
-    {
-      error = 1;
-      goto cleanup_value;
-    }
-cleanup_value:
-  free (value_str);
-wrapup:
+  mpf_clear (double_value);
   return error;
 }
 
@@ -297,33 +241,10 @@ cleanup:
 static inline void
 term_make_literal_double (struct adftool_term *term, double value)
 {
-  static const char *meta = "http://www.w3.org/2001/XMLSchema#double";
-  char value_str[256];
-#ifdef HAVE_MPFR_STRTOFR
-  mpfr_t number;
-  mpfr_init2 (number, 53);
-  mpfr_set_d (number, value, MPFR_RNDN);
-  mpfr_exp_t exp;
-  char *the_value = mpfr_get_str (NULL, &exp, 10, 0, number, MPFR_RNDN);
-  assert (strlen (the_value) < sizeof (value_str));
-  assert (strlen (the_value) > 0);
-  if (the_value[0] == '-' || the_value[0] == '+')
-    {
-      assert (strlen (the_value) > 1);
-      sprintf (value_str, "%c%c.%sE%ld", the_value[0], the_value[1],
-	       the_value + 2, exp - 1);
-    }
-  else
-    {
-      sprintf (value_str, "%c.%sE%ld", the_value[0], the_value + 1, exp - 1);
-    }
-  mpfr_clear (number);
-#else
-  char *old_locale = setlocale (LC_NUMERIC, "C");
-  sprintf (value_str, "%.20e", value);
-  setlocale (LC_NUMERIC, old_locale);
-#endif
-  adftool_term_set_literal (term, value_str, meta, NULL);
+  mpf_t double_value;
+  mpf_init_set_d (double_value, value);
+  adftool_term_set_double (term, double_value);
+  mpf_clear (double_value);
 }
 
 int

@@ -10,6 +10,7 @@ cache:
   paths:
     - .apt
     - emsdk
+    - gmp-6.1.2.tar.lz
 
 before_script:
   - rm -f /etc/apt/apt.conf.d/docker-clean
@@ -20,7 +21,7 @@ before_script:
 dist:
   stage: dependencies
   script:
-    - apt-get install -y git gettext libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ m4 libtinfo5 flex r-base texinfo texlive
+    - apt-get install -y git gettext libgmp-dev libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc g++ m4 libtinfo5 flex r-base texinfo texlive
     - mkdir -p public
     - export GNULIB_SRCDIR=$PWD/gnulib
     - ./bootstrap --force --skip-po
@@ -72,6 +73,43 @@ dep_hdf5_emscripten:
     paths:
       - public
 
+dep_gmp_emscripten:
+  stage: dependencies
+  script:
+    - apt-get install -y tar gcc make wget lzip git python3 m4
+    - test -d emsdk || git clone https://github.com/emscripten-core/emsdk.git
+    - cd emsdk
+    - git pull
+    - ./emsdk install latest
+    - ./emsdk activate latest
+    - source ./emsdk_env.sh
+    - cd ..
+    - "[ -f gmp-6.1.2.tar.lz ] || wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.lz"
+    - tar xf gmp-6.1.2.tar.lz
+    - mkdir build-gmp-emscripten
+    - cd build-gmp-emscripten
+    - emconfigure ../gmp-6.1.2/configure --prefix=/emscripten --disable-assembly --host none
+    - emmake make -j 8
+    - emmake make DESTDIR=$PWD/../public install
+  artifacts:
+    paths:
+      - public
+
+dep_gmp_mingw:
+  stage: dependencies
+  script:
+    - apt-get install -y tar make binutils-mingw-w64-x86-64 g++-mingw-w64 gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 wget lzip gcc m4
+    - "[ -f gmp-6.1.2.tar.lz ] || wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.lz"
+    - tar xf gmp-6.1.2.tar.lz
+    - mkdir build-gmp-mingw
+    - cd build-gmp-mingw
+    - ../gmp-6.1.2/configure --host=x86_64-w64-mingw32 --prefix=/mingw64 --enable-shared=yes --disable-static
+    - make -j 8
+    - make DESTDIR=$PWD/../public install
+  artifacts:
+    paths:
+      - public
+
 build_mingw:
   stage: build
   script:
@@ -112,34 +150,10 @@ build_emscripten:
     paths:
       - public
 
-build_without_mpfr:
-  stage: build
-  script:
-    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 texinfo texlive
-    - tar xf public/adftool-latest.tar.gz
-    - mkdir -p build-without-mpfr
-    - cd build-without-mpfr
-    - ../adftool-*/configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
-    - make -j
-    - make -j check
-    - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
-
-build_with_mpfr:
-  stage: build
-  script:
-    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 libmpfr-dev texinfo texlive
-    - tar xf public/adftool-latest.tar.gz
-    - mkdir -p build-with-mpfr
-    - cd build-with-mpfr
-    - ../adftool-*/configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
-    - make -j
-    - make -j check
-    - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
-
 build_html:
   stage: build
   script:
-    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 libmpfr-dev texinfo
+    - apt-get install -y gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 libmpfr-dev texinfo
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-html
     - cd build-html
@@ -154,7 +168,7 @@ build_html:
 build_pdf:
   stage: build
   script:
-    - apt-get install -y gettext libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 libmpfr-dev texinfo texlive
+    - apt-get install -y gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc g++ libtinfo5 libmpfr-dev texinfo texlive
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-pdf
     - cd build-pdf
