@@ -122,6 +122,7 @@ build_mingw:
     - make -j DESTDIR=$PWD/../public install
     - cp ../public/mingw64/bin/*.dll .
     - make -j check "LOG_COMPILER = ./libtool --mode=execute wine"
+    - LANG=fr_FR.UTF-8 ./libtool --mode=execute wine ./adftool --aidez-moi
   artifacts:
     paths:
       - public
