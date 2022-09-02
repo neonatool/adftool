@@ -794,3 +794,161 @@ adftool_term_as_double (const struct adftool_term *term, mpf_t value)
     }
   return 1;
 }
+
+static size_t
+date_str (char *dst, size_t max, const struct tm *date, long int nsec)
+{
+  char second_fraction[] = ".000000000";
+  size_t required =
+    snprintf (second_fraction, sizeof (second_fraction), ".%09ld", nsec);
+  assert (required + 1 == sizeof (second_fraction));
+  /* Delete the trailing 0s… */
+  if (nsec == 0)
+    {
+      second_fraction[0] = '\0';
+    }
+  while ((strlen (second_fraction) > 0)
+	 && (second_fraction[strlen (second_fraction) - 1] == '0'))
+    {
+      second_fraction[strlen (second_fraction) - 1] = '\0';
+    }
+  return
+    snprintf (dst, max, "%04d-%02d-%02dT%02d:%02d:%02d%sZ",
+	      date->tm_year + 1900, date->tm_mon + 1, date->tm_mday,
+	      date->tm_hour, date->tm_min, date->tm_sec, second_fraction);
+}
+
+void
+adftool_term_set_date (struct adftool_term *term, const struct timespec *nsec)
+{
+  struct tm date;
+  gmtime_r (&(nsec->tv_sec), &date);
+  static const char *type = "http://www.w3.org/2001/XMLSchema#dateTime";
+  char easy[64];
+  size_t required = date_str (easy, sizeof (easy), &date, nsec->tv_nsec);
+  if (required >= sizeof (easy))
+    {
+      char *full = malloc (required + 1);
+      if (full == NULL)
+	{
+	  abort ();
+	}
+      date_str (full, required + 1, &date, nsec->tv_nsec);
+      adftool_term_set_literal (term, full, type, NULL);
+      free (full);
+    }
+  else
+    {
+      adftool_term_set_literal (term, easy, type, NULL);
+    }
+}
+
+int
+adftool_term_as_date (const struct adftool_term *term, struct timespec *nsec)
+{
+  struct tm date;
+  long int nano = 0;
+  memset (&date, 0, sizeof (date));
+  if (!adftool_term_is_typed_literal (term))
+    {
+      return 1;
+    }
+  if (strcmp (term->str2, "http://www.w3.org/2001/XMLSchema#dateTime") != 0)
+    {
+      return 1;
+    }
+  char *cur = term->str1;
+  char *end;
+  date.tm_year = strtol (cur, &end, 10) - 1900;
+  if (end == cur || *end != '-')
+    {
+      return 1;
+    }
+  cur = end + 1;
+  date.tm_mon = strtol (cur, &end, 10) - 1;
+  if (end == cur || *end != '-')
+    {
+      return 1;
+    }
+  cur = end + 1;
+  date.tm_mday = strtol (cur, &end, 10);
+  if (end == cur || *end != 'T')
+    {
+      return 1;
+    }
+  cur = end + 1;
+  date.tm_hour = strtol (cur, &end, 10);
+  if (end == cur || *end != ':')
+    {
+      return 1;
+    }
+  cur = end + 1;
+  date.tm_min = strtol (cur, &end, 10);
+  if (end == cur || *end != ':')
+    {
+      return 1;
+    }
+  cur = end + 1;
+  date.tm_sec = strtol (cur, &end, 10);
+  if (end == cur)
+    {
+      return 1;
+    }
+  cur = end;
+  if (*cur == '.')
+    {
+      cur++;
+      char digits[] = "000000000";
+      for (size_t i = 0; i < sizeof (digits); i++)
+	{
+	  if (*cur != '\0' && *cur != 'Z' && *cur != '+' && *cur != '-')
+	    {
+	      if (*cur >= '0' && *cur <= '9')
+		{
+		  digits[i] = *cur;
+		}
+	      else
+		{
+		  return 1;
+		}
+	      cur++;
+	    }
+	}
+      nano = strtol (digits, NULL, 10);
+    }
+  if (*cur == 'Z')
+    {
+      end = cur + 1;
+    }
+  else if (*cur == '\0')
+    {
+      end = cur;
+    }
+  else
+    {
+      /* Parse the timezone */
+      date.tm_hour -= strtol (cur, &end, 10);
+      if (end == cur || *end != ':')
+	{
+	  return 1;
+	}
+      cur = end + 1;
+      date.tm_min -= strtol (cur, &end, 10);
+      if (end == cur)
+	{
+	  return 1;
+	}
+    }
+  if (*end != '\0')
+    {
+      return 1;
+    }
+  time_t seconds = timegm (&date);
+  if (seconds == ((time_t) (-1)))
+    {
+      return 1;
+    }
+  nsec->tv_sec = seconds;
+  nsec->tv_nsec = nano;
+  return 0;
+}

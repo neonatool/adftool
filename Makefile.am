@@ -52,7 +52,8 @@ check_PROGRAMS = \
   channel_metadata_example \
   eeg_data_example \
   filter_example \
-  data_file_example
+  data_file_example \
+  date_parser_example
 
 TESTS = \
   bplus_tree_lookup_example \
@@ -70,7 +71,8 @@ TESTS = \
   channel_metadata_example \
   eeg_data_example \
   filter_example \
-  data_file_example
+  data_file_example \
+  date_parser_example
 
 LOG_COMPILER = $(LOG_VALGRIND)
 
@@ -303,6 +305,20 @@ data_file_example_LDADD = \
   $(LTLIBINTL) \
   @LTLIBOBJS@
 data_file_example_CPPFLAGS = \
+  -I include -I $(srcdir)/include \
+  -I libprog -I $(srcdir)/libprog \
+  -I src -I $(srcdir)/src \
+  -DLOCALEDIR=\"@localedir@\" \
+  -DINSTALLDIR=\"$(bindir)\"
+
+date_parser_example_SOURCES = \
+  src/date_parser_example.c
+date_parser_example_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  @LTLIBOBJS@
+date_parser_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \

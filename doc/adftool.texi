@@ -460,6 +460,18 @@ Initialize @var{term} with the numeric @var{value}, with an
 appropriate type.
 @end deftypefun
 
+@deftypefun void adftool_term_set_date (struct adftool_term *@var{term}, const struct timespec *@var{date})
+Initialize @var{term} as a date for @var{date}. If the @code{struct
+timespec} declaration is missing, then you may need to define it
+yourself, as a structure with 2 fields:
+@table @code
+@item time_t @var{tv_sec}
+contains the number of seconds since the epoch;
+@item long int @var{tv_nsec}
+contains the number of nanoseconds to add to @var{tv_sec}.
+@end table
+@end deftypefun
+
 @deftypefun int adftool_term_is_named (const struct adftool_term *@var{term})
 @deftypefunx int adftool_term_is_blank (const struct adftool_term *@var{term})
 @deftypefunx int adftool_term_is_literal (const struct adftool_term *@var{term})
@@ -484,6 +496,10 @@ an integer when the literal is a double, then @var{value} will be set
 to its integer part.
 
 The double conversion might lose precision!
+@end deftypefun
+
+@deftypefun int adftool_term_as_date (const struct adftool_term *@var{term}, struct timespec *@var{date})
+Try and parse @var{term} as a date, and set @var{date}.
 @end deftypefun
 
 It is admissible to pass a larger @var{max} value than required; in
