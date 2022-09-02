@@ -288,6 +288,16 @@ extern "C"
 			      size_t channel_length, size_t *channel_max,
 			      double *data);
 
+  extern LIBADFTOOL_API
+    int adftool_eeg_get_time (const struct adftool_file *file,
+			      size_t observation, struct timespec *time,
+			      double *sampling_frequency);
+
+  extern LIBADFTOOL_API
+    int adftool_eeg_set_time (struct adftool_file *file,
+			      const struct timespec *time,
+			      double sampling_frequency);
+
   struct adftool_fir;
 
   extern LIBADFTOOL_API

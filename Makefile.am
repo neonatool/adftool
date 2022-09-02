@@ -1,4 +1,4 @@
-SUBDIRS = lib libprog . po
+SUBDIRS = lib libprog . po tests
 ACLOCAL_AMFLAGS = -I m4 -I m4prog
 EXTRA_DIST = m4/gnulib-cache.m4 m4prog/gnulib-cache.m4 \
   src/filter_test_data.c src/filter_test_data.R \
@@ -17,7 +17,8 @@ CLEANFILES = \
   statement_example.adf \
   multi_statement_example.adf \
   channel_metadata_example.adf \
-  eeg_data_example.adf
+  eeg_data_example.adf \
+  eeg_metadata_example.adf
 
 AM_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -53,7 +54,8 @@ check_PROGRAMS = \
   eeg_data_example \
   filter_example \
   data_file_example \
-  date_parser_example
+  date_parser_example \
+  eeg_metadata_example
 
 TESTS = \
   bplus_tree_lookup_example \
@@ -72,7 +74,8 @@ TESTS = \
   eeg_data_example \
   filter_example \
   data_file_example \
-  date_parser_example
+  date_parser_example \
+  eeg_metadata_example
 
 LOG_COMPILER = $(LOG_VALGRIND)
 
@@ -83,7 +86,12 @@ adftool_CPPFLAGS = \
   -I src -I $(srcdir)/src \
   -DLOCALEDIR=\"@localedir@\" \
   -DINSTALLDIR=\"$(bindir)\"
-adftool_LDADD = libprog/libgnu.la @LTLIBOBJS@ $(LTLIBINTL) libadftool.la
+adftool_LDADD = \
+  libprog/libgnu.la \
+  @LTLIBOBJS@ \
+  $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
+  libadftool.la
 adftool_LDFLAGS =
 
 libadftool_la_SOURCES = \
@@ -105,6 +113,7 @@ libadftool_la_SOURCES = \
   src/libadftool/lexer.l \
   src/libadftool/channel_metadata.c \
   src/libadftool/eeg_data.c \
+  src/libadftool/eeg_metadata.c \
   src/libadftool/fir.c
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -116,7 +125,13 @@ libadftool_la_CFLAGS = \
     $(CFLAG_VISIBILITY)
 libadftool_la_LFLAGS = --prefix=_adftool_lexer_
 libadftool_la_LIBADD = lib/libadftool.la @LTLIBOBJS@
-libadftool_la_LDFLAGS = -no-undefined $(LTLIBINTL)
+libadftool_la_LDFLAGS = \
+  -no-undefined \
+  $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
+  $(LIB_GETRANDOM) \
+  $(MODF_LIBM) \
+  $(TRUNC_LIBM)
 
 if RELOCATABLE_VIA_LD
 libadftool_la_LDFLAGS += `$(RELOCATABLE_LDFLAGS) $(libdir)`
@@ -129,6 +144,7 @@ bplus_tree_lookup_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 
 bplus_tree_empty_lookup_example_SOURCES = \
@@ -137,6 +153,7 @@ bplus_tree_empty_lookup_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 
 bplus_tree_grow_example_SOURCES = \
@@ -145,6 +162,7 @@ bplus_tree_grow_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 
 bplus_tree_grow_file_example_SOURCES = \
@@ -153,6 +171,7 @@ bplus_tree_grow_file_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 
 bplus_tree_gets_initialized_SOURCES = \
@@ -161,6 +180,7 @@ bplus_tree_gets_initialized_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 
 bplus_tree_insert_example_SOURCES = \
@@ -169,6 +189,7 @@ bplus_tree_insert_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 
 file_open_example_SOURCES = \
@@ -177,6 +198,7 @@ file_open_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 file_open_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -191,6 +213,7 @@ dictionary_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 dictionary_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -205,6 +228,7 @@ term_manipulation_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 term_manipulation_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -219,6 +243,7 @@ statement_manipulation_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 statement_manipulation_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -233,6 +258,7 @@ multi_statement_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 multi_statement_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -247,6 +273,7 @@ term_parser_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 term_parser_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -261,6 +288,7 @@ channel_metadata_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 channel_metadata_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -275,6 +303,7 @@ eeg_data_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 eeg_data_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -289,6 +318,7 @@ filter_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 filter_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -303,6 +333,7 @@ data_file_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 data_file_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -317,8 +348,24 @@ date_parser_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 date_parser_example_CPPFLAGS = \
+  -I include -I $(srcdir)/include \
+  -I libprog -I $(srcdir)/libprog \
+  -I src -I $(srcdir)/src \
+  -DLOCALEDIR=\"@localedir@\" \
+  -DINSTALLDIR=\"$(bindir)\"
+
+eeg_metadata_example_SOURCES = \
+  src/eeg_metadata_example.c
+eeg_metadata_example_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
+  @LTLIBOBJS@
+eeg_metadata_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \

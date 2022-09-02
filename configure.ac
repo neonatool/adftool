@@ -53,5 +53,9 @@ AC_CHECK_FUNC([H5open],, [AC_MSG_ERROR([I need the HDF5 library functions.])])
 AC_CHECK_FUNC([__gmpz_init],, [AC_MSG_ERROR([I need the GMP library functions.])])
 AC_CHECK_FUNCS([localeconv])
 
-AC_CONFIG_FILES([Makefile lib/Makefile libprog/Makefile po/Makefile.in])
+AC_CONFIG_FILES([
+  Makefile
+  lib/Makefile libprog/Makefile
+  po/Makefile.in
+  tests/Makefile])
 AC_OUTPUT

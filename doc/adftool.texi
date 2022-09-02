@@ -844,6 +844,23 @@ anything that was there before. @var{data} is row-oriented, with
 Return 0 on success, or an error code.
 @end deftypefun
 
+@deftypefun int adftool_eeg_get_time (const struct adftool_file *@var{file}, size_t @var{i}, struct timespec *@var{time}, double *@var{sampling_frequency})
+Get the @var{time} that the @var{i}-th observation was made in
+@var{file}, along with the @var{sampling_frequency} of the
+recording. @var{time} and @var{sampling_frequency} can each be
+@code{NULL}, in which case they are not set. @var{i} can be 0, if you
+want the date the recording started.
+
+Return 0 on success, or an error code.
+@end deftypefun
+
+@deftypefun int adftool_eeg_set_time (struct adftool_file *@var{file}, const struct timespec *@var{time}, double @var{sampling_frequency})
+Set the @var{time} ande the @var{sampling_frequency} of the
+recording.
+
+Return 0 on success, or an error code.
+@end deftypefun
+
 @node Data filtering
 @section Data filtering
 For visualization, the bipolar reference or the data must be band-pass

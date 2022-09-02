@@ -60,9 +60,41 @@ main (int argc, char *argv[])
   static int add_channel_type = 0;
   struct adftool_term *channel_type = adftool_term_alloc ();
   static int list_channels_of_type = 0;
+  static int get_eeg_metadata = 0;
+  static int set_eeg_date = 0;
+  struct timespec eeg_date = { 0, 0 };
+  double eeg_sampling_frequency = 0;
+  char *example_date_format;
   if (channel_identifier == NULL || channel_type == NULL)
     {
       abort ();
+    }
+  if (1)
+    {
+      struct timespec now;
+      if (timespec_get (&now, TIME_UTC) != TIME_UTC)
+	{
+	  now.tv_sec = now.tv_nsec = 0;
+	}
+      struct adftool_term *literal_now = adftool_term_alloc ();
+      if (literal_now == NULL)
+	{
+	  abort ();
+	}
+      adftool_term_set_date (literal_now, &now);
+      size_t n = adftool_term_value (literal_now, 0, 0, NULL);
+      example_date_format = malloc (n + 1);
+      if (example_date_format == NULL)
+	{
+	  abort ();
+	}
+      size_t check =
+	adftool_term_value (literal_now, 0, n + 1, example_date_format);
+      if (check != n)
+	{
+	  abort ();
+	}
+      adftool_term_free (literal_now);
     }
   static struct option long_options[] = {
     {NP_ ("Command-line|Option|", "lookup"), no_argument, &lookup,
@@ -85,6 +117,10 @@ main (int argc, char *argv[])
      required_argument, NULL, 259},
     {NP_ ("Command-line|Option|", "channels-of-type"),
      required_argument, NULL, 260},
+    {NP_ ("Command-line|Option|", "eeg-metadata"),
+     no_argument, &get_eeg_metadata, 261},
+    {NP_ ("Command-line|Option|", "set-eeg-date"),
+     required_argument, NULL, 262},
     {NP_ ("Command-line|Option|", "subject"), required_argument,
      0, 's'},
     {NP_ ("Command-line|Option|", "predicate"),
@@ -323,6 +359,64 @@ main (int argc, char *argv[])
 	    list_channels_of_type = 1;
 	  }
 	  break;
+	case 262:
+	  /* --set-eeg-date=DATE,SAMPLING_FREQUENCY */
+	  {
+	    char *separator = strchr (optarg, ',');
+	    if (separator == NULL)
+	      {
+		fprintf (stderr, _("The argument to \"%s\" "
+				   "must be in the form of "
+				   "DATE,SAMPLING_FREQUENCY.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    char *left = malloc (separator - optarg + 1);
+	    char *right = malloc (strlen (separator + 1) + 1);
+	    if (left == NULL || right == NULL)
+	      {
+		abort ();
+	      }
+	    memcpy (left, optarg, separator - optarg);
+	    left[separator - optarg] = '\0';
+	    strcpy (right, separator + 1);
+	    struct adftool_term *literal = adftool_term_alloc ();
+	    if (literal == NULL)
+	      {
+		abort ();
+	      }
+	    static const char *type =
+	      "http://www.w3.org/2001/XMLSchema#dateTime";
+	    adftool_term_set_literal (literal, left, type, NULL);
+	    if (adftool_term_as_date (literal, &eeg_date) != 0)
+	      {
+		fprintf (stderr, _("The DATE argument to \"%s\" "
+				   "must be a date according "
+				   "to XSD.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    adftool_term_free (literal);
+	    char *number_end;
+	    eeg_sampling_frequency = strtod (right, &number_end);
+	    while (*number_end == ' ' || *number_end == '\r'
+		   || *number_end == '\t' || *number_end == '\n')
+	      {
+		number_end++;
+	      }
+	    if (number_end == right || strcmp (number_end, "") != 0)
+	      {
+		fprintf (stderr, _("The SAMPLING_FREQUENCY argument "
+				   "to \"%s\" "
+				   "must be a number.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    free (right);
+	    free (left);
+	    set_eeg_date = 1;
+	  }
+	  break;
 	case 's':
 	case 'p':
 	case 'o':
@@ -405,6 +499,14 @@ main (int argc, char *argv[])
 	  printf (_("  --%s: set the raw EEG sensor data (in TSV format) "
 		    "from the standard input;\n"),
 		  P_ ("Command-line|Option|", "set-eeg-data"));
+	  printf (_("  --%s: read the EEG metadata;\n"),
+		  P_ ("Command-line|Option|", "eeg-metadata"));
+	  printf (_("  --%s=DATE,SAMPLING_FREQUENCY: set the EEG date "
+		    "and sampling frequency (DATE is in the format of "
+		    "%s, and SAMPLING_FREQUENCY in the locale numeric "
+		    "format, %f);\n"),
+		  P_ ("Command-line|Option|", "set-eeg-date"),
+		  example_date_format, 256.0);
 	  printf (_("  --%s=COLUMN: find the channel identifier for the "
 		    "raw sensor data in COLUMN (an integer);\n"),
 		  P_ ("Command-line|Option|", "find-channel-identifier"));
@@ -493,7 +595,8 @@ main (int argc, char *argv[])
     }
   if (!lookup && !insert && !remove && !get_eeg_data && !set_eeg_data
       && !find_channel_identifier && !set_channel_identifier
-      && !get_channel_metadata && !add_channel_type && !list_channels_of_type)
+      && !get_channel_metadata && !add_channel_type && !list_channels_of_type
+      && !get_eeg_metadata && !set_eeg_date)
     {
       fprintf (stderr, _("Nothing to do.\n"));
       exit (0);
@@ -527,7 +630,7 @@ main (int argc, char *argv[])
   while (optind < argc)
     {
       int write = insert || remove || set_eeg_data || set_channel_identifier
-	|| add_channel_type;
+	|| add_channel_type || set_eeg_date;
       const char *filename = argv[optind++];
       if (adftool_file_open (file, filename, write) != 0)
 	{
@@ -886,8 +989,52 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
 	    }
 	  free (channels);
 	}
+      if (get_eeg_metadata)
+	{
+	  struct timespec start_date;
+	  double sfreq;
+	  if (adftool_eeg_get_time (file, 0, &start_date, &sfreq) != 0)
+	    {
+	      printf (_("The EEG does not have "
+			"a start date or a sampling frequency.\n"));
+	    }
+	  else
+	    {
+	      struct adftool_term *literal_date = adftool_term_alloc ();
+	      if (literal_date == NULL)
+		{
+		  abort ();
+		}
+	      adftool_term_set_date (literal_date, &start_date);
+	      size_t n = adftool_term_value (literal_date, 0, 0, NULL);
+	      char *d = malloc (n + 1);
+	      if (d == NULL)
+		{
+		  abort ();
+		}
+	      size_t ck = adftool_term_value (literal_date, 0, n + 1, d);
+	      if (ck != n)
+		{
+		  abort ();
+		}
+	      printf (_("The EEG started at: %s, "
+			"with a sampling frequency of %f Hz.\n"), d, sfreq);
+	      free (d);
+	      adftool_term_free (literal_date);
+	    }
+	}
+      if (set_eeg_date)
+	{
+	  if (adftool_eeg_set_time (file, &eeg_date, eeg_sampling_frequency)
+	      != 0)
+	    {
+	      fprintf (stderr, _("Could not set the EEG time.\n"));
+	      exit (1);
+	    }
+	}
       adftool_file_close (file);
     }
+  free (example_date_format);
   adftool_term_free (channel_type);
   adftool_term_free (channel_identifier);
   adftool_file_free (file);
