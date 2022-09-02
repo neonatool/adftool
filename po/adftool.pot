@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.1.0-25-ge567250\n"
+"Project-Id-Version: adftool 0.1.0-33-g4c43727\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-08-31 12:11+0000\n"
+"POT-Creation-Date: 2022-09-05 12:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,84 +17,94 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/adftool.c:43
+#: src/adftool.c:46
 #, c-format
 msgid "Not enough memory.\n"
 msgstr ""
 
-#: src/adftool.c:53 src/adftool.c:169 src/adftool.c:258
+#: src/adftool.c:58 src/adftool.c:196 src/adftool.c:290
 msgctxt "Command-line|Option|"
 msgid "lookup"
 msgstr ""
 
-#: src/adftool.c:55 src/adftool.c:170
+#: src/adftool.c:60 src/adftool.c:197
 msgctxt "Command-line|Option|"
 msgid "add"
 msgstr ""
 
-#: src/adftool.c:57 src/adftool.c:171 src/adftool.c:260
+#: src/adftool.c:62 src/adftool.c:198 src/adftool.c:292
 msgctxt "Command-line|Option|"
 msgid "remove"
 msgstr ""
 
-#: src/adftool.c:59 src/adftool.c:177 src/adftool.c:261
+#: src/adftool.c:64 src/adftool.c:202 src/adftool.c:293
 msgctxt "Command-line|Option|"
 msgid "get-eeg-data"
 msgstr ""
 
-#: src/adftool.c:61 src/adftool.c:178 src/adftool.c:211 src/adftool.c:262
+#: src/adftool.c:66 src/adftool.c:205 src/adftool.c:242 src/adftool.c:294
 msgctxt "Command-line|Option|"
 msgid "set-eeg-data"
 msgstr ""
 
-#: src/adftool.c:63 src/adftool.c:165
+#: src/adftool.c:68 src/adftool.c:208
+msgctxt "Command-line|Option|"
+msgid "find-channel-identifier"
+msgstr ""
+
+#: src/adftool.c:70 src/adftool.c:192
 msgctxt "Command-line|Option|"
 msgid "subject"
 msgstr ""
 
-#: src/adftool.c:65 src/adftool.c:166
+#: src/adftool.c:72 src/adftool.c:193
 msgctxt "Command-line|Option|"
 msgid "predicate"
 msgstr ""
 
-#: src/adftool.c:67 src/adftool.c:167
+#: src/adftool.c:74 src/adftool.c:194
 msgctxt "Command-line|Option|"
 msgid "object"
 msgstr ""
 
-#: src/adftool.c:69 src/adftool.c:168
+#: src/adftool.c:76 src/adftool.c:195
 msgctxt "Command-line|Option|"
 msgid "graph"
 msgstr ""
 
-#: src/adftool.c:71 src/adftool.c:185
+#: src/adftool.c:78 src/adftool.c:216
 msgctxt "Command-line|Option|"
 msgid "deletion-date"
 msgstr ""
 
-#: src/adftool.c:73 src/adftool.c:186 src/adftool.c:532
+#: src/adftool.c:80 src/adftool.c:217 src/adftool.c:468
 msgctxt "Command-line|Option|"
 msgid "help"
 msgstr ""
 
-#: src/adftool.c:74 src/adftool.c:187
+#: src/adftool.c:81 src/adftool.c:218
 msgctxt "Command-line|Option|"
 msgid "version"
 msgstr ""
 
-#: src/adftool.c:105
+#: src/adftool.c:116
+#, c-format
+msgid "The argument to \"%s\" must be a number.\n"
+msgstr ""
+
+#: src/adftool.c:132
 #, c-format
 msgid "The argument to \"%s\" cannot be parsed as a N-Triples term: \"%s\"\n"
 msgstr ""
 
-#: src/adftool.c:120
+#: src/adftool.c:147
 #, c-format
 msgid ""
 "Warning: the argument to \"%s\" can be parsed as a N-Triples term, but the "
 "trailing \"%s\" will be discarded.\n"
 msgstr ""
 
-#: src/adftool.c:152
+#: src/adftool.c:179
 #, c-format
 msgid ""
 "Usage: [ENVIRONMENT…] adftool [OPTION…] FILE\n"
@@ -103,7 +113,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/adftool.c:154
+#: src/adftool.c:181
 #, c-format
 msgid ""
 "You can set a pattern in N-Triples format:\n"
@@ -119,17 +129,32 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/adftool.c:172
+#: src/adftool.c:199
 #, c-format
-msgid ""
-"There are other operation modes for adftool:\n"
-"  --%s: read the raw EEG sensor data (in Tab-Separated Value [TSV] format);\n"
-"  --%s: set the raw EEG sensor data (in TSV format) from the standard "
-"input.\n"
-"\n"
+msgid "There are other operation modes for adftool:\n"
 msgstr ""
 
-#: src/adftool.c:179
+#: src/adftool.c:200
+#, c-format
+msgid ""
+"  --%s: read the raw EEG sensor data (in Tab-Separated Value [TSV] format);\n"
+msgstr ""
+
+#: src/adftool.c:203
+#, c-format
+msgid ""
+"  --%s: set the raw EEG sensor data (in TSV format) from the standard "
+"input;\n"
+msgstr ""
+
+#: src/adftool.c:206
+#, c-format
+msgid ""
+"  --%s=COLUMN: find the channel identifier for the raw sensor data in COLUMN "
+"(an integer).\n"
+msgstr ""
+
+#: src/adftool.c:210
 #, c-format
 msgid ""
 "There are other options:\n"
@@ -140,7 +165,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/adftool.c:188
+#: src/adftool.c:219
 #, c-format
 msgid ""
 "The following environment variables can change the behavior of the program:\n"
@@ -152,7 +177,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/adftool.c:197
+#: src/adftool.c:228
 #, c-format
 msgid ""
 "Please note that TSV exchange of raw EEG data uses the current numeric "
@@ -168,23 +193,23 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/adftool.c:218
+#: src/adftool.c:249
 #, c-format
 msgid ""
 "Here is a summary of the current values of the main environment variables:\n"
 msgstr ""
 
-#: src/adftool.c:225
+#: src/adftool.c:256
 #, c-format
 msgid "  %s: \"%s\"\n"
 msgstr ""
 
-#: src/adftool.c:229
+#: src/adftool.c:260
 #, c-format
 msgid "  %s is unset\n"
 msgstr ""
 
-#: src/adftool.c:234
+#: src/adftool.c:265
 #, c-format
 msgid ""
 "%s\n"
@@ -192,83 +217,83 @@ msgid ""
 "Copyright status is unclear.\n"
 msgstr ""
 
-#: src/adftool.c:245
+#: src/adftool.c:276
 #, c-format
 msgid "No file to process.\n"
 msgstr ""
 
-#: src/adftool.c:250
+#: src/adftool.c:282
 #, c-format
 msgid "Nothing to do.\n"
 msgstr ""
 
-#: src/adftool.c:256
+#: src/adftool.c:288
 #, c-format
 msgid ""
 "Conflicting operations: please pass either --%s, --%s, --%s, --%s or --%s.\n"
 msgstr ""
 
-#: src/adftool.c:259
+#: src/adftool.c:291
 msgctxt "Command-line|Option|"
 msgid "insert"
 msgstr ""
 
-#: src/adftool.c:271
+#: src/adftool.c:303
 #, c-format
 msgid "The file \"%s\" could not be opened.\n"
 msgstr ""
 
-#: src/adftool.c:281 src/adftool.c:328
+#: src/adftool.c:313 src/adftool.c:545
 #, c-format
 msgid "Cannot allocate memory to hold the results.\n"
 msgstr ""
 
-#: src/adftool.c:287
+#: src/adftool.c:319
 #, c-format
 msgid "Cannot list the statements.\n"
 msgstr ""
 
-#: src/adftool.c:352
-#, c-format
-msgid "I don’t support namespaced data yet.\n"
-msgstr ""
-
-#: src/adftool.c:425
+#: src/adftool.c:361
 #, c-format
 msgid "Could not insert the data.\n"
 msgstr ""
 
-#: src/adftool.c:432
+#: src/adftool.c:368
 #, c-format
 msgid "Could not delete the data.\n"
 msgstr ""
 
-#: src/adftool.c:443
+#: src/adftool.c:379
 #, c-format
 msgid "Could not read the EEG data.\n"
 msgstr ""
 
-#: src/adftool.c:525
+#: src/adftool.c:461
 #, c-format
 msgid ""
 "Error: input line %lu contains \"%s\", which cannot be parsed as a number.\n"
 msgstr ""
 
-#: src/adftool.c:530
+#: src/adftool.c:466
 #, c-format
 msgid ""
 "You may need to set LC_NUMERIC. Please run adftool --%s to read more about "
 "numeric data formats.\n"
 msgstr ""
 
-#: src/adftool.c:543
+#: src/adftool.c:479
 #, c-format
 msgid "Error: input line %lu has %lu values, but there are %lu columns.\n"
 msgstr ""
 
-#: src/adftool.c:557
+#: src/adftool.c:493
 #, c-format
 msgid "Error: cannot set the EEG data.\n"
+msgstr ""
+
+#: src/adftool.c:510
+#, c-format
+msgid "Error: no channel identifier for column %lu.\n"
 msgstr ""
 
 #: src/adftool_hdf5.h:101 src/bplus_tree_grow_file_example.c:207
@@ -511,6 +536,11 @@ msgstr ""
 #: src/filter_example.c:63
 #, c-format
 msgid "The filter test failed at point %lu.\n"
+msgstr ""
+
+#: src/libadftool/lexer.l:396
+#, c-format
+msgid "I don’t know how to represent namespaced terms yet, sorry.\n"
 msgstr ""
 
 #: src/term_manipulation_example.c:123

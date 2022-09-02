@@ -25,6 +25,11 @@
 #define P_(Context, String) (String)
 #endif
 
+/* Write term as N3 to stdout, unless, it is an empty named node and
+   ignore_empty_name. (used to ignore the default graph) */
+static void printf_term (const struct adftool_term *term,
+			 int ignore_empty_name, int print_space);
+
 int
 main (int argc, char *argv[])
 {
@@ -47,6 +52,8 @@ main (int argc, char *argv[])
   static int remove = 0;
   static int get_eeg_data = 0;
   static int set_eeg_data = 0;
+  static int find_channel_identifier = 0;
+  static size_t channel_column = 0;
   static struct option long_options[] = {
     {NP_ ("Command-line|Option|", "lookup"), no_argument, &lookup,
      1},
@@ -58,6 +65,8 @@ main (int argc, char *argv[])
      1},
     {NP_ ("Command-line|Option|", "set-eeg-data"), no_argument, &set_eeg_data,
      1},
+    {NP_ ("Command-line|Option|", "find-channel-identifier"),
+     required_argument, NULL, 256},
     {NP_ ("Command-line|Option|", "subject"), required_argument,
      0, 's'},
     {NP_ ("Command-line|Option|", "predicate"),
@@ -91,6 +100,26 @@ main (int argc, char *argv[])
 	{
 	case 0:
 	  /* The flag has been set. */
+	  break;
+	case 256:
+	  /* --find-channel-identifier=COLUMN */
+	  {
+	    char *end;
+	    channel_column = strtol (optarg, &end, 0);
+	    while (*end == ' ' || *end == '\r' || *end == '\t'
+		   || *end == '\n')
+	      {
+		end++;
+	      }
+	    if (end == optarg || strcmp (end, "") != 0)
+	      {
+		fprintf (stderr, _("The argument to \"%s\" "
+				   "must be a number.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    find_channel_identifier = 1;
+	  }
 	  break;
 	case 's':
 	case 'p':
@@ -167,13 +196,17 @@ main (int argc, char *argv[])
 		  P_ ("Command-line|Option|", "lookup"),
 		  P_ ("Command-line|Option|", "add"),
 		  P_ ("Command-line|Option|", "remove"));
-	  printf (_("There are other operation modes for adftool:\n"
-		    "  --%s: read the raw EEG sensor data (in Tab-Separated "
-		    "Value [TSV] format);\n"
-		    "  --%s: set the raw EEG sensor data (in TSV format) "
-		    "from the standard input.\n"
-		    "\n"), P_ ("Command-line|Option|", "get-eeg-data"),
+	  printf (_("There are other operation modes for adftool:\n"));
+	  printf (_("  --%s: read the raw EEG sensor data (in Tab-Separated "
+		    "Value [TSV] format);\n"),
+		  P_ ("Command-line|Option|", "get-eeg-data"));
+	  printf (_("  --%s: set the raw EEG sensor data (in TSV format) "
+		    "from the standard input;\n"),
 		  P_ ("Command-line|Option|", "set-eeg-data"));
+	  printf (_("  --%s=COLUMN: find the channel identifier for the "
+		    "raw sensor data in COLUMN (an integer).\n"),
+		  P_ ("Command-line|Option|", "find-channel-identifier"));
+	  printf ("\n");
 	  printf (_("There are other options:\n"
 		    "  -d DATE, --%s=DATE: use DATE instead of "
 		    "the current date when deleting statements.\n"
@@ -243,7 +276,8 @@ main (int argc, char *argv[])
       fprintf (stderr, _("No file to process.\n"));
       exit (0);
     }
-  if (!lookup && !insert && !remove && !get_eeg_data && !set_eeg_data)
+  if (!lookup && !insert && !remove && !get_eeg_data && !set_eeg_data
+      && !find_channel_identifier)
     {
       fprintf (stderr, _("Nothing to do.\n"));
       exit (0);
@@ -311,35 +345,7 @@ main (int argc, char *argv[])
 			{
 			  if (terms[i] != NULL)
 			    {
-			      char first_bytes[32];
-			      const size_t easy_n = sizeof (first_bytes) - 1;
-			      size_t length =
-				adftool_term_to_n3 (terms[i], 0, easy_n,
-						    first_bytes);
-			      first_bytes[easy_n] = '\0';
-			      if (i == 3 && strcmp (first_bytes, "<>") == 0)
-				{
-				  /* Do not print the default graph. */
-				  break;
-				}
-			      printf ("%s", first_bytes);
-			      if (length >= sizeof (first_bytes))
-				{
-				  char *rest = malloc (length - easy_n + 1);
-				  if (rest == NULL)
-				    {
-				      fprintf (stderr, _("\
-Cannot allocate memory to hold the results.\n"));
-				      exit (1);
-				    }
-				  adftool_term_to_n3 (terms[i], easy_n,
-						      length - easy_n + 1,
-						      rest);
-				  assert (rest[length - easy_n] == '\0');
-				  printf ("%s", rest);
-				  free (rest);
-				}
-			      printf (" ");
+			      printf_term (terms[i], i == 3, 1);
 			    }
 			}
 		      printf (".\n");
@@ -489,10 +495,64 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
 	    }
 	  free (buffer);
 	}
+      if (find_channel_identifier)
+	{
+	  struct adftool_term *term = adftool_term_alloc ();
+	  if (term == NULL)
+	    {
+	      abort ();
+	    }
+	  int error =
+	    adftool_find_channel_identifier (file, channel_column, term);
+	  if (error)
+	    {
+	      fprintf (stderr,
+		       _("Error: no channel identifier for column %lu.\n"),
+		       channel_column);
+	      exit (1);
+	    }
+	  printf_term (term, 0, 0);
+	  printf ("\n");
+	  free (term);
+	}
       adftool_file_close (file);
     }
   adftool_file_free (file);
   adftool_term_free (term);
   adftool_statement_free (pattern);
   return 0;
+}
+
+static void
+printf_term (const struct adftool_term *term, int ignore_empty_name,
+	     int print_space)
+{
+  char first_bytes[32];
+  const size_t easy_n = sizeof (first_bytes) - 1;
+  size_t length = adftool_term_to_n3 (term, 0, easy_n, first_bytes);
+  first_bytes[easy_n] = '\0';
+  if (ignore_empty_name && strcmp (first_bytes, "<>") == 0)
+    {
+      /* Do not print the default graph. */
+      return;
+    }
+  printf ("%s", first_bytes);
+  if (length >= sizeof (first_bytes))
+    {
+      char *rest = malloc (length - easy_n + 1);
+      if (rest == NULL)
+	{
+	  fprintf (stderr, _("\
+Cannot allocate memory to hold the results.\n"));
+	  exit (1);
+	}
+      adftool_term_to_n3 (term, easy_n, length - easy_n + 1, rest);
+      assert (rest[length - easy_n] == '\0');
+      printf ("%s", rest);
+      free (rest);
+    }
+  if (print_space)
+    {
+      printf (" ");
+    }
 }
