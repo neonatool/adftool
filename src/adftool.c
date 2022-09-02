@@ -53,7 +53,13 @@ main (int argc, char *argv[])
   static int get_eeg_data = 0;
   static int set_eeg_data = 0;
   static int find_channel_identifier = 0;
+  static int set_channel_identifier = 0;
   static size_t channel_column = 0;
+  struct adftool_term *channel_identifier = adftool_term_alloc ();
+  if (channel_identifier == NULL)
+    {
+      abort ();
+    }
   static struct option long_options[] = {
     {NP_ ("Command-line|Option|", "lookup"), no_argument, &lookup,
      1},
@@ -67,6 +73,8 @@ main (int argc, char *argv[])
      1},
     {NP_ ("Command-line|Option|", "find-channel-identifier"),
      required_argument, NULL, 256},
+    {NP_ ("Command-line|Option|", "set-channel-identifier"),
+     required_argument, NULL, 257},
     {NP_ ("Command-line|Option|", "subject"), required_argument,
      0, 's'},
     {NP_ ("Command-line|Option|", "predicate"),
@@ -119,6 +127,69 @@ main (int argc, char *argv[])
 		exit (1);
 	      }
 	    find_channel_identifier = 1;
+	  }
+	  break;
+	case 257:
+	  /* --set-channel-identifier=COLUMN=NAME */
+	  {
+	    char *separator = strchr (optarg, '=');
+	    if (separator == NULL)
+	      {
+		fprintf (stderr, _("The argument to \"%s\" "
+				   "must be in the form of "
+				   "COLUMN=IDENTIFIER.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    char *left = malloc (separator - optarg + 1);
+	    char *right = malloc (strlen (separator + 1) + 1);
+	    if (left == NULL || right == NULL)
+	      {
+		abort ();
+	      }
+	    memcpy (left, optarg, separator - optarg);
+	    left[separator - optarg] = '\0';
+	    strcpy (right, separator + 1);
+	    char *number_end;
+	    channel_column = strtol (left, &number_end, 0);
+	    while (*number_end == ' ' || *number_end == '\r'
+		   || *number_end == '\t' || *number_end == '\n')
+	      {
+		number_end++;
+	      }
+	    if (number_end == optarg || strcmp (number_end, "") != 0)
+	      {
+		fprintf (stderr, _("The COLUMN argument to \"%s\" "
+				   "must be a number.\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    size_t term_consumed;
+	    int parse_error =
+	      adftool_term_parse_n3 (right, strlen (right), &term_consumed,
+				     channel_identifier);
+	    if (parse_error == 0)
+	      {
+		while (term_consumed < strlen (right)
+		       && (right[term_consumed] == ' '
+			   || right[term_consumed] == '\r'
+			   || right[term_consumed] == '\t'
+			   || right[term_consumed] == '\n'))
+		  {
+		    term_consumed++;
+		  }
+	      }
+	    if (parse_error != 0 || term_consumed != strlen (right))
+	      {
+		fprintf (stderr, _("The IDENTIFIER argument to \"%s\" "
+				   "must be a N3 identifier (enclose "
+				   "it with <> maybe?).\n"),
+			 long_options[option_index].name);
+		exit (1);
+	      }
+	    free (right);
+	    free (left);
+	    set_channel_identifier = 1;
 	  }
 	  break;
 	case 's':
@@ -204,8 +275,12 @@ main (int argc, char *argv[])
 		    "from the standard input;\n"),
 		  P_ ("Command-line|Option|", "set-eeg-data"));
 	  printf (_("  --%s=COLUMN: find the channel identifier for the "
-		    "raw sensor data in COLUMN (an integer).\n"),
+		    "raw sensor data in COLUMN (an integer);\n"),
 		  P_ ("Command-line|Option|", "find-channel-identifier"));
+	  printf (_("  --%s=COLUMN=IDENTIFIER: set the channel identifier "
+		    "for the raw sensor data in COLUMN (an integer) to "
+		    "IDENTIFIER (in N3).\n"),
+		  P_ ("Command-line|Option|", "set-channel-identifier"));
 	  printf ("\n");
 	  printf (_("There are other options:\n"
 		    "  -d DATE, --%s=DATE: use DATE instead of "
@@ -277,7 +352,7 @@ main (int argc, char *argv[])
       exit (0);
     }
   if (!lookup && !insert && !remove && !get_eeg_data && !set_eeg_data
-      && !find_channel_identifier)
+      && !find_channel_identifier && !set_channel_identifier)
     {
       fprintf (stderr, _("Nothing to do.\n"));
       exit (0);
@@ -294,9 +369,18 @@ main (int argc, char *argv[])
 	       P_ ("Command-line|Option|", "set-eeg-data"));
       exit (0);
     }
+  if (find_channel_identifier + set_channel_identifier > 1)
+    {
+      fprintf (stderr,
+	       _("Conflicting operations: please pass either --%s "
+		 "or --%s.\n"),
+	       P_ ("Command-line|Option|", "find-channel-identifier"),
+	       P_ ("Command-line|Option|", "set-channel-identifier"));
+      exit (0);
+    }
   while (optind < argc)
     {
-      int write = insert || remove || set_eeg_data;
+      int write = insert || remove || set_eeg_data || set_channel_identifier;
       const char *filename = argv[optind++];
       if (adftool_file_open (file, filename, write) != 0)
 	{
@@ -515,8 +599,22 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
 	  printf ("\n");
 	  free (term);
 	}
+      if (set_channel_identifier)
+	{
+	  int error = adftool_set_channel_identifier (file, channel_column,
+						      channel_identifier);
+	  if (error)
+	    {
+	      fprintf (stderr,
+		       _
+		       ("Error: unable to set the channel identifier of %lu.\n"),
+		       channel_column);
+	      exit (1);
+	    }
+	}
       adftool_file_close (file);
     }
+  adftool_term_free (channel_identifier);
   adftool_file_free (file);
   adftool_term_free (term);
   adftool_statement_free (pattern);
