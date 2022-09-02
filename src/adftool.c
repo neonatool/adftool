@@ -84,7 +84,7 @@ main (int argc, char *argv[])
     {
       int option_index = 0;
       int c =
-	getopt_long (argc, argv, "s:p:o:g:d:hv", long_options, &option_index);
+	getopt_long (argc, argv, "s:p:o:g:d:hV", long_options, &option_index);
       if (c == -1)
 	{
 	  break;
