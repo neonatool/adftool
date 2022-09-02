@@ -300,3 +300,138 @@ yywrap (yyscan_t scanner)
   (void) scanner;
   return 1;
 }
+
+static void
+push_char (char c, size_t start, size_t max, size_t *length, char *dst)
+{
+  if (*length >= start && *length - start < max)
+    {
+      dst[*length - start] = c;
+    }
+  *length += 1;
+}
+
+static void
+push_string (const char *str, size_t start, size_t max, size_t *length,
+	     char *dst)
+{
+  for (size_t i = 0; i < strlen (str); i++)
+    {
+      push_char (str[i], start, max, length, dst);
+    }
+  push_char ('\0', start, max, length, dst);
+  *length -= 1;
+}
+
+static void
+push_string_1 (char c, size_t start, size_t max, size_t *length, char *dst)
+{
+  char str[2] = " ";
+  str[0] = c;
+  push_string (str, start, max, length, dst);
+}
+
+static void
+push_iri (const char *unescaped, size_t start, size_t max, size_t *length,
+	  char *dst)
+{
+  /* FIXME: I only escape the > character, because it could be used
+     for data injection. */
+  push_string ("<", start, max, length, dst);
+  for (size_t i = 0; i < strlen (unescaped); i++)
+    {
+      if (unescaped[i] == '>')
+	{
+	  push_string ("%3E", start, max, length, dst);
+	}
+      else
+	{
+	  push_string_1 (unescaped[i], start, max, length, dst);
+	}
+    }
+  push_string (">", start, max, length, dst);
+}
+
+static void
+push_literal (const char *unescaped, size_t start, size_t max, size_t *length,
+	      char *dst)
+{
+  push_string ("\"", start, max, length, dst);
+  for (size_t i = 0; i < strlen (unescaped); i++)
+    {
+      switch (unescaped[i])
+	{
+	case '\r':
+	  push_string ("\\r", start, max, length, dst);
+	  break;
+	case '\n':
+	  push_string ("\\n", start, max, length, dst);
+	  break;
+	case '\"':
+	case '\\':
+	  push_string ("\\", start, max, length, dst);
+	  /* We still need to push either " or \ */
+	  /* fallthrough */
+	default:
+	  push_string_1 (unescaped[i], start, max, length, dst);
+	}
+    }
+  push_string ("\"", start, max, length, dst);
+}
+
+size_t
+adftool_term_to_n3 (const struct adftool_term *term, size_t start, size_t max,
+		    char *str)
+{
+  size_t length = 0;
+  if (adftool_term_is_blank (term))
+    {
+      push_string ("_:", start, max, &length, str);
+      push_string (term->str1, start, max, &length, str);
+    }
+  else if (adftool_term_is_named (term))
+    {
+      if (term->str2 != NULL && strcmp (term->str2, "") != 0)
+	{
+	  fprintf (stderr, _("\
+I don’t know how to represent namespaced terms yet, sorry.\n"));
+	  abort ();
+	}
+      push_iri (term->str1, start, max, &length, str);
+    }
+  else if (adftool_term_is_literal (term))
+    {
+      push_literal (term->str1, start, max, &length, str);
+      if (adftool_term_is_typed_literal (term))
+	{
+	  push_string ("^^", start, max, &length, str);
+	  push_iri (term->str2, start, max, &length, str);
+	}
+      else if (adftool_term_is_langstring (term))
+	{
+	  push_string ("@", start, max, &length, str);
+	  for (size_t i = 0; i < strlen (term->str2); i++)
+	    {
+	      if ((term->str2[i] >= 'a' && term->str2[i] <= 'z')
+		  || (term->str2[i] >= 'A' && term->str2[i] <= 'Z')
+		  || (term->str2[i] >= '0' && term->str2[i] <= '9'))
+		{
+		  push_string_1 (term->str2[i], start, max, &length, str);
+		}
+	      else
+		{
+		  push_string ("-", start, max, &length, str);
+		}
+	    }
+	}
+      else
+	{
+	  assert (0);
+	}
+    }
+  else
+    {
+      assert (0);
+    }
+  return length;
+}

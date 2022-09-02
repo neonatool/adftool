@@ -140,6 +140,10 @@ extern "C"
     int adftool_term_parse_n3 (const char *text, size_t available,
 			       size_t *consumed, struct adftool_term *term);
 
+  extern LIBADFTOOL_API
+    size_t adftool_term_to_n3 (const struct adftool_term *term, size_t start,
+			       size_t max, char *str);
+
   struct adftool_statement;
   extern LIBADFTOOL_API
     struct adftool_statement *adftool_statement_alloc (void);

@@ -572,6 +572,14 @@ been parsed. If the return value is not 0, @var{consumed} is set to
 @var{consumed} bytes from @var{text}.
 @end deftypefun
 
+@deftypefun size_t adftool_term_to_n3 (const struct adftool_term *@var{term}, size_t @var{start}, size_t @var{max}, char *@var{str})
+Get a N3 representation of @var{term}, discard the first @var{start}
+bytes and write at most @var{max} bytes to @var{str}. If there is
+still room for a NUL character, append it too. Return the number of
+bytes required to hold the whole N3 representation (excluding the
+final NUL character).
+@end deftypefun
+
 @node Manipulating statements
 @section Manipulating statements
 @deftp struct adftool_statement

@@ -25,8 +25,6 @@
 #define P_(Context, String) (String)
 #endif
 
-static void print_uri (const char *value);
-
 int
 main (int argc, char *argv[])
 {
@@ -313,102 +311,34 @@ main (int argc, char *argv[])
 			{
 			  if (terms[i] != NULL)
 			    {
-			      char *value = NULL;
-			      char *meta = NULL;
-			      size_t n_value, n_value_check;
-			      size_t n_meta, n_meta_check;
-			      n_value =
-				adftool_term_value (terms[i], 0, 0, NULL);
-			      n_meta =
-				adftool_term_meta (terms[i], 0, 0, NULL);
-			      value = malloc (n_value + 1);
-			      meta = malloc (n_meta + 1);
-			      if (value == NULL || meta == NULL)
+			      char first_bytes[32];
+			      const size_t easy_n = sizeof (first_bytes) - 1;
+			      size_t length =
+				adftool_term_to_n3 (terms[i], 0, easy_n,
+						    first_bytes);
+			      first_bytes[easy_n] = '\0';
+			      if (i == 3 && strcmp (first_bytes, "<>") == 0)
 				{
-				  fprintf (stderr, _("\
-Cannot allocate memory to hold the results.\n"));
-				  exit (1);
+				  /* Do not print the default graph. */
+				  break;
 				}
-			      n_value_check =
-				adftool_term_value (terms[i], 0, n_value + 1,
-						    value);
-			      n_meta_check =
-				adftool_term_meta (terms[i], 0, n_meta + 1,
-						   meta);
-			      assert (n_value_check == n_value);
-			      assert (n_meta_check == n_meta);
-			      value[n_value] = '\0';
-			      meta[n_meta] = '\0';
-			      if (adftool_term_is_blank (terms[i]))
+			      printf ("%s", first_bytes);
+			      if (length >= sizeof (first_bytes))
 				{
-				  printf ("_:%s ", value);
-				}
-			      else if (adftool_term_is_named (terms[i]))
-				{
-				  if (strcmp (meta, "") != 0)
+				  char *rest = malloc (length - easy_n + 1);
+				  if (rest == NULL)
 				    {
-				      fprintf (stderr,
-					       _
-					       ("I don’t support namespaced data yet.\n"));
+				      fprintf (stderr, _("\
+Cannot allocate memory to hold the results.\n"));
 				      exit (1);
 				    }
-				  print_uri (value);
+				  adftool_term_to_n3 (terms[i], easy_n,
+						      length - easy_n + 1,
+						      rest);
+				  assert (rest[length - easy_n] == '\0');
+				  printf ("%s", rest);
+				  free (rest);
 				}
-			      else
-				{
-				  printf ("\"");
-				  for (size_t i = 0; i < n_value; i++)
-				    {
-				      switch (value[i])
-					{
-					case '\\':
-					  printf ("\\\\");
-					  break;
-					case '"':
-					  printf ("\\\"");
-					  break;
-					case '\r':
-					  printf ("\\r");
-					  break;
-					case '\n':
-					  printf ("\\n");
-					  break;
-					default:
-					  printf ("%c", value[i]);
-					}
-				    }
-				  printf ("\"");
-				  if (adftool_term_is_typed_literal
-				      (terms[i]))
-				    {
-				      printf ("^^");
-				      print_uri (meta);
-				    }
-				  else
-				    if (adftool_term_is_langstring (terms[i]))
-				    {
-				      printf ("@");
-				      for (size_t i = 0; i < n_meta; i++)
-					{
-					  if ((meta[i] >= 'A'
-					       && meta[i] <= 'Z')
-					      || (meta[i] >= 'a'
-						  && meta[i] <= 'z')
-					      || (meta[i] >= '0'
-						  && meta[i] <= '9')
-					      || meta[i] == '-')
-					    {
-					      printf ("%c", meta[i]);
-					    }
-					}
-				    }
-				  else
-				    {
-				      abort ();
-				    }
-				}
-			      free (meta);
-			      free (value);
 			      printf (" ");
 			    }
 			}
@@ -565,22 +495,4 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
   adftool_term_free (term);
   adftool_statement_free (pattern);
   return 0;
-}
-
-static void
-print_uri (const char *value)
-{
-  printf ("<");
-  for (size_t i = 0; i < strlen (value); i++)
-    {
-      if (value[i] == '>')
-	{
-	  printf ("%%3E");
-	}
-      else
-	{
-	  printf ("%c", value[i]);
-	}
-    }
-  printf (">");
 }
