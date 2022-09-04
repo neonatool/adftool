@@ -25,6 +25,7 @@ dist:
     - mkdir -p public
     - export GNULIB_SRCDIR=$PWD/gnulib
     - ./bootstrap --force --skip-po
+    - "ls po/*.po | sed 's|.*/||; s|\\.po$||' > po/LINGUAS"
     - mkdir -p build-dist
     - cd build-dist
     - ../configure CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial
