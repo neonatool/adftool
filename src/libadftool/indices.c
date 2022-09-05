@@ -109,7 +109,8 @@ get_matches (const struct adftool_file *file,
 int
 adftool_lookup (const struct adftool_file *file,
 		const struct adftool_statement *pattern,
-		struct adftool_results *results)
+		size_t start, size_t max, size_t *n_results,
+		struct adftool_statement **results)
 {
   size_t n_rows;
   uint32_t *rows;
@@ -117,21 +118,103 @@ adftool_lookup (const struct adftool_file *file,
     {
       return 1;
     }
-  if (adftool_results_resize (results, n_rows) != 0)
+  for (size_t i = start; i < n_rows && i - start < max; i++)
     {
-      free (rows);
-      return 1;
-    }
-  for (size_t i = 0; i < n_rows; i++)
-    {
-      if (adftool_quads_get (file, rows[i], results->statements[i]) != 0)
+      if (adftool_quads_get (file, rows[i], results[i]) != 0)
 	{
 	  free (rows);
 	  return 1;
 	}
     }
+  *n_results = n_rows;
   free (rows);
   return 0;
+}
+
+size_t
+adftool_lookup_objects (const struct adftool_file *file,
+			const struct adftool_term *subject,
+			const char *predicate, size_t start, size_t max,
+			struct adftool_term **objects)
+{
+  struct adftool_term p = {.type = TERM_NAMED,.str1 =
+      (char *) predicate,.str2 = NULL };
+  struct adftool_statement pattern = {.subject =
+      (struct adftool_term *) subject,.predicate = &p,.object = NULL,.graph =
+      NULL,.deletion_date = ((uint64_t) (-1)) };
+  struct adftool_statement *s = adftool_statement_alloc ();
+  if (s == NULL)
+    {
+      abort ();
+    }
+  size_t n_rows;
+  uint32_t *rows;
+  if (get_matches (file, &pattern, &n_rows, &rows) != 0)
+    {
+      adftool_statement_free (s);
+      return 0;
+    }
+  size_t n_live = 0;
+  for (size_t i = 0; i < n_rows; i++)
+    {
+      if (adftool_quads_get (file, rows[i], s) == 0)
+	{
+	  if (s->deletion_date == ((uint64_t) (-1)))
+	    {
+	      if (n_live >= start && n_live < start + max)
+		{
+		  adftool_term_copy (objects[n_live], s->object);
+		}
+	      n_live++;
+	    }
+	}
+    }
+  free (rows);
+  adftool_statement_free (s);
+  return n_live;
+}
+
+size_t
+adftool_lookup_subjects (const struct adftool_file *file,
+			 const struct adftool_term *object,
+			 const char *predicate, size_t start, size_t max,
+			 struct adftool_term **subjects)
+{
+  struct adftool_term p = {.type = TERM_NAMED,.str1 =
+      (char *) predicate,.str2 = NULL };
+  struct adftool_statement pattern = {.subject = NULL,.predicate =
+      &p,.object = (struct adftool_term *) object,.graph =
+      NULL,.deletion_date = ((uint64_t) (-1)) };
+  struct adftool_statement *s = adftool_statement_alloc ();
+  if (s == NULL)
+    {
+      abort ();
+    }
+  size_t n_rows;
+  uint32_t *rows;
+  if (get_matches (file, &pattern, &n_rows, &rows) != 0)
+    {
+      adftool_statement_free (s);
+      return 0;
+    }
+  size_t n_live = 0;
+  for (size_t i = 0; i < n_rows; i++)
+    {
+      if (adftool_quads_get (file, rows[i], s) == 0)
+	{
+	  if (s->deletion_date == ((uint64_t) (-1)))
+	    {
+	      if (n_live >= start && n_live < start + max)
+		{
+		  adftool_term_copy (subjects[n_live], s->subject);
+		}
+	      n_live++;
+	    }
+	}
+    }
+  free (rows);
+  adftool_statement_free (s);
+  return n_live;
 }
 
 int

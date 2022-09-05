@@ -108,7 +108,6 @@ libadftool_la_SOURCES = \
   src/libadftool/dictionary.c \
   src/libadftool/term.c \
   src/libadftool/statement.c \
-  src/libadftool/results.c \
   src/libadftool/indices.c \
   src/libadftool/lexer.l \
   src/libadftool/channel_metadata.c \

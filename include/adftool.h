@@ -198,32 +198,25 @@ extern "C"
 			      const struct adftool_statement *statement,
 			      uint32_t * id);
 
-  struct adftool_results;
-
-  extern LIBADFTOOL_API struct adftool_results *adftool_results_alloc (void);
-
-  extern LIBADFTOOL_API
-    void adftool_results_free (struct adftool_results *results);
-
-  extern LIBADFTOOL_API
-    size_t adftool_results_count (const struct adftool_results *results);
-
-  extern LIBADFTOOL_API
-    const struct adftool_statement *adftool_results_get (const struct
-							 adftool_results
-							 *results, size_t i);
-
-  extern LIBADFTOOL_API
-    int adftool_results_resize (struct adftool_results *results, size_t size);
-
-  extern LIBADFTOOL_API
-    void adftool_results_set (struct adftool_results *results, size_t i,
-			      const struct adftool_statement *statement);
-
   extern LIBADFTOOL_API
     int adftool_lookup (const struct adftool_file *file,
 			const struct adftool_statement *pattern,
-			struct adftool_results *results);
+			size_t start, size_t max, size_t *n_results,
+			struct adftool_statement **results);
+
+  extern LIBADFTOOL_API
+    size_t adftool_lookup_objects (const struct adftool_file *file,
+				   const struct adftool_term *subject,
+				   const char *predicate,
+				   size_t start, size_t max,
+				   struct adftool_term **objects);
+
+  extern LIBADFTOOL_API
+    size_t adftool_lookup_subjects (const struct adftool_file *file,
+				    const struct adftool_term *object,
+				    const char *predicate,
+				    size_t start, size_t max,
+				    struct adftool_term **subjects);
 
   extern LIBADFTOOL_API
     int adftool_delete (struct adftool_file *file,

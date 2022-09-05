@@ -419,7 +419,6 @@ over-allocation strategy that the kernel may implement.
 @menu
 * Manipulating terms::
 * Manipulating statements::
-* Query results::
 * Manipulating files::
 * EEG-specific API::
 * Data filtering::
@@ -651,34 +650,6 @@ respecting the given @var{order}. @var{order} may be @code{"SPOG"} for
 instance.
 @end deftypefun
 
-@node Query results
-@section Query results
-
-@deftp struct adftool_results
-Query results is an array of statements. For a simpler function
-interface, the array is a reified thing. Otherwise, the query
-interface would be very hard to use. It is allocated with
-@code{adftool_results_alloc}, and freed with
-@code{adftool_results_free}.
-@end deftp
-
-@deftypefun {struct adftool_results *} adftool_results_alloc (void)
-Allocate a new empty set of results. Return @code{NULL} if the
-allocation failed.
-@end deftypefun
-
-@deftypefun void adftool_results_free (struct adftool_results *@var{results})
-Free an allocated set of @var{results}.
-@end deftypefun
-
-@deftypefun size_t adftool_results_count (const struct adftool_results *@var{results})
-Return the number of @var{results}.
-@end deftypefun
-
-@deftypefun {const struct adftool_statement *} adftool_results_get (const struct adftool_results *@var{results}, size_t @var{i})
-Return an unowned pointer to the @var{i}-th result in @var{results}.
-@end deftypefun
-
 @node Manipulating files
 @section Manipulating files
 
@@ -729,11 +700,30 @@ bytes, and writing the next @var{max} bytes to @var{bytes}. Return the
 total number of bytes.
 @end deftypefun
 
-@deftypefun {int} adftool_lookup (const struct adftool_file *@var{file}, const struct adftool_statement *@var{pattern}, struct adftool_results *@var{statements})
-Get all @var{statements} in @var{file} that match @var{pattern}. Some
-statements may be deleted, you can detect them with
+@deftypefun {int} adftool_lookup (const struct adftool_file *@var{file}, const struct adftool_statement *@var{pattern}, size_t @var{start}, size_t @var{max}, size_t *@var{n_results}, struct adftool_statement **@var{statements})
+Discard the first @var{start}, then get the last (at most) @var{max}
+@var{statements} in @var{file} that match @var{pattern}. Some
+statements may be marked as deleted, you can detect them with
 @code{adftool_statement_get_deletion_date}. Return 0 if no error
-happened, otherwise return a non-zero value.
+happened, otherwise return a non-zero value. Set @var{n_results} to
+the total number of results.
+
+Here, all @var{max} elements in @var{statements} @strong{must} be
+already allocated. If @var{max} is 0, then the @var{statements}
+pointer is not touched.
+@end deftypefun
+
+@deftypefun {size_t} adftool_lookup_objects (const struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, struct adftool_term **@var{objects})
+@deftypefunx {size_t} adftool_lookup_subjects (const struct adftool_file *@var{file}, const struct adftool_term *@var{object}, const char *@var{predicate}, struct adftool_term **@var{subjects})
+Return the total number of objects or subjects that match the pattern
+(@var{subject} @var{predicate} ?) or (? @var{predicate} @var{object})
+in @var{file}. Return 0 if there was an HDF5 error. Fill @var{objects}
+or @var{subjects}, which @strong{must} be allocated to at least
+@var{max} terms (not touched if @var{max} is 0) that themselves
+@strong{must} be allocated, discarding the first @var{start} results
+and setting at most the next @var{max} results.
+
+No output terms are deleted, all of them are live.
 @end deftypefun
 
 @deftypefun {int} adftool_delete (struct adftool_file *@var{file}, const struct adftool_statement *@var{pattern}, uint64_t @var{deletion_date})

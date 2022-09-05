@@ -128,6 +128,8 @@
  (outputs (list "out" "dist" "devel" "html" "pdf"))
  (arguments
   (list
+   #:configure-flags
+   #~'("CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined,address -fsanitize-undefined-trap-on-error -Wall -Wextra")
    #:phases
    #~(modify-phases
       %standard-phases

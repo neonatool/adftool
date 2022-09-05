@@ -1,91 +1,29 @@
 #include <adftool_private.h>
 #include <time.h>
 
-static struct adftool_statement *
-column_number_finder (size_t i)
-{
-  /* Construct: ? lyto:column-number "…"^^xsd:integer */
-  struct adftool_statement *pattern = adftool_statement_alloc ();
-  struct adftool_term *subject = NULL;
-  struct adftool_term *predicate = adftool_term_alloc ();
-  struct adftool_term *object = adftool_term_alloc ();
-  struct adftool_term *graph = NULL;
-  uint64_t deletion_date = (uint64_t) (-1);
-  if (pattern == NULL || predicate == NULL || object == NULL)
-    {
-      if (pattern)
-	{
-	  adftool_statement_free (pattern);
-	}
-      if (predicate)
-	{
-	  adftool_term_free (predicate);
-	}
-      if (object)
-	{
-	  adftool_term_free (object);
-	}
-      return NULL;
-    }
-  char column_number[256];
-  sprintf (column_number, "%lu", i);
-  adftool_term_set_named
-    (predicate, "https://localhost/lytonepal#column-number");
-  adftool_term_set_literal
-    (object, column_number, "http://www.w3.org/2001/XMLSchema#integer", NULL);
-  adftool_statement_set (pattern, &subject, &predicate, &object, &graph,
-			 &deletion_date);
-  adftool_term_free (predicate);
-  adftool_term_free (object);
-  return pattern;
-}
-
 int
 adftool_find_channel_identifier (const struct adftool_file *file,
 				 size_t channel_index,
 				 struct adftool_term *identifier)
 {
-  int error = 0;
-  /* Construct: ? lyto:column-number "…"^^xsd:integer */
-  struct adftool_statement *pattern = column_number_finder (channel_index);
-  struct adftool_results *results = adftool_results_alloc ();
-  if (pattern == NULL || results == NULL)
+  struct adftool_term *object = adftool_term_alloc ();
+  mpz_t i;
+  mpz_init_set_ui (i, channel_index);
+  if (object == NULL)
     {
       abort ();
     }
-  if (adftool_lookup (file, pattern, results) != 0)
+  adftool_term_set_integer (object, i);
+  mpz_clear (i);
+  static const char *p = "https://localhost/lytonepal#column-number";
+  size_t n_results =
+    adftool_lookup_subjects (file, object, p, 0, 1, &identifier);
+  adftool_term_free (object);
+  if (n_results == 0)
     {
-      error = 1;
-      goto cleanup;
+      return 1;
     }
-  size_t n_results = adftool_results_count (results);
-  size_t n_live_results = 0;
-  for (size_t i = 0; i < n_results; i++)
-    {
-      struct adftool_term *subject;
-      const struct adftool_statement *candidate =
-	adftool_results_get (results, i);
-      uint64_t deletion_date;
-      adftool_statement_get (candidate, &subject, NULL, NULL, NULL,
-			     &deletion_date);
-      const int has_subject = (subject != NULL);
-      const int has_deletion_date = (deletion_date != ((uint64_t) (-1)));
-      assert (has_subject);
-      if (!has_deletion_date)
-	{
-	  n_live_results++;
-	  adftool_term_copy (identifier, subject);
-	}
-    }
-  if (n_live_results != 1)
-    {
-      error = 1;
-      goto cleanup;
-    }
-cleanup:
-  adftool_statement_free (pattern);
-  adftool_results_free (results);
-  return error;
+  return 0;
 }
 
 int
@@ -94,25 +32,40 @@ adftool_set_channel_identifier (struct adftool_file *file,
 				const struct adftool_term *identifier)
 {
   int error = 0;
-  struct adftool_statement *pattern = column_number_finder (channel_index);
-  if (pattern == NULL)
+  struct adftool_term *object = adftool_term_alloc ();
+  mpz_t i;
+  mpz_init_set_ui (i, channel_index);
+  if (object == NULL)
     {
       abort ();
     }
-  if (adftool_delete (file, pattern, time (NULL) * 1000) != 0)
+  adftool_term_set_integer (object, i);
+  mpz_clear (i);
+  struct adftool_term predicate = {
+    .type = TERM_NAMED,
+    .str1 = "https://localhost/lytonepal#column-number",
+    .str2 = NULL
+  };
+  struct adftool_statement pattern = {
+    .subject = NULL,
+    .predicate = &predicate,
+    .object = object,
+    .graph = NULL,
+    .deletion_date = ((uint64_t) (-1))
+  };
+  if (adftool_delete (file, &pattern, time (NULL) * 1000) != 0)
     {
       error = 1;
       goto cleanup;
     }
-  adftool_statement_set (pattern, (struct adftool_term **) &identifier, NULL,
-			 NULL, NULL, NULL);
-  if (adftool_insert (file, pattern) != 0)
+  pattern.subject = (struct adftool_term *) identifier;
+  if (adftool_insert (file, &pattern) != 0)
     {
       error = 1;
       goto cleanup;
     }
 cleanup:
-  adftool_statement_free (pattern);
+  adftool_term_free (object);
   return error;
 }
 
@@ -130,82 +83,32 @@ term_to_literal_double (const struct adftool_term *term, double *value)
   return error;
 }
 
-static struct adftool_statement *
-channel_decoder_finder (const struct adftool_term *identifier,
-			const char *scale_or_offset)
-{
-  /* Construct: identifier lyto:has-channel-decoder-scale/offset ? */
-  struct adftool_statement *pattern = adftool_statement_alloc ();
-  struct adftool_term *predicate = adftool_term_alloc ();
-  if (pattern == NULL || predicate == NULL)
-    {
-      if (pattern)
-	{
-	  adftool_statement_free (pattern);
-	}
-      if (predicate)
-	{
-	  adftool_term_free (predicate);
-	}
-      return NULL;
-    }
-  char predicate_str[256];
-  sprintf (predicate_str,
-	   "https://localhost/lytonepal#has-channel-decoder-%s",
-	   scale_or_offset);
-  adftool_term_set_named (predicate, predicate_str);
-  adftool_statement_set (pattern, (struct adftool_term **) &identifier,
-			 &predicate, NULL, NULL, NULL);
-  adftool_term_free (predicate);
-  return pattern;
-}
-
 static int
 channel_decoder_find (struct adftool_file *file,
 		      const struct adftool_term *identifier,
 		      const char *scale_or_offset, double *value)
 {
-  int error = 0;
-  struct adftool_statement *pattern =
-    channel_decoder_finder (identifier, scale_or_offset);
-  struct adftool_results *results = adftool_results_alloc ();
-  struct adftool_term *literal_value = adftool_term_alloc ();
-  if (pattern == NULL || results == NULL || literal_value == NULL)
+  char predicate_str[256];
+  sprintf (predicate_str,
+	   "https://localhost/lytonepal#has-channel-decoder-%s",
+	   scale_or_offset);
+  struct adftool_term *object = adftool_term_alloc ();
+  if (object == NULL)
     {
       abort ();
     }
-  if (adftool_lookup (file, pattern, results) != 0)
+  size_t n_results =
+    adftool_lookup_objects (file, identifier, predicate_str, 0, 1, &object);
+  if (n_results > 0)
     {
-      error = 1;
-      goto cleanup;
-    }
-  size_t n_results = adftool_results_count (results);
-  size_t i;
-  for (i = 0; i < n_results; i++)
-    {
-      const struct adftool_statement *candidate =
-	adftool_results_get (results, i);
-      struct adftool_term *literal_value;
-      uint64_t deletion_date;
-      adftool_statement_get (candidate, NULL, NULL, &literal_value, NULL,
-			     &deletion_date);
-      const int has_object = (literal_value != NULL);
-      const int has_deletion_date = (deletion_date != ((uint64_t) (-1)));
-      assert (has_object);
-      if (!has_deletion_date
-	  && term_to_literal_double (literal_value, value) == 0)
+      int error = term_to_literal_double (object, value);
+      if (error)
 	{
-	  error = 0;
-	  goto cleanup;
+	  n_results = 0;
 	}
     }
-  /* No value. */
-  error = 1;
-cleanup:
-  adftool_term_free (literal_value);
-  adftool_results_free (results);
-  adftool_statement_free (pattern);
-  return error;
+  adftool_term_free (object);
+  return (n_results == 0);
 }
 
 static int
@@ -215,26 +118,34 @@ channel_decoder_replace (struct adftool_file *file,
 			 const struct adftool_term *replacement)
 {
   int error = 0;
-  struct adftool_statement *pattern =
-    channel_decoder_finder (identifier, scale_or_offset);
-  if (pattern == NULL)
-    {
-      abort ();
-    }
-  if (adftool_delete (file, pattern, time (NULL) * 1000) != 0)
+  char predicate_str[256];
+  sprintf (predicate_str,
+	   "https://localhost/lytonepal#has-channel-decoder-%s",
+	   scale_or_offset);
+  struct adftool_term p = {
+    .type = TERM_NAMED,
+    .str1 = predicate_str,
+    .str2 = NULL
+  };
+  struct adftool_statement pattern = {
+    .subject = (struct adftool_term *) identifier,
+    .predicate = &p,
+    .object = NULL,
+    .graph = NULL,
+    .deletion_date = ((uint64_t) (-1))
+  };
+  if (adftool_delete (file, &pattern, time (NULL) * 1000) != 0)
     {
       error = 1;
       goto cleanup;
     }
-  adftool_statement_set (pattern, NULL, NULL,
-			 (struct adftool_term **) &replacement, NULL, NULL);
-  if (adftool_insert (file, pattern) != 0)
+  pattern.object = (struct adftool_term *) replacement;
+  if (adftool_insert (file, &pattern) != 0)
     {
       error = 1;
       goto cleanup;
     }
 cleanup:
-  adftool_statement_free (pattern);
   return error;
 }
 
@@ -307,55 +218,30 @@ adftool_get_channel_column (const struct adftool_file *file,
 			    const struct adftool_term *identifier,
 			    size_t *column)
 {
-  mpz_t integer;
-  mpz_init (integer);
-  /* Construct: identifier lyto:column-number ? */
-  struct adftool_statement *pattern = adftool_statement_alloc ();
-  struct adftool_term *predicate = adftool_term_alloc ();
-  struct adftool_results *results = adftool_results_alloc ();
-  if (pattern == NULL || predicate == NULL || results == NULL)
+  struct adftool_term *object = adftool_term_alloc ();
+  if (object == NULL)
     {
       abort ();
     }
-  adftool_term_set_named (predicate,
-			  "https://localhost/lytonepal#column-number");
-  adftool_statement_set (pattern, (struct adftool_term **) &identifier,
-			 &predicate, NULL, NULL, NULL);
-  int error = adftool_lookup (file, pattern, results);
-  int initialized = 0;
-  if (error == 0)
+  static const char *p = "https://localhost/lytonepal#column-number";
+  size_t n_results =
+    adftool_lookup_objects (file, identifier, p, 0, 1, &object);
+  mpz_t i;
+  mpz_init (i);
+  if (n_results > 0)
     {
-      const size_t n_results = adftool_results_count (results);
-      for (size_t i = 0; i < n_results && !initialized; i++)
+      if (adftool_term_as_integer (object, i) != 0)
 	{
-	  const struct adftool_statement *candidate =
-	    adftool_results_get (results, i);
-	  const struct adftool_term *object;
-	  uint64_t deletion_date;
-	  adftool_statement_get (candidate, NULL, NULL,
-				 (struct adftool_term **) &object, NULL,
-				 &deletion_date);
-	  assert (object != NULL);
-	  if (deletion_date == ((uint64_t) (-1)))
-	    {
-	      if (adftool_term_as_integer (object, integer) == 0)
-		{
-		  initialized = 1;
-		}
-	    }
+	  n_results = 0;
 	}
     }
-  if (!initialized)
+  if (n_results > 0)
     {
-      /* Not found. */
-      error = 1;
+      *column = mpz_get_ui (i);
     }
-  adftool_results_free (results);
-  adftool_term_free (predicate);
-  adftool_statement_free (pattern);
-  *column = mpz_get_ui (integer);
-  mpz_clear (integer);
-  return error;
+  mpz_clear (i);
+  adftool_term_free (object);
+  return n_results == 0;
 }
 
 int
@@ -363,20 +249,21 @@ adftool_add_channel_type (struct adftool_file *file,
 			  const struct adftool_term *channel,
 			  const struct adftool_term *type)
 {
-  struct adftool_statement *statement = adftool_statement_alloc ();
-  struct adftool_term *predicate = adftool_term_alloc ();
-  if (statement == NULL || predicate == NULL)
-    {
-      abort ();
-    }
-  adftool_term_set_named (predicate,
-			  "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-  adftool_statement_set (statement, (struct adftool_term **) &channel,
-			 &predicate, (struct adftool_term **) &type, NULL,
-			 NULL);
-  int error = adftool_insert (file, statement);
-  adftool_term_free (predicate);
-  adftool_statement_free (statement);
+  static const char *const rdf_type =
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+  static const struct adftool_term predicate = {
+    .type = TERM_NAMED,
+    .str1 = (char *) rdf_type,
+    .str2 = NULL
+  };
+  const struct adftool_statement statement = {
+    .subject = (struct adftool_term *) channel,
+    .predicate = (struct adftool_term *) &predicate,
+    .object = (struct adftool_term *) type,
+    .graph = NULL,
+    .deletion_date = ((uint64_t) (-1))
+  };
+  int error = adftool_insert (file, &statement);
   return error;
 }
 
@@ -385,49 +272,9 @@ adftool_get_channel_types (const struct adftool_file *file,
 			   const struct adftool_term *channel, size_t start,
 			   size_t max, struct adftool_term **types)
 {
-  struct adftool_statement *pattern = adftool_statement_alloc ();
-  struct adftool_results *results = adftool_results_alloc ();
-  struct adftool_term *rdf_type = adftool_term_alloc ();
-  if (pattern == NULL || results == NULL || rdf_type == NULL)
-    {
-      abort ();
-    }
-  adftool_term_set_named (rdf_type,
-			  "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-  adftool_statement_set (pattern, (struct adftool_term **) &channel,
-			 &rdf_type, NULL, NULL, NULL);
-  size_t n_results = 0;
-  if (adftool_lookup (file, pattern, results) == 0)
-    {
-      size_t total_results = adftool_results_count (results);
-      for (size_t i = 0; i < total_results; i++)
-	{
-	  const struct adftool_statement *candidate =
-	    adftool_results_get (results, i);
-	  const struct adftool_term *object;
-	  uint64_t deletion_date;
-	  adftool_statement_get (candidate, NULL, NULL,
-				 (struct adftool_term **) &object, NULL,
-				 &deletion_date);
-	  assert (object != NULL);
-	  if (deletion_date == ((size_t) (-1)))
-	    {
-	      if (n_results >= start)
-		{
-		  const size_t i_out = n_results - start;
-		  if (i_out < max)
-		    {
-		      adftool_term_copy (types[i_out], object);
-		    }
-		}
-	      n_results++;
-	    }
-	}
-    }
-  adftool_term_free (rdf_type);
-  adftool_results_free (results);
-  adftool_statement_free (pattern);
-  return n_results;
+  static const char *const rdf_type =
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+  return adftool_lookup_objects (file, channel, rdf_type, start, max, types);
 }
 
 size_t
@@ -435,46 +282,7 @@ adftool_find_channels_by_type (const struct adftool_file *file,
 			       const struct adftool_term *type, size_t start,
 			       size_t max, struct adftool_term **channels)
 {
-  struct adftool_statement *pattern = adftool_statement_alloc ();
-  struct adftool_results *results = adftool_results_alloc ();
-  struct adftool_term *rdf_type = adftool_term_alloc ();
-  if (pattern == NULL || results == NULL || rdf_type == NULL)
-    {
-      abort ();
-    }
-  adftool_term_set_named (rdf_type,
-			  "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-  adftool_statement_set (pattern, NULL, &rdf_type,
-			 (struct adftool_term **) &type, NULL, NULL);
-  size_t n_results = 0;
-  if (adftool_lookup (file, pattern, results) == 0)
-    {
-      size_t total_results = adftool_results_count (results);
-      for (size_t i = 0; i < total_results; i++)
-	{
-	  const struct adftool_statement *candidate =
-	    adftool_results_get (results, i);
-	  const struct adftool_term *subject;
-	  uint64_t deletion_date;
-	  adftool_statement_get (candidate, (struct adftool_term **) &subject,
-				 NULL, NULL, NULL, &deletion_date);
-	  assert (subject != NULL);
-	  if (deletion_date == ((size_t) (-1)))
-	    {
-	      if (n_results >= start)
-		{
-		  const size_t i_out = n_results - start;
-		  if (i_out < max)
-		    {
-		      adftool_term_copy (channels[i_out], subject);
-		    }
-		}
-	      n_results++;
-	    }
-	}
-    }
-  adftool_term_free (rdf_type);
-  adftool_results_free (results);
-  adftool_statement_free (pattern);
-  return n_results;
+  static const char *const rdf_type =
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+  return adftool_lookup_subjects (file, type, rdf_type, start, max, channels);
 }

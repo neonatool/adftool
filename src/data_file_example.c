@@ -88,20 +88,20 @@ main (int argc, char *argv[])
     {
       abort ();
     }
-  struct adftool_results *results = adftool_results_alloc ();
-  if (results == NULL)
+  struct adftool_statement *result = adftool_statement_alloc ();
+  size_t n_results;
+  if (result == NULL)
     {
       abort ();
     }
-  if (adftool_lookup (file, pattern, results) != 0)
+  if (adftool_lookup (file, pattern, 0, 1, &n_results, &result) != 0)
     {
       abort ();
     }
-  if (adftool_results_count (results) != 1)
+  if (n_results != 1)
     {
       abort ();
     }
-  const struct adftool_statement *result = adftool_results_get (results, 0);
   for (size_t i = 0; i < sizeof (terms) / sizeof (terms[0]); i++)
     {
       terms[i] = adftool_term_alloc ();
@@ -150,7 +150,7 @@ main (int argc, char *argv[])
       free (term_values[i]);
       adftool_term_free (terms[i]);
     }
-  adftool_results_free (results);
+  adftool_statement_free (result);
   adftool_statement_free (pattern);
   adftool_file_close (file);
   adftool_file_free (file);

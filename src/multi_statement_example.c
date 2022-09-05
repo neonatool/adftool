@@ -108,17 +108,38 @@ main (int argc, char *argv[])
     {NULL, NULL, NULL, "a"}
   };
   static const size_t n_requests = sizeof (requests) / sizeof (requests[0]);
-  struct adftool_results *results[4];
+  struct adftool_statement **results[4];
+  size_t n_results[4];
   assert (sizeof (results) / sizeof (results[0]) == n_requests);
+  assert (sizeof (n_results) / sizeof (n_results[0]) == n_requests);
   for (size_t i = 0; i < n_requests; i++)
     {
       struct adftool_statement *pattern = build_statement (requests[i]);
-      results[i] = adftool_results_alloc ();
+      if (adftool_lookup (file, pattern, 0, 0, &(n_results[i]), NULL) != 0)
+	{
+	  abort ();
+	}
+      results[i] =
+	malloc (n_results[i] * sizeof (struct adftool_statement *));
       if (results[i] == NULL)
 	{
 	  abort ();
 	}
-      if (adftool_lookup (file, pattern, results[i]) != 0)
+      for (size_t j = 0; j < n_results[i]; j++)
+	{
+	  results[i][j] = adftool_statement_alloc ();
+	  if (results[i][j] == NULL)
+	    {
+	      abort ();
+	    }
+	}
+      size_t check;
+      if (adftool_lookup (file, pattern, 0, n_results[i], &check, results[i])
+	  != 0)
+	{
+	  abort ();
+	}
+      if (n_results[i] != check)
 	{
 	  abort ();
 	}
@@ -200,7 +221,7 @@ main (int argc, char *argv[])
 	      abort ();
 	    }
 	}
-      if (n_expected_results != adftool_results_count (results[i]))
+      if (n_expected_results != n_results[i])
 	{
 	  abort ();
 	}
@@ -217,8 +238,7 @@ main (int argc, char *argv[])
 	  for (size_t k = 0; k < n_indices; k++)
 	    {
 	      if (adftool_statement_compare
-		  (expected_statements[j],
-		   adftool_results_get (results[i], j),
+		  (expected_statements[j], results[i][j],
 		   compare_orders[k]) != 0)
 		{
 		  abort ();
@@ -233,7 +253,11 @@ main (int argc, char *argv[])
     }
   for (size_t i = 0; i < n_requests; i++)
     {
-      adftool_results_free (results[i]);
+      for (size_t j = 0; j < n_results[i]; j++)
+	{
+	  adftool_statement_free (results[i][j]);
+	}
+      free (results[i]);
     }
   adftool_file_close (file);
   adftool_file_free (file);

@@ -30,6 +30,12 @@
 static void printf_term (const struct adftool_term *term,
 			 int ignore_empty_name, int print_space);
 
+static void lookup_results_by_page (const struct adftool_file *file,
+				    const struct adftool_statement *pattern,
+				    size_t page_size,
+				    struct adftool_statement **results,
+				    const struct timespec *current_time);
+
 int
 main (int argc, char *argv[])
 {
@@ -640,53 +646,33 @@ main (int argc, char *argv[])
 	}
       if (lookup)
 	{
-	  struct adftool_results *results = adftool_results_alloc ();
-	  if (results == NULL)
+	  size_t page_size = 256;
+	  struct adftool_statement **buffer =
+	    malloc (page_size * sizeof (struct adftool_statement *));
+	  if (buffer == NULL)
 	    {
-	      fprintf (stderr,
-		       _("Cannot allocate memory to hold the results.\n"));
-	      exit (1);
+	      abort ();
 	    }
-	  uint64_t current_time = ((uint64_t) time (NULL)) * 1000;
-	  if (adftool_lookup (file, pattern, results) != 0)
+	  for (size_t i = 0; i < page_size; i++)
 	    {
-	      fprintf (stderr, _("Cannot list the statements.\n"));
-	      exit (1);
-	    }
-	  size_t n_results = adftool_results_count (results);
-	  for (size_t i = 0; i < n_results; i++)
-	    {
-	      const struct adftool_statement *statement =
-		adftool_results_get (results, i);
-	      uint64_t deletion_date;
-	      adftool_statement_get (statement, NULL, NULL, NULL, NULL,
-				     &deletion_date);
-	      const int has_deletion_date =
-		(deletion_date != ((uint64_t) (-1)));
-	      if (has_deletion_date && deletion_date <= current_time)
+	      buffer[i] = adftool_statement_alloc ();
+	      if (buffer[i] == NULL)
 		{
-		  /* Skip this statement. */
-		}
-	      else
-		{
-		  struct adftool_term *terms[4];
-		  adftool_statement_get (statement, &(terms[0]), &(terms[1]),
-					 &(terms[2]), &(terms[3]), NULL);
-		  if (terms[0] != NULL && terms[1] != NULL
-		      && terms[2] != NULL)
-		    {
-		      for (size_t i = 0; i < 4; i++)
-			{
-			  if (terms[i] != NULL)
-			    {
-			      printf_term (terms[i], i == 3, 1);
-			    }
-			}
-		      printf (".\n");
-		    }
+		  abort ();
 		}
 	    }
-	  adftool_results_free (results);
+	  struct timespec current_time;
+	  if (timespec_get (&current_time, TIME_UTC) != TIME_UTC)
+	    {
+	      fprintf (stderr, _("Error: could not get the current time.\n"));
+	    }
+	  lookup_results_by_page (file, pattern, page_size, buffer,
+				  &current_time);
+	  for (size_t i = 0; i < page_size; i++)
+	    {
+	      adftool_statement_free (buffer[i]);
+	    }
+	  free (buffer);
 	}
       if (insert)
 	{
@@ -1074,5 +1060,83 @@ Cannot allocate memory to hold the results.\n"));
   if (print_space)
     {
       printf (" ");
+    }
+}
+
+static size_t
+do_one_page (const struct adftool_file *file,
+	     const struct adftool_statement *pattern, size_t start,
+	     size_t length, struct adftool_statement **page,
+	     uint64_t current_time)
+{
+  size_t n;
+  if (adftool_lookup (file, pattern, start, length, &n, page) != 0)
+    {
+      fprintf (stderr, _("Cannot list the statements.\n"));
+      exit (1);
+    }
+  size_t i;
+  for (i = start; i < n && i - start < length; i++)
+    {
+      const struct adftool_statement *statement = page[i];
+      uint64_t deletion_date;
+      adftool_statement_get (statement, NULL, NULL, NULL, NULL,
+			     &deletion_date);
+      const int has_deletion_date = (deletion_date != ((uint64_t) (-1)));
+      if (has_deletion_date && deletion_date <= current_time)
+	{
+	  /* Skip this statement. */
+	}
+      else
+	{
+	  struct adftool_term *terms[4];
+	  adftool_statement_get (statement, &(terms[0]), &(terms[1]),
+				 &(terms[2]), &(terms[3]), NULL);
+	  if (terms[0] != NULL && terms[1] != NULL && terms[2] != NULL)
+	    {
+	      for (size_t i = 0; i < 4; i++)
+		{
+		  if (terms[i] != NULL)
+		    {
+		      printf_term (terms[i], i == 3, 1);
+		    }
+		}
+	      printf (".\n");
+	    }
+	}
+    }
+  return i;
+}
+
+static void
+lookup_results_by_page (const struct adftool_file *file,
+			const struct adftool_statement *pattern,
+			size_t page_size, struct adftool_statement **results,
+			const struct timespec *current_time)
+{
+  struct tm tm_ref = {
+    .tm_year = 70,		/* 1970 */
+    .tm_mon = 0,		/* january */
+    .tm_mday = 1,		/* 1st */
+    .tm_hour = 0,
+    .tm_min = 0,		/* midnight */
+    .tm_sec = 0
+  };
+  const time_t time_ref = timegm (&tm_ref);
+  const time_t elapsed_s = current_time->tv_sec - time_ref;
+  const uint64_t elapsed_ms =
+    elapsed_s * 1000 + (current_time->tv_nsec / 1000000);
+  size_t start = 0;
+  size_t n_done;
+  while (1)
+    {
+      n_done =
+	do_one_page (file, pattern, start, page_size, results, elapsed_ms);
+      if (n_done == start)
+	{
+	  /* Everything done. */
+	  return;
+	}
+      start = n_done;
     }
 }

@@ -112,10 +112,4 @@ struct adftool_statement
   uint64_t deletion_date;
 };
 
-struct adftool_results
-{
-  size_t n_results;
-  struct adftool_statement **statements;
-};
-
 #endif /* not H_ADFTOOL_PRIVATE_INCLUDED */

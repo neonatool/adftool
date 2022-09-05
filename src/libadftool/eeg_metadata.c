@@ -25,96 +25,56 @@ static const struct adftool_term p_sampling_frequency = {
   .str2 = NULL
 };
 
-static const struct adftool_statement start_date_pattern = {
-  .subject = (struct adftool_term *) &default_eeg,
-  .predicate = (struct adftool_term *) &p_start_date,
-  .object = NULL,
-  .graph = NULL,
-  .deletion_date = ((uint64_t) (-1))
-};
-
-static const struct adftool_statement sampling_frequency_pattern = {
-  .subject = (struct adftool_term *) &default_eeg,
-  .predicate = (struct adftool_term *) &p_sampling_frequency,
-  .object = NULL,
-  .graph = NULL,
-  .deletion_date = ((uint64_t) (-1))
-};
-
 static int
 get_start_date (const struct adftool_file *file, struct timespec *time)
 {
-  struct adftool_results *results = adftool_results_alloc ();
-  const struct adftool_term *object;
-  if (results == NULL)
+  struct adftool_term *object = adftool_term_alloc ();
+  if (object == NULL)
     {
       abort ();
     }
-  if (adftool_lookup (file, &start_date_pattern, results) != 0)
+  size_t n_results =
+    adftool_lookup_objects (file, &default_eeg, lyto_start_date, 0, 1,
+			    &object);
+  if (n_results > 0)
     {
-      adftool_results_free (results);
-      return 1;
-    }
-  size_t n = adftool_results_count (results);
-  for (size_t i = 0; i < n; i++)
-    {
-      const struct adftool_statement *candidate =
-	adftool_results_get (results, i);
-      uint64_t deletion_date;
-      adftool_statement_get (candidate, NULL, NULL,
-			     (struct adftool_term **) &object, NULL,
-			     &deletion_date);
-      if (deletion_date == ((uint64_t) (-1)))
+      if (adftool_term_as_date (object, time) != 0)
 	{
-	  int conversion_error = adftool_term_as_date (object, time);
-	  adftool_results_free (results);
-	  return conversion_error;
+	  n_results = 0;
 	}
     }
-  /* No start-date relation found. */
-  adftool_results_free (results);
-  return 1;
+  adftool_term_free (object);
+  return (n_results == 0);
 }
 
 static int
 get_sampling_frequency (const struct adftool_file *file,
 			double *sampling_frequency)
 {
-  struct adftool_results *results = adftool_results_alloc ();
-  const struct adftool_term *object;
-  if (results == NULL)
+  struct adftool_term *object = adftool_term_alloc ();
+  if (object == NULL)
     {
       abort ();
     }
-  if (adftool_lookup (file, &sampling_frequency_pattern, results) != 0)
-    {
-      adftool_results_free (results);
-      return 1;
-    }
-  size_t n = adftool_results_count (results);
   mpf_t sfreq;
   mpf_init (sfreq);
-  for (size_t i = 0; i < n; i++)
+  size_t n_results =
+    adftool_lookup_objects (file, &default_eeg, lyto_sampling_frequency, 0, 1,
+			    &object);
+  if (n_results > 0)
     {
-      const struct adftool_statement *candidate =
-	adftool_results_get (results, i);
-      uint64_t deletion_date;
-      adftool_statement_get (candidate, NULL, NULL,
-			     (struct adftool_term **) &object, NULL,
-			     &deletion_date);
-      if (deletion_date == ((uint64_t) (-1)))
+      if (adftool_term_as_double (object, sfreq) != 0)
 	{
-	  int conversion_error = adftool_term_as_double (object, sfreq);
-	  *sampling_frequency = mpf_get_d (sfreq);
-	  mpf_clear (sfreq);
-	  adftool_results_free (results);
-	  return conversion_error;
+	  n_results = 0;
 	}
     }
-  /* No sampling-frequency relation found. */
+  if (n_results > 0)
+    {
+      *sampling_frequency = mpf_get_d (sfreq);
+    }
   mpf_clear (sfreq);
-  adftool_results_free (results);
-  return 1;
+  adftool_term_free (object);
+  return (n_results == 0);
 }
 
 int
