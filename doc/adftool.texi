@@ -873,6 +873,10 @@ the @var{sampling_frequency}), as @math{@var{number of components} = 4
 Free @var{filter}.
 @end deftypefun
 
+@deftypefun {size_t} adftool_fir_order (const struct adftool_fir *@var{filter})
+Return the order of @var{filter}. It is an odd number.
+@end deftypefun
+
 @deftypefun void adftool_fir_design_bandpass (struct adftool_fir *@var{filter}, double @var{lowest_frequency}, double @var{highest_frequency})
 Set @var{filter} to be a filter that lets the band between
 @var{lowest_frequency} and @var{highest_frequency} pass.

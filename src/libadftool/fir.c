@@ -42,6 +42,12 @@ adftool_fir_alloc (double sfreq, double transition_bandwidth)
   return ret;
 }
 
+size_t
+adftool_fir_order (const struct adftool_fir *filter)
+{
+  return 2 * filter->half_m + 1;
+}
+
 void
 adftool_fir_free (struct adftool_fir *filter)
 {
