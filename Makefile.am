@@ -133,6 +133,23 @@ libadftool_la_LDFLAGS = \
   $(MODF_LIBM) \
   $(TRUNC_LIBM)
 
+if PYTHON_MODULE
+pyexec_LTLIBRARIES = adftool.la
+adftool_la_SOURCES = \
+  src/adftool_python.c
+adftool_la_CPPFLAGS = \
+  -I include -I $(srcdir)/include \
+  -I lib -I $(srcdir)/lib \
+  -I src -I $(srcdir)/src \
+  -DLOCALEDIR=\"@localedir@\" \
+  -DBUILDING_ADFTOOLMODULE
+adftool_la_CFLAGS = $(CFLAG_VISIBILITY)
+adftool_la_LIBADD = libadftool.la lib/libadftool.la @LTLIBOBJS@
+adftool_la_LDFLAGS = \
+  -no-undefined -avoid-version -module \
+  $(LTLIBINTL)
+endif
+
 if RELOCATABLE_VIA_LD
 libadftool_la_LDFLAGS += `$(RELOCATABLE_LDFLAGS) $(libdir)`
 adftool_LDFLAGS += `$(RELOCATABLE_LDFLAGS) $(bindir)`

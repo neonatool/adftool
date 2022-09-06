@@ -14,7 +14,7 @@
    (open-connection)
    (mlet %store-monad ((adftool
 			(package->derivation
-			 (load "./guix.scm"))))
+			 (load "./adftool.scm"))))
 	 (mlet %store-monad ((built
 			      (built-derivations
 			       (list adftool))))
@@ -28,6 +28,7 @@
   (false-if-exception
    (delete-file (basename name)))
   (copy-file name (basename name))
+  (chmod (basename name) #o644)
   initialized?)
 
 (define (down name stat initialized?)

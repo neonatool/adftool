@@ -7,6 +7,7 @@ src/adftool_hdf5.h
 src/adftool_insert.h
 src/adftool_lookup.h
 src/adftool_private.h
+src/adftool_python.c
 src/bplus_tree_empty_lookup_example.c
 src/bplus_tree_gets_initialized.c
 src/bplus_tree_grow_example.c
