@@ -113,7 +113,8 @@ libadftool_la_SOURCES = \
   src/libadftool/channel_metadata.c \
   src/libadftool/eeg_data.c \
   src/libadftool/eeg_metadata.c \
-  src/libadftool/fir.c
+  src/libadftool/fir.c \
+  src/libadftool/array.c
 libadftool_la_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I lib -I $(srcdir)/lib \

@@ -308,6 +308,59 @@ extern "C"
 			    size_t signal_length, const double *signal,
 			    double *filtered);
 
+  /* These API functions are needed for emscripten, because it’s not
+     easy to compute the address of something in JS. */
+
+  extern LIBADFTOOL_API
+    uint8_t adftool_array_get_byte (const char *byte_array, size_t i);
+
+  extern LIBADFTOOL_API
+    void adftool_array_set_byte (char *byte_array, size_t i, uint8_t byte);
+
+  extern LIBADFTOOL_API size_t adftool_sizeof_size_t (void);
+
+  extern LIBADFTOOL_API
+    size_t adftool_array_get_size_t (const char *sz_array, size_t i);
+
+  extern LIBADFTOOL_API
+    void adftool_array_set_size_t (char *sz_array, size_t i, size_t value);
+
+  extern LIBADFTOOL_API size_t adftool_sizeof_timespec (void);
+
+  extern LIBADFTOOL_API
+    time_t adftool_array_get_tv_sec (const char *time_array, size_t i);
+
+  extern LIBADFTOOL_API
+    long adftool_array_get_tv_nsec (const char *time_array, size_t i);
+
+  extern LIBADFTOOL_API
+    void adftool_array_set_timespec (char *time_array, size_t i,
+				     time_t tv_sec, long tv_nsec);
+
+  extern LIBADFTOOL_API size_t adftool_sizeof_pointer (void);
+
+  extern LIBADFTOOL_API
+    void *adftool_array_get_pointer (const char *pointer_array, size_t i);
+
+  extern LIBADFTOOL_API
+    void adftool_array_set_pointer (char *pointer_array, size_t i, void *ptr);
+
+  extern LIBADFTOOL_API
+    uint64_t adftool_array_get_uint64 (const char *longs_array, size_t i);
+
+  extern LIBADFTOOL_API
+    void adftool_array_set_uint64 (char *longs_array, size_t i,
+				   uint64_t value);
+
+  extern LIBADFTOOL_API size_t adftool_sizeof_double (void);
+
+  extern LIBADFTOOL_API
+    double adftool_array_get_double (const char *double_array, size_t i);
+
+  extern LIBADFTOOL_API
+    void adftool_array_set_double (char *double_array, size_t i,
+				   double value);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */
