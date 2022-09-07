@@ -485,22 +485,6 @@ Get the two components of @var{term}. If @var{max} is not 0, the first
 @var{start} bytes are ignored, then the next @var{max} are copied to
 @var{value} or @var{meta}. The total number of bytes is returned.
 
-@deftypefun int adftool_term_as_integer (const struct adftool_term *@var{term}, mpz_t @var{value})
-@deftypefunx int adftool_term_as_double (const struct adftool_term *@var{term}, mpf_t @var{value})
-Try and parse @var{term} as a numeric value. Return 0 on success,
-another value if an error happens.
-
-These functions may perform conversions. For instance, if you ask for
-an integer when the literal is a double, then @var{value} will be set
-to its integer part.
-
-The double conversion might lose precision!
-@end deftypefun
-
-@deftypefun int adftool_term_as_date (const struct adftool_term *@var{term}, struct timespec *@var{date})
-Try and parse @var{term} as a date, and set @var{date}.
-@end deftypefun
-
 It is admissible to pass a larger @var{max} value than required; in
 this case a NUL character will be added after the value. Also, if
 @var{max} is set to 0, then the @var{value} or @var{meta} pointers
@@ -556,6 +540,22 @@ assert (check == required);
 /* use value, it is NUL-terminated. */
 free (value);
 @end example
+@end deftypefun
+
+@deftypefun int adftool_term_as_integer (const struct adftool_term *@var{term}, mpz_t @var{value})
+@deftypefunx int adftool_term_as_double (const struct adftool_term *@var{term}, mpf_t @var{value})
+Try and parse @var{term} as a numeric value. Return 0 on success,
+another value if an error happens.
+
+These functions may perform conversions. For instance, if you ask for
+an integer when the literal is a double, then @var{value} will be set
+to its integer part.
+
+The double conversion might lose precision!
+@end deftypefun
+
+@deftypefun int adftool_term_as_date (const struct adftool_term *@var{term}, struct timespec *@var{date})
+Try and parse @var{term} as a date, and set @var{date}.
 @end deftypefun
 
 @deftypefun int adftool_term_compare (const struct adftool_term *@var{reference}, const struct adftool_term *@var{other})
