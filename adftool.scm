@@ -68,14 +68,16 @@
                                       "/bin/git"))))))
 
 (define adftool-version
-  (with-directory-excursion
-   (dirname (current-filename))
-   (let ((port (open-pipe* OPEN_READ git-exec "describe" "--tags")))
-     (let ((version (read-line port)))
-       (close-port port)
-       (if (eof-object? version)
-	   "0.0.0"
-	   version)))))
+  (substring
+   (with-directory-excursion
+    (dirname (current-filename))
+    (let ((port (open-pipe* OPEN_READ git-exec "describe" "--tags")))
+      (let ((version (read-line port)))
+	(close-port port)
+	(if (eof-object? version)
+	    "v0.0.0"
+	    version))))
+   1))
 
 (define po-download
   (program-file
