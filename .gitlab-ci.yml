@@ -184,6 +184,18 @@ build_pdf:
     paths:
       - public
 
+conan:
+  stage: build
+  script:
+    - apt-get install -y python3 python3-pip autoconf autoconf-archive automake libtool pkg-config
+    - pip3 install conan
+    - tar xf public/adftool-latest.tar.gz
+    - mkdir conan-build
+    - cd conan-build
+    - conan remote add gitlab ${CI_API_V4_URL}/projects/$CI_PROJECT_ID/packages/conan
+    - conan create ../adftool-* vkraus+adftool/latest --build missing -c tools.system.package_manager:mode=install
+    - CONAN_LOGIN_USERNAME=vkraus CONAN_PASSWORD=${CI_JOB_TOKEN} conan upload adftool/$(cat ../adftool-*/.tarball-version)@vkraus+adftool/latest --all --remote=gitlab
+
 pages:
   stage: pages
   script:

@@ -2,7 +2,10 @@ SUBDIRS = lib libprog . po tests
 ACLOCAL_AMFLAGS = -I m4 -I m4prog
 EXTRA_DIST = m4/gnulib-cache.m4 m4prog/gnulib-cache.m4 \
   src/filter_test_data.c src/filter_test_data.R \
-  po/Rules-install-local
+  po/Rules-install-local \
+  conanfile-in.py \
+  $(top_srcdir)/conanfile.py \
+  $(top_srcdir)/.version
 
 info_TEXINFOS = doc/adftool.texi
 
@@ -398,3 +401,14 @@ BUILT_SOURCES = src/filter_test_data.c
 $(srcdir)/src/filter_test_data.c: src/filter_test_data.R
 	$(AM_V_GEN) $(RSCRIPT) $< > $@-t
 	@mv $@-t $@
+
+$(top_srcdir)/.version:
+	$(AM_V_GEN) echo '$(VERSION)' > $@-t
+	@mv $@-t $@
+
+$(top_srcdir)/conanfile.py: conanfile-in.py
+	$(AM_V_GEN) $(SED) 's/\@VERSION\@/$(VERSION)/g' $< > $@-t
+	@mv $@-t $@
+
+dist-hook:
+	echo '$(VERSION)' > $(distdir)/.tarball-version

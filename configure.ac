@@ -41,6 +41,7 @@ AM_PATH_PYTHON(,, [
     AC_MSG_ERROR([Python module was required, but python has not been found. Pass --disable-python to not build the python extension.])
   fi
 ])
+AC_PROG_SED
 
 # Checks for libraries.
 AM_GNU_GETTEXT([external])
