@@ -17,6 +17,8 @@ before_script:
   - sed "s|@ABS_TOP_SRCDIR@|$PWD|g" gitlab-ci-apt-cache.conf > /etc/apt/apt.conf.d/gitlab-ci-cache
   - mkdir -p .apt/archives/partial
   - apt-get update -y
+  - apt-get install -y git
+  - git config --global --add safe.directory $PWD
 
 dist:
   stage: dependencies
