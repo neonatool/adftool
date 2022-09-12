@@ -763,7 +763,7 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
 	    }
 	  printf_term (term, 0, 0);
 	  printf ("\n");
-	  free (term);
+	  adftool_term_free (term);
 	}
       if (get_channel_metadata)
 	{
