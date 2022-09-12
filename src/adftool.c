@@ -806,6 +806,7 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
 	      current_line_length = 0;
 	      current_line++;
 	    }
+	  free (line);
 	  int error =
 	    adftool_eeg_set_data (file, current_line, n_columns, buffer);
 	  if (error != 0)
