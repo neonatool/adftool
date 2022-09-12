@@ -9,6 +9,10 @@ static void compute_encoding (size_t n, size_t p, size_t i,
 
 static struct adftool_statement *new_channel_statement (size_t i);
 
+static int set_channel_identifier (struct adftool_file *file,
+				   size_t channel_index,
+				   const struct adftool_term *identifier);
+
 int
 adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
 		      size_t n_channels, const double *data)
@@ -57,7 +61,7 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
 			     (struct adftool_term **) &identifier, NULL,
 			     NULL);
       assert (identifier != NULL);
-      if (adftool_set_channel_identifier (file, i, identifier) != 0)
+      if (set_channel_identifier (file, i, identifier) != 0)
 	{
 	  error = 1;
 	  goto clean_new_channel;
@@ -333,4 +337,47 @@ cleanup_subject:
   adftool_term_free (subject);
 wrapup:
   return statement;
+}
+
+static int
+set_channel_identifier (struct adftool_file *file,
+			size_t channel_index,
+			const struct adftool_term *identifier)
+{
+  int error = 0;
+  struct adftool_term *object = adftool_term_alloc ();
+  mpz_t i;
+  mpz_init_set_ui (i, channel_index);
+  if (object == NULL)
+    {
+      abort ();
+    }
+  adftool_term_set_integer (object, i);
+  mpz_clear (i);
+  struct adftool_term predicate = {
+    .type = TERM_NAMED,
+    .str1 = "https://localhost/lytonepal#column-number",
+    .str2 = NULL
+  };
+  struct adftool_statement pattern = {
+    .subject = NULL,
+    .predicate = &predicate,
+    .object = object,
+    .graph = NULL,
+    .deletion_date = ((uint64_t) (-1))
+  };
+  if (adftool_delete (file, &pattern, time (NULL) * 1000) != 0)
+    {
+      error = 1;
+      goto cleanup;
+    }
+  pattern.subject = (struct adftool_term *) identifier;
+  if (adftool_insert (file, &pattern) != 0)
+    {
+      error = 1;
+      goto cleanup;
+    }
+cleanup:
+  adftool_term_free (object);
+  return error;
 }

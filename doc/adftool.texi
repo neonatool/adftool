@@ -748,11 +748,6 @@ Get the @var{identifier} of the @var{j}-th raw EEG channel in
 @var{j} channels, or a copy failed, for instance.
 @end deftypefun
 
-@deftypefun int adftool_set_channel_identifier (struct adftool_file *@var{file}, size_t @var{j}, const struct adftool_term *@var{identifier})
-Set the @var{identifier} of the @var{j}-th raw EEG channel in
-@var{file}. Return an error code.
-@end deftypefun
-
 @deftypefun int adftool_get_channel_column (const struct adftool_file *@var{file}, const struct adftool_term *@var{channel}, size_t *@var{column})
 Get the @var{column} index for @var{channel} in @var{file}.
 @end deftypefun

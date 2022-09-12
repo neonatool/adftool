@@ -26,49 +26,6 @@ adftool_find_channel_identifier (const struct adftool_file *file,
   return 0;
 }
 
-int
-adftool_set_channel_identifier (struct adftool_file *file,
-				size_t channel_index,
-				const struct adftool_term *identifier)
-{
-  int error = 0;
-  struct adftool_term *object = adftool_term_alloc ();
-  mpz_t i;
-  mpz_init_set_ui (i, channel_index);
-  if (object == NULL)
-    {
-      abort ();
-    }
-  adftool_term_set_integer (object, i);
-  mpz_clear (i);
-  struct adftool_term predicate = {
-    .type = TERM_NAMED,
-    .str1 = "https://localhost/lytonepal#column-number",
-    .str2 = NULL
-  };
-  struct adftool_statement pattern = {
-    .subject = NULL,
-    .predicate = &predicate,
-    .object = object,
-    .graph = NULL,
-    .deletion_date = ((uint64_t) (-1))
-  };
-  if (adftool_delete (file, &pattern, time (NULL) * 1000) != 0)
-    {
-      error = 1;
-      goto cleanup;
-    }
-  pattern.subject = (struct adftool_term *) identifier;
-  if (adftool_insert (file, &pattern) != 0)
-    {
-      error = 1;
-      goto cleanup;
-    }
-cleanup:
-  adftool_term_free (object);
-  return error;
-}
-
 static inline int
 term_to_literal_double (const struct adftool_term *term, double *value)
 {

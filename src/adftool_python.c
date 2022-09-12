@@ -83,8 +83,6 @@ static PyObject *delete (struct adftool_py_file *, PyObject *);
 static PyObject *insert (struct adftool_py_file *, PyObject *);
 static PyObject *find_channel_identifier (struct adftool_py_file *,
 					  PyObject *);
-static PyObject *set_channel_identifier (struct adftool_py_file *,
-					 PyObject *);
 static PyObject *get_channel_column (struct adftool_py_file *, PyObject *);
 static PyObject *add_channel_type (struct adftool_py_file *, PyObject *);
 static PyObject *get_channel_types (struct adftool_py_file *, PyObject *);
@@ -195,10 +193,6 @@ static PyMethodDef adftool_file_methods[] = {
   {"find_channel_identifier", (PyCFunction) find_channel_identifier,
    METH_VARARGS,
    N_("Find the term identifying the channel "
-      "whose data is stored in the given column.")},
-  {"set_channel_identifier", (PyCFunction) set_channel_identifier,
-   METH_VARARGS,
-   N_("Set the term identifying the channel "
       "whose data is stored in the given column.")},
   {"get_channel_column", (PyCFunction) get_channel_column, METH_VARARGS,
    N_("Find in which column the channel data is stored.")},
@@ -901,28 +895,6 @@ find_channel_identifier (struct adftool_py_file *self, PyObject * args)
   int error =
     adftool_find_channel_identifier (self->ptr, channel_index, term->ptr);
   return PyBool_FromLong (error == 0);
-}
-
-static PyObject *
-set_channel_identifier (struct adftool_py_file *self, PyObject * args)
-{
-  Py_ssize_t channel_index;
-  struct adftool_py_term *term;
-  int ok = PyArg_ParseTuple (args, "nO!", &channel_index, &adftool_type_term,
-			     (PyObject **) & term);
-  if (!ok)
-    {
-      return NULL;
-    }
-  int error =
-    adftool_set_channel_identifier (self->ptr, channel_index, term->ptr);
-  if (error)
-    {
-      PyErr_SetString (adftool_io_error, _("Cannot modify the file."));
-      return NULL;
-    }
-  Py_INCREF (Py_None);
-  return Py_None;
 }
 
 static PyObject *
@@ -1849,7 +1821,6 @@ fir_apply (struct adftool_py_fir *self, PyObject * args)
       return NULL;
     }
   size_t n = PyList_Size ((PyObject *) py_input);
-  assert (n >= 0);
   double *input = malloc (n * sizeof (double));
   double *output = malloc (n * sizeof (double));
   if (input == NULL || output == NULL)

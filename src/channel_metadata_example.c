@@ -35,19 +35,17 @@ main (int argc, char *argv[])
     {
       abort ();
     }
+  static const double data_example[2] = { 1, 2 };
+  if (adftool_eeg_set_data (file, 2, 1, data_example) != 0)
+    {
+      abort ();
+    }
   struct adftool_term *identifier = adftool_term_alloc ();
   if (identifier == NULL)
     {
       abort ();
     }
-  adftool_term_set_named (identifier, "initial-name");
-  if (adftool_set_channel_identifier (file, 42, identifier) != 0)
-    {
-      abort ();
-    }
-  /* Woops, it was in fact <the-name>. */
-  adftool_term_set_named (identifier, "the-name");
-  if (adftool_set_channel_identifier (file, 42, identifier) != 0)
+  if (adftool_find_channel_identifier (file, 0, identifier) != 0)
     {
       abort ();
     }
@@ -76,8 +74,8 @@ main (int argc, char *argv[])
     {
       abort ();
     }
-  adftool_term_set_named (expected_identifier, "the-name");
-  if (adftool_find_channel_identifier (file, 42, identifier) != 0)
+  adftool_term_set_named (expected_identifier, "#channel-0");
+  if (adftool_find_channel_identifier (file, 0, identifier) != 0)
     {
       abort ();
     }
@@ -90,7 +88,7 @@ main (int argc, char *argv[])
     {
       abort ();
     }
-  assert (column_index == 42);
+  assert (column_index == 0);
   double scale, offset;
   if (adftool_get_channel_decoder (file, identifier, &scale, &offset) != 0)
     {

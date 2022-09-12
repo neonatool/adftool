@@ -233,12 +233,6 @@ extern "C"
 					 struct adftool_term *identifier);
 
   extern LIBADFTOOL_API
-    int adftool_set_channel_identifier (struct adftool_file *file,
-					size_t channel_index,
-					const struct adftool_term
-					*identifier);
-
-  extern LIBADFTOOL_API
     int adftool_get_channel_column (const struct adftool_file *file,
 				    const struct adftool_term *identifier,
 				    size_t *column);
