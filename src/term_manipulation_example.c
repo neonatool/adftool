@@ -21,6 +21,8 @@
 
 #define EMPTY_TERM 0x7FFFFFFF
 
+static void check_double_0 (void);
+
 int
 main (int argc, char *argv[])
 {
@@ -262,10 +264,34 @@ Meta for number %lu is %s, should be %s.\n"), __FILE__, __LINE__, i, buffer, exp
     }
   adftool_file_close (file);
   adftool_file_free (file);
+  check_double_0 ();
   return 0;
 failure:
   fprintf (stderr, _("The test failed, keeping term_example.adf around.\n"));
   adftool_file_close (file);
   adftool_file_free (file);
   return 1;
+}
+
+static void
+check_double_0 (void)
+{
+  mpf_t zero;
+  mpf_init_set_d (zero, 0);
+  struct adftool_term *term = adftool_term_alloc ();
+  if (term == NULL)
+    {
+      abort ();
+    }
+  adftool_term_set_double (term, zero);
+  if (adftool_term_as_double (term, zero) != 0)
+    {
+      abort ();
+    }
+  if (mpf_get_d (zero) != 0)
+    {
+      abort ();
+    }
+  adftool_term_free (term);
+  mpf_clear (zero);
 }

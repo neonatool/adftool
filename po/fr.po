@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2022-09-12 08:17+0000\n"
+"POT-Creation-Date: 2022-09-12 09:32+0000\n"
 "PO-Revision-Date: 2022-09-12 10:15+0200\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -1188,67 +1188,67 @@ msgstr "Le test du filtre a échoué au point %lu.\n"
 msgid "I don’t know how to represent namespaced terms yet, sorry.\n"
 msgstr "Je ne supporte pas encore les données avec un espace de nom.\n"
 
-#: src/term_manipulation_example.c:123
+#: src/term_manipulation_example.c:125
 #, c-format
 msgid "Type %lu for number %lu is %d, should be %d.\n"
 msgstr "Le type %lu pour le numéro %lu est %d, mais devrait être %d.\n"
 
-#: src/term_manipulation_example.c:134
+#: src/term_manipulation_example.c:136
 #, c-format
 msgid "Value for number %lu is %s, should be %s.\n"
 msgstr "La valeur pour le numéro %lu est %s, mais devrait être %s.\n"
 
-#: src/term_manipulation_example.c:142
+#: src/term_manipulation_example.c:144
 #, c-format
 msgid "Meta for number %lu is %s, should be %s.\n"
 msgstr "La méta pour le numéro %lu est %s, mais devrait être %s.\n"
 
-#: src/term_manipulation_example.c:159
+#: src/term_manipulation_example.c:161
 #, c-format
 msgid "Comparison between %lu and %lu should be %d, it is %d.\n"
 msgstr "La comparaison entre %lu et %lu devrait être %d, c’est %d.\n"
 
-#: src/term_manipulation_example.c:179
+#: src/term_manipulation_example.c:181
 #, c-format
 msgid "Could not add %s to the dictionary.\n"
 msgstr "Impossible d’ajouter %s au dictionnaire.\n"
 
-#: src/term_manipulation_example.c:202
+#: src/term_manipulation_example.c:204
 #, c-format
 msgid "Not enough memory to allocate a term.\n"
 msgstr "Pas assez de mémoire pour allouer un terme.\n"
 
-#: src/term_manipulation_example.c:207
+#: src/term_manipulation_example.c:209
 #, c-format
 msgid "Failed to encode term %lu.\n"
 msgstr "Impossible d’encoder le terme %lu.\n"
 
-#: src/term_manipulation_example.c:212
+#: src/term_manipulation_example.c:214
 #, c-format
 msgid "Encoding term %lu gives %016lx, not %016lx.\n"
 msgstr "L’encodage du terme %lu donne %016lx, pas %016lx.\n"
 
-#: src/term_manipulation_example.c:218
+#: src/term_manipulation_example.c:220
 #, c-format
 msgid "Failed to decode term %lu (%016lx).\n"
 msgstr "Impossible de décoder le terme %lu (%016lx).\n"
 
-#: src/term_manipulation_example.c:234
+#: src/term_manipulation_example.c:236
 #, c-format
 msgid "%s:%d: Type %lu for number %lu is %d, should be %d.\n"
 msgstr "%s:%d: Le type %lu du numéro %lu est %d, mais devrait être %d.\n"
 
-#: src/term_manipulation_example.c:245
+#: src/term_manipulation_example.c:247
 #, c-format
 msgid "%s:%d: Value for number %lu is %s, should be %s.\n"
 msgstr "%s:%d: La valeur pour le numéro %lu est %s, mais devrait être %s.\n"
 
-#: src/term_manipulation_example.c:253
+#: src/term_manipulation_example.c:255
 #, c-format
 msgid "%s:%d: Meta for number %lu is %s, should be %s.\n"
 msgstr "%s:%d: La méta pour le numéro %lu est %s, mais devrait être %s.\n"
 
-#: src/term_manipulation_example.c:267
+#: src/term_manipulation_example.c:270
 #, c-format
 msgid "The test failed, keeping term_example.adf around.\n"
 msgstr "Le test a échoué, gardons term_exemple.adf.\n"

@@ -639,6 +639,18 @@ adftool_term_set_double (struct adftool_term *term, mpf_t value)
     {
       abort ();
     }
+  if (strcmp (str, "") == 0)
+    {
+      /* This may be 0. */
+      free (str);
+      str = malloc (2);
+      if (str == NULL)
+	{
+	  abort ();
+	}
+      strcpy (str, "0");
+      exponent = 1;
+    }
   exponent--;
   /* formatted as: x.yyyyyennn */
   char x[3] = " ";
