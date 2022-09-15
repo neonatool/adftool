@@ -21,6 +21,7 @@ before_script:
   - git config --global --add safe.directory $PWD
 
 dist:
+  image: ubuntu
   stage: dependencies
   script:
     - apt-get install -y git gettext libgmp-dev libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc m4 libtinfo5 flex r-base texinfo texlive libpython3-dev pkg-config
