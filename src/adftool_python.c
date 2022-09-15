@@ -945,7 +945,7 @@ get_channel_types (struct adftool_py_file *self, PyObject * args)
   struct adftool_py_term *channel;
   Py_ssize_t start;
   PyListObject *container;
-  int ok = PyArg_ParseTuple (args, "O!snO!", &adftool_type_term,
+  int ok = PyArg_ParseTuple (args, "O!nO!", &adftool_type_term,
 			     (PyObject **) & channel, &start,
 			     &PyList_Type, (PyObject **) & container);
   if (!ok)
