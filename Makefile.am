@@ -145,7 +145,7 @@ adftool_la_CPPFLAGS = \
   -I lib -I $(srcdir)/lib \
   -I src -I $(srcdir)/src \
   -DLOCALEDIR=\"@localedir@\" \
-  -DBUILDING_ADFTOOLMODULE
+  -DBUILDING_LIBADFTOOL_PYTHON
 adftool_la_CFLAGS = $(CFLAG_VISIBILITY)
 adftool_la_LIBADD = libadftool.la lib/libadftool.la @LTLIBOBJS@
 adftool_la_LDFLAGS = \
