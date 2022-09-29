@@ -36,6 +36,7 @@ dist:
     - mv src/libadftool/libadftool_la-lexer.c ../src/libadftool/
     - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/usr/include/hdf5/serial LDFLAGS=-L/usr/lib/x86_64-linux-gnu/hdf5/serial"
     - cp adftool-*.tar.gz ../public/adftool-latest.tar.gz
+    - cp ../.version ../public
   artifacts:
     paths:
       - public
