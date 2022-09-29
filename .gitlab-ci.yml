@@ -9,7 +9,6 @@ stages:
 cache:
   paths:
     - .apt
-    - emsdk
     - gmp-6.1.2.tar.lz
 
 before_script:
@@ -43,15 +42,9 @@ dist:
 
 dep_hdf5_emscripten:
   stage: dependencies
+  image: emscripten/emsdk
   script:
     - apt-get install -y git python3 gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc m4 libtinfo5 lbzip2
-    - test -d emsdk || git clone https://github.com/emscripten-core/emsdk.git
-    - cd emsdk
-    - git pull
-    - ./emsdk install latest
-    - ./emsdk activate latest
-    - source ./emsdk_env.sh
-    - cd ..
     - mkdir build-hdf5-with-node build-hdf5-emscripten
     - cd hdf5
     - ln -s /usr/bin/libtoolize ./libtoolize
@@ -80,15 +73,9 @@ dep_hdf5_emscripten:
 
 dep_gmp_emscripten:
   stage: dependencies
+  image: emscripten/emsdk
   script:
     - apt-get install -y tar gcc make wget lzip git python3 m4
-    - test -d emsdk || git clone https://github.com/emscripten-core/emsdk.git
-    - cd emsdk
-    - git pull
-    - ./emsdk install latest
-    - ./emsdk activate latest
-    - source ./emsdk_env.sh
-    - cd ..
     - "[ -f gmp-6.1.2.tar.lz ] || wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.lz"
     - tar xf gmp-6.1.2.tar.lz
     - mkdir build-gmp-emscripten
@@ -134,15 +121,9 @@ build_mingw:
 
 build_emscripten:
   stage: build
+  image: emscripten/emsdk
   script:
     - apt-get install -y git python3 gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc m4 libtinfo5 lbzip2
-    - test -d emsdk || git clone https://github.com/emscripten-core/emsdk.git
-    - cd emsdk
-    - git pull
-    - ./emsdk install latest
-    - ./emsdk activate latest
-    - source ./emsdk_env.sh
-    - cd ..
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-emscripten
     - cd build-emscripten
