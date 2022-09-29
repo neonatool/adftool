@@ -20,6 +20,16 @@ AC_ARG_ENABLE([python],
 
 AM_CONDITIONAL([PYTHON_MODULE], [test x$python_module = xtrue])
 
+AC_ARG_ENABLE([node],
+  [  --enable-node=yes Install a nodejs module (requires an emscripten configuration)],
+  [case "${enableval}" in
+    no)  node_module=false ;;
+    yes) node_module=true ;;
+    *)    AC_MSG_ERROR([Bad value ${enableval} for --enable-node]) ;;
+   esac], [node_module=false])
+
+AM_CONDITIONAL([NODE_MODULE], [test x$node_module = xtrue])
+
 # Checks for programs.
 AC_PROG_CC
 gl_EARLY

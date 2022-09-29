@@ -1,0 +1,11 @@
+{
+  "name": "adftool",
+  "version": "@VERSION@",
+  "description": "ADF file format manipulation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "true"
+  },
+  "author": "vivien.kraus@univ-reims.fr",
+  "license": "???"
+}

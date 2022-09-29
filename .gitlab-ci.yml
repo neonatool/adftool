@@ -127,12 +127,11 @@ build_emscripten:
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-emscripten
     - cd build-emscripten
-    - emconfigure ../adftool-*/configure CPPFLAGS=-I$PWD/../public/emscripten/include LIBS=$PWD/../public/emscripten/lib/libhdf5.a LDFLAGS=-L$PWD/../public/emscripten/lib --disable-relocatable --disable-shared --prefix=/emscripten --disable-python
+    - emconfigure ../adftool-*/configure CPPFLAGS=-I$PWD/../public/emscripten/include LIBS=$PWD/../public/emscripten/lib/libhdf5.a LDFLAGS=-L$PWD/../public/emscripten/lib --disable-relocatable --disable-shared --prefix=/emscripten --disable-python --enable-node=yes
     - emmake make -j
     - emmake make -j DESTDIR=$PWD/../public install
-    - ./libtool --tag=CC --mode=link emcc -O3 libadftool.la -sEXPORT_ALL=1 -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -sEXPORTED_FUNCTIONS=_malloc,_free,_adftool_file_alloc,_adftool_file_free,_adftool_file_open,_adftool_file_open,_adftool_file_close,_adftool_file_open_data,_adftool_file_get_data,_adftool_dictionary_get,_adftool_dictionary_lookup,_adftool_dictionary_insert,_adftool_term_alloc,_adftool_term_free,_adftool_term_copy,_adftool_term_set_blank,_adftool_term_set_named,_adftool_term_set_literal,_adftool_term_set_integer,_adftool_term_set_double,_adftool_term_set_date,_adftool_term_is_blank,_adftool_term_is_named,_adftool_term_is_literal,_adftool_term_is_typed_literal,_adftool_term_is_langstring,_adftool_term_value,_adftool_term_meta,_adftool_term_as_integer,_adftool_term_as_double,_adftool_term_as_date,_adftool_term_compare,_adftool_term_decode,_adftool_term_encode,_adftool_term_parse_n3,_adftool_term_to_n3,_adftool_statement_alloc,_adftool_statement_free,_adftool_statement_set,_adftool_statement_get,_adftool_statement_copy,_adftool_statement_compare,_adftool_quads_get,_adftool_quads_delete,_adftool_quads_insert,_adftool_lookup,_adftool_lookup_objects,_adftool_lookup_subjects,_adftool_delete,_adftool_insert,_adftool_find_channel_identifier,_adftool_get_channel_column,_adftool_add_channel_type,_adftool_get_channel_types,_adftool_find_channels_by_type,_adftool_get_channel_decoder,_adftool_set_channel_decoder,_adftool_eeg_set_data,_adftool_eeg_get_data,_adftool_eeg_get_time,_adftool_eeg_set_time,_adftool_fir_alloc,_adftool_fir_free,_adftool_fir_design_bandpass,_adftool_fir_apply,_adftool_array_get_byte,_adftool_array_set_byte,_adftool_sizeof_size_t,_adftool_array_get_size_t,_adftool_array_set_size_t,_adftool_sizeof_timespec,_adftool_array_get_tv_sec,_adftool_array_get_tv_nsec,_adftool_array_set_timespec,_adftool_sizeof_pointer,_adftool_array_get_pointer,_adftool_array_set_pointer,_adftool_array_get_uint64,_adftool_array_set_uint64,_adftool_sizeof_double,_adftool_array_get_double,_adftool_array_set_double $PWD/../public/emscripten/lib/libhdf5.a -o ../public/index.html
-    - ls -R .libs
-    - cp -R .libs/ ../public
+    - emmake make -j index.html index.js index.wasm
+    - cp index.html index.js index.wasm ../public
   artifacts:
     paths:
       - public
@@ -178,6 +177,18 @@ conan:
     - conan remote add gitlab ${CI_API_V4_URL}/projects/$CI_PROJECT_ID/packages/conan
     - conan create ../adftool-* vkraus+adftool/latest --build missing -c tools.system.package_manager:mode=install
     - CONAN_LOGIN_USERNAME=vkraus CONAN_PASSWORD=${CI_JOB_TOKEN} conan upload adftool/$(cat ../adftool-*/.tarball-version)@vkraus+adftool/latest --all --remote=gitlab
+
+publish_npm:
+  stage: pages
+  image: node:14
+  script:
+    - cp -R public/emscripten/share/nodejs/adftool adftool
+    - cd adftool
+    - sed -i "s/\"adftool\"/\"@${CI_PROJECT_NAMESPACE}\\/${CI_PROJECT_NAME}\"/g" package.json
+    - echo "@${CI_PROJECT_NAMESPACE}:registry=${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+    - echo "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
+    - sed -i 's|^https://|//|g' .npmrc
+    - npm publish
 
 pages:
   stage: pages
