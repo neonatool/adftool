@@ -130,8 +130,6 @@ build_emscripten:
     - emconfigure ../adftool-*/configure CPPFLAGS=-I$PWD/../public/emscripten/include LIBS=$PWD/../public/emscripten/lib/libhdf5.a LDFLAGS=-L$PWD/../public/emscripten/lib --disable-relocatable --disable-shared --prefix=/emscripten --disable-python --enable-node=yes
     - emmake make -j
     - emmake make -j DESTDIR=$PWD/../public install
-    - emmake make -j index.html index.js index.wasm
-    - cp index.html index.js index.wasm ../public
   artifacts:
     paths:
       - public
