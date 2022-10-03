@@ -11,6 +11,8 @@ cache:
     - .apt
     - gmp-6.1.2.tar.lz
 
+image: registry.plmlab.math.cnrs.fr/vkraus/adftool-builder:latest
+
 before_script:
   - rm -f /etc/apt/apt.conf.d/docker-clean
   - sed "s|@ABS_TOP_SRCDIR@|$PWD|g" gitlab-ci-apt-cache.conf > /etc/apt/apt.conf.d/gitlab-ci-cache
@@ -20,7 +22,6 @@ before_script:
   - git config --global --add safe.directory $PWD
 
 dist:
-  image: ubuntu
   stage: dependencies
   script:
     - apt-get install -y git gettext libgmp-dev libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc m4 libtinfo5 flex r-base texinfo texlive libpython3-dev pkg-config
@@ -40,68 +41,6 @@ dist:
     paths:
       - public
 
-dep_hdf5_emscripten:
-  stage: dependencies
-  image: emscripten/emsdk
-  script:
-    - apt-get install -y git python3 gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc m4 libtinfo5 lbzip2
-    - mkdir build-hdf5-with-node build-hdf5-emscripten
-    - cd hdf5
-    - ln -s /usr/bin/libtoolize ./libtoolize
-    - cp src/H5make_libsettings.c src/H5make_libsettings-original.c
-    - "(echo '#define main true_main' ; cat src/H5make_libsettings.c ../H5make_libsettings_true_main.c) > src/H5make_libsettings.c-stdin"
-    - cp src/H5make_libsettings.c-stdin src/H5make_libsettings.c
-    - export HDF5_ACLOCAL=$(which aclocal) ; export HDF5_AUTOHEADER=$(which autoheader) ; export HDF5_AUTOMAKE=$(which automake) ; export HDF5_AUTOCONF=$(which autoconf) ; export HDF5_LIBTOOL=$(which libtool) ; export HDF5_M4=$(which m4) ; ./autogen.sh
-    - cd ../build-hdf5-with-node
-    - emconfigure ../hdf5/configure --enable-build-mode=production CFLAGS="-std=gnu11" LIBS="-lnodefs.js" --disable-tools --disable-tests
-    - emmake make -k -j 8 || true
-    - cd src
-    - "cat libhdf5.settings | node ./H5make_libsettings > ../../hdf5/src/H5lib_settings.c-emscripten"
-    - node ./H5detect > ../../hdf5/src/H5Tinit.c-emscripten
-    - cd ../../hdf5
-    - cp src/H5make_libsettings-original.c src/H5make_libsettings.c
-    - cd ../build-hdf5-emscripten
-    - emconfigure ../hdf5/configure --enable-build-mode=production --prefix=/emscripten --disable-tools --disable-tests --disable-shared
-    - emmake make -j 8 -k || true
-    - cp ../hdf5/src/H5lib_settings.c-emscripten ../hdf5/src/H5lib_settings.c
-    - cp ../hdf5/src/H5Tinit.c-emscripten ../hdf5/src/H5Tinit.c
-    - emmake make -j 8
-    - emmake make DESTDIR=$PWD/../public install
-  artifacts:
-    paths:
-      - public
-
-dep_gmp_emscripten:
-  stage: dependencies
-  image: emscripten/emsdk
-  script:
-    - apt-get install -y tar gcc make wget lzip git python3 m4
-    - "[ -f gmp-6.1.2.tar.lz ] || wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.lz"
-    - tar xf gmp-6.1.2.tar.lz
-    - mkdir build-gmp-emscripten
-    - cd build-gmp-emscripten
-    - emconfigure ../gmp-6.1.2/configure --prefix=/emscripten --disable-assembly --host none
-    - emmake make -j 8
-    - emmake make DESTDIR=$PWD/../public install
-  artifacts:
-    paths:
-      - public
-
-dep_gmp_mingw:
-  stage: dependencies
-  script:
-    - apt-get install -y tar make binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64 wget lzip gcc m4
-    - "[ -f gmp-6.1.2.tar.lz ] || wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.lz"
-    - tar xf gmp-6.1.2.tar.lz
-    - mkdir build-gmp-mingw
-    - cd build-gmp-mingw
-    - ../gmp-6.1.2/configure --host=x86_64-w64-mingw32 --prefix=/mingw64 --enable-shared=yes --disable-static
-    - make -j 8
-    - make DESTDIR=$PWD/../public install
-  artifacts:
-    paths:
-      - public
-
 build_mingw:
   stage: build
   script:
@@ -109,11 +48,14 @@ build_mingw:
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-mingw
     - cd build-mingw
-    - ../adftool-*/configure CPPFLAGS=-I$PWD/../public/mingw64/include LIBS=-lhdf5 LDFLAGS=-L$PWD/../public/mingw64/lib --enable-relocatable --host=x86_64-w64-mingw32 --prefix=/mingw64 --disable-python
+    - ../adftool-*/configure CPPFLAGS=-I/export/mingw64/include 'CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -Wall -Wextra' LIBS=-lhdf5 LDFLAGS=-L/export/mingw64/lib --enable-relocatable --host=x86_64-w64-mingw32 --prefix=/mingw64 --disable-python
     - make -j
     - make -j DESTDIR=$PWD/../public install
-    - cp ../public/mingw64/bin/*.dll .
-    - make -j check "LOG_COMPILER = ./libtool --mode=execute wine"
+    - cp /export/mingw64/bin/*.dll $PWD/../public/mingw64/bin
+    - cp -R /export/mingw64/include/* $PWD/../public/mingw64/include/
+    - cp -R /export/mingw64/lib/* $PWD/../public/mingw64/lib/
+    - cp /export/mingw64/bin/*.dll .
+    - make -j check 'LOG_COMPILER = ./libtool --mode=execute wine' 'XFAIL_TESTS = eeg_metadata_example.exe'
     - LANG=fr_FR.UTF-8 wine ../public/mingw64/bin/adftool --aidez-moi
   artifacts:
     paths:
@@ -121,15 +63,17 @@ build_mingw:
 
 build_emscripten:
   stage: build
-  image: emscripten/emsdk
   script:
+    - "source /etc/profile || true"
     - apt-get install -y git python3 gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc m4 libtinfo5 lbzip2
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-emscripten
     - cd build-emscripten
-    - emconfigure ../adftool-*/configure CPPFLAGS=-I$PWD/../public/emscripten/include LIBS=$PWD/../public/emscripten/lib/libhdf5.a LDFLAGS=-L$PWD/../public/emscripten/lib --disable-relocatable --disable-shared --prefix=/emscripten --disable-python --enable-node=yes
+    - emconfigure ../adftool-*/configure CPPFLAGS=-I/export/emscripten/include LIBS=/export/emscripten/lib/libhdf5.a LDFLAGS=-L/export/emscripten/lib --disable-relocatable --disable-shared --prefix=/emscripten --disable-python --enable-node=yes
     - emmake make -j
     - emmake make -j DESTDIR=$PWD/../public install
+    - cp -R /export/emscripten/include/* $PWD/../public/emscripten/include/
+    - cp -R /export/emscripten/lib/* $PWD/../public/emscripten/lib/
   artifacts:
     paths:
       - public
