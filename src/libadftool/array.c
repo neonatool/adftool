@@ -1,63 +1,98 @@
 #include <adftool_private.h>
 #include <time.h>
 
-#define ARRAY_TYPE(type, type_in_fname)                                 \
-  size_t                                                                \
-  adftool_sizeof_##type_in_fname (void)                                 \
-  {                                                                     \
-    return sizeof (type);                                               \
-  }                                                                     \
-                                                                        \
-  type                                                                  \
-  adftool_array_get_##type_in_fname (const char *array, size_t i)       \
-  {                                                                     \
-    type ret;                                                           \
-    memcpy (&ret, array + i * sizeof (type), sizeof (type));            \
-    return ret;                                                         \
-  }                                                                     \
-                                                                        \
-  void                                                                  \
-  adftool_array_set_##type_in_fname (char *array,                       \
-                                     size_t i,                          \
-                                     type value)                        \
-  {                                                                     \
-    memcpy (array + i * sizeof (type), &value, sizeof (type));          \
+#define ARRAY_TYPE(type, type_in_fname)                         \
+  struct adftool_array_##type_in_fname                          \
+  {                                                             \
+    type *container;                                            \
+  };                                                            \
+  struct adftool_array_##type_in_fname *                        \
+  adftool_array_##type_in_fname##_alloc (size_t n_elements)     \
+  {                                                             \
+    struct adftool_array_##type_in_fname *ret =                 \
+      malloc (sizeof (struct adftool_array_##type_in_fname));   \
+    if (ret != NULL)                                            \
+      {                                                         \
+        ret->container = malloc (n_elements * sizeof (type));   \
+        if (ret->container == NULL)                             \
+          {                                                     \
+            free (ret);                                         \
+            ret = NULL;                                         \
+          }                                                     \
+      }                                                         \
+    return ret;                                                 \
+  }                                                             \
+  void                                                          \
+  adftool_array_##type_in_fname##_free                          \
+  (struct adftool_array_##type_in_fname *array)                 \
+  {                                                             \
+    if (array != NULL)                                          \
+      {                                                         \
+        free (array->container);                                \
+      }                                                         \
+    free (array);                                               \
+  }                                                             \
+  type *                                                        \
+  adftool_array_##type_in_fname##_address                       \
+  (struct adftool_array_##type_in_fname *array,                 \
+   size_t i)                                                    \
+  {                                                             \
+    return & (array->container[i]);                             \
+  }                                                             \
+  void                                                          \
+  adftool_array_##type_in_fname##_set                           \
+  (struct adftool_array_##type_in_fname *array,                 \
+   size_t i,                                                    \
+   type value)                                                  \
+  {                                                             \
+    *adftool_array_##type_in_fname##_address (array, i)         \
+      = value;                                                  \
+  }                                                             \
+  type                                                          \
+  adftool_array_##type_in_fname##_get                           \
+  (const struct adftool_array_##type_in_fname *array,           \
+   size_t i)                                                    \
+  {                                                             \
+    return *adftool_array_##type_in_fname##_address             \
+      ((struct adftool_array_##type_in_fname *) array, i);      \
   }
 
 /* *INDENT-OFF* */
 ARRAY_TYPE (uint8_t, byte)
 ARRAY_TYPE (size_t, size_t)
-ARRAY_TYPE (struct timespec, timespec_)
 ARRAY_TYPE (void *, pointer)
 ARRAY_TYPE (uint64_t, uint64)
 ARRAY_TYPE (long, long)
 ARRAY_TYPE (double, double)
 /* *INDENT-ON* */
 
-size_t
-adftool_sizeof_timespec (void)
+struct timespec *
+adftool_timespec_alloc (void)
 {
-  return adftool_sizeof_timespec_ ();
-}
-
-time_t
-adftool_array_get_tv_sec (const char *time_array, size_t i)
-{
-  struct timespec ts = adftool_array_get_timespec_ (time_array, i);
-  return ts.tv_sec;
-}
-
-long
-adftool_array_get_tv_nsec (const char *time_array, size_t i)
-{
-  struct timespec ts = adftool_array_get_timespec_ (time_array, i);
-  return ts.tv_nsec;
+  return malloc (sizeof (struct timespec));
 }
 
 void
-adftool_array_set_timespec (char *time_array, size_t i, time_t tv_sec,
-			    long tv_nsec)
+adftool_timespec_free (struct timespec *time)
 {
-  struct timespec ts = {.tv_sec = tv_sec,.tv_nsec = tv_nsec };
-  adftool_array_set_timespec_ (time_array, i, ts);
+  free (time);
+}
+
+void
+adftool_timespec_set_js (struct timespec *time, double milliseconds)
+{
+  const double seconds = milliseconds / 1000;
+  const time_t entire_seconds = seconds;
+  const long remainder = milliseconds - (entire_seconds * 1000);
+  time->tv_sec = entire_seconds;
+  time->tv_nsec = remainder * 1000000;
+}
+
+double
+adftool_timespec_get_js (const struct timespec *time)
+{
+  const double seconds = time->tv_sec;
+  const double nanoseconds = time->tv_nsec;
+  const double milliseconds = nanoseconds / 1000000;
+  return seconds * 1000 + milliseconds;
 }

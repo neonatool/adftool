@@ -318,63 +318,56 @@ extern "C"
   /* These API functions are needed for emscripten, because it’s not
      easy to compute the address of something in JS. */
 
-  extern LIBADFTOOL_API
-    uint8_t adftool_array_get_byte (const char *byte_array, size_t i);
+  extern LIBADFTOOL_API struct timespec *adftool_timespec_alloc (void);
+
+  extern LIBADFTOOL_API void adftool_timespec_free (struct timespec *time);
 
   extern LIBADFTOOL_API
-    void adftool_array_set_byte (char *byte_array, size_t i, uint8_t byte);
-
-  extern LIBADFTOOL_API size_t adftool_sizeof_size_t (void);
+    void adftool_timespec_set_js (struct timespec *time, double milliseconds);
 
   extern LIBADFTOOL_API
-    size_t adftool_array_get_size_t (const char *sz_array, size_t i);
+    double adftool_timespec_get_js (const struct timespec *time);
+
+  struct adftool_array_long;
 
   extern LIBADFTOOL_API
-    void adftool_array_set_size_t (char *sz_array, size_t i, size_t value);
-
-  extern LIBADFTOOL_API size_t adftool_sizeof_timespec (void);
+    struct adftool_array_long *adftool_array_long_alloc (size_t n_elements);
 
   extern LIBADFTOOL_API
-    time_t adftool_array_get_tv_sec (const char *time_array, size_t i);
+    void adftool_array_long_free (struct adftool_array_long *array);
 
   extern LIBADFTOOL_API
-    long adftool_array_get_tv_nsec (const char *time_array, size_t i);
+    long *adftool_array_long_address (struct adftool_array_long *array,
+				      size_t i);
 
   extern LIBADFTOOL_API
-    void adftool_array_set_timespec (char *time_array, size_t i,
-				     time_t tv_sec, long tv_nsec);
-
-  extern LIBADFTOOL_API size_t adftool_sizeof_pointer (void);
+    void adftool_array_long_set (struct adftool_array_long *array,
+				 size_t i, long value);
 
   extern LIBADFTOOL_API
-    void *adftool_array_get_pointer (const char *pointer_array, size_t i);
+    long adftool_array_long_get (const struct adftool_array_long *array,
+				 size_t i);
+
+  struct adftool_array_double;
 
   extern LIBADFTOOL_API
-    void adftool_array_set_pointer (char *pointer_array, size_t i, void *ptr);
+    struct adftool_array_double *adftool_array_double_alloc (size_t
+							     n_elements);
 
   extern LIBADFTOOL_API
-    uint64_t adftool_array_get_uint64 (const char *longs_array, size_t i);
+    void adftool_array_double_free (struct adftool_array_double *array);
 
   extern LIBADFTOOL_API
-    void adftool_array_set_uint64 (char *longs_array, size_t i,
-				   uint64_t value);
-
-  extern LIBADFTOOL_API size_t adftool_sizeof_long (void);
+    double *adftool_array_double_address (struct adftool_array_double *array,
+					  size_t i);
 
   extern LIBADFTOOL_API
-    long adftool_array_get_long (const char *long_array, size_t i);
+    void adftool_array_double_set (struct adftool_array_double *array,
+				   size_t i, double value);
 
   extern LIBADFTOOL_API
-    void adftool_array_set_long (char *long_array, size_t i, long value);
-
-  extern LIBADFTOOL_API size_t adftool_sizeof_double (void);
-
-  extern LIBADFTOOL_API
-    double adftool_array_get_double (const char *double_array, size_t i);
-
-  extern LIBADFTOOL_API
-    void adftool_array_set_double (char *double_array, size_t i,
-				   double value);
+    double adftool_array_double_get (const struct adftool_array_double *array,
+				     size_t i);
 
 #ifdef __cplusplus
 }

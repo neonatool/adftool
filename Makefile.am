@@ -60,7 +60,7 @@ check_PROGRAMS = \
   data_file_example \
   date_parser_example \
   eeg_metadata_example \
-  timespec_array_example
+  timespec_example
 
 TESTS = \
   bplus_tree_lookup_example \
@@ -81,7 +81,7 @@ TESTS = \
   data_file_example \
   date_parser_example \
   eeg_metadata_example \
-  timespec_array_example
+  timespec_example
 
 LOG_COMPILER = $(LOG_VALGRIND)
 
@@ -395,15 +395,15 @@ eeg_metadata_example_CPPFLAGS = \
   -DLOCALEDIR=\"@localedir@\" \
   -DINSTALLDIR=\"$(bindir)\"
 
-timespec_array_example_SOURCES = \
-  src/timespec_array_example.c
-timespec_array_example_LDADD = \
+timespec_example_SOURCES = \
+  src/timespec_example.c
+timespec_example_LDADD = \
   libprog/libgnu.la \
   libadftool.la \
   $(LTLIBINTL) \
   $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
-timespec_array_example_CPPFLAGS = \
+timespec_example_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \
@@ -436,9 +436,11 @@ dist-hook:
 	echo '$(VERSION)' > $(distdir)/.tarball-version
 
 if NODE_MODULE
+EXPORTED_FUNCTIONS = _adftool_add_channel_type,_adftool_array_double_address,_adftool_array_double_alloc,_adftool_array_double_free,_adftool_array_double_get,_adftool_array_double_set,_adftool_array_long_address,_adftool_array_long_alloc,_adftool_array_long_free,_adftool_array_long_get,_adftool_array_long_set,_adftool_delete,_adftool_dictionary_get,_adftool_dictionary_insert,_adftool_dictionary_lookup,_adftool_eeg_get_data,_adftool_eeg_get_time,_adftool_eeg_set_data,_adftool_eeg_set_time,_adftool_file_alloc,_adftool_file_close,_adftool_file_free,_adftool_file_get_data,_adftool_file_open,_adftool_file_open_data,_adftool_find_channel_identifier,_adftool_find_channels_by_type,_adftool_fir_alloc,_adftool_fir_apply,_adftool_fir_design_bandpass,_adftool_fir_free,_adftool_fir_order,_adftool_get_channel_column,_adftool_get_channel_decoder,_adftool_get_channel_types,_adftool_insert,_adftool_lookup,_adftool_lookup_objects,_adftool_lookup_subjects,_adftool_quads_delete,_adftool_quads_get,_adftool_quads_insert,_adftool_set_channel_decoder,_adftool_statement_alloc,_adftool_statement_compare,_adftool_statement_copy,_adftool_statement_free,_adftool_statement_get,_adftool_statement_set,_adftool_term_alloc,_adftool_term_as_date,_adftool_term_as_double,_adftool_term_as_integer,_adftool_term_as_mpf,_adftool_term_as_mpz,_adftool_term_compare,_adftool_term_copy,_adftool_term_decode,_adftool_term_encode,_adftool_term_free,_adftool_term_is_blank,_adftool_term_is_langstring,_adftool_term_is_literal,_adftool_term_is_named,_adftool_term_is_typed_literal,_adftool_term_meta,_adftool_term_parse_n3,_adftool_term_set_blank,_adftool_term_set_date,_adftool_term_set_double,_adftool_term_set_integer,_adftool_term_set_literal,_adftool_term_set_mpf,_adftool_term_set_mpz,_adftool_term_set_named,_adftool_term_to_n3,_adftool_term_value,_adftool_timespec_alloc,_adftool_timespec_free,_adftool_timespec_set_js,_adftool_timespec_get_js
+
 index.mjs: libadftool.la
 	mkdir -p js-output
-	(cd js-output ; ../libtool --tag=CC --mode=link $(CC) -O3 ../$< -sEXPORT_ALL=1 -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,stringToUTF8 -sEXPORTED_FUNCTIONS=_malloc,_free,_adftool_file_alloc,_adftool_file_free,_adftool_file_open,_adftool_file_open,_adftool_file_close,_adftool_file_open_data,_adftool_file_get_data,_adftool_dictionary_get,_adftool_dictionary_lookup,_adftool_dictionary_insert,_adftool_term_alloc,_adftool_term_free,_adftool_term_copy,_adftool_term_set_blank,_adftool_term_set_named,_adftool_term_set_literal,_adftool_term_set_integer,_adftool_term_set_double,_adftool_term_set_date,_adftool_term_is_blank,_adftool_term_is_named,_adftool_term_is_literal,_adftool_term_is_typed_literal,_adftool_term_is_langstring,_adftool_term_value,_adftool_term_meta,_adftool_term_as_integer,_adftool_term_as_double,_adftool_term_as_date,_adftool_term_compare,_adftool_term_decode,_adftool_term_encode,_adftool_term_parse_n3,_adftool_term_to_n3,_adftool_statement_alloc,_adftool_statement_free,_adftool_statement_set,_adftool_statement_get,_adftool_statement_copy,_adftool_statement_compare,_adftool_quads_get,_adftool_quads_delete,_adftool_quads_insert,_adftool_lookup,_adftool_lookup_objects,_adftool_lookup_subjects,_adftool_delete,_adftool_insert,_adftool_find_channel_identifier,_adftool_get_channel_column,_adftool_add_channel_type,_adftool_get_channel_types,_adftool_find_channels_by_type,_adftool_get_channel_decoder,_adftool_set_channel_decoder,_adftool_eeg_set_data,_adftool_eeg_get_data,_adftool_eeg_get_time,_adftool_eeg_set_time,_adftool_fir_alloc,_adftool_fir_free,_adftool_fir_design_bandpass,_adftool_fir_apply,_adftool_array_get_byte,_adftool_array_set_byte,_adftool_sizeof_size_t,_adftool_array_get_size_t,_adftool_array_set_size_t,_adftool_sizeof_timespec,_adftool_array_get_tv_sec,_adftool_array_get_tv_nsec,_adftool_array_set_timespec,_adftool_sizeof_pointer,_adftool_array_get_pointer,_adftool_array_set_pointer,_adftool_array_get_uint64,_adftool_array_set_uint64,_adftool_sizeof_double,_adftool_array_get_double,_adftool_array_set_double $(CFLAGS) $(LDFLAGS) $(LIBS) -o index.mjs -sSINGLE_FILE -sBINARYEN_ASYNC_COMPILATION=0 && cp index.mjs $(abs_top_builddir)/index.mjs)
+	(cd js-output ; ../libtool --tag=CC --mode=link $(CC) -O3 ../$< -sEXPORT_ALL=1 -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,stringToUTF8 -sEXPORTED_FUNCTIONS=_malloc,_free,$(EXPORTED_FUNCTIONS) $(CFLAGS) $(LDFLAGS) $(LIBS) -o index.mjs -sSINGLE_FILE -sBINARYEN_ASYNC_COMPILATION=0 && cp index.mjs $(abs_top_builddir)/index.mjs)
 	rm -rf js-output
 
 nodejsdir = $(datadir)/nodejs
