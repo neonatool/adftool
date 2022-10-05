@@ -21,7 +21,7 @@
                                      size_t i,                          \
                                      type value)                        \
   {                                                                     \
-    memcpy (&array + i * sizeof (type), &value, sizeof (type));         \
+    memcpy (array + i * sizeof (type), &value, sizeof (type));          \
   }
 
 /* *INDENT-OFF* */
