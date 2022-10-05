@@ -359,6 +359,14 @@ extern "C"
     void adftool_array_set_uint64 (char *longs_array, size_t i,
 				   uint64_t value);
 
+  extern LIBADFTOOL_API size_t adftool_sizeof_long (void);
+
+  extern LIBADFTOOL_API
+    long adftool_array_get_long (const char *long_array, size_t i);
+
+  extern LIBADFTOOL_API
+    void adftool_array_set_long (char *long_array, size_t i, long value);
+
   extern LIBADFTOOL_API size_t adftool_sizeof_double (void);
 
   extern LIBADFTOOL_API

@@ -30,6 +30,7 @@ ARRAY_TYPE (size_t, size_t)
 ARRAY_TYPE (struct timespec, timespec_)
 ARRAY_TYPE (void *, pointer)
 ARRAY_TYPE (uint64_t, uint64)
+ARRAY_TYPE (long, long)
 ARRAY_TYPE (double, double)
 /* *INDENT-ON* */
 
