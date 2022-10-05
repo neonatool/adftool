@@ -13,7 +13,7 @@ adftool_find_channel_identifier (const struct adftool_file *file,
     {
       abort ();
     }
-  adftool_term_set_integer (object, i);
+  adftool_term_set_mpz (object, i);
   mpz_clear (i);
   static const char *p = "https://localhost/lytonepal#column-number";
   size_t n_results =
@@ -24,20 +24,6 @@ adftool_find_channel_identifier (const struct adftool_file *file,
       return 1;
     }
   return 0;
-}
-
-static inline int
-term_to_literal_double (const struct adftool_term *term, double *value)
-{
-  mpf_t double_value;
-  mpf_init (double_value);
-  int error = adftool_term_as_double (term, double_value);
-  if (error == 0)
-    {
-      *value = mpf_get_d (double_value);
-    }
-  mpf_clear (double_value);
-  return error;
 }
 
 static int
@@ -58,7 +44,7 @@ channel_decoder_find (struct adftool_file *file,
     adftool_lookup_objects (file, identifier, predicate_str, 0, 1, &object);
   if (n_results > 0)
     {
-      int error = term_to_literal_double (object, value);
+      int error = adftool_term_as_double (object, value);
       if (error)
 	{
 	  n_results = 0;
@@ -106,15 +92,6 @@ cleanup:
   return error;
 }
 
-static inline void
-term_make_literal_double (struct adftool_term *term, double value)
-{
-  mpf_t double_value;
-  mpf_init_set_d (double_value, value);
-  adftool_term_set_double (term, double_value);
-  mpf_clear (double_value);
-}
-
 int
 adftool_get_channel_decoder (const struct adftool_file *file,
 			     const struct adftool_term *identifier,
@@ -153,8 +130,8 @@ adftool_set_channel_decoder (struct adftool_file *file,
 	}
       return 1;
     }
-  term_make_literal_double (literal_scale, scale);
-  term_make_literal_double (literal_offset, offset);
+  adftool_term_set_double (literal_scale, scale);
+  adftool_term_set_double (literal_offset, offset);
   int scale_error =
     channel_decoder_replace (file, identifier, "scale", literal_scale);
   int offset_error =
@@ -187,7 +164,7 @@ adftool_get_channel_column (const struct adftool_file *file,
   mpz_init (i);
   if (n_results > 0)
     {
-      if (adftool_term_as_integer (object, i) != 0)
+      if (adftool_term_as_mpz (object, i) != 0)
 	{
 	  n_results = 0;
 	}

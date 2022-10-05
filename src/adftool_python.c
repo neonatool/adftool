@@ -1287,7 +1287,7 @@ term_set_integer (struct adftool_py_term *self, PyObject * args)
     }
   mpz_t value;
   mpz_init_set_si (value, number);
-  adftool_term_set_integer (self->ptr, value);
+  adftool_term_set_mpz (self->ptr, value);
   mpz_clear (value);
   Py_INCREF (Py_None);
   return Py_None;
@@ -1303,7 +1303,7 @@ term_set_double (struct adftool_py_term *self, PyObject * args)
     }
   mpf_t value;
   mpf_init_set_d (value, number);
-  adftool_term_set_double (self->ptr, value);
+  adftool_term_set_mpf (self->ptr, value);
   mpf_clear (value);
   Py_INCREF (Py_None);
   return Py_None;
@@ -1406,7 +1406,7 @@ term_as_integer (struct adftool_py_term *self, PyObject * args)
   (void) args;
   mpz_t value;
   mpz_init (value);
-  int error = adftool_term_as_integer (self->ptr, value);
+  int error = adftool_term_as_mpz (self->ptr, value);
   long ret = 0;
   if (error == 0)
     {
@@ -1428,7 +1428,7 @@ term_as_double (struct adftool_py_term *self, PyObject * args)
   (void) args;
   mpf_t value;
   mpf_init (value);
-  int error = adftool_term_as_double (self->ptr, value);
+  int error = adftool_term_as_mpf (self->ptr, value);
   double ret = 0;
   if (error == 0)
     {

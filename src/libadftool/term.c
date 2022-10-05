@@ -1,5 +1,6 @@
 #include <adftool_private.h>
 #include <adftool_bplus.h>
+#include <limits.h>
 
 /* The empty string cannot appear in the dictionary, because it has a
    length of 0 -> it lives in the bytes dataset. Thus, I use
@@ -614,7 +615,7 @@ adftool_term_copy (struct adftool_term *dest, const struct adftool_term *src)
 }
 
 void
-adftool_term_set_integer (struct adftool_term *term, mpz_t value)
+adftool_term_set_mpz (struct adftool_term *term, mpz_t value)
 {
   void (*the_free) (void *, size_t);
   mp_get_memory_functions (NULL, NULL, &the_free);
@@ -629,7 +630,7 @@ adftool_term_set_integer (struct adftool_term *term, mpz_t value)
 }
 
 void
-adftool_term_set_double (struct adftool_term *term, mpf_t value)
+adftool_term_set_mpf (struct adftool_term *term, mpf_t value)
 {
   void (*the_free) (void *, size_t);
   mp_get_memory_functions (NULL, NULL, &the_free);
@@ -701,8 +702,26 @@ adftool_term_set_double (struct adftool_term *term, mpf_t value)
   the_free (str, strlen (str) + 1);
 }
 
+void
+adftool_term_set_integer (struct adftool_term *term, long value)
+{
+  mpz_t mp_value;
+  mpz_init_set_si (mp_value, value);
+  adftool_term_set_mpz (term, mp_value);
+  mpz_clear (mp_value);
+}
+
+void
+adftool_term_set_double (struct adftool_term *term, double value)
+{
+  mpf_t mp_value;
+  mpf_init_set_d (mp_value, value);
+  adftool_term_set_mpf (term, mp_value);
+  mpf_clear (mp_value);
+}
+
 int
-adftool_term_as_integer (const struct adftool_term *term, mpz_t value)
+adftool_term_as_mpz (const struct adftool_term *term, mpz_t value)
 {
   if (!adftool_term_is_typed_literal (term))
     {
@@ -723,7 +742,7 @@ adftool_term_as_integer (const struct adftool_term *term, mpz_t value)
     {
       mpf_t double_value;
       mpf_init (double_value);
-      int error = adftool_term_as_double (term, double_value);
+      int error = adftool_term_as_mpf (term, double_value);
       if (error == 0)
 	{
 	  mpz_set_f (value, double_value);
@@ -768,7 +787,7 @@ localize_decimal_point (const char *str)
 }
 
 int
-adftool_term_as_double (const struct adftool_term *term, mpf_t value)
+adftool_term_as_mpf (const struct adftool_term *term, mpf_t value)
 {
   if (!adftool_term_is_typed_literal (term))
     {
@@ -796,7 +815,7 @@ adftool_term_as_double (const struct adftool_term *term, mpf_t value)
     {
       mpz_t integer_value;
       mpz_init (integer_value);
-      int error = adftool_term_as_integer (term, integer_value);
+      int error = adftool_term_as_mpz (term, integer_value);
       if (error == 0)
 	{
 	  mpf_set_z (value, integer_value);
@@ -805,6 +824,46 @@ adftool_term_as_double (const struct adftool_term *term, mpf_t value)
       return error;
     }
   return 1;
+}
+
+int
+adftool_term_as_integer (const struct adftool_term *term, long *value)
+{
+  mpz_t integer_value;
+  mpz_init (integer_value);
+  int error = adftool_term_as_mpz (term, integer_value);
+  if (error == 0)
+    {
+      if (mpz_fits_slong_p (integer_value))
+	{
+	  *value = mpz_get_si (integer_value);
+	}
+      else if (mpz_sgn (integer_value) < 0)
+	{
+	  *value = LONG_MIN;
+	}
+      else
+	{
+	  assert (mpz_sgn (integer_value) > 0);
+	  *value = LONG_MAX;
+	}
+    }
+  mpz_clear (integer_value);
+  return error;
+}
+
+int
+adftool_term_as_double (const struct adftool_term *term, double *value)
+{
+  mpf_t mp_value;
+  mpf_init (mp_value);
+  int error = adftool_term_as_mpf (term, mp_value);
+  if (error == 0)
+    {
+      *value = mpf_get_d (mp_value);
+    }
+  mpf_clear (mp_value);
+  return error;
 }
 
 static size_t

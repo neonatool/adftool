@@ -276,22 +276,20 @@ failure:
 static void
 check_double_0 (void)
 {
-  mpf_t zero;
-  mpf_init_set_d (zero, 0);
   struct adftool_term *term = adftool_term_alloc ();
   if (term == NULL)
     {
       abort ();
     }
-  adftool_term_set_double (term, zero);
-  if (adftool_term_as_double (term, zero) != 0)
+  adftool_term_set_double (term, 0);
+  double zero = 42;
+  if (adftool_term_as_double (term, &zero) != 0)
     {
       abort ();
     }
-  if (mpf_get_d (zero) != 0)
+  if (zero != 0)
     {
       abort ();
     }
   adftool_term_free (term);
-  mpf_clear (zero);
 }

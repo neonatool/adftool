@@ -352,7 +352,7 @@ set_channel_identifier (struct adftool_file *file,
     {
       abort ();
     }
-  adftool_term_set_integer (object, i);
+  adftool_term_set_mpz (object, i);
   mpz_clear (i);
   struct adftool_term predicate = {
     .type = TERM_NAMED,

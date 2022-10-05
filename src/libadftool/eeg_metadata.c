@@ -56,23 +56,16 @@ get_sampling_frequency (const struct adftool_file *file,
     {
       abort ();
     }
-  mpf_t sfreq;
-  mpf_init (sfreq);
   size_t n_results =
     adftool_lookup_objects (file, &default_eeg, lyto_sampling_frequency, 0, 1,
 			    &object);
   if (n_results > 0)
     {
-      if (adftool_term_as_double (object, sfreq) != 0)
+      if (adftool_term_as_double (object, sampling_frequency) != 0)
 	{
 	  n_results = 0;
 	}
     }
-  if (n_results > 0)
-    {
-      *sampling_frequency = mpf_get_d (sfreq);
-    }
-  mpf_clear (sfreq);
   adftool_term_free (object);
   return (n_results == 0);
 }
@@ -133,10 +126,7 @@ adftool_eeg_set_time (struct adftool_file *file, const struct timespec *time,
       abort ();
     }
   adftool_term_set_date (o_time, time);
-  mpf_t sfreq;
-  mpf_init_set_d (sfreq, sampling_frequency);
-  adftool_term_set_double (o_sfreq, sfreq);
-  mpf_clear (sfreq);
+  adftool_term_set_double (o_sfreq, sampling_frequency);
   const struct adftool_statement set_time = {
     .subject = (struct adftool_term *) &default_eeg,
     .predicate = (struct adftool_term *) &p_start_date,

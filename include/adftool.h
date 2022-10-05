@@ -86,9 +86,13 @@ extern "C"
 				   const char *value, const char *type,
 				   const char *lang);
   extern LIBADFTOOL_API
-    void adftool_term_set_integer (struct adftool_term *term, mpz_t value);
+    void adftool_term_set_mpz (struct adftool_term *term, mpz_t value);
   extern LIBADFTOOL_API
-    void adftool_term_set_double (struct adftool_term *term, mpf_t value);
+    void adftool_term_set_integer (struct adftool_term *term, long value);
+  extern LIBADFTOOL_API
+    void adftool_term_set_mpf (struct adftool_term *term, mpf_t value);
+  extern LIBADFTOOL_API
+    void adftool_term_set_double (struct adftool_term *term, double value);
   extern LIBADFTOOL_API
     void adftool_term_set_date (struct adftool_term *term,
 				const struct timespec *date);
@@ -114,10 +118,16 @@ extern "C"
 			      size_t max, char *meta);
 
   extern LIBADFTOOL_API
-    int adftool_term_as_integer (const struct adftool_term *term,
-				 mpz_t value);
+    int adftool_term_as_mpz (const struct adftool_term *term, mpz_t value);
   extern LIBADFTOOL_API
-    int adftool_term_as_double (const struct adftool_term *term, mpf_t value);
+    int adftool_term_as_integer (const struct adftool_term *term,
+				 long *value);
+  extern LIBADFTOOL_API
+    int adftool_term_as_mpf (const struct adftool_term *term, mpf_t value);
+
+  extern LIBADFTOOL_API
+    int adftool_term_as_double (const struct adftool_term *term,
+				double *value);
 
   extern LIBADFTOOL_API
     int adftool_term_as_date (const struct adftool_term *term,
