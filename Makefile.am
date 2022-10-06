@@ -440,7 +440,7 @@ EXPORTED_FUNCTIONS = _adftool_add_channel_type,_adftool_array_double_address,_ad
 
 index.mjs: libadftool.la
 	mkdir -p js-output
-	(cd js-output ; ../libtool --tag=CC --mode=link $(CC) -O3 ../$< -sEXPORT_ALL=1 -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,stringToUTF8 -sEXPORTED_FUNCTIONS=_malloc,_free,$(EXPORTED_FUNCTIONS) $(CFLAGS) $(LDFLAGS) $(LIBS) -o index.mjs -sSINGLE_FILE -sBINARYEN_ASYNC_COMPILATION=0 && cp index.mjs $(abs_top_builddir)/index.mjs)
+	(cd js-output ; ../libtool --tag=CC --mode=link $(CC) -O3 ../$< -sEXPORT_ALL=1 -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,stringToUTF8,lengthBytesUTF8 -sEXPORTED_FUNCTIONS=_malloc,_free,$(EXPORTED_FUNCTIONS) $(CFLAGS) $(LDFLAGS) $(LIBS) -o index.mjs -sSINGLE_FILE -sBINARYEN_ASYNC_COMPILATION=0 && cp index.mjs $(abs_top_builddir)/index.mjs)
 	rm -rf js-output
 
 nodejsdir = $(datadir)/nodejs
