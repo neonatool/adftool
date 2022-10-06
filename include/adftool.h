@@ -369,6 +369,27 @@ extern "C"
     double adftool_array_double_get (const struct adftool_array_double *array,
 				     size_t i);
 
+  struct adftool_array_size_t;
+
+  extern LIBADFTOOL_API
+    struct adftool_array_size_t *adftool_array_size_t_alloc (size_t
+							     n_elements);
+
+  extern LIBADFTOOL_API
+    void adftool_array_size_t_free (struct adftool_array_size_t *array);
+
+  extern LIBADFTOOL_API
+    size_t *adftool_array_size_t_address (struct adftool_array_size_t *array,
+					  size_t i);
+
+  extern LIBADFTOOL_API
+    void adftool_array_size_t_set (struct adftool_array_size_t *array,
+				   size_t i, size_t value);
+
+  extern LIBADFTOOL_API
+    size_t adftool_array_size_t_get (const struct adftool_array_size_t *array,
+				     size_t i);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */
