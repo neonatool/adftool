@@ -425,6 +425,28 @@ extern "C"
     double adftool_array_uint64_t_get_js_low (const struct
 					      adftool_array_uint64_t *array,
 					      size_t i);
+
+  struct adftool_array_pointer;
+
+  extern LIBADFTOOL_API
+    struct adftool_array_pointer *adftool_array_pointer_alloc (size_t
+							       n_elements);
+
+  extern LIBADFTOOL_API
+    void adftool_array_pointer_free (struct adftool_array_pointer *array);
+
+  extern LIBADFTOOL_API
+    void **adftool_array_pointer_address (struct adftool_array_pointer *array,
+					  size_t i);
+
+  extern LIBADFTOOL_API
+    void adftool_array_pointer_set (struct adftool_array_pointer *array,
+				    size_t i, void *value);
+
+  extern LIBADFTOOL_API
+    void *adftool_array_pointer_get (const struct adftool_array_pointer
+				     *array, size_t i);
+
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */
