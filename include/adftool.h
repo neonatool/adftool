@@ -390,6 +390,41 @@ extern "C"
     size_t adftool_array_size_t_get (const struct adftool_array_size_t *array,
 				     size_t i);
 
+  struct adftool_array_uint64_t;
+
+  extern LIBADFTOOL_API
+    struct adftool_array_uint64_t *adftool_array_uint64_t_alloc (size_t
+								 n_elements);
+
+  extern LIBADFTOOL_API
+    void adftool_array_uint64_t_free (struct adftool_array_uint64_t *array);
+
+  extern LIBADFTOOL_API
+    uint64_t *
+    adftool_array_uint64_t_address (struct adftool_array_uint64_t *array,
+				    size_t i);
+
+  extern LIBADFTOOL_API
+    void adftool_array_uint64_t_set (struct adftool_array_uint64_t *array,
+				     size_t i, uint64_t value);
+
+  extern LIBADFTOOL_API
+    void adftool_array_uint64_t_set_js (struct adftool_array_uint64_t *array,
+					size_t i, double high, double low);
+
+  extern LIBADFTOOL_API
+    uint64_t adftool_array_uint64_t_get (const struct adftool_array_uint64_t
+					 *array, size_t i);
+
+  extern LIBADFTOOL_API
+    double adftool_array_uint64_t_get_js_high (const struct
+					       adftool_array_uint64_t *array,
+					       size_t i);
+
+  extern LIBADFTOOL_API
+    double adftool_array_uint64_t_get_js_low (const struct
+					      adftool_array_uint64_t *array,
+					      size_t i);
 #ifdef __cplusplus
 }
 #endif				/* __cplusplus */

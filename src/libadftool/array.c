@@ -61,7 +61,7 @@
 ARRAY_TYPE (uint8_t, byte)
 ARRAY_TYPE (size_t, size_t)
 ARRAY_TYPE (void *, pointer)
-ARRAY_TYPE (uint64_t, uint64)
+ARRAY_TYPE (uint64_t, uint64_t)
 ARRAY_TYPE (long, long)
 ARRAY_TYPE (double, double)
 /* *INDENT-ON* */
@@ -95,4 +95,38 @@ adftool_timespec_get_js (const struct timespec *time)
   const double nanoseconds = time->tv_nsec;
   const double milliseconds = nanoseconds / 1000000;
   return seconds * 1000 + milliseconds;
+}
+
+void
+adftool_array_uint64_t_set_js (struct adftool_array_uint64_t *array, size_t i,
+			       double high, double low)
+{
+  const uint64_t shift = 32;
+  const uint64_t high_exact = high;
+  const uint64_t h = high_exact << shift;
+  const uint64_t l = low;
+  const uint64_t x = h | l;
+  adftool_array_uint64_t_set (array, i, x);
+}
+
+double
+adftool_array_uint64_t_get_js_high (const struct adftool_array_uint64_t
+				    *array, size_t i)
+{
+  const uint64_t value = adftool_array_uint64_t_get (array, i);
+  const uint64_t shift = 32;
+  const uint64_t exact = value >> shift;
+  return (double) exact;
+}
+
+double
+adftool_array_uint64_t_get_js_low (const struct adftool_array_uint64_t *array,
+				   size_t i)
+{
+  const uint64_t value = adftool_array_uint64_t_get (array, i);
+  const uint64_t one = 1;
+  const uint64_t shift = 32;
+  const uint64_t mask = (one << shift) - one;
+  const uint64_t exact = value & mask;
+  return (double) exact;
 }
