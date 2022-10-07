@@ -4,6 +4,7 @@ variables:
 stages:
   - dependencies
   - build
+  - package
   - pages
 
 cache:
@@ -109,7 +110,7 @@ build_pdf:
       - public
 
 conan:
-  stage: build
+  stage: package
   script:
     - apt-get install -y python3 python3-pip autoconf autoconf-archive automake libtool pkg-config
     - pip3 install conan
@@ -120,8 +121,8 @@ conan:
     - conan create ../adftool-* vkraus+adftool/latest --build missing -c tools.system.package_manager:mode=install
     - CONAN_LOGIN_USERNAME=vkraus CONAN_PASSWORD=${CI_JOB_TOKEN} conan upload adftool/$(cat ../adftool-*/.tarball-version)@vkraus+adftool/latest --all --remote=gitlab
 
-publish_npm:
-  stage: pages
+check_npm:
+  stage: package
   image: node:14
   script:
     - cp -R public/emscripten/share/nodejs/adftool adftool
@@ -130,7 +131,21 @@ publish_npm:
     - echo "@${CI_PROJECT_NAMESPACE}:registry=${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
     - echo "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
     - sed -i 's|^https://|//|g' .npmrc
-    - node run test
+    - npm install
+    - npm run test
+
+publish_npm:
+  stage: package
+  image: node:14
+  script:
+    - cp -R public/emscripten/share/nodejs/adftool adftool
+    - cd adftool
+    - sed -i "s/\"adftool\"/\"@${CI_PROJECT_NAMESPACE}\\/${CI_PROJECT_NAME}\"/g" package.json
+    - echo "@${CI_PROJECT_NAMESPACE}:registry=${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+    - echo "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
+    - sed -i 's|^https://|//|g' .npmrc
+    - npm install
+    - npm run test
     - npm publish
   only:
     - /^v[0-9]+.[0-9]+.[0-9]+$/
