@@ -6,7 +6,7 @@ EXTRA_DIST = m4/gnulib-cache.m4 m4prog/gnulib-cache.m4 \
   conanfile-in.py \
   $(top_srcdir)/conanfile.py \
   $(top_srcdir)/.version \
-  $(top_srcdir)/package.json.in
+  $(top_srcdir)/src/js/package.json.in
 
 info_TEXINFOS = doc/adftool.texi
 
@@ -445,7 +445,7 @@ $(top_srcdir)/conanfile.py: conanfile-in.py
 	$(AM_V_GEN) $(SED) 's/\@VERSION\@/$(VERSION)/g' $< > $@-t
 	@mv $@-t $@
 
-$(top_srcdir)/package.json: package.json.in
+$(top_srcdir)/src/js/package.json: src/js/package.json.in
 	$(AM_V_GEN) $(SED) "s/\\@VERSION\\@/$$(echo $(VERSION) | cut -d '.' -f 1-3)/g" $< > $@-t
 	@mv $@-t $@
 
@@ -455,12 +455,27 @@ dist-hook:
 if NODE_MODULE
 EXPORTED_FUNCTIONS = _adftool_add_channel_type,_adftool_array_double_address,_adftool_array_double_alloc,_adftool_array_double_free,_adftool_array_double_get,_adftool_array_double_set,_adftool_array_long_address,_adftool_array_long_alloc,_adftool_array_long_free,_adftool_array_long_get,_adftool_array_long_set,_adftool_array_size_t_address,_adftool_array_size_t_alloc,_adftool_array_size_t_free,_adftool_array_size_t_get,_adftool_array_size_t_set,_adftool_array_uint64_t_address,_adftool_array_uint64_t_alloc,_adftool_array_uint64_t_free,_adftool_array_uint64_t_get_js_high,_adftool_array_uint64_t_get_js_low,_adftool_array_uint64_t_set_js,_adftool_delete,_adftool_dictionary_get,_adftool_dictionary_insert,_adftool_dictionary_lookup,_adftool_eeg_get_data,_adftool_eeg_get_time,_adftool_eeg_set_data,_adftool_eeg_set_time,_adftool_file_alloc,_adftool_file_close,_adftool_file_free,_adftool_file_get_data,_adftool_file_open,_adftool_file_open_data,_adftool_find_channel_identifier,_adftool_find_channels_by_type,_adftool_fir_alloc,_adftool_fir_apply,_adftool_fir_design_bandpass,_adftool_fir_free,_adftool_fir_order,_adftool_get_channel_column,_adftool_get_channel_decoder,_adftool_get_channel_types,_adftool_insert,_adftool_lookup,_adftool_lookup_objects,_adftool_lookup_subjects,_adftool_quads_delete,_adftool_quads_get,_adftool_quads_insert,_adftool_set_channel_decoder,_adftool_statement_alloc,_adftool_statement_compare,_adftool_statement_copy,_adftool_statement_free,_adftool_statement_get,_adftool_statement_set,_adftool_term_alloc,_adftool_term_as_date,_adftool_term_as_double,_adftool_term_as_integer,_adftool_term_as_mpf,_adftool_term_as_mpz,_adftool_term_compare,_adftool_term_copy,_adftool_term_decode,_adftool_term_encode,_adftool_term_free,_adftool_term_is_blank,_adftool_term_is_langstring,_adftool_term_is_literal,_adftool_term_is_named,_adftool_term_is_typed_literal,_adftool_term_meta,_adftool_term_parse_n3,_adftool_term_set_blank,_adftool_term_set_date,_adftool_term_set_double,_adftool_term_set_integer,_adftool_term_set_literal,_adftool_term_set_mpf,_adftool_term_set_mpz,_adftool_term_set_named,_adftool_term_to_n3,_adftool_term_value,_adftool_timespec_alloc,_adftool_timespec_free,_adftool_timespec_set_js,_adftool_timespec_get_js
 
-index.mjs: libadftool.la
-	mkdir -p js-output
-	(cd js-output ; ../libtool --tag=CC --mode=link $(CC) -O3 ../$< -sEXPORT_ALL=1 -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,stringToUTF8,lengthBytesUTF8 -sEXPORTED_FUNCTIONS=_malloc,_free,$(EXPORTED_FUNCTIONS) $(CFLAGS) $(LDFLAGS) $(LIBS) -o index.mjs -sSINGLE_FILE -sBINARYEN_ASYNC_COMPILATION=0 && cp index.mjs $(abs_top_builddir)/index.mjs)
-	rm -rf js-output
+src/js/index.mjs: libadftool.la
+	mkdir -p src/js/
+	./libtool --tag=CC --mode=link $(CC) -O3 $< -sEXPORT_ALL=1 -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,stringToUTF8,lengthBytesUTF8 -sEXPORTED_FUNCTIONS=_malloc,_free,$(EXPORTED_FUNCTIONS) $(CFLAGS) $(LDFLAGS) $(LIBS) -o src/js/index.mjs -sSINGLE_FILE -sBINARYEN_ASYNC_COMPILATION=0
 
 nodejsdir = $(datadir)/nodejs
 pkgnodejsdir = $(nodejsdir)/$(PACKAGE)
-pkgnodejs_DATA = index.mjs package.json
+pkgnodejs_DATA = src/js/index.mjs src/js/package.json
+dist_pkgnodejs_DATA = \
+  src/js/adftool_binding.mjs \
+  src/js/adftool_double_array.mjs \
+  src/js/adftool_file.mjs \
+  src/js/adftool_fir.mjs \
+  src/js/adftool_long_array.mjs \
+  src/js/adftool.mjs \
+  src/js/adftool_numeric_array.mjs \
+  src/js/adftool_pointer_array.mjs \
+  src/js/adftool_size_t_array.mjs \
+  src/js/adftool_statement.mjs \
+  src/js/adftool_string.mjs \
+  src/js/adftool_term.mjs \
+  src/js/adftool_timespec.mjs \
+  src/js/adftool_uint64_t_array.mjs \
+  src/js/test.mjs
 endif
