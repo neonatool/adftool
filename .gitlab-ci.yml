@@ -118,8 +118,8 @@ conan:
     - mkdir conan-build
     - cd conan-build
     - conan remote add gitlab ${CI_API_V4_URL}/projects/$CI_PROJECT_ID/packages/conan
-    - conan create ../adftool-* vkraus+adftool/latest --build missing -c tools.system.package_manager:mode=install
-    - CONAN_LOGIN_USERNAME=vkraus CONAN_PASSWORD=${CI_JOB_TOKEN} conan upload adftool/$(cat ../adftool-*/.tarball-version)@vkraus+adftool/latest --all --remote=gitlab
+    - conan create ../adftool-* ${CI_PROJECT_NAMESPACE}+${CI_PROJECT_NAME}/latest --build missing -c tools.system.package_manager:mode=install
+    - CONAN_LOGIN_USERNAME=${GITLAB_USER_NAME} CONAN_PASSWORD=${CI_JOB_TOKEN} conan upload adftool/$(cat ../adftool-*/.tarball-version)@${CI_PROJECT_NAMESPACE}+${CI_PROJECT_NAME}/latest --all --remote=gitlab
 
 check_npm:
   stage: package
