@@ -12,7 +12,7 @@ cache:
     - .apt
     - gmp-6.1.2.tar.lz
 
-image: registry.plmlab.math.cnrs.fr/vkraus/adftool-builder:latest
+image: registry.plmlab.math.cnrs.fr/neonatool/adftool-builder:latest
 
 before_script:
   - rm -f /etc/apt/apt.conf.d/docker-clean
