@@ -156,7 +156,7 @@ publish_npm:
 debian:
   stage: package
   script:
-    - apt-get -y install build-essential devscripts debhelper git-buildpackage gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc libtinfo5 libmpfr-dev texinfo python3 libpython3-dev pkg-config
+    - apt-get -y install build-essential devscripts debhelper git-buildpackage gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc libtinfo5 libmpfr-dev texinfo python3 libpython3-dev pkg-config reprepro
     - mv public/adftool-latest.tar.gz adftool_$(sed 's/-/./g' public/.version).orig.tar.gz
     - mkdir -p public/debian
     - tar xf adftool_*.orig.tar.gz
@@ -166,6 +166,11 @@ debian:
     - debuild -us -uc
     - cd ../public/debian
     - cp ../../*.deb adftool-latest.deb
+    - cp -R ../../conf conf
+    - reprepro -Vb . includedeb stable ../../*.deb
+    - echo "deb [trusted=yes] ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/${CI_JOB_ID}/artifacts/public/debian stable main" >> adftool-job.list
+    - echo "deb [trusted=yes] ${CI_PAGES_URL}/debian stable main" >> adftool-latest.list
+    - echo "Now you can download either .list file, add it to your debian, set up your /etc/apt/auth.conf, and realize that you can’t authenticate neither to the artifacts API nor the pages with basic authentication, and you can’t configure apt to use bearer authentication with a token. So you will be glad to download /debian/adftool-latest.deb and install it by hand :)"
   artifacts:
     paths:
       - public
