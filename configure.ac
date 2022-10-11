@@ -56,6 +56,10 @@ AC_PROG_SED
 # Checks for libraries.
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19])
+PKG_CHECK_MODULES([HDF5], [hdf5], [
+  CFLAGS="$CFLAGS $HDF5_CFLAGS"
+  LIBS="$LIBS $HDF5_LIBS"
+], [AC_MSG_WARN([No hdf5 pkg-config module found.])])
 AC_SEARCH_LIBS([H5open], [hdf5],,, [-lz])
 AC_SEARCH_LIBS([__gmpz_init], [gmp])
 AC_SEARCH_LIBS([cos], [m])
