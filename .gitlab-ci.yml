@@ -1,5 +1,8 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
+  DEBEMAIL: vivien.kraus@univ-reims.fr
+  DEBFULLNAME: Gitlab CI
+  INITIAL_DEBIAN_PACKAGE: v0.2.15
 
 stages:
   - dependencies
@@ -149,6 +152,23 @@ publish_npm:
     - npm publish
   only:
     - /^v[0-9]+.[0-9]+.[0-9]+$/
+
+debian:
+  stage: package
+  script:
+    - apt-get -y install build-essential devscripts debhelper git-buildpackage gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc libtinfo5 libmpfr-dev texinfo python3 libpython3-dev pkg-config
+    - mv public/adftool-latest.tar.gz adftool_$(sed 's/-/./g' public/.version).orig.tar.gz
+    - mkdir -p public/debian
+    - tar xf adftool_*.orig.tar.gz
+    - echo "" | gbp dch --debian-branch=main --ignore-branch --since=$INITIAL_DEBIAN_PACKAGE --new-version=$(sed 's/-/./g' public/.version)-1
+    - cd adftool-*
+    - cp -R ../debian debian
+    - debuild -us -uc
+    - cd ../public/debian
+    - cp ../../*.deb adftool-latest.deb
+  artifacts:
+    paths:
+      - public
 
 pages:
   stage: pages
