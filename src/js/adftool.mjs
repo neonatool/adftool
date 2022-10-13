@@ -12,9 +12,10 @@ import { with_string } from './adftool_string.mjs';
 import { with_statement, with_statement_init,
 	 with_statement_copy, with_n_statements } from './adftool_statement.mjs';
 import { with_fir, with_bandpass, with_bandpassed } from './adftool_fir.mjs';
-import { with_file } from './adftool_file.mjs';
+import { File, with_file } from './adftool_file.mjs';
 
 export {
+    File,
     with_bandpass,
     with_bandpassed,
     with_blank_node,
