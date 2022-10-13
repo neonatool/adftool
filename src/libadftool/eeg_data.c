@@ -234,7 +234,11 @@ adftool_eeg_get_data (const struct adftool_file *file, size_t time_start,
 	  if (i >= time_start && i - time_start < time_length
 	      && j >= channel_start && j - channel_start < channel_length)
 	    {
-	      data[i * channel_length + j] = scaled;
+	      const size_t time_index = i - time_start;
+	      const size_t channel_index = j - channel_start;
+	      const size_t index =
+		time_index * channel_length + channel_index;
+	      data[index] = scaled;
 	    }
 	}
     clean_encoded:
