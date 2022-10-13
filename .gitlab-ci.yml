@@ -73,7 +73,7 @@ build_emscripten:
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-emscripten
     - cd build-emscripten
-    - emconfigure ../adftool-*/configure CPPFLAGS=-I/export/emscripten/include LIBS=/export/emscripten/lib/libhdf5.a LDFLAGS=-L/export/emscripten/lib --disable-relocatable --disable-shared --prefix=/emscripten --disable-python --enable-node=yes
+    - emconfigure ../adftool-*/configure CPPFLAGS=-I/export/emscripten/include LIBS=/export/emscripten/lib/libhdf5.a LDFLAGS=-L/export/emscripten/lib --disable-relocatable --disable-shared --prefix=/emscripten --disable-python --enable-node=yes --enable-js-initial-memory=$((256 * 1024 * 1024))
     - emmake make -j
     - emmake make -j DESTDIR=$PWD/../public install
     - cp -R /export/emscripten/include/* $PWD/../public/emscripten/include/

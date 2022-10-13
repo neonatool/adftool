@@ -30,6 +30,19 @@ AC_ARG_ENABLE([node],
 
 AM_CONDITIONAL([NODE_MODULE], [test x$node_module = xtrue])
 
+AC_ARG_ENABLE([js-initial-memory],
+  [  --enable-js-initial-memory=BYTES Request at least BYTES memory of heap space when running the wasm output],
+  [case "${enableval}" in
+    yes)
+	# https://english.stackexchange.com/questions/504260/origin-of-yes-joke-to-a-question
+	# This is 2 GiB
+	CFLAGS="$CFLAGS -sINITIAL_MEMORY=2147483648" ;;
+    no) ;;
+    default) ;;
+    *)
+	CFLAGS="$CFLAGS -sINITIAL_MEMORY=${enableval}" ;;
+  esac])
+
 # Checks for programs.
 AC_PROG_CC
 gl_EARLY
