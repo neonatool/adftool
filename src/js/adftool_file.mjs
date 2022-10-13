@@ -230,24 +230,28 @@ export class File {
 	    Adftool._free (input_pointer);
 	}
     }
-    eeg_get_data (f) {
+    eeg_get_data (channel, first_observation, n_observations, f) {
 	return with_size_t_array (2, (dimensions) => {
-	    const error = adftool_eeg_get_data (this._ptr, 0, 0, dimensions.address (0), 0, 0, dimensions.address (1), 0);
-	    if (error != 0) {
-		throw 'Cannot get the data!';
-	    }
-	    const n_points = dimensions.get (0);
-	    const n_channels = dimensions.get (1);
-	    const output_pointer = Adftool._malloc (n_points * n_channels * 8);
+	    const output_pointer = Adftool._malloc (n_observations * 8);
 	    try {
-		const check_error = adftool_eeg_get_data (this._ptr, 0, n_points, dimensions.address (0), 0, n_channels, dimensions.address (1), output_pointer);
-		if (check_error != 0) {
-		    throw 'Cannot get the data (second time)!';
+		const error = adftool_eeg_get_data (this._ptr, first_observation, n_observations, dimensions.address (0), channel, 1, dimensions.address (1), output_pointer);
+		if (error != 0) {
+		    throw 'Cannot get the data!';
+		}
+		const n_points = dimensions.get (0);
+		const n_channels = dimensions.get (1);
+		const flt_offset = output_pointer / 8;
+		let true_n_observations = n_observations;
+		if (first_observation >= n_points) {
+		    true_n_observations = 0;
+		} else if (first_observation + n_observations > n_points) {
+		    /* We requested more than is available. */
+		    true_n_observations = n_points - first_observation;
 		}
 		const view =
-		      Adftool.HEAPF64.subarray (output_pointer / 8,
-						output_pointer / 8 + n_points * n_channels);
-		return f (view);
+		      Adftool.HEAPF64.subarray (
+			  flt_offset, flt_offset + true_n_observations);
+		return f (n_points, n_channels, view);
 	    } finally {
 		Adftool._free (output_pointer);
 	    }

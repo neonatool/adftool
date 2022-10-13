@@ -197,6 +197,79 @@ const file_ok =
 
 assert (file_ok);
 
+Adftool.with_file (new Uint8Array (0), (f) => {
+    const example_data = [];
+    // In this example, there are 2 channels and 4 observations.
+    //            [,1]       [,2]
+    // [1,]  0.6062011  0.6326078
+    // [2,] -2.7099204 -0.2362881
+    // [3,] -0.6014201 -0.1521410
+    // [4,]  0.4972079 -1.0824288
+    example_data.push (0.6062011, 0.6326078);
+    example_data.push (-2.7099204, -0.2362881);
+    example_data.push (-0.6014201, -0.1521410);
+    example_data.push (0.4972079, -1.0824288);
+    const example_data_array = new Float64Array(example_data);
+    f.eeg_set_data (4, 2, example_data_array);
+    const float_eq = (f, expected) => {
+	const diff = f - expected;
+	return (diff < 1e-4 && -diff < 1e-4);
+    }
+    f.eeg_get_data (0, 0, 4, (n_points, n_channels, data) => {
+	assert (n_points == 4);
+	assert (n_channels == 2);
+	assert (data.length == 4);
+	assert (float_eq (data[0], 0.6062011));
+	assert (float_eq (data[3], 0.4972079));
+    });
+    f.eeg_get_data (1, 0, 4, (n_points, n_channels, data) => {
+	assert (n_points == 4);
+	assert (n_channels == 2);
+	assert (data.length == 4);
+	assert (float_eq (data[0], 0.6326078));
+	assert (float_eq (data[3], -1.0824288));
+    });
+    f.eeg_get_data (1, 2, 5, (n_points, n_channels, data) => {
+	assert (n_points == 4);
+	assert (n_channels == 2);
+	assert (data.length == 2);
+	assert (float_eq (data[0], -0.1521410));
+	assert (float_eq (data[1], -1.0824288));
+    });
+    f.eeg_get_data (1, 2, 4, (n_points, n_channels, data) => {
+	assert (n_points == 4);
+	assert (n_channels == 2);
+	assert (data.length == 2);
+	assert (float_eq (data[0], -0.1521410));
+	assert (float_eq (data[1], -1.0824288));
+    });
+    f.eeg_get_data (1, 2, 3, (n_points, n_channels, data) => {
+	assert (n_points == 4);
+	assert (n_channels == 2);
+	assert (data.length == 2);
+	assert (float_eq (data[0], -0.1521410));
+	assert (float_eq (data[1], -1.0824288));
+    });
+    f.eeg_get_data (1, 2, 2, (n_points, n_channels, data) => {
+	assert (n_points == 4);
+	assert (n_channels == 2);
+	assert (data.length == 2);
+	assert (float_eq (data[0], -0.1521410));
+	assert (float_eq (data[1], -1.0824288));
+    });
+    f.eeg_get_data (1, 2, 1, (n_points, n_channels, data) => {
+	assert (n_points == 4);
+	assert (n_channels == 2);
+	assert (data.length == 1);
+	assert (float_eq (data[0], -0.1521410));
+    });
+    f.eeg_get_data (1, 2, 0, (n_points, n_channels, data) => {
+	assert (n_points == 4);
+	assert (n_channels == 2);
+	assert (data.length == 0);
+    });
+});
+
 // Local Variables:
 // mode: js
 // End:
