@@ -995,7 +995,7 @@ do_one_page (const struct adftool_file *file,
   size_t i;
   for (i = start; i < n && i - start < length; i++)
     {
-      const struct adftool_statement *statement = page[i];
+      const struct adftool_statement *statement = page[i - start];
       uint64_t deletion_date;
       adftool_statement_get (statement, NULL, NULL, NULL, NULL,
 			     &deletion_date);
@@ -1011,11 +1011,11 @@ do_one_page (const struct adftool_file *file,
 				 &(terms[2]), &(terms[3]), NULL);
 	  if (terms[0] != NULL && terms[1] != NULL && terms[2] != NULL)
 	    {
-	      for (size_t i = 0; i < 4; i++)
+	      for (size_t j = 0; j < 4; j++)
 		{
-		  if (terms[i] != NULL)
+		  if (terms[j] != NULL)
 		    {
-		      printf_term (terms[i], i == 3, 1);
+		      printf_term (terms[j], j == 3, 1);
 		    }
 		}
 	      printf (".\n");

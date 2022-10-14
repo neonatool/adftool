@@ -120,7 +120,7 @@ adftool_lookup (const struct adftool_file *file,
     }
   for (size_t i = start; i < n_rows && i - start < max; i++)
     {
-      if (adftool_quads_get (file, rows[i], results[i]) != 0)
+      if (adftool_quads_get (file, rows[i], results[i - start]) != 0)
 	{
 	  free (rows);
 	  return 1;

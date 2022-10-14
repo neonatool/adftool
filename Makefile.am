@@ -62,7 +62,8 @@ check_PROGRAMS = \
   eeg_metadata_example \
   timespec_example \
   statement_get_with_arrays \
-  check_fine_eeg_get_data
+  check_fine_eeg_get_data \
+  check_lookup_pagination
 
 TESTS = \
   bplus_tree_lookup_example \
@@ -85,7 +86,8 @@ TESTS = \
   eeg_metadata_example \
   timespec_example \
   statement_get_with_arrays \
-  check_fine_eeg_get_data
+  check_fine_eeg_get_data \
+  check_lookup_pagination
 
 LOG_COMPILER = $(LOG_VALGRIND)
 
@@ -438,6 +440,21 @@ check_fine_eeg_get_data_LDADD = \
   $(LIB_CLOCK_GETTIME) \
   @LTLIBOBJS@
 check_fine_eeg_get_data_CPPFLAGS = \
+  -I include -I $(srcdir)/include \
+  -I libprog -I $(srcdir)/libprog \
+  -I src -I $(srcdir)/src \
+  -DLOCALEDIR=\"@localedir@\" \
+  -DINSTALLDIR=\"$(bindir)\"
+
+check_lookup_pagination_SOURCES = \
+  src/check_lookup_pagination.c
+check_lookup_pagination_LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
+  @LTLIBOBJS@
+check_lookup_pagination_CPPFLAGS = \
   -I include -I $(srcdir)/include \
   -I libprog -I $(srcdir)/libprog \
   -I src -I $(srcdir)/src \
