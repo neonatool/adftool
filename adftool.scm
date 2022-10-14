@@ -267,12 +267,17 @@
 	  (list glibc "debug")
 	  tar global gnu-gettext flex r
 	  texinfo
-	  (texlive-updmap.cfg (list texlive-epsf texlive-tex-texinfo))
+	  ;; Should not use the full texlive distro, but I don’t want
+	  ;; to debug it.
+	  (texlive-updmap.cfg (list texlive))
 	  pkg-config))
    (home-page "https://localhost/adftool")
    (synopsis "Tool to parse and generate my ADF spec")
    (description "The ADF specification is slightly incomplete, so I made one in the
 same spirit but with more precise expectations.")
-   (license "none")))
+   (license ((@@ (guix licenses) license)
+	     "none"
+	     "https://none"
+	     "No license"))))
 
 adftool
