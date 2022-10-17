@@ -75,7 +75,7 @@ export function with_fir (sfreq, transition_bandwidth, f) {
 export function with_bandpass (sfreq, transition_bandwidth, freq_low, freq_high, f) {
     return with_fir (sfreq, transition_bandwidth, (fir) => {
 	fir.design_bandpass (freq_low, freq_high);
-	f (fir);
+	return f (fir);
     });
 }
 
