@@ -92,12 +92,12 @@ const adftool_eeg_get_data = Adftool.cwrap (
     ['*', 'number', 'number', '*', 'number', 'number', '*', '*']);
 
 const adftool_eeg_get_time = Adftool.cwrap (
-    'adftool_eeg_get_data',
+    'adftool_eeg_get_time',
     'number',
     ['*', 'number', '*', '*']);
 
 const adftool_eeg_set_time = Adftool.cwrap (
-    'adftool_eeg_set_data',
+    'adftool_eeg_set_time',
     'number',
     ['*', '*', 'number']);
 

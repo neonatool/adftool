@@ -270,6 +270,26 @@ Adftool.with_file (new Uint8Array (0), (f) => {
     });
 });
 
+Adftool.with_file(new Uint8Array (0), (f) => {
+    const start_date = new Date (Date.now ());
+    const sfreq = 41;
+    f.eeg_set_time (start_date, sfreq);
+    const check = f.eeg_get_time (0, (time, freq) => {
+	return {
+	    'start_date': time,
+	    'sfreq': freq
+	};
+    });
+    assert (check.start_date - start_date == 0);
+    assert (check.sfreq == sfreq);
+    f.eeg_get_time (1, (time_1) => {
+	f.eeg_get_time (2, (time_2) => {
+	    assert (time_1 > start_date);
+	    assert (time_2 > time_1);
+	});
+    });
+});
+
 // Local Variables:
 // mode: js
 // End:
