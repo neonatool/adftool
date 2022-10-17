@@ -56,7 +56,7 @@ export class Fir {
 	adftool_fir_design_bandpass (this._ptr, freq_low, freq_high);
     }
     apply (signal, f) {
-	adftool_fir_apply (this._ptr, signal, f);
+	return adftool_fir_apply (this._ptr, signal, f);
     }
     _destroy () {
 	adftool_fir_free (this._ptr);
