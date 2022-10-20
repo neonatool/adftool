@@ -491,7 +491,7 @@ EXPORTED_FUNCTIONS = _adftool_add_channel_type,_adftool_array_double_address,_ad
 
 src/js/index.mjs: libadftool.la
 	mkdir -p src/js/
-	./libtool --tag=CC --mode=link $(CC) -O3 $< -sEXPORT_ALL=1 -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,stringToUTF8,lengthBytesUTF8 -sEXPORTED_FUNCTIONS=_malloc,_free,$(EXPORTED_FUNCTIONS) $(CFLAGS) $(LDFLAGS) $(LIBS) -o src/js/index.mjs -sSINGLE_FILE -sBINARYEN_ASYNC_COMPILATION=0
+	./libtool --tag=CC --mode=link $(CC) -O3 $< -sEXPORT_ALL=1 -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,stringToUTF8,lengthBytesUTF8 -sEXPORTED_FUNCTIONS=_malloc,_free,$(EXPORTED_FUNCTIONS) $(CFLAGS) $(LDFLAGS) $(LIBS) -o src/js/index.mjs -sSINGLE_FILE
 
 nodejsdir = $(datadir)/nodejs
 pkgnodejsdir = $(nodejsdir)/$(PACKAGE)
@@ -501,6 +501,7 @@ dist_pkgnodejs_DATA = \
   src/js/adftool_double_array.mjs \
   src/js/adftool_file.mjs \
   src/js/adftool_fir.mjs \
+  src/js/adftool_load_binding.mjs \
   src/js/adftool_long_array.mjs \
   src/js/adftool.mjs \
   src/js/adftool_numeric_array.mjs \

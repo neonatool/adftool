@@ -1,6 +1,6 @@
-import AdftoolFactory from './index.mjs';
+import { immediate } from './adftool_load_binding.mjs';
 
-export default AdftoolFactory ();
+export default immediate ();
 
 // Local Variables:
 // mode: js

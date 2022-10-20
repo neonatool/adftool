@@ -1,47 +1,54 @@
-import { with_timespec } from './adftool_timespec.mjs';
-import { with_long_array } from './adftool_long_array.mjs';
-import { with_size_t_array } from './adftool_size_t_array.mjs';
-import { with_double_array } from './adftool_double_array.mjs';
-import { with_uint64_t_array } from './adftool_uint64_t_array.mjs';
-import { with_pointer_array } from './adftool_pointer_array.mjs';
-import { with_term, with_blank_node, with_named_node,
-	 with_literal_node, with_literal_integer,
-	 with_literal_double, with_literal_date,
-	 with_n3, with_term_copy, with_n_terms } from './adftool_term.mjs';
-import { with_string } from './adftool_string.mjs';
-import { with_statement, with_statement_init,
-	 with_statement_copy, with_n_statements } from './adftool_statement.mjs';
-import { with_fir, with_bandpass, with_bandpassed } from './adftool_fir.mjs';
-import { File, with_file } from './adftool_file.mjs';
+import { factory } from './adftool_load_binding.mjs';
 
-export {
-    File,
-    with_bandpass,
-    with_bandpassed,
-    with_blank_node,
-    with_double_array,
-    with_file,
-    with_fir,
-    with_literal_date,
-    with_literal_double,
-    with_literal_integer,
-    with_literal_node,
-    with_long_array,
-    with_n3,
-    with_n_statements,
-    with_n_terms,
-    with_named_node,
-    with_pointer_array,
-    with_size_t_array,
-    with_statement,
-    with_statement_copy,
-    with_statement_init,
-    with_string,
-    with_term,
-    with_term_copy,
-    with_timespec,
-    with_uint64_t_array
-};
+export default function () {
+    return factory.then (async _ => {
+	const { with_timespec } = await import('./adftool_timespec.mjs');
+	const { with_long_array } = await import('./adftool_long_array.mjs');
+	const { with_size_t_array } = await import('./adftool_size_t_array.mjs');
+	const { with_double_array } = await import('./adftool_double_array.mjs');
+	const { with_uint64_t_array } = await import('./adftool_uint64_t_array.mjs');
+	const { with_pointer_array } = await import('./adftool_pointer_array.mjs');
+	const {
+	    with_term, with_blank_node, with_named_node,
+	    with_literal_node, with_literal_integer,
+	    with_literal_double, with_literal_date,
+	    with_n3, with_term_copy, with_n_terms
+	} = await import('./adftool_term.mjs');
+	const { with_string } = await import('./adftool_string.mjs');
+	const { with_statement, with_statement_init,
+		with_statement_copy, with_n_statements } = await import('./adftool_statement.mjs');
+	const { with_fir, with_bandpass, with_bandpassed } = await import('./adftool_fir.mjs');
+	const { File, with_file } = await import('./adftool_file.mjs');
+	return {
+	    File: File,
+	    with_bandpass: with_bandpass,
+	    with_bandpassed: with_bandpassed,
+	    with_blank_node: with_blank_node,
+	    with_double_array: with_double_array,
+	    with_file: with_file,
+	    with_fir: with_fir,
+	    with_literal_date: with_literal_date,
+	    with_literal_double: with_literal_double,
+	    with_literal_integer: with_literal_integer,
+	    with_literal_node: with_literal_node,
+	    with_long_array: with_long_array,
+	    with_n3: with_n3,
+	    with_n_statements: with_n_statements,
+	    with_n_terms: with_n_terms,
+	    with_named_node: with_named_node,
+	    with_pointer_array: with_pointer_array,
+	    with_size_t_array: with_size_t_array,
+	    with_statement: with_statement,
+	    with_statement_copy: with_statement_copy,
+	    with_statement_init: with_statement_init,
+	    with_string: with_string,
+	    with_term: with_term,
+	    with_term_copy: with_term_copy,
+	    with_timespec: with_timespec,
+	    with_uint64_t_array: with_uint64_t_array
+	};
+    });
+}
 
 // Local Variables:
 // mode: js
