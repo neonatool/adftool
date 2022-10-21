@@ -26,7 +26,7 @@ static const struct adftool_term p_sampling_frequency = {
 };
 
 static int
-get_start_date (const struct adftool_file *file, struct timespec *time)
+get_start_date (struct adftool_file *file, struct timespec *time)
 {
   struct adftool_term *object = adftool_term_alloc ();
   if (object == NULL)
@@ -48,8 +48,7 @@ get_start_date (const struct adftool_file *file, struct timespec *time)
 }
 
 static int
-get_sampling_frequency (const struct adftool_file *file,
-			double *sampling_frequency)
+get_sampling_frequency (struct adftool_file *file, double *sampling_frequency)
 {
   struct adftool_term *object = adftool_term_alloc ();
   if (object == NULL)
@@ -71,7 +70,7 @@ get_sampling_frequency (const struct adftool_file *file,
 }
 
 int
-adftool_eeg_get_time (const struct adftool_file *file,
+adftool_eeg_get_time (struct adftool_file *file,
 		      size_t observation,
 		      struct timespec *time, double *sampling_frequency)
 {

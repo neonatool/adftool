@@ -57,11 +57,11 @@ extern "C"
 				  size_t max, void *bytes);
 
   extern LIBADFTOOL_API
-    int adftool_dictionary_get (const struct adftool_file *file, uint32_t id,
+    int adftool_dictionary_get (struct adftool_file *file, uint32_t id,
 				size_t start, size_t max, size_t *length,
 				char *dest);
   extern LIBADFTOOL_API
-    int adftool_dictionary_lookup (const struct adftool_file *file,
+    int adftool_dictionary_lookup (struct adftool_file *file,
 				   size_t length, const char *key, int *found,
 				   uint32_t * id);
   /* insert will do nothing if the key is already present. */
@@ -138,7 +138,7 @@ extern "C"
 			      const struct adftool_term *other);
 
   extern LIBADFTOOL_API
-    int adftool_term_decode (const struct adftool_file *file, uint64_t value,
+    int adftool_term_decode (struct adftool_file *file, uint64_t value,
 			     struct adftool_term *decoded);
 
   extern LIBADFTOOL_API
@@ -209,20 +209,20 @@ extern "C"
 			      uint32_t * id);
 
   extern LIBADFTOOL_API
-    int adftool_lookup (const struct adftool_file *file,
+    int adftool_lookup (struct adftool_file *file,
 			const struct adftool_statement *pattern,
 			size_t start, size_t max, size_t *n_results,
 			struct adftool_statement **results);
 
   extern LIBADFTOOL_API
-    size_t adftool_lookup_objects (const struct adftool_file *file,
+    size_t adftool_lookup_objects (struct adftool_file *file,
 				   const struct adftool_term *subject,
 				   const char *predicate,
 				   size_t start, size_t max,
 				   struct adftool_term **objects);
 
   extern LIBADFTOOL_API
-    size_t adftool_lookup_subjects (const struct adftool_file *file,
+    size_t adftool_lookup_subjects (struct adftool_file *file,
 				    const struct adftool_term *object,
 				    const char *predicate,
 				    size_t start, size_t max,
@@ -238,12 +238,12 @@ extern "C"
 			const struct adftool_statement *statement);
 
   extern LIBADFTOOL_API
-    int adftool_find_channel_identifier (const struct adftool_file *file,
+    int adftool_find_channel_identifier (struct adftool_file *file,
 					 size_t channel_index,
 					 struct adftool_term *identifier);
 
   extern LIBADFTOOL_API
-    int adftool_get_channel_column (const struct adftool_file *file,
+    int adftool_get_channel_column (struct adftool_file *file,
 				    const struct adftool_term *identifier,
 				    size_t *column);
 
@@ -253,19 +253,19 @@ extern "C"
 				  const struct adftool_term *type);
 
   extern LIBADFTOOL_API
-    size_t adftool_get_channel_types (const struct adftool_file *file,
+    size_t adftool_get_channel_types (struct adftool_file *file,
 				      const struct adftool_term *channel,
 				      size_t start, size_t max,
 				      struct adftool_term **types);
 
   extern LIBADFTOOL_API
-    size_t adftool_find_channels_by_type (const struct adftool_file *file,
+    size_t adftool_find_channels_by_type (struct adftool_file *file,
 					  const struct adftool_term *type,
 					  size_t start, size_t max,
 					  struct adftool_term **identifiers);
 
   extern LIBADFTOOL_API
-    int adftool_get_channel_decoder (const struct adftool_file *file,
+    int adftool_get_channel_decoder (struct adftool_file *file,
 				     const struct adftool_term *identifier,
 				     double *scale, double *offset);
 
@@ -279,14 +279,14 @@ extern "C"
 			      size_t n_channels, const double *data);
 
   extern LIBADFTOOL_API
-    int adftool_eeg_get_data (const struct adftool_file *file,
+    int adftool_eeg_get_data (struct adftool_file *file,
 			      size_t time_start, size_t time_length,
 			      size_t *time_max, size_t channel_start,
 			      size_t channel_length, size_t *channel_max,
 			      double *data);
 
   extern LIBADFTOOL_API
-    int adftool_eeg_get_time (const struct adftool_file *file,
+    int adftool_eeg_get_time (struct adftool_file *file,
 			      size_t observation, struct timespec *time,
 			      double *sampling_frequency);
 

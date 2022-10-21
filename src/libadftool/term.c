@@ -363,7 +363,7 @@ adftool_term_compare (const struct adftool_term *reference,
 }
 
 static int
-dict_get_safe (const struct adftool_file *file, uint32_t id, size_t start,
+dict_get_safe (struct adftool_file *file, uint32_t id, size_t start,
 	       size_t max, size_t *required, char *buffer)
 {
   if (id == 0x7FFFFFFF)
@@ -379,7 +379,7 @@ dict_get_safe (const struct adftool_file *file, uint32_t id, size_t start,
 }
 
 static inline int
-dict_get (const struct adftool_file *file, uint32_t id, size_t *allocated,
+dict_get (struct adftool_file *file, uint32_t id, size_t *allocated,
 	  char **buffer)
 {
   size_t required;
@@ -413,7 +413,7 @@ wrapup:
 }
 
 int
-adftool_term_decode (const struct adftool_file *file, uint64_t value,
+adftool_term_decode (struct adftool_file *file, uint64_t value,
 		     struct adftool_term *decoded)
 {
   uint64_t flags_mask = (((uint64_t) 1) << 2) - 1;

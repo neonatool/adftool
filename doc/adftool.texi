@@ -310,6 +310,14 @@ row.
 Contrary to the storage of statements, the dictionary has only 1
 index.
 
+@cindex cache
+Since the dictionary is an append-only data structure, it is easy to
+maintain a cache of entries. This is very beneficial, because getting
+an entry from the dictionary requires two indirections and HDF5 reads
+most of the time. A hash table is ideal for this, because collisions
+can be easily resolved by dropping the earliest element in the cache
+that caused the collision.
+
 @node Storage of statements
 @section Storage of statements
 
@@ -571,12 +579,14 @@ Compare the representation of @var{reference} and @var{other}, as with
 otherwise. Think of it as the difference function.
 @end deftypefun
 
-@deftypefun int adftool_term_decode (const struct adftool_file *@var{file}, uint64_t @var{encoded}, struct adftool_term *@var{term})
+@deftypefun int adftool_term_decode (struct adftool_file *@var{file}, uint64_t @var{encoded}, struct adftool_term *@var{term})
 @deftypefunx int adftool_term_encode (struct adftool_file *@var{file}, const struct adftool_term *@var{term}, uint64_t *@var{encoded})
 Encode or decode a @var{term}. The @var{encoded} form uses 64 bits, as
 @math{31 + 31 + 2}. To encode a term, we must make sure that the
-dictionary is up to date, which is why we might modify @var{file}. In
-any case, @var{term} must be allocated.
+dictionary is up to date, which is why we might modify @var{file}. To
+decode a term, we also keep maintaining a dictionar cache, so the
+@var{file} might be modified also. In any case, @var{term} must be
+allocated.
 
 Return 0 on success, another value if an error occured.
 @end deftypefun
@@ -700,13 +710,19 @@ Close @var{file}. Due to how HDF5 works, you must close the @var{file}
 at some point, otherwise it will be permanently locked.
 @end deftypefun
 
+The adftool file maintains a cache of dictionary elements to speed up
+lookups. Because of this, lookup function may actually mutate some
+parts of the file, in a way that is not visible to the caller. Thus,
+the constant tag to file arguments is not present in the function
+signatures.
+
 @deftypefun size_t adftool_file_get_data (struct adftool_file *@var{file}, size_t @var{start}, size_t @var{max}, void *@var{bytes})
 Get the byte contents of @var{file}, ignoring the @var{start} first
 bytes, and writing the next @var{max} bytes to @var{bytes}. Return the
 total number of bytes.
 @end deftypefun
 
-@deftypefun {int} adftool_lookup (const struct adftool_file *@var{file}, const struct adftool_statement *@var{pattern}, size_t @var{start}, size_t @var{max}, size_t *@var{n_results}, struct adftool_statement **@var{statements})
+@deftypefun {int} adftool_lookup (struct adftool_file *@var{file}, const struct adftool_statement *@var{pattern}, size_t @var{start}, size_t @var{max}, size_t *@var{n_results}, struct adftool_statement **@var{statements})
 Discard the first @var{start}, then get the last (at most) @var{max}
 @var{statements} in @var{file} that match @var{pattern}. Some
 statements may be marked as deleted, you can detect them with
@@ -719,8 +735,8 @@ already allocated. If @var{max} is 0, then the @var{statements}
 pointer is not touched.
 @end deftypefun
 
-@deftypefun {size_t} adftool_lookup_objects (const struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, struct adftool_term **@var{objects})
-@deftypefunx {size_t} adftool_lookup_subjects (const struct adftool_file *@var{file}, const struct adftool_term *@var{object}, const char *@var{predicate}, struct adftool_term **@var{subjects})
+@deftypefun {size_t} adftool_lookup_objects (struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, struct adftool_term **@var{objects})
+@deftypefunx {size_t} adftool_lookup_subjects (struct adftool_file *@var{file}, const struct adftool_term *@var{object}, const char *@var{predicate}, struct adftool_term **@var{subjects})
 Return the total number of objects or subjects that match the pattern
 (@var{subject} @var{predicate} ?) or (? @var{predicate} @var{object})
 in @var{file}. Return 0 if there was an HDF5 error. Fill @var{objects}
@@ -748,13 +764,13 @@ otherwise return a non-zero value.
 Raw EEG data is stored as long time series. It is much more efficient
 to use datasets than RDF to store these values.
 
-@deftypefun int adftool_find_channel_identifier (const struct adftool_file *@var{file}, size_t @var{j}, struct adftool_term *@var{identifier})
+@deftypefun int adftool_find_channel_identifier (struct adftool_file *@var{file}, size_t @var{j}, struct adftool_term *@var{identifier})
 Get the @var{identifier} of the @var{j}-th raw EEG channel in
 @var{file}. Return non-zero iff an error occurs: there is less than
 @var{j} channels, or a copy failed, for instance.
 @end deftypefun
 
-@deftypefun int adftool_get_channel_column (const struct adftool_file *@var{file}, const struct adftool_term *@var{channel}, size_t *@var{column})
+@deftypefun int adftool_get_channel_column (struct adftool_file *@var{file}, const struct adftool_term *@var{channel}, size_t *@var{column})
 Get the @var{column} index for @var{channel} in @var{file}.
 @end deftypefun
 
@@ -764,18 +780,18 @@ Add that @var{channel} in @var{file} is of the given
 error code otherwise.
 @end deftypefun
 
-@deftypefun size_t adftool_get_channel_types (const struct adftool_file *@var{file}, const struct adftool_term *@var{channel}, size_t @var{start}, size_t @var{max}, struct adftool_term **@var{types})
+@deftypefun size_t adftool_get_channel_types (struct adftool_file *@var{file}, const struct adftool_term *@var{channel}, size_t @var{start}, size_t @var{max}, struct adftool_term **@var{types})
 Discard the first @var{start} types that appear if @var{file} for
 @var{channel}, and initialize at most the next @var{max} @var{types}
 with the type values. Return the total number of types.
 @end deftypefun
 
-@deftypefun size_t adftool_find_channels_by_type (const struct adftool_file *@var{file}, const struct adftool_term *@var{type}, size_t @var{start}, size_t @var{max}, struct adftool_term **@var{identifiers})
+@deftypefun size_t adftool_find_channels_by_type (struct adftool_file *@var{file}, const struct adftool_term *@var{type}, size_t @var{start}, size_t @var{max}, struct adftool_term **@var{identifiers})
 Build the list of channel @var{identifiers} that are of the given
 @var{types}.
 @end deftypefun
 
-@deftypefun int adftool_eeg_get_data (const struct adftool_file *@var{file}, size_t @var{time_start}, size_t @var{time_length}, size_t *@var{time_max}, size_t @var{channel_start}, size_t @var{channel_length}, size_t *@var{channel_max}, double *@var{data})
+@deftypefun int adftool_eeg_get_data (struct adftool_file *@var{file}, size_t @var{time_start}, size_t @var{time_length}, size_t *@var{time_max}, size_t @var{channel_start}, size_t @var{channel_length}, size_t *@var{channel_max}, double *@var{data})
 Fetch the raw data from @var{file}. Consider @var{data} as a
 row-oriented storage of @var{time_length} rows by @var{channel_length}
 columns, and initialize it. Set @var{time_max} to the actual number of
@@ -835,7 +851,7 @@ anything that was there before. @var{data} is row-oriented, with
 Return 0 on success, or an error code.
 @end deftypefun
 
-@deftypefun int adftool_eeg_get_time (const struct adftool_file *@var{file}, size_t @var{i}, struct timespec *@var{time}, double *@var{sampling_frequency})
+@deftypefun int adftool_eeg_get_time (struct adftool_file *@var{file}, size_t @var{i}, struct timespec *@var{time}, double *@var{sampling_frequency})
 Get the @var{time} that the @var{i}-th observation was made in
 @var{file}, along with the @var{sampling_frequency} of the
 recording. @var{time} and @var{sampling_frequency} can each be

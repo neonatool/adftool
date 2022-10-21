@@ -12,6 +12,9 @@
 #define OPEN_BINARY_SUFFIX ""
 #endif
 
+#define DEFAULT_DICTIONARY_CACHE_ENTRIES 2039
+#define DEFAULT_DICTIONARY_CACHE_ENTRY_LENGTH 512
+
 struct adftool_file *
 adftool_file_alloc (void)
 {
@@ -20,6 +23,24 @@ adftool_file_alloc (void)
   if (ret != NULL)
     {
       ret->hdf5_file = H5I_INVALID_HID;
+      ret->dictionary.cache.n_entries = DEFAULT_DICTIONARY_CACHE_ENTRIES;
+      ret->dictionary.cache.maximum_entry_length =
+	DEFAULT_DICTIONARY_CACHE_ENTRY_LENGTH;
+      ret->dictionary.cache.entries =
+	malloc (ret->dictionary.cache.n_entries *
+		sizeof (struct adftool_dictionary_cache_entry));
+      if (ret->dictionary.cache.entries == NULL)
+	{
+	  free (ret);
+	  ret = NULL;
+	}
+    }
+  if (ret != NULL)
+    {
+      for (size_t i = 0; i < ret->dictionary.cache.n_entries; i++)
+	{
+	  ret->dictionary.cache.entries[i].data = NULL;
+	}
     }
   return ret;
 }
@@ -27,12 +48,18 @@ adftool_file_alloc (void)
 void
 adftool_file_free (struct adftool_file *file)
 {
-  adftool_file_close (file);
+  if (file != NULL)
+    {
+      adftool_file_close (file);
+      /* The dictionary cache entries have been deleted by
+         adftool_file_close. */
+      free (file->dictionary.cache.entries);
+    }
   free (file);
 }
 
 static int
-dictionary_get_key (const struct adftool_file *file,
+dictionary_get_key (struct adftool_file *file,
 		    const struct adftool_bplus_key *key, size_t *length,
 		    char **dest)
 {
@@ -878,6 +905,12 @@ wrapup:
 void
 adftool_file_close (struct adftool_file *file)
 {
+  for (size_t i = 0; i < file->dictionary.cache.n_entries; i++)
+    {
+      /* Also works if the entry is unused (NULL) */
+      free (file->dictionary.cache.entries[i].data);
+      file->dictionary.cache.entries[i].data = NULL;
+    }
   if (file->hdf5_file != H5I_INVALID_HID)
     {
       if (file->eeg_dataset != H5I_INVALID_HID)

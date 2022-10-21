@@ -2,7 +2,7 @@
 #include <time.h>
 
 int
-adftool_find_channel_identifier (const struct adftool_file *file,
+adftool_find_channel_identifier (struct adftool_file *file,
 				 size_t channel_index,
 				 struct adftool_term *identifier)
 {
@@ -93,7 +93,7 @@ cleanup:
 }
 
 int
-adftool_get_channel_decoder (const struct adftool_file *file,
+adftool_get_channel_decoder (struct adftool_file *file,
 			     const struct adftool_term *identifier,
 			     double *scale, double *offset)
 {
@@ -148,7 +148,7 @@ wrapup:
 }
 
 int
-adftool_get_channel_column (const struct adftool_file *file,
+adftool_get_channel_column (struct adftool_file *file,
 			    const struct adftool_term *identifier,
 			    size_t *column)
 {
@@ -202,7 +202,7 @@ adftool_add_channel_type (struct adftool_file *file,
 }
 
 size_t
-adftool_get_channel_types (const struct adftool_file *file,
+adftool_get_channel_types (struct adftool_file *file,
 			   const struct adftool_term *channel, size_t start,
 			   size_t max, struct adftool_term **types)
 {
@@ -212,7 +212,7 @@ adftool_get_channel_types (const struct adftool_file *file,
 }
 
 size_t
-adftool_find_channels_by_type (const struct adftool_file *file,
+adftool_find_channels_by_type (struct adftool_file *file,
 			       const struct adftool_term *type, size_t start,
 			       size_t max, struct adftool_term **channels)
 {

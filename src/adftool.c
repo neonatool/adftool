@@ -30,7 +30,7 @@
 static void printf_term (const struct adftool_term *term,
 			 int ignore_empty_name, int print_space);
 
-static void lookup_results_by_page (const struct adftool_file *file,
+static void lookup_results_by_page (struct adftool_file *file,
 				    const struct adftool_statement *pattern,
 				    size_t page_size,
 				    struct adftool_statement **results,
@@ -981,7 +981,7 @@ Cannot allocate memory to hold the results.\n"));
 }
 
 static size_t
-do_one_page (const struct adftool_file *file,
+do_one_page (struct adftool_file *file,
 	     const struct adftool_statement *pattern, size_t start,
 	     size_t length, struct adftool_statement **page,
 	     uint64_t current_time)
@@ -1026,7 +1026,7 @@ do_one_page (const struct adftool_file *file,
 }
 
 static void
-lookup_results_by_page (const struct adftool_file *file,
+lookup_results_by_page (struct adftool_file *file,
 			const struct adftool_statement *pattern,
 			size_t page_size, struct adftool_statement **results,
 			const struct timespec *current_time)

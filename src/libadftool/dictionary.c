@@ -1,8 +1,31 @@
 #include <adftool_private.h>
 
-int
-adftool_dictionary_get (const struct adftool_file *file, uint32_t id,
-			size_t start, size_t max, size_t *length, char *dest)
+static size_t
+hash_id (const struct adftool_dictionary_cache *cache, uint32_t id)
+{
+  /* FIXME: this hash function is awful */
+  return id % cache->n_entries;
+}
+
+static void
+adftool_dictionary_cache_add (struct adftool_dictionary_cache *cache,
+			      uint32_t id, size_t length, char *value)
+{
+  /* value ownership is transferred to the cache. */
+  const size_t location = hash_id (cache, id);
+  if (cache->entries[location].data)
+    {
+      free (cache->entries[location].data);
+    }
+  cache->entries[location].id = id;
+  cache->entries[location].length = length;
+  cache->entries[location].data = value;
+}
+
+static int
+adftool_dictionary_get_non_cache (const struct adftool_file *file,
+				  uint32_t id, size_t start, size_t max,
+				  size_t *length, char *dest)
 {
   /* FIXME: A lot of these checks (that strings must be a matrix, with
      13 columns) ought to be performed when loading the file. */
@@ -179,8 +202,91 @@ wrapup:
   return error;
 }
 
+static int
+adftool_dictionary_get_to_cache (struct adftool_file *file, uint32_t id)
+{
+  /* 0: added to the cache, 1: too long, 2: memory exhausted, 3: error
+     from get_non_cache. */
+  size_t actual_length;
+  int error =
+    adftool_dictionary_get_non_cache (file, id, 0, 0, &actual_length, NULL);
+  if (error)
+    {
+      return 3;
+    }
+  if (actual_length <= file->dictionary.cache.maximum_entry_length)
+    {
+      /* The entry is cacheable. */
+      char *whole = malloc (actual_length);
+      if (whole == NULL)
+	{
+	  return 2;
+	}
+      size_t check_actual_length;
+      error =
+	adftool_dictionary_get_non_cache (file, id, 0, actual_length,
+					  &check_actual_length, whole);
+      if (error)
+	{
+	  free (whole);
+	  return 3;
+	}
+      assert (check_actual_length == actual_length);
+      adftool_dictionary_cache_add (&(file->dictionary.cache), id,
+				    actual_length, whole);
+      return 0;
+    }
+  return 1;
+}
+
 int
-adftool_dictionary_lookup (const struct adftool_file *file, size_t length,
+adftool_dictionary_get (struct adftool_file *file, uint32_t id,
+			size_t start, size_t max, size_t *length, char *dest)
+{
+  const size_t location = hash_id (&(file->dictionary.cache), id);
+  struct adftool_dictionary_cache_entry *entry =
+    &(file->dictionary.cache.entries[location]);
+  if (entry->data != NULL && entry->id == id)
+    {
+      *length = entry->length;
+      size_t n_copy = max;
+      if (start + max > entry->length)
+	{
+	  n_copy = entry->length - start;
+	}
+      memcpy (dest, entry->data + start, n_copy);
+      if (n_copy < max)
+	{
+	  dest[n_copy] = '\0';
+	}
+      return 0;
+    }
+  else
+    {
+      int error = adftool_dictionary_get_to_cache (file, id);
+      switch (error)
+	{
+	case 0:
+	  /* It has been added to cache. */
+	  assert (entry->data != NULL);
+	  assert (entry->id == id);
+	  /* Next recursive call will read from cache and not recurse
+	     anymore. */
+	  return adftool_dictionary_get (file, id, start, max, length, dest);
+	case 1:
+	  /* Too large to fit in the cache */
+	  return adftool_dictionary_get_non_cache (file, id, start, max,
+						   length, dest);
+	case 2:
+	  return 2;
+	default:
+	  return 1;
+	}
+    }
+}
+
+int
+adftool_dictionary_lookup (struct adftool_file *file, size_t length,
 			   const char *key, int *found, uint32_t * id)
 {
   struct adftool_bplus_key needle;

@@ -107,7 +107,7 @@ get_matches (const struct adftool_file *file,
 }
 
 int
-adftool_lookup (const struct adftool_file *file,
+adftool_lookup (struct adftool_file *file,
 		const struct adftool_statement *pattern,
 		size_t start, size_t max, size_t *n_results,
 		struct adftool_statement **results)
@@ -132,16 +132,18 @@ adftool_lookup (const struct adftool_file *file,
 }
 
 size_t
-adftool_lookup_objects (const struct adftool_file *file,
+adftool_lookup_objects (struct adftool_file *file,
 			const struct adftool_term *subject,
 			const char *predicate, size_t start, size_t max,
 			struct adftool_term **objects)
 {
   struct adftool_term p = {.type = TERM_NAMED,.str1 =
-      (char *) predicate,.str2 = NULL };
+      (char *) predicate,.str2 = NULL
+  };
   struct adftool_statement pattern = {.subject =
       (struct adftool_term *) subject,.predicate = &p,.object = NULL,.graph =
-      NULL,.deletion_date = ((uint64_t) (-1)) };
+      NULL,.deletion_date = ((uint64_t) (-1))
+  };
   struct adftool_statement *s = adftool_statement_alloc ();
   if (s == NULL)
     {
@@ -175,16 +177,18 @@ adftool_lookup_objects (const struct adftool_file *file,
 }
 
 size_t
-adftool_lookup_subjects (const struct adftool_file *file,
+adftool_lookup_subjects (struct adftool_file *file,
 			 const struct adftool_term *object,
 			 const char *predicate, size_t start, size_t max,
 			 struct adftool_term **subjects)
 {
   struct adftool_term p = {.type = TERM_NAMED,.str1 =
-      (char *) predicate,.str2 = NULL };
+      (char *) predicate,.str2 = NULL
+  };
   struct adftool_statement pattern = {.subject = NULL,.predicate =
       &p,.object = (struct adftool_term *) object,.graph =
-      NULL,.deletion_date = ((uint64_t) (-1)) };
+      NULL,.deletion_date = ((uint64_t) (-1))
+  };
   struct adftool_statement *s = adftool_statement_alloc ();
   if (s == NULL)
     {

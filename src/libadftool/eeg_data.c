@@ -137,7 +137,7 @@ wrapup:
 }
 
 int
-adftool_eeg_get_data (const struct adftool_file *file, size_t time_start,
+adftool_eeg_get_data (struct adftool_file *file, size_t time_start,
 		      size_t time_length, size_t *time_max,
 		      size_t channel_start, size_t channel_length,
 		      size_t *channel_max, double *data)

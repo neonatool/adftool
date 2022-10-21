@@ -47,6 +47,24 @@ struct literal
   char *data;
 };
 
+struct adftool_dictionary_cache_entry
+{
+  uint32_t id;
+  size_t length;
+  /* data = NULL is the sole indicator that the entry is free */
+  char *data;
+};
+
+struct adftool_dictionary_cache
+{
+  size_t n_entries;
+  size_t maximum_entry_length;
+  struct adftool_dictionary_cache_entry *entries;
+  /* The array of entries is allocated by
+     adftool_file_alloc/adftool_file_free, but each entry is allocated
+     by adftool_file_open/adftool_file_close. */
+};
+
 struct adftool_dictionary
 {
   hid_t group;
@@ -57,6 +75,7 @@ struct adftool_dictionary
   hid_t strings_nextid;
   hid_t bytes_dataset;
   hid_t bytes_nextid;
+  struct adftool_dictionary_cache cache;
 };
 
 struct adftool_quads
