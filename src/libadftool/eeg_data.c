@@ -167,7 +167,32 @@ adftool_eeg_get_data (const struct adftool_file *file, size_t time_start,
     }
   *time_max = dimensions[0];
   *channel_max = dimensions[1];
-  for (size_t j = 0; j < dimensions[1]; j++)
+  /* We are filling out rows of data. Data is a row-wise matrix, with
+     channel_length columns. */
+  const size_t output_row_length = channel_length;
+  /* Now we can restrict channel_length so as to make sure each
+     requested channel is in the file. If channel_length is too large
+     (channel_start + channel_length is out of bounds), then the last
+     columns of the output will not be touched. */
+  if (time_start >= dimensions[0])
+    {
+      time_start = 0;
+      time_length = 0;
+    }
+  if (channel_start >= dimensions[1])
+    {
+      channel_start = 0;
+      channel_length = 0;
+    }
+  if (time_start + time_length > dimensions[0])
+    {
+      time_length = dimensions[0] - time_start;
+    }
+  if (channel_length >= dimensions[1])
+    {
+      channel_length = dimensions[1] - channel_start;
+    }
+  for (size_t j = channel_start; j - channel_start < channel_length; j++)
     {
       struct adftool_term *identifier = adftool_term_alloc ();
       if (identifier == NULL)
@@ -194,10 +219,13 @@ adftool_eeg_get_data (const struct adftool_file *file, size_t time_start,
 	  error = 1;
 	  goto clean_identifier;
 	}
+      /* We want to read data starting at channel j (1 channel), time
+         starting at time_start (time_length points) */
       hsize_t start[] = { 0, 0 };
       hsize_t count[] = { 0, 1 };
+      start[0] = time_start;
       start[1] = j;
-      count[0] = dimensions[0];
+      count[0] = time_length;
       herr_t selection_error =
 	H5Sselect_hyperslab (selection_space, H5S_SELECT_AND, start, NULL,
 			     count, NULL);
@@ -206,14 +234,16 @@ adftool_eeg_get_data (const struct adftool_file *file, size_t time_start,
 	  error = 1;
 	  goto clean_selection_space;
 	}
-      hsize_t mem_length = dimensions[0];
+      /* We want to store the result in an array of length
+         time_length. */
+      hsize_t mem_length = time_length;
       hid_t memspace = H5Screate_simple (1, &mem_length, &mem_length);
       if (memspace == H5I_INVALID_HID)
 	{
 	  error = 1;
 	  goto clean_selection_space;
 	}
-      uint16_t *encoded = malloc (dimensions[0] * sizeof (uint16_t));
+      uint16_t *encoded = malloc (time_length * sizeof (uint16_t));
       if (encoded == NULL)
 	{
 	  error = 1;
@@ -227,19 +257,14 @@ adftool_eeg_get_data (const struct adftool_file *file, size_t time_start,
 	  error = 1;
 	  goto clean_encoded;
 	}
-      for (size_t i = 0; i < dimensions[0]; i++)
+      for (size_t i = time_start; i - time_start < time_length; i++)
 	{
-	  const double raw = encoded[i];
+	  const size_t time_index = i - time_start;
+	  const size_t channel_index = j - channel_start;
+	  const size_t index = time_index * output_row_length + channel_index;
+	  const double raw = encoded[i - time_start];
 	  const double scaled = raw * scale + offset;
-	  if (i >= time_start && i - time_start < time_length
-	      && j >= channel_start && j - channel_start < channel_length)
-	    {
-	      const size_t time_index = i - time_start;
-	      const size_t channel_index = j - channel_start;
-	      const size_t index =
-		time_index * channel_length + channel_index;
-	      data[index] = scaled;
-	    }
+	  data[index] = scaled;
 	}
     clean_encoded:
       free (encoded);
