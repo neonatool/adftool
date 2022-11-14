@@ -58,6 +58,15 @@ adftool_fir_free (struct adftool_fir *filter)
   free (filter);
 }
 
+#define BLACKMAN \
+  (0.42 - 0.5 * cos (2 * M_PI * i_window) \
+   + 0.08 * cos (4 * M_PI * i_window))
+
+#define HAMMING \
+  (0.54 + 0.46 * cos (2 * M_PI * i_window))
+
+#define WINDOW HAMMING
+
 static void
 add_lowpass (struct adftool_fir *filter, double freq)
 {
@@ -69,10 +78,8 @@ add_lowpass (struct adftool_fir *filter, double freq)
     {
       const double i_f = i + 1;
       const double sinc = sin (2 * M_PI * fc * i_f) / i_f;
-      const double i_window = (filter->half_m + i + 1) / window_size;
-      const double window =
-	0.42 - 0.5 * cos (2 * M_PI * i_window) +
-	0.08 * cos (4 * M_PI * i_window);
+      const double i_window = i_f / window_size;
+      const double window = WINDOW;
       coef_sum += 2 * sinc * window;
     }
   const double k = 1 / coef_sum;
@@ -81,10 +88,8 @@ add_lowpass (struct adftool_fir *filter, double freq)
     {
       const double i_f = i + 1;
       const double sinc = sin (2 * M_PI * fc * i_f) / i_f;
-      const double i_window = (filter->half_m + i + 1) / window_size;
-      const double window =
-	0.42 - 0.5 * cos (2 * M_PI * i_window) +
-	0.08 * cos (4 * M_PI * i_window);
+      const double i_window = i_f / window_size;
+      const double window = WINDOW;
       filter->coefficients[i] += k * sinc * window;
     }
 }
