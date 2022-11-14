@@ -1,7 +1,7 @@
 SUBDIRS = lib libprog . po tests
 ACLOCAL_AMFLAGS = -I m4 -I m4prog
 EXTRA_DIST = m4/gnulib-cache.m4 m4prog/gnulib-cache.m4 \
-  src/filter_test_data.c src/filter_test_data.R \
+  src/filter_test_data.c src/filter_test_data.R src/filter_test_data.csv \
   po/Rules-install-local \
   conanfile-in.py \
   $(top_srcdir)/conanfile.py \
@@ -22,7 +22,8 @@ CLEANFILES = \
   multi_statement_example.adf \
   channel_metadata_example.adf \
   eeg_data_example.adf \
-  eeg_metadata_example.adf
+  eeg_metadata_example.adf \
+  filter-log
 
 AM_CPPFLAGS = \
   -I include -I $(srcdir)/include \
@@ -467,8 +468,8 @@ AM_TESTS_ENVIRONMENT = \
 
 BUILT_SOURCES = src/filter_test_data.c
 
-$(srcdir)/src/filter_test_data.c: src/filter_test_data.R
-	$(AM_V_GEN) $(RSCRIPT) $< > $@-t
+$(srcdir)/src/filter_test_data.c: src/filter_test_data.R src/filter_test_data.csv
+	$(AM_V_GEN) (cd $(srcdir) && $(RSCRIPT) src/filter_test_data.R > src/filter_test_data.c-t)
 	@mv $@-t $@
 
 $(top_srcdir)/.version:
