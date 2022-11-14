@@ -302,7 +302,14 @@ extern "C"
 					   double transition_bandwidth);
 
   extern LIBADFTOOL_API
+    struct adftool_fir *adftool_fir_alloc_n (double sfreq, size_t order);
+
+  extern LIBADFTOOL_API
     size_t adftool_fir_order (const struct adftool_fir *filter);
+
+  extern LIBADFTOOL_API
+    void adftool_fir_coefficients (const struct adftool_fir *filter,
+				   double *coefficients);
 
   extern LIBADFTOOL_API void adftool_fir_free (struct adftool_fir *filter);
 

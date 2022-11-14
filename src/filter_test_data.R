@@ -1,4 +1,5 @@
 data <- read.csv ('src/filter_test_data.csv')
+coef <- read.csv ('src/filter_test_coef.csv')
 
 filter_order <- 6607 # MNE told me so
 sfreq <- 600.6 # MNE told me so
@@ -17,6 +18,9 @@ init_signal = paste (sapply (data$unfiltered, function (y) {
 init_filtered = paste (sapply (data$filtered, function (y) {
   sprintf ("%.20f", y)
 }), collapse = ",\n      ")
+init_coef = paste (sapply (coef$coef, function (y) {
+  sprintf ("%.20f", y)
+}), collapse = ",\n      ")
 
 cat (sprintf ("#ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -32,7 +36,8 @@ _adftool_filter_test_data (double *sfreq,
 			   double *high,
                            size_t *length,
 			   double **signal,
-			   double **expected_filtered)
+			   double **expected_filtered,
+			   double **expected_coef)
 {
   *sfreq = %f;
   *transition_bandwidth = %f;
@@ -47,16 +52,23 @@ _adftool_filter_test_data (double *sfreq,
     {
       %s
     };
+  static const double my_expected_coef[%d] =
+    {
+      %s
+    };
   *signal = malloc (%d * sizeof (double));
   *expected_filtered = malloc (%d * sizeof (double));
-  if (*signal == NULL || *expected_filtered == NULL)
+  *expected_coef = malloc (%d * sizeof (double));
+  if (*signal == NULL || *expected_filtered == NULL || expected_coef == NULL)
     {
       abort ();
     }
   memcpy (*signal, my_signal, sizeof (my_signal));
   memcpy (*expected_filtered, my_expected_filtered, sizeof (my_expected_filtered));
+  memcpy (*expected_coef, my_expected_coef, sizeof (my_expected_coef));
 }
 ", sfreq, transition_bandwidth, low, high, length (data$unfiltered),
    length (data$unfiltered), init_signal,
    length (data$unfiltered), init_filtered,
-   length (data$unfiltered), length (data$unfiltered)))
+   filter_order, init_coef,
+   length (data$unfiltered), length (data$unfiltered), filter_order))

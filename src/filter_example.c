@@ -18,7 +18,8 @@
 #define N_(String) (String)
 
 extern void _adftool_filter_test_data (double *, double *, double *, double *,
-				       size_t *, double **, double **);
+				       size_t *, double **, double **,
+				       double **);
 
 int
 main (int argc, char *argv[])
@@ -36,8 +37,10 @@ main (int argc, char *argv[])
   size_t signal_length;
   double *signal;
   double *expected_filtered;
+  double *expected_coef;
   _adftool_filter_test_data (&sfreq, &transition_bandwidth, &low, &high,
-			     &signal_length, &signal, &expected_filtered);
+			     &signal_length, &signal, &expected_filtered,
+			     &expected_coef);
   double *filtered = malloc (signal_length * sizeof (double));
   if (filtered == NULL)
     {
@@ -56,6 +59,35 @@ main (int argc, char *argv[])
       abort ();
     }
   adftool_fir_design_bandpass (filter, low, high);
+  double *actual_coef = malloc (filter_order * sizeof (double));
+  if (actual_coef == NULL)
+    {
+      abort ();
+    }
+  adftool_fir_coefficients (filter, actual_coef);
+  double coef_max_diff = 0;
+  printf ("Coefficient\tExpected\tActual\n");
+  for (size_t i = 0; i < filter_order; i++)
+    {
+      const double actual = actual_coef[i];
+      const double expected = expected_coef[i];
+      double diff = actual - expected;
+      if (diff < 0)
+	{
+	  diff = -diff;
+	}
+      printf ("%lu\t%f\t%f\n", i, expected, actual);
+      if (diff > coef_max_diff)
+	{
+	  coef_max_diff = diff;
+	}
+    }
+  if (coef_max_diff > 1e-6)
+    {
+      fprintf (stderr, "Filter coefficients do not match, \
+now let’s see if it works though…\n");
+    }
+  free (actual_coef);
   adftool_fir_apply (filter, signal_length, signal, filtered);
   FILE *log = fopen ("filter-log", "wt");
   if (log == NULL)
@@ -91,5 +123,6 @@ it is closer to the expected result than to the raw signal."));
   free (filtered);
   free (signal);
   free (expected_filtered);
+  free (expected_coef);
   return 0;
 }

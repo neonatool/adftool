@@ -11,28 +11,16 @@ struct adftool_fir
 };
 
 struct adftool_fir *
-adftool_fir_alloc (double sfreq, double transition_bandwidth)
+adftool_fir_alloc_n (double sfreq, size_t order)
 {
   struct adftool_fir *ret = malloc (sizeof (struct adftool_fir));
   if (ret != NULL)
     {
-      const double bw = transition_bandwidth / sfreq;
-      size_t m = 4 / bw;
-      if (m < 8)
-	{
-	  /* bw > 0.5, every frequency is in the transition bandwidth,
-	     so any response is correct: no filtering. This is very
-	     suspicious, so we’ll still put 8 here. */
-	  m = 8;
-	}
-      if (m % 2 == 1)
-	{
-	  m++;
-	}
+      assert (order % 2 == 1);
       ret->sfreq = sfreq;
-      ret->half_m = m / 2;
+      ret->half_m = order / 2;
       ret->coef_0 = 0;
-      ret->coefficients = calloc (m / 2, sizeof (double));
+      ret->coefficients = calloc (order / 2, sizeof (double));
       if (ret->coefficients == NULL)
 	{
 	  free (ret);
@@ -42,10 +30,44 @@ adftool_fir_alloc (double sfreq, double transition_bandwidth)
   return ret;
 }
 
+struct adftool_fir *
+adftool_fir_alloc (double sfreq, double transition_bandwidth)
+{
+  const double bw = transition_bandwidth / sfreq;
+  size_t m = 4 / bw;
+  if (m < 8)
+    {
+      /* bw > 0.5, every frequency is in the transition bandwidth,
+         so any response is correct: no filtering. This is very
+         suspicious, so we’ll still put 8 here. */
+      m = 8;
+    }
+  if (m % 2 == 0)
+    {
+      m++;
+    }
+  return adftool_fir_alloc_n (sfreq, m);
+}
+
 size_t
 adftool_fir_order (const struct adftool_fir *filter)
 {
   return 2 * filter->half_m + 1;
+}
+
+void
+adftool_fir_coefficients (const struct adftool_fir *filter,
+			  double *coefficients)
+{
+  coefficients[filter->half_m] = filter->coef_0;
+  for (size_t i = 0; i < filter->half_m; i++)
+    {
+      const size_t low_index = filter->half_m - i - 1;
+      const size_t high_index = filter->half_m + i + 1;
+      const double coef = filter->coefficients[i];
+      coefficients[low_index] = coef;
+      coefficients[high_index] = coef;
+    }
 }
 
 void
