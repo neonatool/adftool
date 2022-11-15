@@ -93,6 +93,11 @@ static void
 add_lowpass (struct adftool_fir *filter, double freq)
 {
   const double fc = freq / filter->sfreq;
+  if (fc <= 1e-6)
+    {
+      /* Now low-pass to do… */
+      return;
+    }
   /* Compute K so that the sum of all coefficients is 1. */
   double coef_sum = 2 * M_PI * fc;
   const double window_size = 2 * filter->half_m;
