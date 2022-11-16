@@ -114,6 +114,7 @@ libadftool_la_SOURCES = \
   src/adftool_bplus_node.h \
   src/adftool_bplus_key.h \
   src/adftool_bplus.h \
+  src/adftool_bplus_cache.h \
   src/adftool_hdf5.h \
   src/adftool_grow.h \
   src/adftool_lookup.h \

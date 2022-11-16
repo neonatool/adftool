@@ -2,6 +2,7 @@
 #define H_ADFTOOL_BPLUS_INCLUDED
 
 #include <adftool_private.h>
+#include <adftool_bplus_cache.h>
 
 #include <hdf5.h>
 
@@ -43,6 +44,7 @@ struct bplus
   struct context allocate_context;
   void (*store) (uint32_t, size_t, size_t, const uint32_t *, void *);
   struct context store_context;
+  struct bplus_cache cache;
 };
 
 static inline void bplus_set_fetch (struct bplus *bplus,
@@ -133,10 +135,25 @@ static inline int
 bplus_fetch (struct bplus *bplus, uint32_t row_id, size_t *actual_row_length,
 	     size_t request_start, size_t request_length, uint32_t * response)
 {
-  assert (bplus->fetch != NULL);
-  void *ctx = appropriate_context_argument (&(bplus->fetch_context));
-  return bplus->fetch (row_id, actual_row_length, request_start,
-		       request_length, response, ctx);
+  int cache_miss =
+    bplus_cache_fetch (&(bplus->cache), row_id, actual_row_length,
+		       request_start, request_length, response);
+  if (cache_miss)
+    {
+      assert (bplus->fetch != NULL);
+      void *ctx = appropriate_context_argument (&(bplus->fetch_context));
+      int fetch_error =
+	bplus->fetch (row_id, actual_row_length, request_start,
+		      request_length, response, ctx);
+      if (fetch_error == 0 && request_start == 0
+	  && request_length == 2 * bplus->cache.order + 1)
+	{
+	  bplus_cache_store (&(bplus->cache), row_id, request_start,
+			     request_length, response);
+	}
+      return fetch_error;
+    }
+  return 0;
 }
 
 static inline int
@@ -172,6 +189,7 @@ static inline void
 bplus_store (struct bplus *bplus, uint32_t node_id, size_t start,
 	     size_t length, const uint32_t * row)
 {
+  bplus_cache_store (&(bplus->cache), node_id, start, length, row);
   assert (bplus->store != NULL);
   void *ctx = appropriate_context_argument (&(bplus->store_context));
   bplus->store (node_id, start, length, row, ctx);

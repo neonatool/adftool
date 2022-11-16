@@ -139,6 +139,7 @@ main ()
   textdomain (PACKAGE);
   /* We need to set the parameters. */
   static struct bplus my_bplus;
+  bplus_cache_init (&(my_bplus.cache));
   bplus = &my_bplus;
   if (bplus == NULL)
     {
@@ -159,5 +160,6 @@ main ()
   check_string_absent ("trombone");
   check_string_absent ("vibraslap");
   check_string_absent ("xylophone");
+  bplus_cache_destroy (&(my_bplus.cache));
   return 0;
 }

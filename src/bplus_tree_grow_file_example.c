@@ -112,6 +112,7 @@ the file with the initial data.\n"));
   H5Sclose (initial_data_space);
   H5Sclose (selection_space);
   static struct bplus my_bplus;
+  bplus_cache_init (&(my_bplus.cache));
   bplus = &my_bplus;
   int set_bplus_error = bplus_from_hdf5 (bplus, dataset, nextID);
   if (set_bplus_error)
@@ -119,6 +120,7 @@ the file with the initial data.\n"));
       fprintf (stderr, _("Could not set up the bplus.\n"));
       abort ();
     }
+  bplus_cache_destroy (&(my_bplus.cache));
 }
 
 static void

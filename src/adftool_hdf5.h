@@ -235,6 +235,20 @@ bplus_from_hdf5 (struct bplus *bplus, hid_t dataset, hid_t next_id)
   bplus->store_context.type = HDF5;
   bplus->store_context.arg.hdf5.dataset = dataset;
   bplus->store_context.arg.hdf5.nextID = next_id;
+  hid_t dataset_space = H5Dget_space (dataset);
+  int dataset_rank = H5Sget_simple_extent_ndims (dataset_space);
+  if (dataset_rank != 2)
+    {
+      return 1;
+    }
+  hsize_t start_dimensions[2];
+  H5Sget_simple_extent_dims (dataset_space, start_dimensions, NULL);
+  if ((start_dimensions[1] % 2) != 1)
+    {
+      return 1;
+    }
+  const size_t order = ((start_dimensions[1] - 1) / 2);
+  bplus_cache_set_order (&(bplus->cache), order);
   int next_id_value;
   if (H5Aread (next_id, H5T_NATIVE_INT, &next_id_value) < 0)
     {
@@ -246,16 +260,6 @@ bplus_from_hdf5 (struct bplus *bplus, hid_t dataset, hid_t next_id)
       uint32_t new_root;
       struct node root_node;
       bplus_allocate (bplus, &new_root);
-      size_t row_length;
-      int query_rank_error =
-	bplus_fetch (bplus, new_root, &row_length, 0, 0, NULL);
-      if (query_rank_error)
-	{
-	  /* FIXME: revert next_id to 0? */
-	  return -1;
-	}
-      assert ((row_length % 2) == 1);
-      size_t order = ((row_length - 1) / 2);
       if (node_init (order, new_root, &root_node) != 0)
 	{
 	  return 1;

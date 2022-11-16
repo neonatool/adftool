@@ -135,6 +135,7 @@ main ()
   /* We need to set the parameters. */
   static struct bplus my_bplus;
   bplus = &my_bplus;
+  bplus_cache_init (&(my_bplus.cache));
   bplus_set_fetch (bplus, fetch, NULL);
   bplus_set_allocate (bplus, allocate, NULL);
   bplus_set_store (bplus, store, NULL);
@@ -150,5 +151,6 @@ main ()
 	  assert (data[i][j] == expected[i][j]);
 	}
     }
+  bplus_cache_destroy (&(my_bplus.cache));
   return 0;
 }

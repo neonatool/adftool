@@ -164,6 +164,7 @@ main ()
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
   static struct bplus my_bplus;
+  bplus_cache_init (&(my_bplus.cache));
   bplus = &my_bplus;
   bplus_set_fetch (bplus, fetch, &ctx);
   bplus_set_compare (bplus, compare, &ctx);
@@ -178,5 +179,6 @@ main ()
 	}
     }
   bplus = NULL;
+  bplus_cache_destroy (&(my_bplus.cache));
   return 0;
 }

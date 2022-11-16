@@ -67,6 +67,7 @@ prepare_file (void)
     }
   H5Sclose (fspace);
   static struct bplus my_bplus;
+  bplus_cache_init (&(my_bplus.cache));
   bplus = &my_bplus;
   int error = bplus_from_hdf5 (bplus, dataset, nextID);
   if (error)
@@ -74,6 +75,7 @@ prepare_file (void)
       fprintf (stderr, _("Could not use the file as the B+ backend.\n"));
       abort ();
     }
+  bplus_cache_destroy (&(my_bplus.cache));
 }
 
 static void

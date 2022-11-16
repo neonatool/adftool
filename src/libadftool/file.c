@@ -303,11 +303,13 @@ _adftool_file_do_open (struct adftool_file *file)
   hid_t data_description_group = H5I_INVALID_HID;
   hid_t data_description_quads_dataset = H5I_INVALID_HID;
   hid_t data_description_quads_nextid = H5I_INVALID_HID;
+  bplus_cache_init (&(dictionary_bplus.cache));
   struct adftool_index indices[6];
   for (size_t i = 0; i < 6; i++)
     {
       indices[i].dataset = H5I_INVALID_HID;
       indices[i].nextid = H5I_INVALID_HID;
+      bplus_cache_init (&(indices[i].bplus.cache));
     }
   hid_t eeg_dataset = H5I_INVALID_HID;
   dictionary_group = H5Gopen2 (hdf5_file, "/dictionary", H5P_DEFAULT);
@@ -736,6 +738,7 @@ wrapup:
 	    {
 	      H5Aclose (indices[i].nextid);
 	    }
+	  bplus_cache_destroy (&(indices[i].bplus.cache));
 	}
       if (data_description_quads_dataset != H5I_INVALID_HID)
 	{
@@ -777,6 +780,7 @@ wrapup:
 	{
 	  H5Gclose (dictionary_group);
 	}
+      bplus_cache_destroy (&(dictionary_bplus.cache));
     }
   return error;
 }
@@ -921,6 +925,9 @@ adftool_file_close (struct adftool_file *file)
 	{
 	  H5Dclose (file->data_description.indices[i].dataset);
 	  H5Aclose (file->data_description.indices[i].nextid);
+	  bplus_cache_destroy (&
+			       (file->data_description.indices[i].bplus.
+				cache));
 	}
       H5Dclose (file->data_description.quads.dataset);
       H5Aclose (file->data_description.quads.nextid);
@@ -932,6 +939,7 @@ adftool_file_close (struct adftool_file *file)
       H5Aclose (file->dictionary.bplus_nextid);
       H5Dclose (file->dictionary.bplus_dataset);
       H5Gclose (file->dictionary.group);
+      bplus_cache_destroy (&(file->dictionary.bplus.cache));
       H5Fclose (file->hdf5_file);
       fclose (file->file_handle);
       file->hdf5_file = H5I_INVALID_HID;
