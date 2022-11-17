@@ -89,71 +89,24 @@ adftool_fir_free (struct adftool_fir *filter)
 
 #define WINDOW HAMMING
 
-static void
-add_lowpass (struct adftool_fir *filter, double freq)
-{
-  const double fc = freq / filter->sfreq;
-  if (fc <= 1e-6)
-    {
-      /* Now low-pass to do… */
-      return;
-    }
-  /* Compute K so that the sum of all coefficients is 1. */
-  double coef_sum = 2 * M_PI * fc;
-  const double window_size = 2 * filter->half_m;
-  for (size_t i = 0; i < filter->half_m; i++)
-    {
-      const double i_f = i + 1;
-      const double sinc = sin (2 * M_PI * fc * i_f) / i_f;
-      const double i_window = i_f / window_size;
-      const double window = WINDOW;
-      coef_sum += 2 * sinc * window;
-    }
-  const double k = 1 / coef_sum;
-  filter->coef_0 += 2 * M_PI * fc * k;
-  for (size_t i = 0; i < filter->half_m; i++)
-    {
-      const double i_f = i + 1;
-      const double sinc = sin (2 * M_PI * fc * i_f) / i_f;
-      const double i_window = i_f / window_size;
-      const double window = WINDOW;
-      filter->coefficients[i] += k * sinc * window;
-    }
-}
-
-static void
-spectral_reverse (struct adftool_fir *filter)
-{
-  for (size_t i = 0; i < filter->half_m; i += 2)
-    {
-      filter->coefficients[i] = -(filter->coefficients[i]);
-    }
-}
-
-static void
-spectral_invert (struct adftool_fir *filter)
-{
-  filter->coef_0 = -(filter->coef_0);
-  for (size_t i = 0; i < filter->half_m; i += 1)
-    {
-      filter->coefficients[i] = -(filter->coefficients[i]);
-    }
-  filter->coef_0 += 1;
-}
-
 void
 adftool_fir_design_bandpass (struct adftool_fir *filter, double freq_low,
 			     double freq_high)
 {
-  filter->coef_0 = 0;
+  const double fcl = freq_low / filter->sfreq;
+  const double fch = freq_high / filter->sfreq;
+  const double window_size = 2 * filter->half_m;
+  filter->coef_0 = 2 * (fch - fcl);
   for (size_t i = 0; i < filter->half_m; i++)
     {
-      filter->coefficients[i] = 0;
+      const double i_f = i + 1;
+      const double sincdiff =
+	(((sin (2 * M_PI * fch * i_f) / i_f)
+	  - (sin (2 * M_PI * fcl * i_f) / i_f)) / M_PI);
+      const double i_window = i_f / window_size;
+      const double window = WINDOW;
+      filter->coefficients[i] = sincdiff * window;
     }
-  add_lowpass (filter, (filter->sfreq / 2) - freq_high);
-  spectral_reverse (filter);
-  add_lowpass (filter, freq_low);
-  spectral_invert (filter);
 }
 
 void
