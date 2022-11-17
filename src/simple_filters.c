@@ -31,13 +31,12 @@ main (int argc, char *argv[])
   textdomain (PACKAGE);
   const size_t filter_order = 113;
   const double sfreq = 256;
-  struct adftool_fir *filter = adftool_fir_alloc_n (sfreq, filter_order);
+  struct adftool_fir *filter = adftool_fir_alloc (filter_order);
   if (filter == NULL)
     {
       abort ();
     }
-  /* Cut-off, 30, plus half the bandwidth, 7.5 */
-  adftool_fir_design_bandpass (filter, 0, 33.75);
+  adftool_fir_design_bandpass (filter, sfreq, 0, 30, 0, 7.5);
   assert (adftool_fir_order (filter) == filter_order);
   double coef[113];
   assert (sizeof (coef) == filter_order * sizeof (double));
@@ -51,13 +50,13 @@ main (int argc, char *argv[])
   assert (APPEQ (coef[112], coef[0]));
   adftool_fir_free (filter);
   /* Second example: high pass */
-  filter = adftool_fir_alloc_n (sfreq, filter_order);
+  filter = adftool_fir_alloc (filter_order);
   if (filter == NULL)
     {
       abort ();
     }
   /* Cut-off, 30, minus half the bandwidth, 7.5 */
-  adftool_fir_design_bandpass (filter, 26.25, 128);
+  adftool_fir_design_bandpass (filter, sfreq, 30, 128, 7.5, 0);
   assert (adftool_fir_order (filter) == filter_order);
   assert (sizeof (coef) == filter_order * sizeof (double));
   adftool_fir_coefficients (filter, coef);

@@ -4,20 +4,54 @@
 
 struct adftool_fir
 {
-  double sfreq;
   size_t half_m;
   double coef_0;
   double *coefficients;		/* just the strictly positive half_m of them. */
 };
 
+void
+adftool_fir_auto_bandwidth (double sfreq, double freq_low, double freq_high,
+			    double *trans_low, double *trans_high)
+{
+  /* MNE: Why compare transition bandwidths to 2 Hz?????? */
+  *trans_low = freq_low / 4;
+  if (*trans_low < 2)
+    {
+      *trans_low = 2;
+    }
+  if (*trans_low > freq_low)
+    {
+      *trans_low = freq_low;
+    }
+  *trans_high = freq_high / 4;
+  if (*trans_high < 2)
+    {
+      *trans_high = 2;
+    }
+  if (*trans_high > sfreq / 2 - freq_high)
+    {
+      *trans_high = sfreq / 2 - freq_high;
+    }
+}
+
+size_t
+adftool_fir_auto_order (double sfreq, double bw)
+{
+  size_t relative = ceil (3.3 * sfreq / bw);
+  if (relative % 2 == 0)
+    {
+      relative++;
+    }
+  return relative;
+}
+
 struct adftool_fir *
-adftool_fir_alloc_n (double sfreq, size_t order)
+adftool_fir_alloc (size_t order)
 {
   struct adftool_fir *ret = malloc (sizeof (struct adftool_fir));
   if (ret != NULL)
     {
       assert (order % 2 == 1);
-      ret->sfreq = sfreq;
       ret->half_m = order / 2;
       ret->coef_0 = 0;
       ret->coefficients = calloc (order / 2, sizeof (double));
@@ -28,25 +62,6 @@ adftool_fir_alloc_n (double sfreq, size_t order)
 	}
     }
   return ret;
-}
-
-struct adftool_fir *
-adftool_fir_alloc (double sfreq, double transition_bandwidth)
-{
-  const double bw = transition_bandwidth / sfreq;
-  size_t m = 4 / bw;
-  if (m < 8)
-    {
-      /* bw > 0.5, every frequency is in the transition bandwidth,
-         so any response is correct: no filtering. This is very
-         suspicious, so we’ll still put 8 here. */
-      m = 8;
-    }
-  if (m % 2 == 0)
-    {
-      m++;
-    }
-  return adftool_fir_alloc_n (sfreq, m);
 }
 
 size_t
@@ -90,22 +105,52 @@ adftool_fir_free (struct adftool_fir *filter)
 #define WINDOW HAMMING
 
 void
-adftool_fir_design_bandpass (struct adftool_fir *filter, double freq_low,
-			     double freq_high)
+adftool_fir_design_bandpass (struct adftool_fir *filter, double sfreq,
+			     double freq_low, double freq_high,
+			     double trans_low, double trans_high)
 {
-  const double fcl = freq_low / filter->sfreq;
-  const double fch = freq_high / filter->sfreq;
-  const double window_size = 2 * filter->half_m;
-  filter->coef_0 = 2 * (fch - fcl);
   for (size_t i = 0; i < filter->half_m; i++)
     {
-      const double i_f = i + 1;
-      const double sincdiff =
-	(((sin (2 * M_PI * fch * i_f) / i_f)
-	  - (sin (2 * M_PI * fcl * i_f) / i_f)) / M_PI);
-      const double i_window = i_f / window_size;
-      const double window = WINDOW;
-      filter->coefficients[i] = sincdiff * window;
+      filter->coefficients[i] = 0;
+    }
+  const double fcl = (freq_low - trans_low / 2) / sfreq;
+  const double fch = (freq_high + trans_high / 2) / sfreq;
+  filter->coef_0 = 2 * (fch - fcl);
+  /* Add the low-pass component: up to fch */
+  if (fch * 2 < 1)
+    {
+      const size_t stop = adftool_fir_auto_order (sfreq, trans_high) / 2;
+      assert (stop <= filter->half_m);
+      const double lowpass_window_size = 2 * stop;
+      for (size_t i = 0; i < stop; i++)
+	{
+	  const double i_f = i + 1;
+	  const double i_window = i_f / lowpass_window_size;
+	  if (i_window <= 0.5)
+	    {
+	      const double sinc = (sin (2 * M_PI * fch * i_f) / i_f) / M_PI;
+	      const double window = WINDOW;
+	      filter->coefficients[i] += sinc * window;
+	    }
+	}
+    }
+  /* Add the high-pass component: start at fcl */
+  if (fcl > 0)
+    {
+      const size_t stop = adftool_fir_auto_order (sfreq, trans_low) / 2;
+      assert (stop <= filter->half_m);
+      const double highpass_window_size = 2 * stop;
+      for (size_t i = 0; i < stop; i++)
+	{
+	  const double i_f = i + 1;
+	  const double i_window = i_f / highpass_window_size;
+	  if (i_window <= 0.5)
+	    {
+	      const double sinc = -(sin (2 * M_PI * fcl * i_f) / i_f) / M_PI;
+	      const double window = WINDOW;
+	      filter->coefficients[i] += sinc * window;
+	    }
+	}
     }
 }
 

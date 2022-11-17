@@ -17,9 +17,9 @@
 #define _(String) gettext(String)
 #define N_(String) (String)
 
-extern void _adftool_filter_test_data (double *, double *, double *, double *,
+extern void _adftool_filter_test_data (double *, double *, double *,
 				       size_t *, double **, double **,
-				       double **);
+				       size_t *, double **);
 
 int
 main (int argc, char *argv[])
@@ -29,25 +29,31 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
-  const size_t filter_order = 6607;
   double sfreq;
-  double transition_bandwidth;
   double low;
   double high;
   size_t signal_length;
   double *signal;
   double *expected_filtered;
+  size_t filter_order;
   double *expected_coef;
-  _adftool_filter_test_data (&sfreq, &transition_bandwidth, &low, &high,
+  _adftool_filter_test_data (&sfreq, &low, &high,
 			     &signal_length, &signal, &expected_filtered,
-			     &expected_coef);
+			     &filter_order, &expected_coef);
   double *filtered = malloc (signal_length * sizeof (double));
   if (filtered == NULL)
     {
       abort ();
     }
-  struct adftool_fir *filter =
-    adftool_fir_alloc (sfreq, transition_bandwidth);
+  double trans_low, trans_high;
+  adftool_fir_auto_bandwidth (sfreq, low, high, &trans_low, &trans_high);
+  double tightest = trans_low;
+  if (trans_high < tightest)
+    {
+      tightest = trans_high;
+    }
+  const size_t order = adftool_fir_auto_order (sfreq, tightest);
+  struct adftool_fir *filter = adftool_fir_alloc (order);
   if (filter == NULL)
     {
       abort ();
@@ -58,8 +64,9 @@ main (int argc, char *argv[])
 	       adftool_fir_order (filter), filter_order);
       abort ();
     }
-  adftool_fir_design_bandpass (filter, low, high);
-  double *actual_coef = malloc (filter_order * sizeof (double));
+  adftool_fir_design_bandpass (filter, sfreq, low, high, trans_low,
+			       trans_high);
+  double *actual_coef = malloc (adftool_fir_order (filter) * sizeof (double));
   if (actual_coef == NULL)
     {
       abort ();
@@ -82,10 +89,11 @@ main (int argc, char *argv[])
 	  coef_max_diff = diff;
 	}
     }
-  if (coef_max_diff > 1e-6)
+  if (coef_max_diff > 1.2e-4)
     {
-      fprintf (stderr, "Filter coefficients do not match, \
-now let’s see if it works though…\n");
+      fprintf (stderr, "Filter coefficients do not match (%f).\n",
+	       coef_max_diff);
+      abort ();
     }
   free (actual_coef);
   adftool_fir_apply (filter, signal_length, signal, filtered);
@@ -109,7 +117,7 @@ now let’s see if it works though…\n");
     }
   const double cossim = dot / (sqrt (actual2) * sqrt (expected2));
   fclose (log);
-  if (cossim <= 0.98)
+  if (cossim <= 0.997)
     {
       fprintf (stderr, _("The filter test failed (%f).\n"), cossim);
       abort ();

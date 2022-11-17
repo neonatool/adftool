@@ -153,8 +153,8 @@ AdftoolFactory ().then (Adftool => {
 	return changes;
     }
 
-    Adftool.with_bandpassed (sampling_frequency, 0.5, 1, 3, mix, (filter_quick, fir1) => {
-	Adftool.with_bandpassed (sampling_frequency, 0.5, 3, 5, mix, (filter_slow, fir2) => {
+    Adftool.with_bandpassed (sampling_frequency, 1, 3, mix, (filter_quick, fir1) => {
+	Adftool.with_bandpassed (sampling_frequency, 3, 5, mix, (filter_slow, fir2) => {
 	    console.log('Filter orders:', fir1.order (), fir2.order ());
 	    console.log('Roots of quick:', count_roots (quick_sine));
 	    console.log('Roots of slow:', count_roots (slow_sine));

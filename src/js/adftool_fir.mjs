@@ -1,9 +1,28 @@
 import Adftool from './adftool_binding.mjs'
+import { with_double_array} from './adftool_double_array.mjs';
+
+const adftool_fir_auto_bandwidth = (() => {
+    const impl = Adftool.cwrap (
+	'adftool_fir_auto_bandwidth',
+	null,
+	['number', 'number', 'number', '*', '*']);
+    return (sfreq, freq_low, freq_high) => {
+	return with_double_array (2, (a) => {
+	    impl (sfreq, freq_low, freq_high, a.address (0), a.address (1));
+	    return [ a.get(0), a.get (1) ];
+	});
+    };
+})();
+
+const adftool_fir_auto_order = Adftool.cwrap (
+    'adftool_fir_auto_order',
+    'number',
+    ['number', 'number']);
 
 const adftool_fir_alloc = Adftool.cwrap (
     'adftool_fir_alloc',
     '*',
-    ['number', 'number']);
+    ['number']);
 
 const adftool_fir_order = Adftool.cwrap (
     'adftool_fir_order',
@@ -18,7 +37,7 @@ const adftool_fir_free = Adftool.cwrap (
 const adftool_fir_design_bandpass = Adftool.cwrap (
     'adftool_fir_design_bandpass',
     null,
-    ['*', 'number', 'number']);
+    ['*', 'number', 'number', 'number', 'number', 'number']);
 
 const adftool_fir_apply = (() => {
     const impl = Adftool.cwrap (
@@ -46,14 +65,14 @@ const adftool_fir_apply = (() => {
 }) ();
 
 export class Fir {
-    constructor (sfreq, transition_bandwidth) {
-	this._ptr = adftool_fir_alloc (sfreq, transition_bandwidth);
+    constructor (order) {
+	this._ptr = adftool_fir_alloc (order);
     }
     order () {
 	return adftool_fir_order (this._ptr);
     }
-    design_bandpass (freq_low, freq_high) {
-	adftool_fir_design_bandpass (this._ptr, freq_low, freq_high);
+    design_bandpass (sfreq, freq_low, freq_high, trans_low, trans_high) {
+	adftool_fir_design_bandpass (this._ptr, sfreq, freq_low, freq_high, trans_low, trans_high);
     }
     apply (signal, f) {
 	return adftool_fir_apply (this._ptr, signal, f);
@@ -61,10 +80,16 @@ export class Fir {
     _destroy () {
 	adftool_fir_free (this._ptr);
     }
+    static auto_bandwidth (sfreq, freq_low, freq_high) {
+	return adftool_fir_auto_bandwidth (sfreq, freq_low, freq_high);
+    }
+    static auto_order (sfreq, tightest_transition_bandwidth) {
+	return adftool_fir_auto_order (sfreq, tightest_transition_bandwidth);
+    }
 }
 
-export function with_fir (sfreq, transition_bandwidth, f) {
-    const fir = new Fir (sfreq, transition_bandwidth);
+export function with_fir (order, f) {
+    const fir = new Fir (order);
     try {
 	return f (fir);
     } finally {
@@ -72,15 +97,21 @@ export function with_fir (sfreq, transition_bandwidth, f) {
     }
 }
 
-export function with_bandpass (sfreq, transition_bandwidth, freq_low, freq_high, f) {
-    return with_fir (sfreq, transition_bandwidth, (fir) => {
-	fir.design_bandpass (freq_low, freq_high);
+export function with_bandpass (sfreq, freq_low, freq_high, f) {
+    const [trans_low, trans_high] = Fir.auto_bandwidth (sfreq, freq_low, freq_high);
+    let tightest = trans_low;
+    if (trans_high < tightest) {
+	tightest = trans_high;
+    }
+    const order = Fir.auto_order (sfreq, tightest);
+    return with_fir (order, (fir) => {
+	fir.design_bandpass (sfreq, freq_low, freq_high, trans_low, trans_high);
 	return f (fir);
     });
 }
 
-export function with_bandpassed (sfreq, transition_bandwidth, freq_low, freq_high, signal, f) {
-    return with_bandpass (sfreq, transition_bandwidth, freq_low, freq_high, (fir) => {
+export function with_bandpassed (sfreq, freq_low, freq_high, signal, f) {
+    return with_bandpass (sfreq, freq_low, freq_high, (fir) => {
 	return fir.apply (signal, (output) => f (output, fir));
     });
 }

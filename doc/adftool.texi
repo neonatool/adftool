@@ -878,12 +878,33 @@ A simple Finite Impulse Response a-causal filter, that can be applied
 to a batch of data.
 @end deftp
 
-@deftypefun {struct adftool_fir *} adftool_fir_alloc (double @var{sampling_frequency}, double @var{transition_bandwidth})
-Allocate some storage for a new filter. The @var{number of components}
-of the filter depends of the @var{transition_bandwidth} (relative to
-the @var{sampling_frequency}), as @math{@var{number of components} = 4
-/ (@var{transition_bandwidth} / @var{sampling_frequency})}. Return
-@code{NULL} if the allocation failed, or the new filter.
+To remain compatible with MNE, you must proceed in three steps:
+@enumerate
+@item
+Compute the default transition bandwidth if you don’t know them yet;
+@item
+Compute the default filter order if you don’t know it yet;
+@item
+Allocate the filter with the right number of coefficients (order);
+@item
+Design the band-pass filter.
+@end enumerate
+
+@deftypefun {void} adftool_fir_auto_bandwidth (double @var{sfreq}, double @var{low}, double @var{high}, double *@var{trans_low}, double *@var{trans_high})
+Compute a sensible value for the low and high bandwidth of a band-pass
+filter between @var{low} and @var{high}, that will be applied to a
+signal sampled at @var{sfreq} Hz.
+@end deftypefun
+
+@deftypefun {size_t} adftool_fir_auto_order (double @var{sfreq}, double @var{tightest_transition_bandwidth}
+Compute a good filter order that can respect the
+@var{tightest_transition_bandwidth} (for a band-pass filter, either
+its low or high transition bandwidths.
+@end deftypefun
+
+@deftypefun {struct adftool_fir *} adftool_fir_alloc (size_t @var{order})
+Allocate some storage for a new filter. Return @code{NULL} if the
+allocation failed, or the new filter, uninitialized.
 @end deftypefun
 
 @deftypefun void adftool_fir_free (struct adftool_fir *@var{filter})
@@ -894,9 +915,10 @@ Free @var{filter}.
 Return the order of @var{filter}. It is an odd number.
 @end deftypefun
 
-@deftypefun void adftool_fir_design_bandpass (struct adftool_fir *@var{filter}, double @var{lowest_frequency}, double @var{highest_frequency})
+@deftypefun void adftool_fir_design_bandpass (struct adftool_fir *@var{filter}, double @var{sampling_frequency}, double @var{lowest_frequency}, double @var{highest_frequency}, double @var{low_transition_bandwidth}, double @var{high_transition_bandwidth})
 Set @var{filter} to be a filter that lets the band between
-@var{lowest_frequency} and @var{highest_frequency} pass.
+@var{lowest_frequency} and @var{highest_frequency}
+pass.
 @end deftypefun
 
 @deftypefun void adftool_fir_apply (const struct adftool_fir *@var{filter}, size_t @var{signal_length}, const double *@var{signal}, double *@var{filtered})

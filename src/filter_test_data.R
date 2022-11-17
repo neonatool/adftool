@@ -1,15 +1,11 @@
 data <- read.csv ('src/filter_test_data.csv')
 coef <- read.csv ('src/filter_test_coef.csv')
 
-filter_order <- 6607 # MNE told me so
 sfreq <- 600.6 # MNE told me so
-cutoff_low <- 0.3 # I chose it
-cutoff_high <- 30 # I chose it
-transition_bandwidth <- 0.36365 # It gives the correct filter order
+low <- 0.3 # I chose it
+high <- 30 # I chose it
 
-low <- 0.15 # MNE chooses a low transition bandwidth of 0.3 Hz, so the
-            # lowest cutoff is actually 0.15
-high <- 33.75 # MNE chooses a high transition bandwidth of 7.50 Hz
+filter_order <- 6607
 
 # Code generation:
 init_signal = paste (sapply (data$unfiltered, function (y) {
@@ -31,19 +27,19 @@ cat (sprintf ("#ifdef HAVE_CONFIG_H
 
 void
 _adftool_filter_test_data (double *sfreq,
-                           double *transition_bandwidth,
 			   double *low,
 			   double *high,
                            size_t *length,
 			   double **signal,
 			   double **expected_filtered,
+                           size_t *filter_length,
 			   double **expected_coef)
 {
   *sfreq = %f;
-  *transition_bandwidth = %f;
   *low = %f;
   *high = %f;
   *length = %d;
+  *filter_length = %d;
   static const double my_signal[%d] =
     {
       %s
@@ -67,8 +63,17 @@ _adftool_filter_test_data (double *sfreq,
   memcpy (*expected_filtered, my_expected_filtered, sizeof (my_expected_filtered));
   memcpy (*expected_coef, my_expected_coef, sizeof (my_expected_coef));
 }
-", sfreq, transition_bandwidth, low, high, length (data$unfiltered),
-   length (data$unfiltered), init_signal,
-   length (data$unfiltered), init_filtered,
-   filter_order, init_coef,
-   length (data$unfiltered), length (data$unfiltered), filter_order))
+",
+sfreq,
+low,
+high,
+length (data$unfiltered),
+filter_order,
+
+length (data$unfiltered), init_signal,
+length (data$unfiltered), init_filtered,
+filter_order, init_coef,
+
+length (data$unfiltered),
+length (data$unfiltered),
+filter_order))

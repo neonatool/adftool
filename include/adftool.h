@@ -298,11 +298,15 @@ extern "C"
   struct adftool_fir;
 
   extern LIBADFTOOL_API
-    struct adftool_fir *adftool_fir_alloc (double sfreq,
-					   double transition_bandwidth);
+    void adftool_fir_auto_bandwidth (double sfreq, double freq_low,
+				     double freq_high, double *trans_low,
+				     double *trans_high);
 
   extern LIBADFTOOL_API
-    struct adftool_fir *adftool_fir_alloc_n (double sfreq, size_t order);
+    size_t adftool_fir_auto_order (double sfreq,
+				   double tightest_transition_bandwidth);
+
+  extern LIBADFTOOL_API struct adftool_fir *adftool_fir_alloc (size_t order);
 
   extern LIBADFTOOL_API
     size_t adftool_fir_order (const struct adftool_fir *filter);
@@ -315,7 +319,9 @@ extern "C"
 
   extern LIBADFTOOL_API
     void adftool_fir_design_bandpass (struct adftool_fir *filter,
-				      double freq_low, double freq_high);
+				      double sfreq,
+				      double freq_low, double freq_high,
+				      double trans_low, double trans_high);
 
   extern LIBADFTOOL_API
     void adftool_fir_apply (const struct adftool_fir *filter,

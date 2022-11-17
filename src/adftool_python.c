@@ -150,6 +150,8 @@ static PyObject *fir_order (struct adftool_py_fir *, PyObject *);
 static PyObject *fir_coefficients (struct adftool_py_fir *, PyObject *);
 static PyObject *fir_design_bandpass (struct adftool_py_fir *, PyObject *);
 static PyObject *fir_apply (struct adftool_py_fir *, PyObject *);
+static PyObject *fir_auto_bandwidth (struct adftool_py_fir *, PyObject *);
+static PyObject *fir_auto_order (struct adftool_py_fir *, PyObject *);
 
 static PyMemberDef adftool_file_members[] = {
   {NULL}
@@ -383,6 +385,10 @@ static PyMethodDef adftool_fir_methods[] = {
    N_("Set up the filter as band-pass.")},
   {"apply", (PyCFunction) fir_apply, METH_VARARGS,
    N_("Apply the filter.")},
+  {"auto_bandwidth", (PyCFunction) fir_auto_bandwidth,
+   METH_VARARGS | METH_STATIC, N_("Compute default transition bandwidth")},
+  {"auto_order", (PyCFunction) fir_auto_order, METH_VARARGS | METH_STATIC,
+   N_("Compute a default filter order")},
   {NULL}
 };
 
@@ -1756,33 +1762,16 @@ static PyObject *
 fir_new (PyTypeObject * subtype, PyObject * args, PyObject * kwds)
 {
   (void) kwds;
-  double sfreq;
-  double transition_bandwidth;
   Py_ssize_t order;
-  if (PyArg_ParseTuple (args, "ddn", &sfreq, &transition_bandwidth, &order) ==
-      0)
+  if (PyArg_ParseTuple (args, "n", &order) == 0)
     {
-      return NULL;
-    }
-  if (transition_bandwidth <= 0 && order <= 0)
-    {
-      PyErr_SetString (adftool_rdf_error,
-		       _
-		       ("You must specify either a transition bandwidth or a number of coefficients."));
       return NULL;
     }
   struct adftool_py_fir *self =
     (struct adftool_py_fir *) subtype->tp_alloc (subtype, 0);
   if (self != NULL)
     {
-      if (order > 0)
-	{
-	  self->ptr = adftool_fir_alloc_n (sfreq, order);
-	}
-      else
-	{
-	  self->ptr = adftool_fir_alloc (sfreq, transition_bandwidth);
-	}
+      self->ptr = adftool_fir_alloc (order);
       if (self->ptr == NULL)
 	{
 	  Py_DECREF (self);
@@ -1840,12 +1829,14 @@ fir_coefficients (struct adftool_py_fir *self, PyObject * args)
 static PyObject *
 fir_design_bandpass (struct adftool_py_fir *self, PyObject * args)
 {
-  double low, high;
-  if (PyArg_ParseTuple (args, "dd", &low, &high) == 0)
+  double sfreq, low, high, trans_low, trans_high;
+  if (PyArg_ParseTuple
+      (args, "ddddd", &sfreq, &low, &high, &trans_low, &trans_high) == 0)
     {
       return NULL;
     }
-  adftool_fir_design_bandpass (self->ptr, low, high);
+  adftool_fir_design_bandpass (self->ptr, sfreq, low, high, trans_low,
+			       trans_high);
   Py_INCREF (Py_None);
   return Py_None;
 }
@@ -1889,4 +1880,33 @@ fir_apply (struct adftool_py_fir *self, PyObject * args)
     }
   free (output);
   return ret;
+}
+
+static PyObject *
+fir_auto_bandwidth (struct adftool_py_fir *self, PyObject * args)
+{
+  assert (self == NULL);
+  double sfreq, freq_low, freq_high, trans_low, trans_high;
+  int ok = PyArg_ParseTuple (args, "ddd", &sfreq, &freq_low, &freq_high);
+  if (!ok)
+    {
+      return NULL;
+    }
+  adftool_fir_auto_bandwidth (sfreq, freq_low, freq_high, &trans_low,
+			      &trans_high);
+  return Py_BuildValue ("(dd)", trans_low, trans_high);
+}
+
+static PyObject *
+fir_auto_order (struct adftool_py_fir *self, PyObject * args)
+{
+  assert (self == NULL);
+  double sfreq, bw;
+  int ok = PyArg_ParseTuple (args, "dd", &sfreq, &bw);
+  if (!ok)
+    {
+      return NULL;
+    }
+  const size_t order = adftool_fir_auto_order (sfreq, bw);
+  return PyLong_FromSsize_t (order);
 }
