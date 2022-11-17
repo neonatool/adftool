@@ -147,6 +147,7 @@ static PyObject *fir_new (PyTypeObject *, PyObject *, PyObject *);
 static int fir_init (PyObject *, PyObject *, PyObject *);
 static void fir_dealloc (PyObject *);
 static PyObject *fir_order (struct adftool_py_fir *, PyObject *);
+static PyObject *fir_coefficients (struct adftool_py_fir *, PyObject *);
 static PyObject *fir_design_bandpass (struct adftool_py_fir *, PyObject *);
 static PyObject *fir_apply (struct adftool_py_fir *, PyObject *);
 
@@ -376,6 +377,8 @@ static PyMemberDef adftool_fir_members[] = {
 static PyMethodDef adftool_fir_methods[] = {
   {"order", (PyCFunction) fir_order, METH_NOARGS,
    N_("Get the (odd) number of coefficients of the filter.")},
+  {"coefficients", (PyCFunction) fir_coefficients, METH_NOARGS,
+   N_("Get the coefficients of the filter as a list.")},
   {"design_bandpass", (PyCFunction) fir_design_bandpass, METH_VARARGS,
    N_("Set up the filter as band-pass.")},
   {"apply", (PyCFunction) fir_apply, METH_VARARGS,
@@ -1755,15 +1758,31 @@ fir_new (PyTypeObject * subtype, PyObject * args, PyObject * kwds)
   (void) kwds;
   double sfreq;
   double transition_bandwidth;
-  if (PyArg_ParseTuple (args, "dd", &sfreq, &transition_bandwidth) == 0)
+  Py_ssize_t order;
+  if (PyArg_ParseTuple (args, "ddn", &sfreq, &transition_bandwidth, &order) ==
+      0)
     {
+      return NULL;
+    }
+  if (transition_bandwidth <= 0 && order <= 0)
+    {
+      PyErr_SetString (adftool_rdf_error,
+		       _
+		       ("You must specify either a transition bandwidth or a number of coefficients."));
       return NULL;
     }
   struct adftool_py_fir *self =
     (struct adftool_py_fir *) subtype->tp_alloc (subtype, 0);
   if (self != NULL)
     {
-      self->ptr = adftool_fir_alloc (sfreq, transition_bandwidth);
+      if (order > 0)
+	{
+	  self->ptr = adftool_fir_alloc_n (sfreq, order);
+	}
+      else
+	{
+	  self->ptr = adftool_fir_alloc (sfreq, transition_bandwidth);
+	}
       if (self->ptr == NULL)
 	{
 	  Py_DECREF (self);
@@ -1795,6 +1814,27 @@ fir_order (struct adftool_py_fir *self, PyObject * args)
   (void) args;
   size_t order = adftool_fir_order (self->ptr);
   return PyLong_FromSsize_t (order);
+}
+
+static PyObject *
+fir_coefficients (struct adftool_py_fir *self, PyObject * args)
+{
+  (void) args;
+  const size_t order = adftool_fir_order (self->ptr);
+  double *output = malloc (order * sizeof (double));
+  if (output == NULL)
+    {
+      return NULL;
+    }
+  adftool_fir_coefficients (self->ptr, output);
+  PyObject *ret = PyList_New (order);
+  for (size_t i = 0; i < order; i++)
+    {
+      int error = PyList_SetItem (ret, i, PyFloat_FromDouble (output[i]));
+      assert (error == 0);
+    }
+  free (output);
+  return ret;
 }
 
 static PyObject *
