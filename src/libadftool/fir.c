@@ -122,9 +122,9 @@ adftool_fir_apply (const struct adftool_fir *filter, size_t signal_length,
     {
       for (size_t j = 0; j < filter->half_m; j++)
 	{
-	  if (i + j < signal_length)
+	  if (i + j + 1 < signal_length)
 	    {
-	      filtered[i] += filter->coefficients[j] * signal[i + j];
+	      filtered[i] += filter->coefficients[j] * signal[i + j + 1];
 	    }
 	}
     }
@@ -133,9 +133,9 @@ adftool_fir_apply (const struct adftool_fir *filter, size_t signal_length,
     {
       for (size_t j = 0; j < filter->half_m; j++)
 	{
-	  if (i + j < signal_length)
+	  if (i + j + 1 < signal_length)
 	    {
-	      filtered[i + j] += filter->coefficients[j] * signal[i];
+	      filtered[i + j + 1] += filter->coefficients[j] * signal[i];
 	    }
 	}
     }
