@@ -2,7 +2,6 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   DEBEMAIL: vivien.kraus@univ-reims.fr
   DEBFULLNAME: Gitlab CI
-  INITIAL_DEBIAN_PACKAGE: v0.2.15
 
 stages:
   - dependencies
@@ -160,7 +159,7 @@ debian:
     - mv public/adftool-latest.tar.gz adftool_$(sed 's/-/./g' public/.version).orig.tar.gz
     - mkdir -p public/debian
     - tar xf adftool_*.orig.tar.gz
-    - echo "" | gbp dch --debian-branch=main --ignore-branch --since=$INITIAL_DEBIAN_PACKAGE --new-version=$(sed 's/-/./g' public/.version)-1
+    - echo "" | gbp dch --debian-branch=main --ignore-branch --new-version=$(sed 's/-/./g' public/.version)-1
     - cd adftool-*
     - cp -R ../debian debian
     - debuild -us -uc
