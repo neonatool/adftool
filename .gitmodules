@@ -4,3 +4,6 @@
 [submodule "hdf5"]
 	path = hdf5
 	url = https://github.com/HDFGroup/hdf5
+[submodule "libbplus"]
+	path = libbplus
+	url = git@plmlab.math.cnrs.fr:neonatool/libbplus.git
