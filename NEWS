@@ -1,1 +1,12 @@
-WIP…
+#+title: What’s new in adftool
+
+* Noteworthy changes in release ?.? (????-??-??) [?]
+** Now use libbplus
+The code has been moved around so as to use libbplus.
+
+#+language: en
+#+author: Vivien Kraus
+#+email: vivien.kraus@univ-reims.fr
+# Local Variables:
+# mode: org
+# End:

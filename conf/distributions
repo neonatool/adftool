@@ -1,9 +1,0 @@
-Origin: Adftool
-Label: Adftool
-Suite: stable
-Codename: stable
-Version: 1.0
-Architectures: amd64 source
-Components: main
-UDebComponents: main
-Description: Archive of the latest adftool

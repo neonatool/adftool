@@ -1,5 +1,7 @@
-#include <adftool_private.h>
+#include <config.h>
+#include <adftool.h>
 #include <time.h>
+#include <stdlib.h>
 
 #define ARRAY_TYPE(type, type_in_fname)                         \
   struct adftool_array_##type_in_fname                          \

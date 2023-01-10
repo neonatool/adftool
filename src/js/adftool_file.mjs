@@ -6,20 +6,10 @@ import { with_n_terms } from './adftool_term.mjs';
 import { with_timespec } from './adftool_timespec.mjs';
 import { with_double_array } from './adftool_double_array.mjs';
 
-const adftool_file_alloc = Adftool.cwrap (
-    'adftool_file_alloc',
-    '*',
-    []);
-
-const adftool_file_free = Adftool.cwrap (
-    'adftool_file_free',
-    null,
-    ['*']);
-
 const adftool_file_open_data = Adftool.cwrap (
     'adftool_file_open_data',
-    'number',
-    ['*', 'number', '*']);
+    '*',
+    ['number', '*']);
 
 const adftool_file_close = Adftool.cwrap (
     'adftool_file_close',
@@ -103,22 +93,29 @@ const adftool_eeg_set_time = Adftool.cwrap (
 
 export class File {
     constructor () {
-	this._ptr = adftool_file_alloc ();
+	this._ptr = null;
     }
     open (data) {
 	const input_pointer = Adftool._malloc (data.length);
 	try {
 	    Adftool.HEAPU8.set (data, input_pointer);
-	    const error = adftool_file_open_data (this._ptr, data.length, input_pointer);
-	    if (error != 0) {
+	    const ptr = adftool_file_open_data (this._ptr, data.length, input_pointer);
+	    if (ptr == 0) {
 		throw 'Cannot open the file.';
 	    }
+	    this.close ();
+	    this._ptr = ptr;
 	} finally {
 	    Adftool._free (input_pointer);
 	}
     }
     close () {
-        adftool_file_close (this._ptr);
+	if (this._ptr === null) {
+	    /* Already closed. */
+	} else {
+            adftool_file_close (this._ptr);
+	    this._ptr = null;
+	}
     }
     data (f) {
 	const output_size = adftool_file_get_data (this._ptr, 0, 0, 0);
@@ -278,7 +275,7 @@ export class File {
 	});
     }
     _destroy () {
-	adftool_file_free (this._ptr);
+	this.close ();
     }
 }
 

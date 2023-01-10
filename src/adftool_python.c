@@ -1,21 +1,19 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #if defined _WIN32 && !defined __CYGWIN__
-#define LIBADFTOOL_PYTHON_DLL_MADNESS 1
+# define LIBADFTOOL_PYTHON_DLL_MADNESS 1
 #else
-#define LIBADFTOOL_PYTHON_DLL_MADNESS 0
+# define LIBADFTOOL_PYTHON_DLL_MADNESS 0
 #endif
 
 #if BUILDING_LIBADFTOOL_PYTHON && HAVE_VISIBILITY
-#define LIBADFTOOL_PYTHON_DLL_EXPORTED __attribute__((__visibility__("default")))
+# define LIBADFTOOL_PYTHON_DLL_EXPORTED __attribute__((__visibility__("default")))
 #elif BUILDING_LIBADFTOOL_PYTHON && LIBADFTOOL_PYTHON_DLL_MADNESS
-#define LIBADFTOOL_PYTHON_DLL_EXPORTED __declspec(dllexport)
+# define LIBADFTOOL_PYTHON_DLL_EXPORTED __declspec(dllexport)
 #elif LIBADFTOOL_PYTHON_DLL_MADNESS
-#define LIBADFTOOL_PYTHON_DLL_EXPORTED __declspec(dllimport)
+# define LIBADFTOOL_PYTHON_DLL_EXPORTED __declspec(dllimport)
 #else
-#define LIBADFTOOL_PYTHON_DLL_EXPORTED
+# define LIBADFTOOL_PYTHON_DLL_EXPORTED
 #endif
 
 #define LIBADFTOOL_PYTHON_API \
@@ -566,12 +564,7 @@ file_new (PyTypeObject * subtype, PyObject * args, PyObject * kwds)
     (struct adftool_py_file *) subtype->tp_alloc (subtype, 0);
   if (self != NULL)
     {
-      self->ptr = adftool_file_alloc ();
-      if (self->ptr == NULL)
-	{
-	  Py_DECREF (self);
-	  return NULL;
-	}
+      self->ptr = NULL;
     }
   return (PyObject *) self;
 }
@@ -589,7 +582,7 @@ static void
 file_dealloc (PyObject * self)
 {
   struct adftool_py_file *aself = (struct adftool_py_file *) self;
-  adftool_file_free (aself->ptr);
+  adftool_file_close (aself->ptr);
 }
 
 static PyObject *
@@ -601,9 +594,11 @@ file_open (struct adftool_py_file *self, PyObject * args)
     {
       return NULL;
     }
-  int ret = adftool_file_open (self->ptr, filename, write);
-  if (ret == 0)
+  struct adftool_file *new_file = adftool_file_open (filename, write);
+  if (new_file)
     {
+      adftool_file_close (self->ptr);
+      self->ptr = new_file;
       Py_INCREF (Py_None);
       return Py_None;
     }
@@ -631,6 +626,7 @@ file_close (struct adftool_py_file *self, PyObject * args)
 {
   (void) args;
   adftool_file_close (self->ptr);
+  self->ptr = NULL;
   Py_INCREF (Py_None);
   return Py_None;
 }
@@ -644,9 +640,12 @@ file_open_data (struct adftool_py_file *self, PyObject * args)
     {
       return NULL;
     }
-  int ret = adftool_file_open_data (self->ptr, initial_size, initial_data);
-  if (ret == 0)
+  struct adftool_file *new_file =
+    adftool_file_open_data (initial_size, initial_data);
+  if (new_file)
     {
+      adftool_file_close (self->ptr);
+      self->ptr = new_file;
       Py_INCREF (Py_None);
       return Py_None;
     }

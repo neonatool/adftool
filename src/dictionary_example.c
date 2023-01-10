@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 #include <hdf5.h>
@@ -15,6 +13,9 @@
 #define _(String) gettext(String)
 #define N_(String) (String)
 
+#define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
+
 int
 main (int argc, char *argv[])
 {
@@ -23,19 +24,15 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
-  struct adftool_file *file = adftool_file_alloc ();
+  remove ("dictionary_example.adf");
+  struct adftool_file *file = adftool_file_open ("dictionary_example.adf", 1);
   if (file == NULL)
     {
       abort ();
     }
-  remove ("dictionary_example.adf");
-  int error = adftool_file_open (file, "dictionary_example.adf", 1);
-  if (error)
-    {
-      abort ();
-    }
   uint32_t id = 0;
-  error = adftool_dictionary_insert (file, strlen ("hello"), "hello", &id);
+  int error =
+    adftool_dictionary_insert (file, strlen ("hello"), "hello", &id);
   if (error || id != 0)
     {
       abort ();
@@ -124,16 +121,14 @@ main (int argc, char *argv[])
   error =
     adftool_dictionary_get (file, 0, 0, sizeof (buffer), &buffer_length,
 			    buffer);
-  if (error || buffer_length != strlen ("hello")
-      || strcmp (buffer, "hello") != 0)
+  if (error || buffer_length != strlen ("hello") || STRNEQ (buffer, "hello"))
     {
       abort ();
     }
   error =
     adftool_dictionary_get (file, 1, 0, sizeof (buffer), &buffer_length,
 			    buffer);
-  if (error || buffer_length != strlen ("world")
-      || strcmp (buffer, "world") != 0)
+  if (error || buffer_length != strlen ("world") || STRNEQ (buffer, "world"))
     {
       abort ();
     }
@@ -141,7 +136,7 @@ main (int argc, char *argv[])
     adftool_dictionary_get (file, 2, 0, sizeof (buffer), &buffer_length,
 			    buffer);
   if (error || buffer_length != strlen ("hello, hello, hello")
-      || strcmp (buffer, "hello, hello, hello") != 0)
+      || STRNEQ (buffer, "hello, hello, hello"))
     {
       abort ();
     }
@@ -149,11 +144,10 @@ main (int argc, char *argv[])
     adftool_dictionary_get (file, 3, 0, sizeof (buffer), &buffer_length,
 			    buffer);
   if (error || buffer_length != strlen ("world, world, world")
-      || strcmp (buffer, "world, world, world") != 0)
+      || STRNEQ (buffer, "world, world, world"))
     {
       abort ();
     }
   adftool_file_close (file);
-  adftool_file_free (file);
   return 0;
 }

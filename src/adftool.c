@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,12 +16,15 @@
 #define NP_(Context, String) (String)
 
 #if defined ENABLE_NLS && ENABLE_NLS
-#define adftool_pgettext pgettext_expr
-#define P_(Context, String) pgettext(Context, String)
+# define adftool_pgettext pgettext_expr
+# define P_(Context, String) pgettext(Context, String)
 #else
-#define adftool_pgettext(Context, String) (String)
-#define P_(Context, String) (String)
+# define adftool_pgettext(Context, String) (String)
+# define P_(Context, String) (String)
 #endif
+
+#define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
 
 /* Write term as N3 to stdout, unless, it is an empty named node and
    ignore_empty_name. (used to ignore the default graph) */
@@ -45,12 +46,12 @@ main (int argc, char *argv[])
   textdomain (PACKAGE);
   struct adftool_statement *pattern = adftool_statement_alloc ();
   struct adftool_term *term = adftool_term_alloc ();
-  struct adftool_file *file = adftool_file_alloc ();
+  struct adftool_file *file = NULL;
   uint64_t deletion_date = ((uint64_t) time (NULL)) * 1000;
-  if (pattern == NULL || term == NULL || file == NULL)
+  if (pattern == NULL || term == NULL)
     {
       fprintf (stderr, _("Not enough memory.\n"));
-      exit (1);
+      exit (EXIT_FAILURE);
     }
   size_t consumed;
   static int lookup = 0;
@@ -168,12 +169,12 @@ main (int argc, char *argv[])
 	      {
 		end++;
 	      }
-	    if (end == optarg || strcmp (end, "") != 0)
+	    if (end == optarg || STRNEQ (end, ""))
 	      {
 		fprintf (stderr, _("The argument to \"%s\" "
 				   "must be a number.\n"),
 			 long_options[option_index].name);
-		exit (1);
+		exit (EXIT_FAILURE);
 	      }
 	    find_channel_identifier = 1;
 	  }
@@ -201,7 +202,7 @@ main (int argc, char *argv[])
 		fprintf (stderr, _("The argument to \"%s\" "
 				   "must be a N3 identifier.\n"),
 			 long_options[option_index].name);
-		exit (1);
+		exit (EXIT_FAILURE);
 	      }
 	    get_channel_metadata = 1;
 	  }
@@ -219,7 +220,7 @@ main (int argc, char *argv[])
 				   "must be in the form of "
 				   "IDENTIFIER=TYPE.\n"),
 			 long_options[option_index].name);
-		exit (1);
+		exit (EXIT_FAILURE);
 	      }
 	    while (consumed < strlen (optarg)
 		   && (optarg[consumed] == ' '
@@ -235,7 +236,7 @@ main (int argc, char *argv[])
 				   "must be in the form of "
 				   "IDENTIFIER=TYPE.\n"),
 			 long_options[option_index].name);
-		exit (1);
+		exit (EXIT_FAILURE);
 	      }
 	    char *rest = optarg + consumed + strlen ("=");
 	    parse_error =
@@ -247,7 +248,7 @@ main (int argc, char *argv[])
 				   "must be in the form of "
 				   "IDENTIFIER=TYPE.\n"),
 			 long_options[option_index].name);
-		exit (1);
+		exit (EXIT_FAILURE);
 	      }
 	    while (consumed < strlen (rest)
 		   && (rest[consumed] == ' '
@@ -262,7 +263,7 @@ main (int argc, char *argv[])
 				   "must be in the form of "
 				   "IDENTIFIER=TYPE.\n"),
 			 long_options[option_index].name);
-		exit (1);
+		exit (EXIT_FAILURE);
 	      }
 	    add_channel_type = 1;
 	  }
@@ -279,7 +280,7 @@ main (int argc, char *argv[])
 		fprintf (stderr, _("The argument to \"%s\" "
 				   "must be a N3 identifier.\n"),
 			 long_options[option_index].name);
-		exit (1);
+		exit (EXIT_FAILURE);
 	      }
 	    while (consumed < strlen (optarg)
 		   && (optarg[consumed] == ' '
@@ -294,7 +295,7 @@ main (int argc, char *argv[])
 		fprintf (stderr, _("The argument to \"%s\" "
 				   "must be a N3 identifier.\n"),
 			 long_options[option_index].name);
-		exit (1);
+		exit (EXIT_FAILURE);
 	      }
 	    list_channels_of_type = 1;
 	  }
@@ -309,7 +310,7 @@ main (int argc, char *argv[])
 				   "must be in the form of "
 				   "DATE,SAMPLING_FREQUENCY.\n"),
 			 long_options[option_index].name);
-		exit (1);
+		exit (EXIT_FAILURE);
 	      }
 	    char *left = malloc (separator - optarg + 1);
 	    char *right = malloc (strlen (separator + 1) + 1);
@@ -334,7 +335,7 @@ main (int argc, char *argv[])
 				   "must be a date according "
 				   "to XSD.\n"),
 			 long_options[option_index].name);
-		exit (1);
+		exit (EXIT_FAILURE);
 	      }
 	    adftool_term_free (literal);
 	    char *number_end;
@@ -344,13 +345,13 @@ main (int argc, char *argv[])
 	      {
 		number_end++;
 	      }
-	    if (number_end == right || strcmp (number_end, "") != 0)
+	    if (number_end == right || STRNEQ (number_end, ""))
 	      {
 		fprintf (stderr, _("The SAMPLING_FREQUENCY argument "
 				   "to \"%s\" "
 				   "must be a number.\n"),
 			 long_options[option_index].name);
-		exit (1);
+		exit (EXIT_FAILURE);
 	      }
 	    free (right);
 	    free (left);
@@ -368,7 +369,7 @@ main (int argc, char *argv[])
 		       _("The argument to \"%s\" "
 			 "cannot be parsed as a N-Triples term: \"%s\"\n"),
 		       long_options[option_index].name, optarg);
-	      exit (1);
+	      exit (EXIT_FAILURE);
 	    }
 	  while (consumed < strlen (optarg)
 		 && (optarg[consumed] == ' '
@@ -513,11 +514,11 @@ main (int argc, char *argv[])
 		  printf (_("  %s is unset\n"), env_names[i]);
 		}
 	    }
-	  exit (0);
+	  exit (EXIT_SUCCESS);
 	case 'V':
 	  printf (_("%s\n"
 		    "\n" "Copyright status is unclear.\n"), PACKAGE_STRING);
-	  exit (0);
+	  exit (EXIT_SUCCESS);
 	case '?':
 	  break;
 	default:
@@ -527,7 +528,7 @@ main (int argc, char *argv[])
   if (optind == argc)
     {
       fprintf (stderr, _("No file to process.\n"));
-      exit (0);
+      exit (EXIT_SUCCESS);
     }
   if (!lookup && !insert && !remove && !get_eeg_data && !set_eeg_data
       && !find_channel_identifier
@@ -535,7 +536,7 @@ main (int argc, char *argv[])
       && !get_eeg_metadata && !set_eeg_date)
     {
       fprintf (stderr, _("Nothing to do.\n"));
-      exit (0);
+      exit (EXIT_SUCCESS);
     }
   if (lookup + insert + remove + get_eeg_data + set_eeg_data > 1)
     {
@@ -547,7 +548,7 @@ main (int argc, char *argv[])
 	       P_ ("Command-line|Option|", "remove"),
 	       P_ ("Command-line|Option|", "get-eeg-data"),
 	       P_ ("Command-line|Option|", "set-eeg-data"));
-      exit (0);
+      exit (EXIT_SUCCESS);
     }
   if (find_channel_identifier +
       get_channel_metadata + add_channel_type + list_channels_of_type > 1)
@@ -560,18 +561,18 @@ main (int argc, char *argv[])
 	       P_ ("Command-line|Option|", "channel-metadata"),
 	       P_ ("Command-line|Option|", "add-channel-type"),
 	       P_ ("Command-line|Option|", "channels-of-type"));
-      exit (0);
+      exit (EXIT_SUCCESS);
     }
   while (optind < argc)
     {
       int write = insert || remove || set_eeg_data
 	|| add_channel_type || set_eeg_date;
       const char *filename = argv[optind++];
-      if (adftool_file_open (file, filename, write) != 0)
+      if ((file = adftool_file_open (filename, write)) == NULL)
 	{
 	  fprintf (stderr, _("The file \"%s\" could not be opened.\n"),
 		   filename);
-	  exit (1);
+	  exit (EXIT_FAILURE);
 	}
       if (lookup)
 	{
@@ -626,7 +627,7 @@ main (int argc, char *argv[])
 	  if (error != 0)
 	    {
 	      fprintf (stderr, _("Could not read the EEG data.\n"));
-	      exit (1);
+	      exit (EXIT_FAILURE);
 	    }
 	  double *data = calloc (n_lines * n_columns, sizeof (double));
 	  if (data == NULL)
@@ -705,7 +706,7 @@ main (int argc, char *argv[])
 		    }
 		}
 	      while (end != beginning);
-	      if (strcmp (end, "") != 0)
+	      if (STRNEQ (end, ""))
 		{
 		  fprintf (stderr, _("Error: \
 input line %lu contains \"%s\", which cannot be parsed \
@@ -716,7 +717,7 @@ as a number.\n"), current_line + 1, end);
 LC_NUMERIC. Please run adftool --%s to read more about numeric \
 data formats.\n"), P_ ("Command-line|Option|", "help"));
 		    }
-		  exit (1);
+		  exit (EXIT_FAILURE);
 		}
 	      if (current_line == 0)
 		{
@@ -728,7 +729,7 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
 			   _("Error: input line %lu has %lu values, "
 			     "but there are %lu columns.\n"),
 			   current_line + 1, current_column, n_columns);
-		  exit (1);
+		  exit (EXIT_FAILURE);
 		}
 	      free (line);
 	      line = NULL;
@@ -741,7 +742,7 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
 	  if (error != 0)
 	    {
 	      fprintf (stderr, _("Error: cannot set the EEG data.\n"));
-	      exit (1);
+	      exit (EXIT_FAILURE);
 	    }
 	  free (buffer);
 	}
@@ -759,7 +760,7 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
 	      fprintf (stderr,
 		       _("Error: no channel identifier for column %lu.\n"),
 		       channel_column);
-	      exit (1);
+	      exit (EXIT_FAILURE);
 	    }
 	  printf_term (term, 0, 0);
 	  printf ("\n");
@@ -847,7 +848,7 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
 	  if (error)
 	    {
 	      fprintf (stderr, _("Error: could not add a new type.\n"));
-	      exit (1);
+	      exit (EXIT_FAILURE);
 	    }
 	}
       if (list_channels_of_type)
@@ -932,7 +933,7 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
 	      != 0)
 	    {
 	      fprintf (stderr, _("Could not set the EEG time.\n"));
-	      exit (1);
+	      exit (EXIT_FAILURE);
 	    }
 	}
       adftool_file_close (file);
@@ -940,7 +941,6 @@ data formats.\n"), P_ ("Command-line|Option|", "help"));
   free (example_date_format);
   adftool_term_free (channel_type);
   adftool_term_free (channel_identifier);
-  adftool_file_free (file);
   adftool_term_free (term);
   adftool_statement_free (pattern);
   return 0;
@@ -954,7 +954,7 @@ printf_term (const struct adftool_term *term, int ignore_empty_name,
   const size_t easy_n = sizeof (first_bytes) - 1;
   size_t length = adftool_term_to_n3 (term, 0, easy_n, first_bytes);
   first_bytes[easy_n] = '\0';
-  if (ignore_empty_name && strcmp (first_bytes, "<>") == 0)
+  if (ignore_empty_name && STREQ (first_bytes, "<>"))
     {
       /* Do not print the default graph. */
       return;
@@ -967,7 +967,7 @@ printf_term (const struct adftool_term *term, int ignore_empty_name,
 	{
 	  fprintf (stderr, _("\
 Cannot allocate memory to hold the results.\n"));
-	  exit (1);
+	  exit (EXIT_FAILURE);
 	}
       adftool_term_to_n3 (term, easy_n, length - easy_n + 1, rest);
       assert (rest[length - easy_n] == '\0');
@@ -990,7 +990,7 @@ do_one_page (struct adftool_file *file,
   if (adftool_lookup (file, pattern, start, length, &n, page) != 0)
     {
       fprintf (stderr, _("Cannot list the statements.\n"));
-      exit (1);
+      exit (EXIT_FAILURE);
     }
   size_t i;
   for (i = start; i < n && i - start < length; i++)
@@ -1028,7 +1028,8 @@ do_one_page (struct adftool_file *file,
 static void
 lookup_results_by_page (struct adftool_file *file,
 			const struct adftool_statement *pattern,
-			size_t page_size, struct adftool_statement **results,
+			size_t page_size,
+			struct adftool_statement **results,
 			const struct timespec *current_time)
 {
   struct tm tm_ref = {

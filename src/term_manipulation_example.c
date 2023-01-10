@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 #include <hdf5.h>
@@ -15,6 +13,9 @@
 
 #define _(String) gettext(String)
 #define N_(String) (String)
+
+#define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
 
 #define CHECK_PACK(value, meta, flags) \
   ((((((uint64_t) (value)) << 31) | ((uint64_t) (meta))) << 2) | ((uint64_t) (flags)))
@@ -31,14 +32,9 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
-  struct adftool_file *file = adftool_file_alloc ();
-  if (file == NULL)
-    {
-      abort ();
-    }
   remove ("term_example.adf");
-  int error = adftool_file_open (file, "term_example.adf", 1);
-  if (error)
+  struct adftool_file *file = adftool_file_open ("term_example.adf", 1);
+  if (file == NULL)
     {
       abort ();
     }
@@ -131,7 +127,7 @@ main (int argc, char *argv[])
       static const size_t max = sizeof (buffer) / sizeof (buffer[0]);
       size_t n_used = adftool_term_value (all_terms[i], 0, max, buffer);
       if (n_used != strlen (expected_value[i])
-	  || strcmp (buffer, expected_value[i]) != 0)
+	  || STRNEQ (buffer, expected_value[i]))
 	{
 	  fprintf (stderr, _("Value for number %lu is %s, should be %s.\n"),
 		   i, buffer, expected_value[i]);
@@ -139,7 +135,7 @@ main (int argc, char *argv[])
 	}
       n_used = adftool_term_meta (all_terms[i], 0, max, buffer);
       if (n_used != strlen (expected_meta[i])
-	  || strcmp (buffer, expected_meta[i]) != 0)
+	  || STRNEQ (buffer, expected_meta[i]))
 	{
 	  fprintf (stderr, _("Meta for number %lu is %s, should be %s.\n"),
 		   i, buffer, expected_meta[i]);
@@ -242,7 +238,7 @@ Type %lu for number %lu is %d, should be %d.\n"), __FILE__, __LINE__, j, i, my_t
       static const size_t max = sizeof (buffer) / sizeof (buffer[0]);
       size_t n_used = adftool_term_value (term, 0, max, buffer);
       if (n_used != strlen (expected_value[i])
-	  || strcmp (buffer, expected_value[i]) != 0)
+	  || STRNEQ (buffer, expected_value[i]))
 	{
 	  fprintf (stderr, _("%s:%d: \
 Value for number %lu is %s, should be %s.\n"), __FILE__, __LINE__, i, buffer, expected_value[i]);
@@ -250,7 +246,7 @@ Value for number %lu is %s, should be %s.\n"), __FILE__, __LINE__, i, buffer, ex
 	}
       n_used = adftool_term_meta (term, 0, max, buffer);
       if (n_used != strlen (expected_meta[i])
-	  || strcmp (buffer, expected_meta[i]) != 0)
+	  || STRNEQ (buffer, expected_meta[i]))
 	{
 	  fprintf (stderr, _("%s:%d: \
 Meta for number %lu is %s, should be %s.\n"), __FILE__, __LINE__, i, buffer, expected_meta[i]);
@@ -263,13 +259,11 @@ Meta for number %lu is %s, should be %s.\n"), __FILE__, __LINE__, i, buffer, exp
       adftool_term_free (all_terms[i]);
     }
   adftool_file_close (file);
-  adftool_file_free (file);
   check_double_0 ();
   return 0;
 failure:
   fprintf (stderr, _("The test failed, keeping term_example.adf around.\n"));
   adftool_file_close (file);
-  adftool_file_free (file);
   return 1;
 }
 

@@ -1,4 +1,6 @@
-#include <adftool_private.h>
+#include <config.h>
+#include <adftool.h>
+#include "gettext.h"
 #include "relocatable.h"
 
 void

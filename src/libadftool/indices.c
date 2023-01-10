@@ -1,107 +1,49 @@
-#include <adftool_private.h>
+#include <config.h>
+#include <adftool.h>
 
-static size_t
-choose_index (const struct adftool_statement *pattern)
+#define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
+
+#include "file.h"
+#include "statement.h"
+
+struct copy_iterator_context
 {
-  /* See file.c to know the orders. */
-#define INDEX_GSPO 0
-#define INDEX_GPOS 1
-#define INDEX_GOSP 2
-#define INDEX_SPOG 3
-#define INDEX_POSG 4
-#define INDEX_OSPG 5
-  size_t relevant_index = INDEX_SPOG;
-  int can_use_spo = 1;
-  int can_use_pos = 1;
-  int can_use_osp = 1;
-  if ((pattern->subject == NULL
-       && (pattern->predicate != NULL || pattern->object != NULL))
-      || (pattern->predicate == NULL && pattern->object != NULL))
+  size_t start;
+  size_t max;
+  size_t *n_results;
+  struct adftool_statement **results;
+};
+
+static inline int
+copy_iterator (void *ctx, size_t n, const struct adftool_statement **results)
+{
+  struct copy_iterator_context *context = ctx;
+  *(context->n_results) += n;
+  if (context->start >= n)
     {
-      can_use_spo = 0;
-    }
-  if ((pattern->predicate == NULL
-       && (pattern->object != NULL || pattern->subject != NULL))
-      || (pattern->object == NULL && pattern->subject != NULL))
-    {
-      can_use_pos = 0;
-    }
-  if ((pattern->object == NULL
-       && (pattern->subject != NULL || pattern->predicate != NULL))
-      || (pattern->subject == NULL && pattern->predicate != NULL))
-    {
-      can_use_osp = 0;
-    }
-  if (pattern->graph == NULL)
-    {
-      if (can_use_spo)
-	{
-	  relevant_index = INDEX_SPOG;
-	}
-      else if (can_use_pos)
-	{
-	  relevant_index = INDEX_POSG;
-	}
-      else if (can_use_osp)
-	{
-	  relevant_index = INDEX_OSPG;
-	}
-      else
-	{
-	  assert (0);
-	}
+      context->start -= n;
+      return 0;
     }
   else
     {
-      if (can_use_spo)
+      size_t n_written = 0;
+      for (size_t i = 0; i < n; i++)
 	{
-	  relevant_index = INDEX_GSPO;
+	  if (i >= context->start)
+	    {
+	      const size_t output_index = i - context->start;
+	      if (output_index < context->max)
+		{
+		  statement_copy (context->results[output_index], results[i]);
+		  n_written++;
+		}
+	    }
 	}
-      else if (can_use_pos)
-	{
-	  relevant_index = INDEX_GPOS;
-	}
-      else if (can_use_osp)
-	{
-	  relevant_index = INDEX_GOSP;
-	}
-      else
-	{
-	  assert (0);
-	}
-    }
-  return relevant_index;
-}
-
-static int
-get_matches (const struct adftool_file *file,
-	     const struct adftool_statement *pattern,
-	     size_t *n_rows, uint32_t ** rows)
-{
-  size_t relevant_index = choose_index (pattern);
-  const struct bplus *bplus =
-    &(file->data_description.indices[relevant_index].bplus);
-  struct adftool_bplus_key key;
-  key.type = KEY_UNKNOWN;
-  key.arg.unknown = (void *) pattern;
-  int error = bplus_lookup (&key, (struct bplus *) bplus, 0, 0, n_rows, NULL);
-  if (error)
-    {
-      return 1;
-    }
-  *rows = malloc (*n_rows * sizeof (uint32_t));
-  if (*rows == NULL)
-    {
-      return 1;
-    }
-  size_t n_rows_check;
-  error =
-    bplus_lookup (&key, (struct bplus *) bplus, 0, *n_rows, &n_rows_check,
-		  *rows);
-  if (error || n_rows_check != *n_rows)
-    {
-      free (*rows);
-      return 1;
+      assert (n_written <= context->max);
+      context->start = 0;
+      context->max -= n_written;
+      context->results = &(context->results[n_written]);
     }
   return 0;
 }
@@ -112,22 +54,53 @@ adftool_lookup (struct adftool_file *file,
 		size_t start, size_t max, size_t *n_results,
 		struct adftool_statement **results)
 {
-  size_t n_rows;
-  uint32_t *rows;
-  if (get_matches (file, pattern, &n_rows, &rows) != 0)
+  *n_results = 0;
+  struct copy_iterator_context ctx = {
+    .start = start,
+    .max = max,
+    .n_results = n_results,
+    .results = results
+  };
+  return adftool_file_lookup (file, pattern, copy_iterator, &ctx);
+}
+
+struct filter_iterator_context
+{
+  size_t start;
+  size_t max;
+  size_t *n_results;
+  bool subject;			/* false: extract the object */
+  struct adftool_term **results;
+};
+
+static inline int
+filter_iterator (void *ctx, size_t n,
+		 const struct adftool_statement **results)
+{
+  struct filter_iterator_context *context = ctx;
+  for (size_t i = 0; i < n; i++)
     {
-      return 1;
-    }
-  for (size_t i = start; i < n_rows && i - start < max; i++)
-    {
-      if (adftool_quads_get (file, rows[i], results[i - start]) != 0)
+      if (results[i]->deletion_date == ((uint64_t) (-1)))
 	{
-	  free (rows);
-	  return 1;
+	  /* Push results[i] */
+	  const struct adftool_term *to_push = results[i]->subject;
+	  if (!context->subject)
+	    {
+	      to_push = results[i]->object;
+	    }
+	  if (context->start != 0)
+	    {
+	      context->start -= 1;
+	    }
+	  else if (context->max != 0)
+	    {
+	      term_copy (context->results[0], to_push);
+	      context->max -= 1;
+	      context->results = &(context->results[1]);
+	    }
+	  *(context->n_results) += 1;
 	}
     }
-  *n_results = n_rows;
-  free (rows);
   return 0;
 }
 
@@ -144,36 +117,20 @@ adftool_lookup_objects (struct adftool_file *file,
       (struct adftool_term *) subject,.predicate = &p,.object = NULL,.graph =
       NULL,.deletion_date = ((uint64_t) (-1))
   };
-  struct adftool_statement *s = adftool_statement_alloc ();
-  if (s == NULL)
+  size_t n_results = 0;
+  struct filter_iterator_context ctx = {
+    .start = start,
+    .max = max,
+    .n_results = &n_results,
+    .subject = false,
+    .results = objects
+  };
+  int error = adftool_file_lookup (file, &pattern, filter_iterator, &ctx);
+  if (error)
     {
-      abort ();
-    }
-  size_t n_rows;
-  uint32_t *rows;
-  if (get_matches (file, &pattern, &n_rows, &rows) != 0)
-    {
-      adftool_statement_free (s);
       return 0;
     }
-  size_t n_live = 0;
-  for (size_t i = 0; i < n_rows; i++)
-    {
-      if (adftool_quads_get (file, rows[i], s) == 0)
-	{
-	  if (s->deletion_date == ((uint64_t) (-1)))
-	    {
-	      if (n_live >= start && n_live < start + max)
-		{
-		  adftool_term_copy (objects[n_live], s->object);
-		}
-	      n_live++;
-	    }
-	}
-    }
-  free (rows);
-  adftool_statement_free (s);
-  return n_live;
+  return n_results;
 }
 
 size_t
@@ -189,36 +146,20 @@ adftool_lookup_subjects (struct adftool_file *file,
       &p,.object = (struct adftool_term *) object,.graph =
       NULL,.deletion_date = ((uint64_t) (-1))
   };
-  struct adftool_statement *s = adftool_statement_alloc ();
-  if (s == NULL)
+  size_t n_results = 0;
+  struct filter_iterator_context ctx = {
+    .start = start,
+    .max = max,
+    .n_results = &n_results,
+    .subject = true,
+    .results = subjects
+  };
+  int error = adftool_file_lookup (file, &pattern, filter_iterator, &ctx);
+  if (error)
     {
-      abort ();
-    }
-  size_t n_rows;
-  uint32_t *rows;
-  if (get_matches (file, &pattern, &n_rows, &rows) != 0)
-    {
-      adftool_statement_free (s);
       return 0;
     }
-  size_t n_live = 0;
-  for (size_t i = 0; i < n_rows; i++)
-    {
-      if (adftool_quads_get (file, rows[i], s) == 0)
-	{
-	  if (s->deletion_date == ((uint64_t) (-1)))
-	    {
-	      if (n_live >= start && n_live < start + max)
-		{
-		  adftool_term_copy (subjects[n_live], s->subject);
-		}
-	      n_live++;
-	    }
-	}
-    }
-  free (rows);
-  adftool_statement_free (s);
-  return n_live;
+  return n_results;
 }
 
 int
@@ -226,40 +167,12 @@ adftool_delete (struct adftool_file *file,
 		const struct adftool_statement *pattern,
 		uint64_t deletion_date)
 {
-  size_t n_rows;
-  uint32_t *rows;
-  if (get_matches (file, pattern, &n_rows, &rows) != 0)
-    {
-      return 1;
-    }
-  for (size_t i = 0; i < n_rows; i++)
-    {
-      if (adftool_quads_delete (file, rows[i], deletion_date) != 0)
-	{
-	  free (rows);
-	  return 1;
-	}
-    }
-  free (rows);
-  return 0;
+  return adftool_file_delete (file, pattern, deletion_date);
 }
 
 int
 adftool_insert (struct adftool_file *file,
 		const struct adftool_statement *statement)
 {
-  uint32_t id;
-  if (adftool_quads_insert (file, statement, &id) != 0)
-    {
-      return 1;
-    }
-  for (size_t i = 0; i < 6; i++)
-    {
-      if (bplus_insert (id, id, &(file->data_description.indices[i].bplus)) !=
-	  0)
-	{
-	  return 1;
-	}
-    }
-  return 0;
+  return adftool_file_insert (file, statement);
 }

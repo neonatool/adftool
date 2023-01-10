@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 #include <hdf5.h>
@@ -32,12 +30,9 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
-  struct adftool_file *file = adftool_file_alloc ();
+  remove ("eeg_data_example.adf");
+  struct adftool_file *file = adftool_file_open ("eeg_data_example.adf", 1);
   if (file == NULL)
-    {
-      abort ();
-    }
-  if (adftool_file_open (file, "eeg_data_example.adf", 1) != 0)
     {
       abort ();
     }
@@ -47,7 +42,8 @@ main (int argc, char *argv[])
     }
   adftool_file_close (file);
   /* Now read the file. */
-  if (adftool_file_open (file, "eeg_data_example.adf", 0) != 0)
+  file = adftool_file_open ("eeg_data_example.adf", 0);
+  if (file == NULL)
     {
       abort ();
     }
@@ -89,6 +85,5 @@ main (int argc, char *argv[])
     }
   free (file_eeg_data);
   adftool_file_close (file);
-  adftool_file_free (file);
   return 0;
 }

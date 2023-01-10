@@ -24,63 +24,30 @@ before_script:
   - apt-get install -y git
   - git config --global --add safe.directory $PWD
 
-libbplus:
-  stage: dependencies
-  script:
-    - apt-get install -y gcc gettext git pkg-config check emacs lcov perl libgd-perl autoconf autoconf-archive automake libtool gettext autopoint make indent
-    - cd libbplus
-    - emacs --batch --quick --load bootstrap-bootstrap.el
-    - ./prepare
-    - mkdir build-native
-    - cd build-native
-    - ../configure --prefix=/ --enable-relocatable
-    - make -j 8
-    - make -j 8 install DESTDIR=$PWD/../../public/native-build
-    - cd ..
-    - mkdir build-mingw
-    - cd build-mingw
-    - ../configure --enable-relocatable HDF5_CFLAGS=-I/export/mingw64/include 'HDF5_LIBS=-L/export/mingw64/lib -lhdf5' 'CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -Wall -Wextra' --enable-relocatable --host=x86_64-w64-mingw32 --prefix=/
-    - make -j 8
-    - make -j 8 install DESTDIR=$PWD/../../public/mingw64
-    - cd ..
-    - mkdir build-emscrpiten
-    - cd build-emscripten
-    - emconfigure ../configure CPPFLAGS=-I/export/emscripten/include LIBS=/export/emscripten/lib/libhdf5.a LDFLAGS=-L/export/emscripten/lib --disable-relocatable --disable-shared --prefix=/
-    - emmake -j 8
-    - emmake -j 8 install DESTDIR=$PWD/../../public/emscripten
-  artifacts:
-    paths:
-      - public
-
 dist:
   stage: dependencies
   script:
-    - apt-get install -y git gettext libgmp-dev libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc m4 libtinfo5 flex r-base texinfo texlive libpython3-dev pkg-config emacs
+    - apt-get install -y git gettext libgmp-dev libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc m4 libtinfo5 flex r-base texinfo texlive libpython3-dev pkg-config emacs check
     - mkdir -p public
     - export GNULIB_SRCDIR=$PWD/gnulib
-    - cd libbplus
-    - emacs --batch --quick --load bootstrap-bootstrap.el
-    - ./prepare
-    - ./bootstrap
-    - cd ..
-    - mkdir build-libbplus
-    - cd build-libbplus
-    - ../libbplus/configure
-    - make -j 8
-    - make -j 8 install
-    - cd ..
-    - ./bootstrap --force --skip-po
-    - "ls po/*.po | sed 's|.*/||; s|\\.po$||' > po/LINGUAS"
+    - ./bootstrap-bootstrap
     - mkdir -p build-dist
     - cd build-dist
-    - ../configure CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib
+    - ../configure CPPFLAGS=-I/export/native/include LDFLAGS=-L/export/native/lib LIBS="-lbplus -lbplus-hdf5"
     - make -j
     - mv src/libadftool/libadftool_la-lexer.c ../src/libadftool/
-    - make -j distcheck
+    - make -j distcheck DISTCHECK_CONFIGURE_FLAGS="CPPFLAGS=-I/export/native/include LDFLAGS=-L/export/native/lib LIBS=\"-lbplus -lbplus-hdf5\" LD_LIBRARY_PATH=/export/native/lib"
     - cp adftool-*.tar.gz ../public/adftool-latest.tar.gz
     - cp ../.version ../public
   artifacts:
+    when: always
     paths:
+      - build-dist/config.log
+      - build-dist/adftool-*/_build/sub/config.log
+      - build-dist/config.h
+      - build-dist/adftool-*/_build/sub/config.h
+      - build-dist/test-suite.log
+      - build-dist/adftool-*/_build/sub/test-suite.log
       - public
 
 build_mingw:
@@ -90,17 +57,22 @@ build_mingw:
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-mingw
     - cd build-mingw
-    - ../adftool-*/configure CPPFLAGS=-I$PWD/../public/mingw64/include LDFLAGS=-L$PWD/../public/mingw64/lib HDF5_CFLAGS=-I/export/mingw64/include 'HDF5_LIBS=-L/export/mingw64/lib -lhdf5' 'CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -Wall -Wextra' --enable-relocatable --host=x86_64-w64-mingw32 --prefix=/mingw64 --disable-python
+    - ../adftool-*/configure CPPFLAGS="-I$PWD/../public/mingw64/include -I/export/mingw64/include" LDFLAGS="-L$PWD/../public/mingw64/lib -L/export/mingw64/lib" HDF5_CFLAGS=-I/export/mingw64/include 'HDF5_LIBS=-L/export/mingw64/lib -lhdf5' 'CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -Wall -Wextra' LIBS='-lbplus -lbplus-hdf5' --enable-relocatable --host=x86_64-w64-mingw32 --prefix=/mingw64 --disable-python
     - make -j
     - make -j DESTDIR=$PWD/../public install
     - cp /export/mingw64/bin/*.dll $PWD/../public/mingw64/bin
     - cp -R /export/mingw64/include/* $PWD/../public/mingw64/include/
     - cp -R /export/mingw64/lib/* $PWD/../public/mingw64/lib/
     - cp /export/mingw64/bin/*.dll .
-    - make -j check 'LOG_COMPILER = ./libtool --mode=execute wine' 'XFAIL_TESTS = eeg_metadata_example.exe'
+    - cp ../public/mingw64/bin/*.dll .
+    - make -j check 'LOG_COMPILER = ./libtool --mode=execute wine' 'XFAIL_TESTS = src/eeg_metadata_example.exe'
     - LANG=fr_FR.UTF-8 wine ../public/mingw64/bin/adftool --aidez-moi
   artifacts:
+    when: always
     paths:
+      - build-mingw/config.log
+      - build-mingw/config.h
+      - build-mingw/test-suite.log
       - public
 
 build_emscripten:
@@ -109,25 +81,37 @@ build_emscripten:
     - "source /etc/profile || true"
     - apt-get install -y git python3 gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc m4 libtinfo5 lbzip2
     - tar xf public/adftool-latest.tar.gz
+    - cd adftool-*
+    - (echo 'char *getprogname (void);' ; cat lib/error.c) > lib/true-error.c
+    - mv lib/true-error.c lib/error.c
+    - (echo 'char *getprogname (void);' ; cat libprog/error.c) > libprog/true-error.c
+    - mv libprog/true-error.c libprog/error.c
+    - (echo 'char *rawmemchr (char *, char);' ; cat libprog/canonicalize-lgpl.c) > libprog/true-canonicalize-lgpl.c
+    - mv libprog/true-canonicalize-lgpl.c libprog/canonicalize-lgpl.c
+    - cd ..
     - mkdir -p build-emscripten
     - cd build-emscripten
-    - emconfigure ../adftool-*/configure CPPFLAGS="-I/export/emscripten/include -I$PWD/../public/emscripten" LIBS="/export/emscripten/lib/libhdf5.a $PWD/../public/emscripten/lib/libbplus.a" LDFLAGS="-L/export/emscripten/lib -L$PWD/../public/emscripten/lib" --disable-relocatable --disable-shared --prefix=/emscripten --disable-python --enable-node=yes --enable-js-initial-memory=$((256 * 1024 * 1024)) gl_cv_func_dup2_works=no --disable-valgrind-tests CFLAGS=--profiling
+    - emconfigure ../adftool-*/configure CPPFLAGS="-I/export/emscripten/include -I$PWD/../public/emscripten" LIBS="/export/emscripten/lib/libhdf5.a /export/emscripten/lib/libbplus.a /export/emscripten/lib/libbplus-hdf5.a" LDFLAGS="-L/export/emscripten/lib -L$PWD/../public/emscripten/lib" --disable-relocatable --disable-shared --prefix=/emscripten --disable-python --enable-node=yes --enable-js-initial-memory=$((256 * 1024 * 1024)) gl_cv_func_dup2_works=no --disable-valgrind-tests CFLAGS=--profiling
     - emmake make -j
     - emmake make -j DESTDIR=$PWD/../public install
     - cp -R /export/emscripten/include/* $PWD/../public/emscripten/include/
     - cp -R /export/emscripten/lib/* $PWD/../public/emscripten/lib/
   artifacts:
+    when: always
     paths:
+      - build-emscripten/config.log
+      - build-emscripten/config.h
+      - build-emscripten/test-suite.log
       - public
 
 build_html:
   stage: build
   script:
-    - apt-get install -y gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc libtinfo5 libmpfr-dev texinfo python3 libpython3-dev pkg-config
+    - apt-get install -y gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc libtinfo5 libmpfr-dev texinfo python3 libpython3-dev pkg-config check
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-html
     - cd build-html
-    - ../adftool-*/configure --prefix=/ --htmldir=/adftool CPPFLAGS="-I$PWD/../public/native-build/include" LDFLAGS="-L$PWD/../public/native-build/lib"
+    - ../adftool-*/configure --prefix=/ --htmldir=/adftool CPPFLAGS=-I/export/native/include LDFLAGS=-L/export/native/lib LIBS="-lbplus -lbplus-hdf5"
     - make -j
     - make -j html
     - make -j DESTDIR=$PWD/../public install-html
@@ -138,29 +122,17 @@ build_html:
 build_pdf:
   stage: build
   script:
-    - apt-get install -y gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc libtinfo5 libmpfr-dev texinfo texlive python3 libpython3-dev pkg-config
+    - apt-get install -y gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc libtinfo5 libmpfr-dev texinfo texlive python3 libpython3-dev pkg-config check
     - tar xf public/adftool-latest.tar.gz
     - mkdir -p build-pdf
     - cd build-pdf
-    - ../adftool-*/configure --prefix=/ --pdfdir=/ CPPFLAGS="-I$PWD/../public/native-build/include" LDFLAGS="-L$PWD/../public/native-build/lib"
+    - ../adftool-*/configure --prefix=/ --pdfdir=/ CPPFLAGS=-I/export/native/include LDFLAGS=-L/export/native/lib LIBS="-lbplus -lbplus-hdf5"
     - make -j
     - make -j pdf
     - make -j DESTDIR=$PWD/../public install-pdf
   artifacts:
     paths:
       - public
-
-conan:
-  stage: package
-  script:
-    - apt-get install -y python3 python3-pip autoconf autoconf-archive automake libtool pkg-config
-    - pip3 install conan
-    - tar xf public/adftool-latest.tar.gz
-    - mkdir conan-build
-    - cd conan-build
-    - conan remote add gitlab ${CI_API_V4_URL}/projects/$CI_PROJECT_ID/packages/conan
-    - conan create ../adftool-* ${CI_PROJECT_NAMESPACE}+${CI_PROJECT_NAME}/latest --build missing -c tools.system.package_manager:mode=install
-    - CONAN_LOGIN_USERNAME=${GITLAB_USER_NAME} CONAN_PASSWORD=${CI_JOB_TOKEN} conan upload adftool/$(cat ../adftool-*/.tarball-version)@${CI_PROJECT_NAMESPACE}+${CI_PROJECT_NAME}/latest --all --remote=gitlab
 
 check_npm:
   stage: package
@@ -190,28 +162,6 @@ publish_npm:
     - npm publish
   only:
     - /^v[0-9]+.[0-9]+.[0-9]+$/
-
-debian:
-  stage: package
-  script:
-    - apt-get -y install build-essential devscripts debhelper git-buildpackage gettext libgmp-dev libhdf5-dev zlib1g-dev valgrind tar make gcc libtinfo5 libmpfr-dev texinfo python3 libpython3-dev pkg-config reprepro
-    - mv public/adftool-latest.tar.gz adftool_$(sed 's/-/./g' public/.version).orig.tar.gz
-    - mkdir -p public/debian
-    - tar xf adftool_*.orig.tar.gz
-    - echo "" | gbp dch --debian-branch=main --ignore-branch --new-version=$(sed 's/-/./g' public/.version)-1
-    - cd adftool-*
-    - cp -R ../debian debian
-    - debuild -us -uc
-    - cd ../public/debian
-    - cp ../../*.deb adftool-latest.deb
-    - cp -R ../../conf conf
-    - reprepro -Vb . includedeb stable ../../*.deb
-    - echo "deb [trusted=yes] ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/${CI_JOB_ID}/artifacts/public/debian stable main" >> adftool-job.list
-    - echo "deb [trusted=yes] ${CI_PAGES_URL}/debian stable main" >> adftool-latest.list
-    - echo "Now you can download either .list file, add it to your debian, set up your /etc/apt/auth.conf, and realize that you can’t authenticate neither to the artifacts API nor the pages with basic authentication, and you can’t configure apt to use bearer authentication with a token. So you will be glad to download /debian/adftool-latest.deb and install it by hand :)"
-  artifacts:
-    paths:
-      - public
 
 pages:
   stage: pages

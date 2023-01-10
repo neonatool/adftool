@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 #include <hdf5.h>
@@ -11,7 +9,6 @@
 #include "relocatable.h"
 #include "progname.h"
 #include <locale.h>
-#include <assert.h>
 
 #define _(String) gettext(String)
 #define N_(String) (String)
@@ -25,14 +22,9 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
-  struct adftool_file *file = adftool_file_alloc ();
-  if (file == NULL)
-    {
-      abort ();
-    }
   remove ("statement_example.adf");
-  int error = adftool_file_open (file, "statement_example.adf", 1);
-  if (error)
+  struct adftool_file *file = adftool_file_open ("statement_example.adf", 1);
+  if (file == NULL)
     {
       abort ();
     }
@@ -96,6 +88,5 @@ main (int argc, char *argv[])
   adftool_term_free (term_a);
   adftool_statement_free (statement);
   adftool_file_close (file);
-  adftool_file_free (file);
   return 0;
 }

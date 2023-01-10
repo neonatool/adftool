@@ -1,8 +1,16 @@
 /* *INDENT-OFF* */
 %top{
 /* *INDENT-ON* */
-#include <adftool_private.h>
-#include <adftool_bplus.h>
+#include <config.h>
+#include <adftool.h>
+
+#define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
+
+#include "term.h"
+
+#include <assert.h>
+
 /* *INDENT-OFF* */
 }
 
@@ -391,7 +399,7 @@ adftool_term_to_n3 (const struct adftool_term *term, size_t start, size_t max,
     }
   else if (adftool_term_is_named (term))
     {
-      if (term->str2 != NULL && strcmp (term->str2, "") != 0)
+      if (term->str2 != NULL && STRNEQ (term->str2, ""))
 	{
 	  fprintf (stderr, _("\
 I don’t know how to represent namespaced terms yet, sorry.\n"));

@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 #include <hdf5.h>
@@ -15,6 +13,9 @@
 
 #define _(String) gettext(String)
 #define N_(String) (String)
+
+#define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
 
 int
 main (int argc, char *argv[])
@@ -50,13 +51,13 @@ main (int argc, char *argv[])
     {
       assert (0);
     }
-  assert (strcmp (value, untimezoned) == 0);
+  assert (STREQ (value, untimezoned));
   if (adftool_term_meta (term, 0, sizeof (meta), meta) !=
       strlen (xsd_datetime))
     {
       assert (0);
     }
-  assert (strcmp (meta, xsd_datetime) == 0);
+  assert (STREQ (meta, xsd_datetime));
   /* Test that milliseconds are not parsed as nanoseconds */
   adftool_term_set_literal (term, with_milliseconds, xsd_datetime, NULL);
   if (adftool_term_as_date (term, &date) != 0)

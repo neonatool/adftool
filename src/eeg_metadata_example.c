@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 #include <hdf5.h>
@@ -24,14 +22,10 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
-  struct adftool_file *file = adftool_file_alloc ();
-  if (file == NULL)
-    {
-      abort ();
-    }
   remove ("eeg_metadata_example.adf");
-  int error = adftool_file_open (file, "eeg_metadata_example.adf", 1);
-  if (error)
+  struct adftool_file *file =
+    adftool_file_open ("eeg_metadata_example.adf", 1);
+  if (file == NULL)
     {
       abort ();
     }
@@ -49,8 +43,8 @@ main (int argc, char *argv[])
       abort ();
     }
   adftool_file_close (file);
-  error = adftool_file_open (file, "eeg_metadata_example.adf", 0);
-  if (error)
+  file = adftool_file_open ("eeg_metadata_example.adf", 0);
+  if (file == NULL)
     {
       abort ();
     }
@@ -94,6 +88,5 @@ of the third observation.\n"));
   assert (observation_1s_later.tv_sec == start.tv_sec + 1);
   assert (observation_1s_later.tv_nsec == start.tv_nsec);
   adftool_file_close (file);
-  adftool_file_free (file);
   return 0;
 }

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+me="$0"
+medir=`dirname "$me"`
+
+if test -z "$GNULIB_SRCDIR"
+then
+    export GNULIB_SRCDIR="$PWD/gnulib"
+fi
+
+cp "$GNULIB_SRCDIR"/top/* "$medir" && "$medir"/bootstrap "$@"

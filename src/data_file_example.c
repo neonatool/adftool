@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 #include <hdf5.h>
@@ -16,6 +14,9 @@
 #define _(String) gettext(String)
 #define N_(String) (String)
 
+#define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
+
 int
 main (int argc, char *argv[])
 {
@@ -24,12 +25,8 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
-  struct adftool_file *file = adftool_file_alloc ();
+  struct adftool_file *file = adftool_file_open_data (0, NULL);
   if (file == NULL)
-    {
-      abort ();
-    }
-  if (adftool_file_open_data (file, 0, NULL) != 0)
     {
       abort ();
     }
@@ -72,14 +69,9 @@ main (int argc, char *argv[])
       adftool_term_free (terms[i]);
     }
   adftool_file_close (file);
-  adftool_file_free (file);
   /* Now read the file… */
-  file = adftool_file_alloc ();
+  file = adftool_file_open_data (file_length, file_data);
   if (file == NULL)
-    {
-      abort ();
-    }
-  if (adftool_file_open_data (file, file_length, file_data) != 0)
     {
       abort ();
     }
@@ -139,9 +131,8 @@ main (int argc, char *argv[])
 	adftool_term_value (result_terms[i], 0, length + 1, term_values[i]);
       assert (length == check_length);
     }
-  if ((strcmp (term_values[0], "a") != 0)
-      || (strcmp (term_values[1], "b") != 0)
-      || (strcmp (term_values[2], "c") != 0))
+  if (STRNEQ (term_values[0], "a")
+      || STRNEQ (term_values[1], "b") || STRNEQ (term_values[2], "c"))
     {
       abort ();
     }
@@ -153,7 +144,6 @@ main (int argc, char *argv[])
   adftool_statement_free (result);
   adftool_statement_free (pattern);
   adftool_file_close (file);
-  adftool_file_free (file);
   free (file_data);
   return 0;
 }

@@ -18,9 +18,7 @@ init_coef = paste (sapply (coef$coef, function (y) {
   sprintf ("%.20f", y)
 }), collapse = ",\n      ")
 
-cat (sprintf ("#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+cat (sprintf ("#include <config.h>
 
 #include <stdlib.h>
 #include <string.h>

@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 #include <hdf5.h>
@@ -34,52 +32,46 @@ main (int argc, char *argv[])
   /* 6. What happens if we open a corrupted file for writing. */
   prepare_files ();
 
-  /* The first step is to allocate a file object. It does not directly
-     open a new file. */
-
-  struct adftool_file *file = adftool_file_alloc ();
-
-  /* There could be some dark magic spell cast on our program that
-     makes malloc returns NULL (ugh). */
-  if (file == NULL)
-    {
-      abort ();
-    }
+  struct adftool_file *file;
 
   /* First, the well-formed file. */
   /* For reading: */
-  int error = adftool_file_open (file, "well-formed.adf", 0);
-  if (error)
+  file = adftool_file_open ("well-formed.adf", 0);
+  if (file == NULL)
     {
       abort ();
     }
   /* When we’re done with the file, we can close it. */
   adftool_file_close (file);
   /* And now for reading and writing: */
-  error = adftool_file_open (file, "well-formed.adf", 1);
-  if (error)
+  file = adftool_file_open ("well-formed.adf", 1);
+  if (file == NULL)
     {
       abort ();
     }
   adftool_file_close (file);
 
   /* We can’t open the non-existing file for reading. */
-  error = adftool_file_open (file, "non-existing.adf", 0);
-  if (error == 0)
+  file = adftool_file_open ("non-existing.adf", 0);
+  if (file)
     {
       abort ();
     }
-  /* We don’t need to close the file if we couldn’t open it. */
+  /* We don’t need to close the file if we couldn’t open it. We can if
+     we want. */
+#ifdef I_WANT_TO_CLOSE_FILES
+  adftool_file_close (file);
+#endif
   /* We can however open the non-existing file for writing, and it
      will be all set up so that we can open it again for reading. */
-  error = adftool_file_open (file, "non-existing.adf", 1);
-  if (error)
+  file = adftool_file_open ("non-existing.adf", 1);
+  if (file == NULL)
     {
       abort ();
     }
   adftool_file_close (file);
-  error = adftool_file_open (file, "non-existing.adf", 0);
-  if (error)
+  file = adftool_file_open ("non-existing.adf", 0);
+  if (file == NULL)
     {
       abort ();
     }
@@ -89,32 +81,40 @@ main (int argc, char *argv[])
      non-existing file case. Since the HDF5 file is not corrupted
      (only the ADF layer is), we can just consider that there is
      simply no RDF in there. */
-  error = adftool_file_open (file, "corrupted.adf", 0);
-  if (error == 0)
+  file = adftool_file_open ("corrupted.adf", 0);
+  if (file)
     {
       abort ();
     }
-  error = adftool_file_open (file, "corrupted.adf", 1);
-  if (error)
-    {
-      abort ();
-    }
-  adftool_file_close (file);
-  error = adftool_file_open (file, "corrupted.adf", 0);
-  if (error)
+  file = adftool_file_open ("corrupted.adf", 1);
+  if (file == NULL)
     {
       abort ();
     }
   adftool_file_close (file);
-
-  /* At the end of the program, free the resources. */
-  adftool_file_free (file);
+  file = adftool_file_open ("corrupted.adf", 0);
+  if (file == NULL)
+    {
+      abort ();
+    }
+  adftool_file_close (file);
   return 0;
 }
 
 static void
 prepare_files (void)
 {
+  hid_t native_u32_type = H5Tcopy (H5T_NATIVE_UINT);
+  if (native_u32_type == H5I_INVALID_HID)
+    {
+      abort ();
+    }
+  /* native_u32_type is not yet 4 bytes, it’s sizeof (unsigned int)
+     bytes… */
+  if (H5Tset_size (native_u32_type, 4) < 0)
+    {
+      abort ();
+    }
   hid_t well_formed_file, corrupted_file;
   well_formed_file =
     H5Fcreate ("well-formed.adf", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
@@ -144,16 +144,14 @@ prepare_files (void)
   hid_t dataset_creation_properties = H5Pcreate (H5P_DATASET_CREATE);
   if (dataset_creation_properties == H5I_INVALID_HID)
     {
-      fprintf (stderr, "%s:%d: failed here.\n", __FILE__, __LINE__);
       abort ();
     }
   if (H5Pset_chunk (dataset_creation_properties, 2, chunk_dimensions) < 0)
     {
-      fprintf (stderr, "%s:%d: failed here.\n", __FILE__, __LINE__);
       abort ();
     }
   hid_t dictionary_bplus_dataset =
-    H5Dcreate2 (well_formed_file, "/dictionary/keys", H5T_NATIVE_B32, fspace,
+    H5Dcreate2 (well_formed_file, "/dictionary/keys", native_u32_type, fspace,
 		H5P_DEFAULT, dataset_creation_properties, H5P_DEFAULT);
   H5Pclose (dataset_creation_properties);
   H5Sclose (fspace);
@@ -239,15 +237,10 @@ prepare_files (void)
   /* The well-formed file is not fully prepared yet: there are 0 rows
      in the dictionary index, which is invalid. */
 
-  struct adftool_file *file = adftool_file_alloc ();
+  struct adftool_file *file = adftool_file_open ("well-formed.adf", 1);
   if (file == NULL)
     {
       abort ();
     }
-  if (adftool_file_open (file, "well-formed.adf", 1) != 0)
-    {
-      abort ();
-    }
   adftool_file_close (file);
-  adftool_file_free (file);
 }

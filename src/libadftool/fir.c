@@ -1,6 +1,8 @@
-#include <adftool_private.h>
-#include <adftool_bplus.h>
+#include <config.h>
+#include <adftool.h>
+#include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 
 struct adftool_fir
 {

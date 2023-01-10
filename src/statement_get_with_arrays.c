@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 
@@ -15,6 +13,9 @@
 #define _(String) gettext(String)
 #define N_(String) (String)
 
+#define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
+
 static void
 check_n3 (const struct adftool_term *term, const char *expected_n3)
 {
@@ -24,7 +25,7 @@ check_n3 (const struct adftool_term *term, const char *expected_n3)
   assert (n_out < sizeof (out));
   out[sizeof (out) - 1] = '\0';	/* Unnecessary but still doesn’t
 				   hurt */
-  if (strcmp (out, expected_n3) != 0)
+  if (STRNEQ (out, expected_n3))
     {
       abort ();
     }

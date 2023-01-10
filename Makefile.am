@@ -3,8 +3,6 @@ ACLOCAL_AMFLAGS = -I m4 -I m4prog
 EXTRA_DIST = m4/gnulib-cache.m4 m4prog/gnulib-cache.m4 \
   src/filter_test_data.c src/filter_test_data.R src/filter_test_data.csv \
   po/Rules-install-local \
-  conanfile-in.py \
-  $(top_srcdir)/conanfile.py \
   $(top_srcdir)/.version \
   $(top_srcdir)/src/js/package.json.in
 
@@ -25,122 +23,100 @@ CLEANFILES = \
   eeg_metadata_example.adf \
   filter-log
 
-AM_CPPFLAGS = \
+COMMON_COMPILE_FLAGS = \
   -I include -I $(srcdir)/include \
-  -I lib -I $(srcdir)/lib \
   -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\"
+  -DLOCALEDIR=\"$(localedir)\" \
+  -DINSTALLDIR=\"$(bindir)\"
+
+COMMON_LINK_FLAGS = \
+  $(LTLIBOBJS) \
+  $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME)
+
+AM_CPPFLAGS = \
+  -I libprog -I $(srcdir)/libprog \
+  $(COMMON_COMPILE_FLAGS)
+
+LDADD = \
+  libprog/libgnu.la \
+  libadftool.la \
+  $(COMMON_LINK_FLAGS) \
+  $(LIBTHREAD) \
+  $(LIB_SETLOCALE) \
+  $(LIB_SETLOCALE_NULL) \
+  $(INTL_MACOSX_LIBS)
 
 AM_DISTCHECK_CONFIGURE_FLAGS = \
   --disable-valgrind-tests \
-  "CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined,address -fsanitize-undefined-trap-on-error -Wall -Wextra" \
+  "CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined,address -fsanitize-undefined-trap-on-error -Wall -Wextra -fanalyzer" \
   SHELL=$(SHELL)
 
 RELOCATABLE_LIBRARY_PATH = $(libdir)
 
-bin_PROGRAMS = adftool
+bin_PROGRAMS = src/adftool
 
 lib_LTLIBRARIES = libadftool.la
 dist_include_HEADERS = include/adftool.h
 check_PROGRAMS = \
-  bplus_tree_lookup_example \
-  bplus_tree_empty_lookup_example \
-  bplus_tree_grow_example \
-  bplus_tree_grow_file_example \
-  bplus_tree_gets_initialized \
-  bplus_tree_insert_example \
-  file_open_example \
-  dictionary_example \
-  term_manipulation_example \
-  statement_manipulation_example \
-  multi_statement_example \
-  term_parser_example \
-  channel_metadata_example \
-  eeg_data_example \
-  filter_example \
-  data_file_example \
-  date_parser_example \
-  eeg_metadata_example \
-  timespec_example \
-  statement_get_with_arrays \
-  check_fine_eeg_get_data \
-  check_lookup_pagination \
-  simple_filters
+  src/file_open_example \
+  src/dictionary_example \
+  src/term_manipulation_example \
+  src/statement_manipulation_example \
+  src/multi_statement_example \
+  src/term_parser_example \
+  src/channel_metadata_example \
+  src/eeg_data_example \
+  src/filter_example \
+  src/data_file_example \
+  src/date_parser_example \
+  src/eeg_metadata_example \
+  src/timespec_example \
+  src/statement_get_with_arrays \
+  src/check_fine_eeg_get_data \
+  src/check_lookup_pagination \
+  src/simple_filters
 
-TESTS = \
-  bplus_tree_lookup_example \
-  bplus_tree_empty_lookup_example \
-  bplus_tree_grow_example \
-  bplus_tree_grow_file_example \
-  bplus_tree_gets_initialized \
-  bplus_tree_insert_example \
-  file_open_example \
-  dictionary_example \
-  term_manipulation_example \
-  statement_manipulation_example \
-  multi_statement_example \
-  term_parser_example \
-  channel_metadata_example \
-  eeg_data_example \
-  filter_example \
-  data_file_example \
-  date_parser_example \
-  eeg_metadata_example \
-  timespec_example \
-  statement_get_with_arrays \
-  check_fine_eeg_get_data \
-  check_lookup_pagination \
-  simple_filters
+TESTS = $(check_PROGRAMS)
 
 LOG_COMPILER = $(LOG_VALGRIND)
 
-adftool_SOURCES = src/adftool.c
-adftool_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-adftool_LDADD = \
+src_adftool_LDADD = \
   libprog/libgnu.la \
-  @LTLIBOBJS@ \
+  $(LTLIBOBJS) \
   $(LTLIBINTL) \
   $(LIB_CLOCK_GETTIME) \
   libadftool.la
-adftool_LDFLAGS =
 
 libadftool_la_SOURCES = \
-  src/adftool_private.h \
-  src/adftool_bplus_node.h \
-  src/adftool_bplus_key.h \
-  src/adftool_bplus.h \
-  src/adftool_bplus_cache.h \
-  src/adftool_hdf5.h \
-  src/adftool_grow.h \
-  src/adftool_lookup.h \
-  src/adftool_insert.h \
-  src/libadftool/version.c \
-  src/libadftool/file.c \
-  src/libadftool/dictionary.c \
-  src/libadftool/term.c \
-  src/libadftool/statement.c \
-  src/libadftool/indices.c \
-  src/libadftool/lexer.l \
+  src/libadftool/array.c \
   src/libadftool/channel_metadata.c \
+  src/libadftool/dictionary_bytes.h \
+  src/libadftool/dictionary_cache.h \
+  src/libadftool/dictionary_index.h \
+  src/libadftool/dictionary_strings.h \
   src/libadftool/eeg_data.c \
   src/libadftool/eeg_metadata.c \
+  src/libadftool/file.c \
+  src/libadftool/file.h \
   src/libadftool/fir.c \
-  src/libadftool/array.c
+  src/libadftool/indices.c \
+  src/libadftool/lexer.l \
+  src/libadftool/quads.h \
+  src/libadftool/quads_index.h \
+  src/libadftool/statement.c \
+  src/libadftool/statement.h \
+  src/libadftool/term.c \
+  src/libadftool/term.h \
+  src/libadftool/version.c
 libadftool_la_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
   -I lib -I $(srcdir)/lib \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DBUILDING_LIBADFTOOL
+  -DBUILDING_LIBADFTOOL \
+  $(COMMON_COMPILE_FLAGS)
 libadftool_la_CFLAGS = \
     $(CFLAG_VISIBILITY)
 libadftool_la_LFLAGS = --prefix=_adftool_lexer_
-libadftool_la_LIBADD = lib/libadftool.la @LTLIBOBJS@
+libadftool_la_LIBADD = lib/libadftool.la $(LTLIBOBJS)
 libadftool_la_LDFLAGS = \
   -no-undefined \
   $(LTLIBINTL) \
@@ -149,342 +125,33 @@ libadftool_la_LDFLAGS = \
   $(MODF_LIBM) \
   $(TRUNC_LIBM)
 
+adftool_la_LDFLAGS =
 if PYTHON_MODULE
 pyexec_LTLIBRARIES = adftool.la
 adftool_la_SOURCES = \
   src/adftool_python.c
 adftool_la_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
   -I lib -I $(srcdir)/lib \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DBUILDING_LIBADFTOOL_PYTHON
+  -DBUILDING_LIBADFTOOL_PYTHON \
+  $(COMMON_COMPILE_FLAGS)
 adftool_la_CFLAGS = $(CFLAG_VISIBILITY)
-adftool_la_LIBADD = libadftool.la lib/libadftool.la @LTLIBOBJS@
-adftool_la_LDFLAGS = \
+adftool_la_LIBADD = libadftool.la lib/libadftool.la $(LTLIBOBJS)
+adftool_la_LDFLAGS += \
   -no-undefined -avoid-version -module \
   $(LTLIBINTL)
 endif
 
 if RELOCATABLE_VIA_LD
 libadftool_la_LDFLAGS += `$(RELOCATABLE_LDFLAGS) $(libdir)`
-adftool_LDFLAGS += `$(RELOCATABLE_LDFLAGS) $(bindir)`
+adftool_la_LDFLAGS += `$(RELOCATABLE_LDFLAGS) $(bindir)`
 endif
-
-bplus_tree_lookup_example_SOURCES = \
-  src/bplus_tree_lookup_example.c
-bplus_tree_lookup_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-
-bplus_tree_empty_lookup_example_SOURCES = \
-  src/bplus_tree_empty_lookup_example.c
-bplus_tree_empty_lookup_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-
-bplus_tree_grow_example_SOURCES = \
-  src/bplus_tree_grow_example.c
-bplus_tree_grow_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-
-bplus_tree_grow_file_example_SOURCES = \
-  src/bplus_tree_grow_file_example.c
-bplus_tree_grow_file_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-
-bplus_tree_gets_initialized_SOURCES = \
-  src/bplus_tree_gets_initialized.c
-bplus_tree_gets_initialized_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-
-bplus_tree_insert_example_SOURCES = \
-  src/bplus_tree_insert_example.c
-bplus_tree_insert_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-
-file_open_example_SOURCES = \
-  src/file_open_example.c
-file_open_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-file_open_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-dictionary_example_SOURCES = \
-  src/dictionary_example.c
-dictionary_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-dictionary_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-term_manipulation_example_SOURCES = \
-  src/term_manipulation_example.c
-term_manipulation_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-term_manipulation_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-statement_manipulation_example_SOURCES = \
-  src/statement_manipulation_example.c
-statement_manipulation_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-statement_manipulation_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-multi_statement_example_SOURCES = \
-  src/multi_statement_example.c
-multi_statement_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-multi_statement_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-term_parser_example_SOURCES = \
-  src/term_parser_example.c
-term_parser_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-term_parser_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-channel_metadata_example_SOURCES = \
-  src/channel_metadata_example.c
-channel_metadata_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-channel_metadata_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-eeg_data_example_SOURCES = \
-  src/eeg_data_example.c
-eeg_data_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-eeg_data_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-filter_example_SOURCES = \
-  src/filter_example.c src/filter_test_data.c
-filter_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-filter_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-data_file_example_SOURCES = \
-  src/data_file_example.c
-data_file_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-data_file_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-date_parser_example_SOURCES = \
-  src/date_parser_example.c
-date_parser_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-date_parser_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-eeg_metadata_example_SOURCES = \
-  src/eeg_metadata_example.c
-eeg_metadata_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-eeg_metadata_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-timespec_example_SOURCES = \
-  src/timespec_example.c
-timespec_example_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-timespec_example_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-statement_get_with_arrays_SOURCES = \
-  src/statement_get_with_arrays.c
-statement_get_with_arrays_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-statement_get_with_arrays_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-check_fine_eeg_get_data_SOURCES = \
-  src/check_fine_eeg_get_data.c
-check_fine_eeg_get_data_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-check_fine_eeg_get_data_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-check_lookup_pagination_SOURCES = \
-  src/check_lookup_pagination.c
-check_lookup_pagination_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-check_lookup_pagination_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
-
-simple_filters_SOURCES = \
-  src/simple_filters.c
-simple_filters_LDADD = \
-  libprog/libgnu.la \
-  libadftool.la \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  @LTLIBOBJS@
-simple_filters_CPPFLAGS = \
-  -I include -I $(srcdir)/include \
-  -I libprog -I $(srcdir)/libprog \
-  -I src -I $(srcdir)/src \
-  -DLOCALEDIR=\"@localedir@\" \
-  -DINSTALLDIR=\"$(bindir)\"
 
 AM_TESTS_ENVIRONMENT = \
   mkdir -p $(abs_top_builddir)/.tmp ; \
   export TMPDIR=$(abs_top_builddir)/.tmp ;
 
 BUILT_SOURCES = src/filter_test_data.c
+src_filter_example_SOURCES = src/filter_example.c src/filter_test_data.c
 
 $(srcdir)/src/filter_test_data.c: src/filter_test_data.R src/filter_test_data.csv
 	$(AM_V_GEN) (cd $(srcdir) && $(RSCRIPT) src/filter_test_data.R > src/filter_test_data.c-t)
@@ -506,7 +173,7 @@ dist-hook:
 	echo '$(VERSION)' > $(distdir)/.tarball-version
 
 if NODE_MODULE
-EXPORTED_FUNCTIONS = _adftool_add_channel_type,_adftool_array_double_address,_adftool_array_double_alloc,_adftool_array_double_free,_adftool_array_double_get,_adftool_array_double_set,_adftool_array_long_address,_adftool_array_long_alloc,_adftool_array_long_free,_adftool_array_long_get,_adftool_array_long_set,_adftool_array_size_t_address,_adftool_array_size_t_alloc,_adftool_array_size_t_free,_adftool_array_size_t_get,_adftool_array_size_t_set,_adftool_array_uint64_t_address,_adftool_array_uint64_t_alloc,_adftool_array_uint64_t_free,_adftool_array_uint64_t_get_js_high,_adftool_array_uint64_t_get_js_low,_adftool_array_uint64_t_set_js,_adftool_delete,_adftool_dictionary_get,_adftool_dictionary_insert,_adftool_dictionary_lookup,_adftool_eeg_get_data,_adftool_eeg_get_time,_adftool_eeg_set_data,_adftool_eeg_set_time,_adftool_file_alloc,_adftool_file_close,_adftool_file_free,_adftool_file_get_data,_adftool_file_open,_adftool_file_open_data,_adftool_find_channel_identifier,_adftool_find_channels_by_type,_adftool_fir_auto_bandwidth,_adftool_fir_auto_order,_adftool_fir_alloc,_adftool_fir_apply,_adftool_fir_design_bandpass,_adftool_fir_free,_adftool_fir_order,_adftool_get_channel_column,_adftool_get_channel_decoder,_adftool_get_channel_types,_adftool_insert,_adftool_lookup,_adftool_lookup_objects,_adftool_lookup_subjects,_adftool_quads_delete,_adftool_quads_get,_adftool_quads_insert,_adftool_set_channel_decoder,_adftool_statement_alloc,_adftool_statement_compare,_adftool_statement_copy,_adftool_statement_free,_adftool_statement_get,_adftool_statement_set,_adftool_term_alloc,_adftool_term_as_date,_adftool_term_as_double,_adftool_term_as_integer,_adftool_term_as_mpf,_adftool_term_as_mpz,_adftool_term_compare,_adftool_term_copy,_adftool_term_decode,_adftool_term_encode,_adftool_term_free,_adftool_term_is_blank,_adftool_term_is_langstring,_adftool_term_is_literal,_adftool_term_is_named,_adftool_term_is_typed_literal,_adftool_term_meta,_adftool_term_parse_n3,_adftool_term_set_blank,_adftool_term_set_date,_adftool_term_set_double,_adftool_term_set_integer,_adftool_term_set_literal,_adftool_term_set_mpf,_adftool_term_set_mpz,_adftool_term_set_named,_adftool_term_to_n3,_adftool_term_value,_adftool_timespec_alloc,_adftool_timespec_free,_adftool_timespec_set_js,_adftool_timespec_get_js
+EXPORTED_FUNCTIONS = _adftool_add_channel_type,_adftool_array_double_address,_adftool_array_double_alloc,_adftool_array_double_free,_adftool_array_double_get,_adftool_array_double_set,_adftool_array_long_address,_adftool_array_long_alloc,_adftool_array_long_free,_adftool_array_long_get,_adftool_array_long_set,_adftool_array_size_t_address,_adftool_array_size_t_alloc,_adftool_array_size_t_free,_adftool_array_size_t_get,_adftool_array_size_t_set,_adftool_array_uint64_t_address,_adftool_array_uint64_t_alloc,_adftool_array_uint64_t_free,_adftool_array_uint64_t_get_js_high,_adftool_array_uint64_t_get_js_low,_adftool_array_uint64_t_set_js,_adftool_delete,_adftool_dictionary_get,_adftool_dictionary_insert,_adftool_dictionary_lookup,_adftool_eeg_get_data,_adftool_eeg_get_time,_adftool_eeg_set_data,_adftool_eeg_set_time,_adftool_file_close,_adftool_file_get_data,_adftool_file_open,_adftool_file_open_data,_adftool_find_channel_identifier,_adftool_find_channels_by_type,_adftool_fir_auto_bandwidth,_adftool_fir_auto_order,_adftool_fir_alloc,_adftool_fir_apply,_adftool_fir_design_bandpass,_adftool_fir_free,_adftool_fir_order,_adftool_get_channel_column,_adftool_get_channel_decoder,_adftool_get_channel_types,_adftool_insert,_adftool_lookup,_adftool_lookup_objects,_adftool_lookup_subjects,_adftool_quads_delete,_adftool_quads_get,_adftool_quads_insert,_adftool_set_channel_decoder,_adftool_statement_alloc,_adftool_statement_compare,_adftool_statement_copy,_adftool_statement_free,_adftool_statement_get,_adftool_statement_set,_adftool_term_alloc,_adftool_term_as_date,_adftool_term_as_double,_adftool_term_as_integer,_adftool_term_as_mpf,_adftool_term_as_mpz,_adftool_term_compare,_adftool_term_copy,_adftool_term_decode,_adftool_term_encode,_adftool_term_free,_adftool_term_is_blank,_adftool_term_is_langstring,_adftool_term_is_literal,_adftool_term_is_named,_adftool_term_is_typed_literal,_adftool_term_meta,_adftool_term_parse_n3,_adftool_term_set_blank,_adftool_term_set_date,_adftool_term_set_double,_adftool_term_set_integer,_adftool_term_set_literal,_adftool_term_set_mpf,_adftool_term_set_mpz,_adftool_term_set_named,_adftool_term_to_n3,_adftool_term_value,_adftool_timespec_alloc,_adftool_timespec_free,_adftool_timespec_set_js,_adftool_timespec_get_js
 
 src/js/index.mjs: libadftool.la
 	mkdir -p src/js/

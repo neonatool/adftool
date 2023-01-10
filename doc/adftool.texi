@@ -7,6 +7,8 @@
 
 @copying
 Huh… I’ll have to think about copying conditions…
+
+Copyright @copyright{} 2022, 2023 me, I guess?
 @end copying
 
 @dircategory Texinfo documentation system
@@ -672,34 +674,22 @@ instance.
 @deftp struct adftool_file
 A file is the main handle to interact with an ADF/HDF5 file. It can be
 reused for multiple files in the file system. It is allocated with
-@code{adftool_file_alloc}, and freed with @code{adftool_file_free}.
+@code{adftool_file_open*}, and freed with @code{adftool_file_close}.
 @end deftp
 
-@deftypefun {struct adftool_file *} adftool_file_alloc (void)
-Allocate a new empty file. Return @code{NULL} if the allocation
-failed. You @strong{must} open the returned file once it has been
-allocated before doing things with it.
+@deftypefun {struct adftool_file *} adftool_file_open (const char *@var{filename}, int @var{write})
+Open @var{filename}, and return a new file to access it. If
+@var{write} is set, request permission to update the file. This is
+required for inserting or deleting statements, or changing the EEG
+data.
+
+If an error happens (invalid format, cannot respect the @var{write}
+preference, …), return @code{NULL}.
 @end deftypefun
 
-@deftypefun void adftool_file_free (struct adftool_file *@var{file})
-Free an allocated @var{file}. You @strong{must} close the @var{file}
-before that.
-@end deftypefun
-
-@deftypefun int adftool_file_open (struct adftool_file *@var{file}, const char *@var{filename}, int @var{write})
-Open @var{filename}, and use the @strong{already allocated} @var{file}
-to access it. If @var{write} is set, request permission to update the
-file. This is required for inserting or deleting statements, or
-changing the EEG data.
-
-Return 0 on success, or a non-zero value if an error happened (invalid
-format, cannot respect the @var{write} preference, …).
-@end deftypefun
-
-@deftypefun int adftool_file_open_data (struct adftool_file *@var{file}, size_t @var{nbytes}, const void *@var{bytes})
-Open an anonymous @var{file} (already allocated) initialized with the
-@var{nbytes} of @var{bytes}. The file can be closed by
-@code{adftool_file_close}.
+@deftypefun {struct adftool_file *} adftool_file_open_data (size_t @var{nbytes}, const void *@var{bytes})
+Open an anonymous file initialized with the @var{nbytes} of
+@var{bytes}. The file must be closed by @code{adftool_file_close}.
 
 This function has been introduced for the emscripten back-end, so that
 the implementation details of the file system is not important.

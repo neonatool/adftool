@@ -1,24 +1,30 @@
-#include <adftool_private.h>
-#include <time.h>
+#include <config.h>
+#include <adftool.h>
+
+#define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
+
+#include "term.h"
+#include "file.h"
 
 int
 adftool_find_channel_identifier (struct adftool_file *file,
 				 size_t channel_index,
 				 struct adftool_term *identifier)
 {
-  struct adftool_term *object = adftool_term_alloc ();
   mpz_t i;
   mpz_init_set_ui (i, channel_index);
+  struct adftool_term *object = term_alloc ();
   if (object == NULL)
     {
       abort ();
     }
-  adftool_term_set_mpz (object, i);
+  term_set_mpz (object, i);
   mpz_clear (i);
   static const char *p = "https://localhost/lytonepal#column-number";
   size_t n_results =
     adftool_lookup_subjects (file, object, p, 0, 1, &identifier);
-  adftool_term_free (object);
+  term_free (object);
   if (n_results == 0)
     {
       return 1;
@@ -35,7 +41,7 @@ channel_decoder_find (struct adftool_file *file,
   sprintf (predicate_str,
 	   "https://localhost/lytonepal#has-channel-decoder-%s",
 	   scale_or_offset);
-  struct adftool_term *object = adftool_term_alloc ();
+  struct adftool_term *object = term_alloc ();
   if (object == NULL)
     {
       abort ();
@@ -44,13 +50,13 @@ channel_decoder_find (struct adftool_file *file,
     adftool_lookup_objects (file, identifier, predicate_str, 0, 1, &object);
   if (n_results > 0)
     {
-      int error = adftool_term_as_double (object, value);
+      int error = term_as_double (object, value);
       if (error)
 	{
 	  n_results = 0;
 	}
     }
-  adftool_term_free (object);
+  term_free (object);
   return (n_results == 0);
 }
 
@@ -77,7 +83,7 @@ channel_decoder_replace (struct adftool_file *file,
     .graph = NULL,
     .deletion_date = ((uint64_t) (-1))
   };
-  if (adftool_delete (file, &pattern, time (NULL) * 1000) != 0)
+  if (adftool_file_delete (file, &pattern, time (NULL) * 1000) != 0)
     {
       error = 1;
       goto cleanup;
@@ -116,22 +122,22 @@ adftool_set_channel_decoder (struct adftool_file *file,
 			     double scale, double offset)
 {
   int error = 0;
-  struct adftool_term *literal_scale = adftool_term_alloc ();
-  struct adftool_term *literal_offset = adftool_term_alloc ();
+  struct adftool_term *literal_scale = term_alloc ();
+  struct adftool_term *literal_offset = term_alloc ();
   if (literal_scale == NULL || literal_offset == NULL)
     {
       if (literal_scale)
 	{
-	  adftool_term_free (literal_scale);
+	  term_free (literal_scale);
 	}
       if (literal_offset)
 	{
-	  adftool_term_free (literal_offset);
+	  term_free (literal_offset);
 	}
       return 1;
     }
-  adftool_term_set_double (literal_scale, scale);
-  adftool_term_set_double (literal_offset, offset);
+  term_set_double (literal_scale, scale);
+  term_set_double (literal_offset, offset);
   int scale_error =
     channel_decoder_replace (file, identifier, "scale", literal_scale);
   int offset_error =
@@ -142,8 +148,8 @@ adftool_set_channel_decoder (struct adftool_file *file,
       goto wrapup;
     }
 wrapup:
-  adftool_term_free (literal_scale);
-  adftool_term_free (literal_offset);
+  term_free (literal_scale);
+  term_free (literal_offset);
   return error;
 }
 
@@ -152,7 +158,7 @@ adftool_get_channel_column (struct adftool_file *file,
 			    const struct adftool_term *identifier,
 			    size_t *column)
 {
-  struct adftool_term *object = adftool_term_alloc ();
+  struct adftool_term *object = term_alloc ();
   if (object == NULL)
     {
       abort ();
@@ -164,7 +170,7 @@ adftool_get_channel_column (struct adftool_file *file,
   mpz_init (i);
   if (n_results > 0)
     {
-      if (adftool_term_as_mpz (object, i) != 0)
+      if (term_as_mpz (object, i) != 0)
 	{
 	  n_results = 0;
 	}
@@ -174,7 +180,7 @@ adftool_get_channel_column (struct adftool_file *file,
       *column = mpz_get_ui (i);
     }
   mpz_clear (i);
-  adftool_term_free (object);
+  term_free (object);
   return n_results == 0;
 }
 
@@ -197,7 +203,7 @@ adftool_add_channel_type (struct adftool_file *file,
     .graph = NULL,
     .deletion_date = ((uint64_t) (-1))
   };
-  int error = adftool_insert (file, &statement);
+  int error = adftool_file_insert (file, &statement);
   return error;
 }
 

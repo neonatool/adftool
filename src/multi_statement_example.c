@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 #include <hdf5.h>
@@ -59,14 +57,10 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
-  struct adftool_file *file = adftool_file_alloc ();
-  if (file == NULL)
-    {
-      abort ();
-    }
   remove ("multi_statement_example.adf");
-  int error = adftool_file_open (file, "multi_statement_example.adf", 1);
-  if (error)
+  struct adftool_file *file =
+    adftool_file_open ("multi_statement_example.adf", 1);
+  if (file == NULL)
     {
       abort ();
     }
@@ -260,6 +254,5 @@ main (int argc, char *argv[])
       free (results[i]);
     }
   adftool_file_close (file);
-  adftool_file_free (file);
   return 0;
 }

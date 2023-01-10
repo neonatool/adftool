@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 
@@ -23,13 +21,12 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
-  struct adftool_file *file = adftool_file_alloc ();
   struct adftool_statement *first_statement = adftool_statement_alloc ();
   struct adftool_statement *second_statement = adftool_statement_alloc ();
   struct adftool_statement *pattern = adftool_statement_alloc ();
   struct adftool_statement *result = adftool_statement_alloc ();
   struct adftool_term *letters[6];
-  if (file == NULL || first_statement == NULL || second_statement == NULL
+  if (first_statement == NULL || second_statement == NULL
       || pattern == NULL || result == NULL)
     {
       abort ();
@@ -50,7 +47,8 @@ main (int argc, char *argv[])
 			 &(letters[2]), NULL, NULL);
   adftool_statement_set (second_statement, &(letters[3]), &(letters[4]),
 			 &(letters[5]), NULL, NULL);
-  if (adftool_file_open_data (file, 0, NULL) != 0)
+  struct adftool_file *file = adftool_file_open_data (0, NULL);
+  if (file == NULL)
     {
       abort ();
     }
@@ -76,6 +74,5 @@ main (int argc, char *argv[])
   adftool_statement_free (pattern);
   adftool_statement_free (second_statement);
   adftool_statement_free (first_statement);
-  adftool_file_free (file);
   return 0;
 }

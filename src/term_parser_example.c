@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 #include <hdf5.h>
@@ -15,6 +13,9 @@
 
 #define _(String) gettext(String)
 #define N_(String) (String)
+
+#define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
 
 struct test
 {
@@ -127,7 +128,7 @@ but it is.\n", file, line, text);
 	}
       str_length_check = adftool_term_value (term, 0, str_length + 1, buffer);
       assert (str_length == str_length_check);
-      if (strcmp (expected_literal_value, buffer) != 0)
+      if (STRNEQ (expected_literal_value, buffer))
 	{
 	  fprintf (stderr, "%s:%d: `%s` should have `%s` as literal value, \
 but it is `%s`.\n", file, line, text, expected_literal_value, buffer);
@@ -151,7 +152,7 @@ but it is `%s`.\n", file, line, text, expected_literal_value, buffer);
 	    {
 	      source = expected_langtag;
 	    }
-	  if (strcmp (source, buffer) != 0)
+	  if (STRNEQ (source, buffer))
 	    {
 	      fprintf (stderr, "%s:%d: `%s` should have `%s` as \
 literal value metadata, but it is `%s`.\n", file, line, text, source, buffer);

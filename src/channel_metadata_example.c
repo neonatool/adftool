@@ -1,7 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-
 #include <adftool.h>
 #include <hdf5.h>
 
@@ -24,14 +21,10 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
-  struct adftool_file *file = adftool_file_alloc ();
-  if (file == NULL)
-    {
-      abort ();
-    }
   remove ("channel_metadata_example.adf");
-  int error = adftool_file_open (file, "channel_metadata_example.adf", 1);
-  if (error)
+  struct adftool_file *file =
+    adftool_file_open ("channel_metadata_example.adf", 1);
+  if (file == NULL)
     {
       abort ();
     }
@@ -64,8 +57,8 @@ main (int argc, char *argv[])
       abort ();
     }
   adftool_file_close (file);
-  error = adftool_file_open (file, "channel_metadata_example.adf", 1);
-  if (error)
+  file = adftool_file_open ("channel_metadata_example.adf", 1);
+  if (file == NULL)
     {
       abort ();
     }
@@ -123,6 +116,5 @@ main (int argc, char *argv[])
   adftool_term_free (expected_identifier);
   adftool_term_free (identifier);
   adftool_file_close (file);
-  adftool_file_free (file);
   return 0;
 }

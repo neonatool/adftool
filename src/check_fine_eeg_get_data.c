@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 
@@ -10,7 +8,6 @@
 #include "relocatable.h"
 #include "progname.h"
 #include <locale.h>
-#include <assert.h>
 
 #define _(String) gettext(String)
 #define N_(String) (String)
@@ -206,11 +203,6 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
-  struct adftool_file *file = adftool_file_alloc ();
-  if (file == NULL)
-    {
-      test_fail ();
-    }
   static const size_t n_points =
     sizeof (example_data) / sizeof (example_data[0]);
   static const size_t n_channels =
@@ -228,7 +220,8 @@ main (int argc, char *argv[])
 	  row_wise[index] = example_data[i][j];
 	}
     }
-  if (adftool_file_open_data (file, 0, NULL) != 0)
+  struct adftool_file *file = adftool_file_open_data (0, NULL);
+  if (file == NULL)
     {
       test_fail ();
     }
@@ -246,6 +239,5 @@ main (int argc, char *argv[])
   check_empty (file);
   adftool_file_close (file);
   free (row_wise);
-  adftool_file_free (file);
   return 0;
 }

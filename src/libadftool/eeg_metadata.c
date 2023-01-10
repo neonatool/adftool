@@ -1,4 +1,13 @@
-#include <adftool_private.h>
+#include <config.h>
+#include <adftool.h>
+
+#define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
+
+#include "term.h"
+#include "statement.h"
+#include "file.h"
+
 #include <time.h>
 #include <math.h>
 
@@ -28,7 +37,7 @@ static const struct adftool_term p_sampling_frequency = {
 static int
 get_start_date (struct adftool_file *file, struct timespec *time)
 {
-  struct adftool_term *object = adftool_term_alloc ();
+  struct adftool_term *object = term_alloc ();
   if (object == NULL)
     {
       abort ();
@@ -38,19 +47,19 @@ get_start_date (struct adftool_file *file, struct timespec *time)
 			    &object);
   if (n_results > 0)
     {
-      if (adftool_term_as_date (object, time) != 0)
+      if (term_as_date (object, time) != 0)
 	{
 	  n_results = 0;
 	}
     }
-  adftool_term_free (object);
+  term_free (object);
   return (n_results == 0);
 }
 
 static int
 get_sampling_frequency (struct adftool_file *file, double *sampling_frequency)
 {
-  struct adftool_term *object = adftool_term_alloc ();
+  struct adftool_term *object = term_alloc ();
   if (object == NULL)
     {
       abort ();
@@ -60,12 +69,18 @@ get_sampling_frequency (struct adftool_file *file, double *sampling_frequency)
 			    &object);
   if (n_results > 0)
     {
-      if (adftool_term_as_double (object, sampling_frequency) != 0)
+      if (term_as_double (object, sampling_frequency) != 0)
 	{
 	  n_results = 0;
 	}
+      else
+	{
+	  /* sampling_frequency is set because term_as_double
+	     succeeded. */
+	  assert (*sampling_frequency >= 0);
+	}
     }
-  adftool_term_free (object);
+  term_free (object);
   return (n_results == 0);
 }
 
@@ -74,13 +89,15 @@ adftool_eeg_get_time (struct adftool_file *file,
 		      size_t observation,
 		      struct timespec *time, double *sampling_frequency)
 {
-  double sfreq;
+  double sfreq = 0;
+  bool sfreq_initialized = false;
   if ((time && observation != 0) || sampling_frequency)
     {
       if (get_sampling_frequency (file, &sfreq) != 0)
 	{
 	  return 1;
 	}
+      sfreq_initialized = true;
     }
   /* sfreq is set if needed. */
   if (time)
@@ -108,6 +125,7 @@ adftool_eeg_get_time (struct adftool_file *file,
     }
   if (sampling_frequency)
     {
+      assert (sfreq_initialized);
       *sampling_frequency = sfreq;
     }
   return 0;
@@ -118,14 +136,14 @@ adftool_eeg_set_time (struct adftool_file *file, const struct timespec *time,
 		      double sampling_frequency)
 {
   int error = 0;
-  struct adftool_term *o_time = adftool_term_alloc ();
-  struct adftool_term *o_sfreq = adftool_term_alloc ();
+  struct adftool_term *o_time = term_alloc ();
+  struct adftool_term *o_sfreq = term_alloc ();
   if (o_time == NULL || o_sfreq == NULL)
     {
       abort ();
     }
-  adftool_term_set_date (o_time, time);
-  adftool_term_set_double (o_sfreq, sampling_frequency);
+  term_set_date (o_time, time);
+  term_set_double (o_sfreq, sampling_frequency);
   const struct adftool_statement set_time = {
     .subject = (struct adftool_term *) &default_eeg,
     .predicate = (struct adftool_term *) &p_start_date,
@@ -140,9 +158,9 @@ adftool_eeg_set_time (struct adftool_file *file, const struct timespec *time,
     .graph = NULL,
     .deletion_date = ((uint64_t) (-1))
   };
-  error = (adftool_insert (file, &set_time)
-	   || adftool_insert (file, &set_sfreq));
-  adftool_term_free (o_time);
-  adftool_term_free (o_sfreq);
+  error = (adftool_file_insert (file, &set_time)
+	   || adftool_file_insert (file, &set_sfreq));
+  term_free (o_time);
+  term_free (o_sfreq);
   return error;
 }

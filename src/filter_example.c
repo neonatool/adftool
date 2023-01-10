@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <adftool.h>
 #include <hdf5.h>
@@ -11,7 +9,6 @@
 #include "relocatable.h"
 #include "progname.h"
 #include <locale.h>
-#include <assert.h>
 #include <math.h>
 
 #define _(String) gettext(String)

@@ -1,7 +1,14 @@
-#include <adftool_private.h>
-#include <adftool_bplus.h>
+#include <config.h>
+#include <adftool.h>
+
+#define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
+
+#include "file.h"
 
 #include <float.h>
+
+#include <hdf5.h>
 
 static void compute_encoding (size_t n, size_t p, size_t i,
 			      const double *data, double *offset,
@@ -18,12 +25,8 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
 		      size_t n_channels, const double *data)
 {
   int error = 0;
-  if (file->eeg_dataset != H5I_INVALID_HID)
-    {
-      H5Dclose (file->eeg_dataset);
-      file->eeg_dataset = H5I_INVALID_HID;
-    }
-  H5Ldelete (file->hdf5_file, "/eeg-data", H5P_DEFAULT);
+  hid_t eeg_dataset = H5I_INVALID_HID;
+  H5Ldelete (file->hdf5_handle, "/eeg-data", H5P_DEFAULT);
   hsize_t dimensions[2];
   dimensions[0] = n_points;
   dimensions[1] = n_channels;
@@ -33,10 +36,10 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
       error = 1;
       goto wrapup;
     }
-  file->eeg_dataset =
-    H5Dcreate2 (file->hdf5_file, "/eeg-data", H5T_NATIVE_B16, fspace,
+  eeg_dataset =
+    H5Dcreate2 (file->hdf5_handle, "/eeg-data", H5T_NATIVE_B16, fspace,
 		H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-  if (file->eeg_dataset == H5I_INVALID_HID)
+  if (eeg_dataset == H5I_INVALID_HID)
     {
       error = 1;
       goto clean_fspace;
@@ -51,15 +54,14 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
 	{
 	  abort ();
 	}
-      if (adftool_insert (file, new_channel) != 0)
+      if (adftool_file_insert (file, new_channel) != 0)
 	{
 	  error = 1;
 	  goto clean_new_channel;
 	}
       const struct adftool_term *identifier;
-      adftool_statement_get (new_channel, NULL, NULL,
-			     (struct adftool_term **) &identifier, NULL,
-			     NULL);
+      statement_get (new_channel, NULL, NULL,
+		     (struct adftool_term **) &identifier, NULL, NULL);
       assert (identifier != NULL);
       if (set_channel_identifier (file, i, identifier) != 0)
 	{
@@ -109,9 +111,8 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
 	  const uint16_t rounded = (uint16_t) (encoded_point + 0.5);
 	  encoded[j] = rounded;
 	}
-      herr_t write_error =
-	H5Dwrite (file->eeg_dataset, H5T_NATIVE_B16, memspace,
-		  selection_space, H5P_DEFAULT, encoded);
+      herr_t write_error = H5Dwrite (eeg_dataset, H5T_NATIVE_B16, memspace,
+				     selection_space, H5P_DEFAULT, encoded);
       if (write_error < 0)
 	{
 	  error = 1;
@@ -124,7 +125,7 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
     clean_selection_space:
       H5Sclose (selection_space);
     clean_new_channel:
-      adftool_statement_free (new_channel);
+      statement_free (new_channel);
       if (error)
 	{
 	  goto clean_fspace;
@@ -133,6 +134,7 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
 clean_fspace:
   H5Sclose (fspace);
 wrapup:
+  H5Dclose (eeg_dataset);
   return error;
 }
 
@@ -143,12 +145,13 @@ adftool_eeg_get_data (struct adftool_file *file, size_t time_start,
 		      size_t *channel_max, double *data)
 {
   int error = 0;
-  if (file->eeg_dataset == H5I_INVALID_HID)
+  hid_t eeg_dataset = H5Dopen2 (file->hdf5_handle, "/eeg-data", H5P_DEFAULT);
+  if (eeg_dataset == H5I_INVALID_HID)
     {
       error = 1;
       goto wrapup;
     }
-  hid_t dataspace = H5Dget_space (file->eeg_dataset);
+  hid_t dataspace = H5Dget_space (eeg_dataset);
   if (dataspace == H5I_INVALID_HID)
     {
       error = 1;
@@ -194,7 +197,7 @@ adftool_eeg_get_data (struct adftool_file *file, size_t time_start,
     }
   for (size_t j = channel_start; j - channel_start < channel_length; j++)
     {
-      struct adftool_term *identifier = adftool_term_alloc ();
+      struct adftool_term *identifier = term_alloc ();
       if (identifier == NULL)
 	{
 	  error = 1;
@@ -250,7 +253,7 @@ adftool_eeg_get_data (struct adftool_file *file, size_t time_start,
 	  goto clean_memory_space;
 	}
       herr_t read_error =
-	H5Dread (file->eeg_dataset, H5T_NATIVE_B16, memspace, selection_space,
+	H5Dread (eeg_dataset, H5T_NATIVE_B16, memspace, selection_space,
 		 H5P_DEFAULT, encoded);
       if (read_error < 0)
 	{
@@ -273,7 +276,7 @@ adftool_eeg_get_data (struct adftool_file *file, size_t time_start,
     clean_selection_space:
       H5Sclose (selection_space);
     clean_identifier:
-      adftool_term_free (identifier);
+      term_free (identifier);
       if (error)
 	{
 	  goto clean_dataspace;
@@ -282,6 +285,7 @@ adftool_eeg_get_data (struct adftool_file *file, size_t time_start,
 clean_dataspace:
   H5Sclose (dataspace);
 wrapup:
+  H5Dclose (eeg_dataset);
   return error;
 }
 
@@ -320,29 +324,29 @@ compute_encoding (size_t n, size_t p, size_t j, const double *data,
 static struct adftool_statement *
 new_channel_statement (size_t i)
 {
-  struct adftool_statement *statement = adftool_statement_alloc ();
+  struct adftool_statement *statement = statement_alloc ();
   if (statement == NULL)
     {
       goto wrapup;
     }
-  struct adftool_term *subject = adftool_term_alloc ();
+  struct adftool_term *subject = term_alloc ();
   if (subject == NULL)
     {
-      adftool_statement_free (statement);
+      statement_free (statement);
       statement = NULL;
       goto wrapup;
     }
-  struct adftool_term *predicate = adftool_term_alloc ();
+  struct adftool_term *predicate = term_alloc ();
   if (predicate == NULL)
     {
-      adftool_statement_free (statement);
+      statement_free (statement);
       statement = NULL;
       goto cleanup_subject;
     }
-  struct adftool_term *object = adftool_term_alloc ();
+  struct adftool_term *object = term_alloc ();
   if (object == NULL)
     {
-      adftool_statement_free (statement);
+      statement_free (statement);
       statement = NULL;
       goto cleanup_predicate;
     }
@@ -352,18 +356,18 @@ new_channel_statement (size_t i)
   static const char *pred = "https://localhost/lytonepal#has-channel";
   /* 64 chars is enough I guess. There are up to 64 digits in base 2,
      so around a third of that in base 10. */
-  adftool_term_set_named (subject, "");
-  adftool_term_set_named (predicate, pred);
-  adftool_term_set_named (object, label);
+  term_set_named (subject, "");
+  term_set_named (predicate, pred);
+  term_set_named (object, label);
   struct adftool_term *graph = NULL;
   uint64_t deletion_date = ((uint64_t) (-1));
-  adftool_statement_set (statement, &subject, &predicate, &object, &graph,
-			 &deletion_date);
-  adftool_term_free (object);
+  statement_set (statement, &subject, &predicate, &object, &graph,
+		 &deletion_date);
+  term_free (object);
 cleanup_predicate:
-  adftool_term_free (predicate);
+  term_free (predicate);
 cleanup_subject:
-  adftool_term_free (subject);
+  term_free (subject);
 wrapup:
   return statement;
 }
@@ -374,14 +378,14 @@ set_channel_identifier (struct adftool_file *file,
 			const struct adftool_term *identifier)
 {
   int error = 0;
-  struct adftool_term *object = adftool_term_alloc ();
+  struct adftool_term *object = term_alloc ();
   mpz_t i;
   mpz_init_set_ui (i, channel_index);
   if (object == NULL)
     {
       abort ();
     }
-  adftool_term_set_mpz (object, i);
+  term_set_mpz (object, i);
   mpz_clear (i);
   struct adftool_term predicate = {
     .type = TERM_NAMED,
@@ -395,18 +399,18 @@ set_channel_identifier (struct adftool_file *file,
     .graph = NULL,
     .deletion_date = ((uint64_t) (-1))
   };
-  if (adftool_delete (file, &pattern, time (NULL) * 1000) != 0)
+  if (adftool_file_delete (file, &pattern, time (NULL) * 1000) != 0)
     {
       error = 1;
       goto cleanup;
     }
   pattern.subject = (struct adftool_term *) identifier;
-  if (adftool_insert (file, &pattern) != 0)
+  if (adftool_file_insert (file, &pattern) != 0)
     {
       error = 1;
       goto cleanup;
     }
 cleanup:
-  adftool_term_free (object);
+  term_free (object);
   return error;
 }

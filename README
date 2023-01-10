@@ -2,7 +2,9 @@ WIP…
 
 To build, run:
 
-./bootstrap --bootstrap-sync --force --skip-po
+./bootstrap-bootstrap
+
+./bootstrap
 
 ./configure CFLAGS="-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined,address -fsanitize-undefined-trap-on-error -Wall -Wextra"
 
