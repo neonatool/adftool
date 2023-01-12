@@ -111,6 +111,7 @@ libadftool_la_SOURCES = \
   src/libadftool/version.c
 libadftool_la_CPPFLAGS = \
   -I lib -I $(srcdir)/lib \
+  -I $(abs_top_builddir)/src/libadftool -I $(abs_top_srcdir)/src/libadftool \
   -DBUILDING_LIBADFTOOL \
   $(COMMON_COMPILE_FLAGS)
 libadftool_la_CFLAGS = \
