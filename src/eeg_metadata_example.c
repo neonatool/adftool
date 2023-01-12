@@ -10,6 +10,7 @@
 #include "progname.h"
 #include <locale.h>
 #include <assert.h>
+#include <time.h>
 
 #define _(String) gettext(String)
 #define N_(String) (String)
