@@ -277,7 +277,10 @@ insertion_advance (struct bplus_insertion *insertion)
 	  insertion->divider_old = updated;
 	  insertion->divider_new_id = new_id;
 	  insertion->divider_new = new_node;
-	  insertion->divider_pivot_key = pivot;
+	  if (new_node != NULL)
+	    {
+	      insertion->divider_pivot_key = pivot;
+	    }
 	  node_copy (insertion->order, &(insertion->target), updated);
 	  /* Now, prepare the updates: */
 	  /* Keys: */
