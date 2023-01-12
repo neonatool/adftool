@@ -49,7 +49,7 @@ LDADD = \
 
 AM_DISTCHECK_CONFIGURE_FLAGS = \
   --disable-valgrind-tests \
-  "CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined,address -fsanitize-undefined-trap-on-error -Wall -Wextra -fanalyzer" \
+  "CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined,address -fsanitize-undefined-trap-on-error -Wall -Wextra" \
   SHELL=$(SHELL)
 
 RELOCATABLE_LIBRARY_PATH = $(libdir)
