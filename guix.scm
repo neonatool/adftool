@@ -186,7 +186,7 @@
 	tar global flex r pkg-config
 	texinfo (texlive-updmap.cfg (list texlive))))
  (inputs
-  (list hdf5 check gnu-gettext zlib gmp python (load "../libbplus/guix.scm")))
+  (list hdf5 check gnu-gettext zlib gmp python))
  (home-page "https://plmlab.math.cnrs.fr/vkraus/bplus")
  (synopsis "B+ implementatiof for adftool")
  (description "This library provides a B+ implementation for adftool.")
