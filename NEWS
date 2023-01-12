@@ -1,6 +1,6 @@
 #+title: What’s new in adftool
 
-* Noteworthy changes in release ?.? (????-??-??) [?]
+* Noteworthy changes in release 0.3.0 (2023-01-12) [alpha]
 ** Now use libbplus
 The code has been moved around so as to use libbplus.
 

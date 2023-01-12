@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.2.24.3-0800\n"
+"Project-Id-Version: adftool 0.2.24.6-9c78-dirty\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-01-11 18:16+0100\n"
+"POT-Creation-Date: 2023-01-12 09:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -796,27 +796,27 @@ msgstr ""
 msgid "The term is not in N3."
 msgstr ""
 
-#: src/eeg_metadata_example.c:35
+#: src/eeg_metadata_example.c:36
 #, c-format
 msgid "Could not get the current time.\n"
 msgstr ""
 
-#: src/eeg_metadata_example.c:42
+#: src/eeg_metadata_example.c:43
 #, c-format
 msgid "Could not set the time and sampling frequency.\n"
 msgstr ""
 
-#: src/eeg_metadata_example.c:55
+#: src/eeg_metadata_example.c:56
 #, c-format
 msgid "Could not compute the date of the first observation.\n"
 msgstr ""
 
-#: src/eeg_metadata_example.c:63
+#: src/eeg_metadata_example.c:64
 #, c-format
 msgid "Could not compute the date of the second observation.\n"
 msgstr ""
 
-#: src/eeg_metadata_example.c:84
+#: src/eeg_metadata_example.c:85
 #, c-format
 msgid "Could not compute the date of the third observation.\n"
 msgstr ""

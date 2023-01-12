@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-01-11 18:16+0100\n"
+"POT-Creation-Date: 2023-01-12 09:32+0100\n"
 "PO-Revision-Date: 2023-01-11 18:15+0100\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -934,27 +934,27 @@ msgstr "Le terme n’est pas un littéral de date."
 msgid "The term is not in N3."
 msgstr "Le terme n’est pas en N3."
 
-#: src/eeg_metadata_example.c:35
+#: src/eeg_metadata_example.c:36
 #, c-format
 msgid "Could not get the current time.\n"
 msgstr "Impossible de récupérer la date courante.\n"
 
-#: src/eeg_metadata_example.c:42
+#: src/eeg_metadata_example.c:43
 #, c-format
 msgid "Could not set the time and sampling frequency.\n"
 msgstr "Impossible de définir la date et la fréquence d’échantillonnage.\n"
 
-#: src/eeg_metadata_example.c:55
+#: src/eeg_metadata_example.c:56
 #, c-format
 msgid "Could not compute the date of the first observation.\n"
 msgstr "Impossible de calculer la date de la première observation.\n"
 
-#: src/eeg_metadata_example.c:63
+#: src/eeg_metadata_example.c:64
 #, c-format
 msgid "Could not compute the date of the second observation.\n"
 msgstr "Impossible de calculer la date de la seconde observation.\n"
 
-#: src/eeg_metadata_example.c:84
+#: src/eeg_metadata_example.c:85
 #, c-format
 msgid "Could not compute the date of the third observation.\n"
 msgstr "Impossible de calculer la date de la troisième observation.\n"
