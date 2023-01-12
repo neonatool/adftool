@@ -1,3 +1,4 @@
+**/*.a
 **/*.la
 **/*.lo
 **/*.o
@@ -7,7 +8,6 @@
 .libs
 .version
 /usr
-ABOUT-NLS
 GNUmakefile
 INSTALL
 Makefile
@@ -21,7 +21,6 @@ autom4te.cache
 autopull.sh
 bootstrap
 bootstrap-funclib.sh
-build-aux
 channel_metadata_example.adf
 config.h
 config.h.in
@@ -46,6 +45,7 @@ m4/
 m4prog/
 maint.mk
 multi_statement_example.adf
+non-existing.adf
 po/*.gmo
 po/.gitignore
 po/.reference
@@ -59,6 +59,7 @@ src/*.trs
 src/.deps
 src/adftool
 src/channel_metadata_example
+src/check_bplus
 src/check_fine_eeg_get_data
 src/check_lookup_pagination
 src/data_file_example

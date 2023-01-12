@@ -3,6 +3,13 @@
 
 AC_PREREQ([2.69])
 AC_INIT([adftool], m4_esyscmd([sh build-aux/git-version-gen .tarball-version]), [vivien.kraus@univ-reims.fr])
+
+AC_SUBST(LTV_CURRENT, [0])
+AC_SUBST(LTV_REVISION, [0])
+AC_SUBST(LTV_AGE, [0])
+
+AC_SUBST(DLL_VERSION, $(expr ${LTV_CURRENT} - ${LTV_AGE}))
+
 AC_CONFIG_SRCDIR([include/adftool.h])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -80,18 +87,16 @@ PKG_CHECK_MODULES([PYTHON3], [python3], [
   CFLAGS="$CFLAGS $PYTHON3_CFLAGS"
   LIBS="$LIBS $PYTHON3_LIBS"
 ], [AC_MSG_WARN([No python pkg-config module found.])])
-PKG_CHECK_MODULES([BPLUS], [bplus bplus-hdf5], [
-  CFLAGS="$CFLAGS $BPLUS_CFLAGS"
-  CPPFLAGS="$CPPFLAGS $BPLUS_CPPFLAGS"
-  LIBS="$LIBS $BPLUS_LIBS"
-], [AC_MSG_WARN([Pkg-config could not find bplus or bplus-hdf5.])])
+PKG_CHECK_MODULES([LIBCHECK], [check], [
+  CPPFLAGS="$CPPFLAGS $LIBCHECK_CFLAGS"
+  CFLAGS="$CFLAGS $LIBCHECK_CFLAGS"
+  LIBS="$LIBS $LIBCHECK_LIBS"
+], [AC_MSG_WARN([pkg-config does not know the "check" module])])
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdint.h emscripten.h])
+AC_CHECK_HEADERS([stdint.h emscripten.h check.h])
 AC_CHECK_HEADER([hdf5.h],, [AC_MSG_ERROR([I need the HDF5 header.])])
 AC_CHECK_HEADER([gmp.h],, [AC_MSG_ERROR([I need the gmp.h header.])])
-AC_CHECK_HEADER([bplus.h],, [AC_MSG_ERROR([I need the bplus.h header from libbplus.])])
-AC_CHECK_HEADER([bplus_hdf5.h],, [AC_MSG_ERROR([I need the bplus.h header from libbplus.])])
 AC_CHECK_HEADER([Python.h],, [
   if test x$python_module = xtrue ; then
     AC_MSG_ERROR([Python module was required, but Python.h cannot be used.])
@@ -103,14 +108,18 @@ AC_C_RESTRICT
 AC_TYPE_SIZE_T
 AC_TYPE_UINT32_T
 gl_VISIBILITY
+SAVE_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$SAVE_CPPFLAGS -I$srcdir/include"
+AC_CHECK_ALIGNOF([struct bplus_node], [[#include <bplus.h>]])
+AC_CHECK_ALIGNOF([struct bplus_key], [[#include <bplus.h>]])
+CPPFLAGS="$SAVE_CPPFLAGS"
 
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNC([H5open],, [AC_MSG_ERROR([I need the HDF5 library functions.])])
 AC_CHECK_FUNC([__gmpz_init],, [AC_MSG_ERROR([I need the GMP library functions.])])
-AC_CHECK_FUNC([bplus_find],, [AC_MSG_ERROR([I need the libbplus library functions.])])
-AC_CHECK_FUNC([bplus_hdf5_table_alloc],, [AC_MSG_ERROR([I need the HDF5 extension of libbplus.])])
+AC_SEARCH_LIBS([srunner_create], [check])
 
 AC_CONFIG_FILES([
   Makefile

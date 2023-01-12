@@ -1,11 +1,13 @@
 #+title: What’s new in adftool
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
-
+** Libbplus has now merged with adftool
+Libbplus is no longer a dependency.
 
 * Noteworthy changes in release 0.3.0 (2023-01-12) [alpha]
 ** Now use libbplus
-The code has been moved around so as to use libbplus.
+The code has been moved around so as to use libbplus. libbplus is
+included in adftool.
 
 #+language: en
 #+author: Vivien Kraus

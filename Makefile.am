@@ -75,7 +75,8 @@ check_PROGRAMS = \
   src/statement_get_with_arrays \
   src/check_fine_eeg_get_data \
   src/check_lookup_pagination \
-  src/simple_filters
+  src/simple_filters \
+  src/check_bplus
 
 TESTS = $(check_PROGRAMS)
 
@@ -89,6 +90,25 @@ src_adftool_LDADD = \
   libadftool.la
 
 libadftool_la_SOURCES = \
+  ./include/bplus.h \
+  src/libbplus/bplus_hdf5.h \
+  src/libbplus/bplus_analyzer.h \
+  src/libbplus/bplus_divider.h \
+  src/libbplus/bplus_explorer.h \
+  src/libbplus/bplus_fetch.h \
+  src/libbplus/bplus_fetcher.h \
+  src/libbplus/bplus_find.h \
+  src/libbplus/bplus_finder.h \
+  src/libbplus/bplus_growth.h \
+  src/libbplus/bplus_insert.h \
+  src/libbplus/bplus_insertion.h \
+  src/libbplus/bplus_key.h \
+  src/libbplus/bplus_node.h \
+  src/libbplus/bplus_parent_fetcher.h \
+  src/libbplus/bplus_prime.h \
+  src/libbplus/bplus_range.h \
+  src/libbplus/bplus_reparentor.h \
+  src/libbplus/bplus_tree.h \
   src/libadftool/array.c \
   src/libadftool/channel_metadata.c \
   src/libadftool/dictionary_bytes.h \
@@ -120,11 +140,17 @@ libadftool_la_LFLAGS = --prefix=_adftool_lexer_
 libadftool_la_LIBADD = lib/libadftool.la $(LTLIBOBJS)
 libadftool_la_LDFLAGS = \
   -no-undefined \
+  -version-info ${LTV_CURRENT}:${LTV_REVISION}:${LTV_AGE} \
   $(LTLIBINTL) \
   $(LIB_CLOCK_GETTIME) \
   $(LIB_GETRANDOM) \
   $(MODF_LIBM) \
-  $(TRUNC_LIBM)
+  $(TRUNC_LIBM) \
+  $(LIB_SETLOCALE) \
+  $(LIB_SETLOCALE_NULL) \
+  $(COMMON_LINK_FLAGS) \
+  $(LIBTHREAD) \
+  $(INTL_MACOSX_LIBS)
 
 adftool_la_LDFLAGS =
 if PYTHON_MODULE
@@ -142,9 +168,23 @@ adftool_la_LDFLAGS += \
   $(LTLIBINTL)
 endif
 
+DISTCLEANFILES =
+
 if RELOCATABLE_VIA_LD
 libadftool_la_LDFLAGS += `$(RELOCATABLE_LDFLAGS) $(libdir)`
 adftool_la_LDFLAGS += `$(RELOCATABLE_LDFLAGS) $(bindir)`
+endif
+
+if HAVE_LD_OUTPUT_DEF
+libadftool_la_LDFLAGS += \
+  -Wl,--output-def,libadftool-$(DLL_VERSION).def
+
+libadftool-$(DLL_VERSION).def: libadftool.la
+
+defexecdir = $(libdir)
+defexec_DATA = libadftool-$(DLL_VERSION).def
+
+DISTCLEANFILES += $(defexec_DATA)
 endif
 
 AM_TESTS_ENVIRONMENT = \

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-01-12 09:37+0100\n"
-"PO-Revision-Date: 2023-01-11 18:15+0100\n"
+"POT-Creation-Date: 2023-01-12 15:29+0100\n"
+"PO-Revision-Date: 2023-01-12 13:35+0100\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -934,6 +934,60 @@ msgstr "Le terme n’est pas un littéral de date."
 msgid "The term is not in N3."
 msgstr "Le terme n’est pas en N3."
 
+#: src/check_bplus.c:4190
+msgid "Libbplus test suite"
+msgstr "Suite de test libbplus"
+
+#: src/check_bplus.c:4191
+msgid "Fetching a node"
+msgstr "Récupération d’un nœud"
+
+#: src/check_bplus.c:4195
+msgid "Finding a key with dichotomy"
+msgstr "Trouver une clé par dichotomie"
+
+#: src/check_bplus.c:4198
+msgid "Search step for both first  and last occurence of a key"
+msgstr ""
+"Étape de recherche simultanée pour la première et dernière occurence d’une "
+"clé"
+
+#: src/check_bplus.c:4204
+msgid "Check the range iterator"
+msgstr "Vérifier l’itérateur d’intervalle"
+
+#: src/check_bplus.c:4209
+msgid "Check the recursive key finder"
+msgstr "Vérifier la recherche de clé récursive"
+
+#: src/check_bplus.c:4214
+msgid "Fix the children’s parent"
+msgstr "Réattacher le parent des enfants"
+
+#: src/check_bplus.c:4221
+msgid "Grow the B+ tree"
+msgstr "Agrandir l’arbre B+"
+
+#: src/check_bplus.c:4226
+msgid "Fetch the parent of a node"
+msgstr "Récupérer le parent d’un nœud"
+
+#: src/check_bplus.c:4229
+msgid "Give some of your keys to a new node"
+msgstr "Donner quelques-unes de vos clés à un nouveau nœud"
+
+#: src/check_bplus.c:4239
+msgid "Insert in the B+ tree"
+msgstr "Insertion dans l’arbre B+"
+
+#: src/check_bplus.c:4250
+msgid "Insert in the B+ tree with the pull API"
+msgstr "Insertion dans l’arbre B+ avec l’API pull"
+
+#: src/check_bplus.c:4256
+msgid "HDF5 callbacks for the API"
+msgstr "Fonctions de rappel HDF5"
+
 #: src/eeg_metadata_example.c:36
 #, c-format
 msgid "Could not get the current time.\n"
@@ -983,7 +1037,7 @@ msgstr ""
 msgid "I don’t know how to represent namespaced terms yet, sorry.\n"
 msgstr "Je ne supporte pas encore les données avec un espace de nom.\n"
 
-#: src/libadftool/quads.h:470
+#: src/libadftool/quads.h:469
 #, c-format
 msgid "Could not extend the dataset.\n"
 msgstr "Impossible d’étendre le jeu de données.\n"
@@ -1052,6 +1106,10 @@ msgstr "%s:%d: La méta pour le numéro %lu est %s, mais devrait être %s.\n"
 #, c-format
 msgid "The test failed, keeping term_example.adf around.\n"
 msgstr "Le test a échoué, gardons term_exemple.adf.\n"
+
+#, c-format
+#~ msgid "The setup took %f seconds, and the requests %f.\n"
+#~ msgstr "L’initialisation a pris %f secondes, et les requêtes %f.\n"
 
 #, c-format
 #~ msgid "Failed to read the next ID.\n"
@@ -1214,10 +1272,6 @@ msgstr "Le test a échoué, gardons term_exemple.adf.\n"
 #, c-format
 #~ msgid "There is a mismatch.\n"
 #~ msgstr "Il y a quiproquo.\n"
-
-#, c-format
-#~ msgid "Error growing the tree.\n"
-#~ msgstr "Erreur d’agrandissement de l’arbre.\n"
 
 #, c-format
 #~ msgid "Growing a tree in an HDF5 file is OK!\n"

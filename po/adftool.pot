@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.3.0\n"
+"Project-Id-Version: adftool 0.3.0.3-5233-dirty\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-01-12 09:37+0100\n"
+"POT-Creation-Date: 2023-01-12 15:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -796,6 +796,58 @@ msgstr ""
 msgid "The term is not in N3."
 msgstr ""
 
+#: src/check_bplus.c:4190
+msgid "Libbplus test suite"
+msgstr ""
+
+#: src/check_bplus.c:4191
+msgid "Fetching a node"
+msgstr ""
+
+#: src/check_bplus.c:4195
+msgid "Finding a key with dichotomy"
+msgstr ""
+
+#: src/check_bplus.c:4198
+msgid "Search step for both first  and last occurence of a key"
+msgstr ""
+
+#: src/check_bplus.c:4204
+msgid "Check the range iterator"
+msgstr ""
+
+#: src/check_bplus.c:4209
+msgid "Check the recursive key finder"
+msgstr ""
+
+#: src/check_bplus.c:4214
+msgid "Fix the children’s parent"
+msgstr ""
+
+#: src/check_bplus.c:4221
+msgid "Grow the B+ tree"
+msgstr ""
+
+#: src/check_bplus.c:4226
+msgid "Fetch the parent of a node"
+msgstr ""
+
+#: src/check_bplus.c:4229
+msgid "Give some of your keys to a new node"
+msgstr ""
+
+#: src/check_bplus.c:4239
+msgid "Insert in the B+ tree"
+msgstr ""
+
+#: src/check_bplus.c:4250
+msgid "Insert in the B+ tree with the pull API"
+msgstr ""
+
+#: src/check_bplus.c:4256
+msgid "HDF5 callbacks for the API"
+msgstr ""
+
 #: src/eeg_metadata_example.c:36
 #, c-format
 msgid "Could not get the current time.\n"
@@ -843,7 +895,7 @@ msgstr ""
 msgid "I don’t know how to represent namespaced terms yet, sorry.\n"
 msgstr ""
 
-#: src/libadftool/quads.h:470
+#: src/libadftool/quads.h:469
 #, c-format
 msgid "Could not extend the dataset.\n"
 msgstr ""
