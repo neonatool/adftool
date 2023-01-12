@@ -111,7 +111,6 @@ AC_CHECK_FUNC([H5open],, [AC_MSG_ERROR([I need the HDF5 library functions.])])
 AC_CHECK_FUNC([__gmpz_init],, [AC_MSG_ERROR([I need the GMP library functions.])])
 AC_CHECK_FUNC([bplus_find],, [AC_MSG_ERROR([I need the libbplus library functions.])])
 AC_CHECK_FUNC([bplus_hdf5_table_alloc],, [AC_MSG_ERROR([I need the HDF5 extension of libbplus.])])
-AC_CHECK_FUNCS([localeconv])
 
 AC_CONFIG_FILES([
   Makefile

@@ -828,10 +828,8 @@ adftool_term_localize_decimal_point (const char *str)
 {
   static const char *default_decimal_point = ".";
   const char *decimal_point = default_decimal_point;
-# ifdef HAVE_LOCALECONV
   struct lconv *lc = localeconv ();
   decimal_point = lc->decimal_point;
-# endif
   const char *start_decimal_point = strchr (str, '.');
   if (start_decimal_point == NULL)
     {
