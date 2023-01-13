@@ -1,7 +1,9 @@
 #+title: What’s new in adftool
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
-
+** Package fixes
+The continuous integration is now able to build a debian package,
+without a "-dirty" suffix to the version number.
 
 * Noteworthy changes in release 0.4.0 (2023-01-12) [alpha]
 ** Libbplus has now merged with adftool

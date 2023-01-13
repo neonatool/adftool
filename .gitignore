@@ -1,3 +1,5 @@
+/ABOUT-NLS
+/build-aux
 **/*.a
 **/*.la
 **/*.lo
