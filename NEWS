@@ -4,6 +4,8 @@
 ** Package fixes
 The continuous integration is now able to build a debian package,
 without a "-dirty" suffix to the version number.
+** Emscripten build fix
+The file open function now respects the initialization bytes.
 
 * Noteworthy changes in release 0.4.0 (2023-01-12) [alpha]
 ** Libbplus has now merged with adftool

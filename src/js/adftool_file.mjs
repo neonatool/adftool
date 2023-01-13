@@ -99,7 +99,7 @@ export class File {
 	const input_pointer = Adftool._malloc (data.length);
 	try {
 	    Adftool.HEAPU8.set (data, input_pointer);
-	    const ptr = adftool_file_open_data (this._ptr, data.length, input_pointer);
+	    const ptr = adftool_file_open_data (data.length, input_pointer);
 	    if (ptr == 0) {
 		throw 'Cannot open the file.';
 	    }
