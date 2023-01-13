@@ -145,7 +145,7 @@ check_npm:
     - echo "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
     - sed -i 's|^https://|//|g' .npmrc
     - npm install
-    - npm run test
+    - node test.mjs
 
 publish_npm:
   stage: package
