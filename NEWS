@@ -1,5 +1,8 @@
 #+title: What’s new in adftool
 
+* Noteworthy changes in release ?.? (????-??-??) [?]
+
+
 * Noteworthy changes in release 0.4.1 (2023-01-13) [alpha]
 ** Package fixes
 The continuous integration is now able to build a debian package,
