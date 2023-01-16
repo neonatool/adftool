@@ -1,6 +1,6 @@
 #+title: What’s new in adftool
 
-* Noteworthy changes in release ?.? (????-??-??) [?]
+* Noteworthy changes in release 0.4.2 (2023-01-16) [alpha]
 ** Fully specify the storage type for HDF5
 The HDF5 types for 32-bit integers are now specified as big
 endian. This applies for B+ trees and nextID attributes. The files
