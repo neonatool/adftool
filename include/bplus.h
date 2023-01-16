@@ -433,9 +433,6 @@ extern "C"
   static inline
     size_t bplus_hdf5_table_order (struct bplus_hdf5_table *table);
 
-  static inline
-    hid_t bplus_hdf5_table_type (const struct bplus_hdf5_table *table);
-
   /* I provide here a set of convenience callbacks for working with
      HDF5 tables. The first argument is of type struct
      bplus_hdf5_table, but gcc emits a warning if we do that. */
@@ -865,12 +862,6 @@ extern "C"
   static inline size_t bplus_hdf5_table_order (struct bplus_hdf5_table *table)
   {
     return hdf5_table_order (table);
-  }
-
-  static inline hid_t
-    bplus_hdf5_table_type (const struct bplus_hdf5_table *table)
-  {
-    return hdf5_table_type (table);
   }
 
   static inline int

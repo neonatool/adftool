@@ -16,8 +16,6 @@ static inline int hdf5_table_set (struct bplus_hdf5_table *table, hid_t data);
 
 static inline size_t hdf5_table_order (struct bplus_hdf5_table *table);
 
-static inline hid_t hdf5_table_type (const struct bplus_hdf5_table *table);
-
   /* I provide here a set of convenience callbacks for working with
      HDF5 tables. The first argument is of type struct
      hdf5_table, but gcc emits a warning if we do that. */
@@ -40,37 +38,18 @@ struct bplus_hdf5_table
 {
   hid_t dataset;
   hid_t nextID;
-  /* HDF5 does not provide a type that maps to uint32_t. */
-  hid_t native_u32_type;
   size_t order;
 };
 
 static inline struct bplus_hdf5_table *
 hdf5_table_alloc (void)
 {
-  hid_t native_u32_type = H5Tcopy (H5T_NATIVE_UINT);
-  if (native_u32_type == H5I_INVALID_HID)
-    {
-      return NULL;
-    }
-  /* native_u32_type is not yet 4 bytes, it’s sizeof (unsigned int)
-     bytes… */
-  if (H5Tset_size (native_u32_type, 4) < 0)
-    {
-      H5Tclose (native_u32_type);
-      return NULL;
-    }
   struct bplus_hdf5_table *ret = malloc (sizeof (struct bplus_hdf5_table));
   if (ret != NULL)
     {
       ret->dataset = H5I_INVALID_HID;
       ret->nextID = H5I_INVALID_HID;
-      ret->native_u32_type = native_u32_type;
       ret->order = 0;
-    }
-  else
-    {
-      H5Tclose (native_u32_type);
     }
   return ret;
 }
@@ -82,7 +61,6 @@ hdf5_table_free (struct bplus_hdf5_table *table)
     {
       H5Dclose (table->dataset);
       H5Aclose (table->nextID);
-      H5Tclose (table->native_u32_type);
       table->dataset = H5I_INVALID_HID;
       table->nextID = H5I_INVALID_HID;
     }
@@ -133,6 +111,33 @@ cleanup:
   return ret;
 }
 
+static void
+hdf5_table_to_net (uint32_t * value)
+{
+  /* value is in native endianness, but we want it as big endian. */
+  uint8_t bytes[4];
+  for (size_t i = 4; i-- > 0;)
+    {
+      bytes[i] = ((*value) % 256);
+      (*value) /= 256;
+    }
+  memcpy (value, bytes, 4);
+}
+
+static void
+hdf5_table_from_net (uint32_t * value)
+{
+  /* value is big-endian */
+  uint8_t bytes[4];
+  memcpy (bytes, value, 4);
+  *value = 0;
+  for (size_t i = 0; i < 4; i++)
+    {
+      *value *= 256;
+      *value += bytes[i];
+    }
+}
+
 static inline int
 hdf5_table_set (struct bplus_hdf5_table *table, hid_t data)
 {
@@ -156,15 +161,15 @@ hdf5_table_set (struct bplus_hdf5_table *table, hid_t data)
 	  goto cleanup_acpl;
 	}
       table->nextID =
-	H5Acreate2 (data, "nextID", table->native_u32_type, fspace, acpl,
-		    H5P_DEFAULT);
+	H5Acreate2 (data, "nextID", H5T_STD_U32BE, fspace, acpl, H5P_DEFAULT);
       if (table->nextID == H5I_INVALID_HID)
 	{
 	  ret = 1;
 	  goto cleanup_fspace;
 	}
       uint32_t value = 0;
-      if (H5Awrite (table->nextID, table->native_u32_type, &value) < 0)
+      hdf5_table_to_net (&value);
+      if (H5Awrite (table->nextID, H5T_STD_U32BE, &value) < 0)
 	{
 	  ret = 1;
 	  goto cleanup_fspace;
@@ -175,12 +180,12 @@ hdf5_table_set (struct bplus_hdf5_table *table, hid_t data)
       H5Pclose (acpl);
     }
   uint32_t next_id_initial_value;
-  if (H5Aread (table->nextID, table->native_u32_type, &next_id_initial_value)
-      < 0)
+  if (H5Aread (table->nextID, H5T_STD_U32BE, &next_id_initial_value) < 0)
     {
       ret = 1;
       goto cleanup;
     }
+  hdf5_table_from_net (&next_id_initial_value);
   if (next_id_initial_value == 0)
     {
       /* Need to prime the table. */
@@ -232,8 +237,13 @@ hdf5_table_set (struct bplus_hdf5_table *table, hid_t data)
 	  ret = 1;
 	  goto cleanup_prime_fspace;
 	}
+      /* Convert row0 to big endian */
+      for (size_t i = 0; i < 2 * order + 1; i++)
+	{
+	  hdf5_table_to_net (&(row0[i]));
+	}
       if (H5Dwrite
-	  (table->dataset, table->native_u32_type, H5S_ALL, prime_fspace,
+	  (table->dataset, H5T_STD_U32BE, H5S_ALL, prime_fspace,
 	   H5P_DEFAULT, row0) < 0)
 	{
 	  ret = 1;
@@ -241,8 +251,8 @@ hdf5_table_set (struct bplus_hdf5_table *table, hid_t data)
 	}
       /* Update nextID */
       unsigned int next_id_value = 1;
-      if (H5Awrite (table->nextID, table->native_u32_type, &next_id_value) <
-	  0)
+      hdf5_table_to_net (&next_id_value);
+      if (H5Awrite (table->nextID, H5T_STD_U32BE, &next_id_value) < 0)
 	{
 	  ret = 1;
 	  goto cleanup_prime_fspace;
@@ -339,14 +349,17 @@ hdf5_fetch (void *_table, size_t row, size_t start,
       error = 1;
       goto cleanup_selection_space;
     }
-  herr_t read_error =
-    H5Dread (table->dataset, table->native_u32_type, memory_space,
-	     selection_space,
-	     H5P_DEFAULT, data);
+  herr_t read_error = H5Dread (table->dataset, H5T_STD_U32BE, memory_space,
+			       selection_space,
+			       H5P_DEFAULT, data);
   if (read_error < 0)
     {
       error = 1;
       goto cleanup_memory_space;
+    }
+  for (size_t i = 0; i < memory_length; i++)
+    {
+      hdf5_table_from_net (&(data[i]));
     }
 cleanup_memory_space:
   H5Sclose (memory_space);
@@ -361,11 +374,12 @@ hdf5_allocate (void *_table, uint32_t * new_id)
 {
   struct bplus_hdf5_table *table = _table;
   uint32_t next_id_value;
-  if (H5Aread (table->nextID, table->native_u32_type, &next_id_value) < 0)
+  if (H5Aread (table->nextID, H5T_STD_U32BE, &next_id_value) < 0)
     {
       *new_id = ((uint32_t) (-1));
       return;
     }
+  hdf5_table_from_net (&next_id_value);
   /* If nextID is equal to the number of rows, we must grow the
      dataset. */
   size_t nrows, ncols, order;
@@ -393,7 +407,8 @@ hdf5_allocate (void *_table, uint32_t * new_id)
 	}
     }
   *new_id = next_id_value++;
-  H5Awrite (table->nextID, table->native_u32_type, &next_id_value);
+  hdf5_table_to_net (&next_id_value);
+  H5Awrite (table->nextID, H5T_STD_U32BE, &next_id_value);
 }
 
 static inline void
@@ -445,23 +460,29 @@ hdf5_update (void *_table, size_t row, size_t start,
     {
       goto cleanup_selection_space;
     }
-  herr_t write_error =
-    H5Dwrite (table->dataset, table->native_u32_type, memory_space,
-	      selection_space, H5P_DEFAULT, data);
-  if (write_error < 0)
+  uint32_t *converted_data = malloc (memory_length * sizeof (uint32_t));
+  if (converted_data == NULL)
     {
       goto cleanup_memory_space;
     }
+  memcpy (converted_data, data, memory_length * sizeof (uint32_t));
+  for (size_t i = 0; i < memory_length; i++)
+    {
+      hdf5_table_to_net (&(converted_data[i]));
+    }
+  herr_t write_error = H5Dwrite (table->dataset, H5T_STD_U32BE, memory_space,
+				 selection_space, H5P_DEFAULT,
+				 converted_data);
+  if (write_error < 0)
+    {
+      goto cleanup_converted_data;
+    }
+cleanup_converted_data:
+  free (converted_data);
 cleanup_memory_space:
   H5Sclose (memory_space);
 cleanup_selection_space:
   H5Sclose (selection_space);
-}
-
-static inline hid_t
-hdf5_table_type (const struct bplus_hdf5_table *table)
-{
-  return table->native_u32_type;
 }
 
 #endif /* not H_BPLUS_HDF5_INCLUDED */

@@ -223,7 +223,8 @@ end. This is implemented by the HDFS file format.
 So, for all uses of B+ trees here, both keys and values are actually
 indices in the @dfn{associated table}. In fact, in all uses of B+
 trees, the key is equal to the value. This is represented as a 32-bit
-unsigned integer value.
+unsigned integer value, where numbers are stored in big-endian byte
+order.
 
 The B+ trees are themselves stored in a 2D dataset in the file, each
 row corresponding to a tree node. The first row (number 0) is always
@@ -235,7 +236,8 @@ missing if a row is used after it. Thus, all elements are
 contiguous. However, to get (amortized) logarithmic append time, the
 datasets are allowed to be larger than what is strictly required. In
 any case, each dataset has an attribute named @dfn{nextID} attached to
-it, that indicates the number of rows actually used.
+it, that indicates the number of rows actually used. This attribute is
+a 32-bit unsigned integer value, stored in big-endian byte order.
 
 @cindex order
 @cindex node order

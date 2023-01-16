@@ -93,9 +93,8 @@ adftool_dictionary_index_alloc (hid_t file, size_t default_order,
 		   (link_creation_properties, 1) < 0)
 		  ||
 		  ((dataset =
-		    H5Dcreate2 (file, "/dictionary/keys",
-				bplus_hdf5_table_type (ret->handle), fspace,
-				link_creation_properties,
+		    H5Dcreate2 (file, "/dictionary/keys", H5T_STD_U32BE,
+				fspace, link_creation_properties,
 				dataset_creation_properties,
 				H5P_DEFAULT)) == H5I_INVALID_HID))
 		{
