@@ -1,6 +1,6 @@
 #+title: What’s new in adftool
 
-* Noteworthy changes in release ?.? (????-??-??) [?]
+* Noteworthy changes in release 0.4.3 (2023-01-21) [alpha]
 ** Add a missing import to src/js/adftool_file.mjs
 It is now possible to set the raw EEG data from JavaScript.
 
