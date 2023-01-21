@@ -2,7 +2,7 @@ import Adftool from './adftool_binding.mjs';
 import { with_size_t_array } from './adftool_size_t_array.mjs';
 import { with_string } from './adftool_string.mjs';
 import { with_n_statements } from './adftool_statement.mjs';
-import { with_n_terms } from './adftool_term.mjs';
+import { with_term, with_n_terms } from './adftool_term.mjs';
 import { with_timespec } from './adftool_timespec.mjs';
 import { with_double_array } from './adftool_double_array.mjs';
 
