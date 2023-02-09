@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-01-21 18:20+0100\n"
-"PO-Revision-Date: 2023-01-12 13:35+0100\n"
+"POT-Creation-Date: 2023-02-16 16:44+0100\n"
+"PO-Revision-Date: 2023-02-16 11:10+0100\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -533,7 +533,7 @@ msgstr "Impossible d’allouer de la mémoire pour les résultats.\n"
 msgid "Cannot list the statements.\n"
 msgstr "Impossible de lister les déclarations.\n"
 
-#: src/adftool_python.c:160
+#: src/adftool_python.c:164
 msgid ""
 "Open the file under the given name. If the write flag is set, open it for "
 "reading and writing. Otherwise, open it just for reading."
@@ -542,11 +542,11 @@ msgstr ""
 "fichier pour la lecture et l’écriture. Sinon, ouvre le fichier juste pour la "
 "lecture."
 
-#: src/adftool_python.c:164
+#: src/adftool_python.c:168
 msgid "Close the opened file."
 msgstr "Ferme le fichier ouvert."
 
-#: src/adftool_python.c:166
+#: src/adftool_python.c:170
 msgid ""
 "Open a virtual file with initial content. The argument is read-only. Use '."
 "get_data()' to return the final content."
@@ -555,7 +555,7 @@ msgstr ""
 "uniquement en lecture seule. Utilisez « .get_data » pour obtenir le contenu "
 "final."
 
-#: src/adftool_python.c:170
+#: src/adftool_python.c:174
 msgid ""
 "Discard the first start bytes, then fill the bytes object with the next "
 "bytes of the file. Return the total number of bytes in the file."
@@ -563,7 +563,7 @@ msgstr ""
 "Ignore les start premiers octets, puis remplit l’objet bytes avec les octets "
 "suivants du fichier. Retourne le nombre total d’octets dans le fichier."
 
-#: src/adftool_python.c:174
+#: src/adftool_python.c:178
 msgid ""
 "Search for statements matching the pattern in the file, discard the first "
 "start statements, and fill the results with the next statements. Return the "
@@ -574,7 +574,7 @@ msgstr ""
 "déclarations suivantes. Retourne le nombre total de déclarations qui "
 "correspondent au motif."
 
-#: src/adftool_python.c:179
+#: src/adftool_python.c:183
 msgid ""
 "Search for non-deleted objects that match the pattern subject <predicate> ?. "
 "Discard the first start statements, and fill the results with the next "
@@ -585,7 +585,55 @@ msgstr ""
 "suivants. Retourne le nombre total d’objets non supprimés qui correspondent "
 "au motif."
 
-#: src/adftool_python.c:185
+#: src/adftool_python.c:189
+msgid ""
+"Search for non-deleted literal integers that match the pattern subject "
+"<predicate> ?. Discard the first start values, and fill the results with the "
+"next values. Return the total number of undeleted values that match the "
+"pattern."
+msgstr ""
+"Cherche des entiers littéraux non supprimés correspondant au motif sujet "
+"<prédicat> ?. Ignore les start premières valeurs, et remplit results avec "
+"les valeurs suivantes. Retourne le nombre total de valeurs non supprimées "
+"qui correspondent au motif."
+
+#: src/adftool_python.c:195
+msgid ""
+"Search for non-deleted literal doubles that match the pattern subject "
+"<predicate> ?. Discard the first start values, and fill the results with the "
+"next values. Return the total number of undeleted values that match the "
+"pattern."
+msgstr ""
+"Cherche des double flottants littéraux non supprimés correspondant au motif "
+"sujet <prédicat> ?. Ignore les start premières valeurs, et remplit results "
+"avec les valeurs suivantes. Retourne le nombre total de valeurs non "
+"supprimées qui correspondent au motif."
+
+#: src/adftool_python.c:201
+msgid ""
+"Search for non-deleted literal dates that match the pattern subject "
+"<predicate> ?. Discard the first start values, and fill the results with the "
+"next values. Return the total number of undeleted values that match the "
+"pattern."
+msgstr ""
+"Cherche des dates littérales non supprimées correspondant au motif sujet "
+"<prédicat> ?. Ignore les start premières valeurs, et remplit results avec "
+"les valeurs suivantes. Retourne le nombre total de valeurs non supprimées "
+"qui correspondent au motif."
+
+#: src/adftool_python.c:207
+msgid ""
+"Search for non-deleted (possibly langtagged) literal strings that match the "
+"pattern subject <predicate> ?. Discard the first start values, and fill the "
+"results with the next values. Return the total number of undeleted values "
+"that match the pattern."
+msgstr ""
+"Cherche des chaînes littérales (possiblement langtagguées) non supprimées "
+"correspondant au motif sujet <prédicat> ?. Ignore les start premières "
+"valeurs, et remplit results avec les valeurs suivantes. Retourne le nombre "
+"total de valeurs non supprimées qui correspondent au motif."
+
+#: src/adftool_python.c:214
 msgid ""
 "Search for non-deleted subjects that match the pattern ? <predicate> object. "
 "Discard the first start statements, and fill the results with the next "
@@ -597,16 +645,16 @@ msgstr ""
 "suivants. Retourne le nombre total de sujets non supprimés qui correspondent "
 "au motif."
 
-#: src/adftool_python.c:191
+#: src/adftool_python.c:220
 msgid "Mark every statement that match the pattern as deleted."
 msgstr ""
 "Marque toutes les déclarations correspondant au motif comme supprimées."
 
-#: src/adftool_python.c:193
+#: src/adftool_python.c:222
 msgid "Insert the new statement in the file."
 msgstr "Ajoute une nouvelle déclaration dans le fichier."
 
-#: src/adftool_python.c:196
+#: src/adftool_python.c:225
 msgid ""
 "Find the term identifying the channel whose data is stored in the given "
 "column."
@@ -614,61 +662,57 @@ msgstr ""
 "Trouve le terme identifiant le canal dont les données sont stockées dans la "
 "colonne donnée."
 
-#: src/adftool_python.c:199
+#: src/adftool_python.c:228
 msgid "Find in which column the channel data is stored."
 msgstr "Trouve dans quelle colonne sont stockées les données du canal."
 
-#: src/adftool_python.c:201
+#: src/adftool_python.c:230
 msgid "Add a new type to the channel."
 msgstr "Ajoute un nouveau type de canal."
 
-#: src/adftool_python.c:203
+#: src/adftool_python.c:232
 msgid "Query all the types for a channel."
 msgstr "Requête tous les types d’un canal."
 
-#: src/adftool_python.c:205
+#: src/adftool_python.c:234
 msgid "Query all the channels of a specific type."
 msgstr "Requête tous les canaux de ce type."
 
-#: src/adftool_python.c:207
+#: src/adftool_python.c:236
 msgid "Get the raw EEG data."
 msgstr "Obtient les données EEG brutes."
 
-#: src/adftool_python.c:209
+#: src/adftool_python.c:238
 msgid "Set all the raw EEG data at once."
 msgstr "Définit l’ensemble des données brutes EEG en une fois."
 
-#: src/adftool_python.c:211
+#: src/adftool_python.c:240
 msgid "Get the EEG recording time and sampling frequency."
 msgstr ""
 "Obtient la date d’enregistrement de l’EEG et la fréquence d’échantillonnage."
 
-#: src/adftool_python.c:213
+#: src/adftool_python.c:242
 msgid "Set the EEG recording time and sampling frequency."
 msgstr ""
 "Modifie la date d’enregistrement de l’EEG et la fréquence d’échantillonnage."
 
-#: src/adftool_python.c:222
+#: src/adftool_python.c:251
 msgid "Handle to a file on the file system or in memory"
 msgstr "Contrôle d’un fichier dans le système de fichier ou en mémoire"
 
-#: src/adftool_python.c:239
+#: src/adftool_python.c:268
 msgid "Set the object to a copy of its argument."
 msgstr "Assigne une copy de l’argument à l’objet."
 
-#: src/adftool_python.c:241
+#: src/adftool_python.c:270
 msgid "Set the object as an IRI reference."
 msgstr "Assigne une référence d’IRI à l’objet."
 
-#: src/adftool_python.c:243
+#: src/adftool_python.c:272
 msgid "Set the object as a labeled blank node."
 msgstr "Assigne un nœud blanc étiquetté à l’objet."
 
-#: src/adftool_python.c:245
-msgid "Set the object as a literal node."
-msgstr "Assigne un littéral à l’objet."
-
-#: src/adftool_python.c:247
+#: src/adftool_python.c:274
 msgid ""
 "Set the object as a literal node, with value as its literal value, and "
 "either type, langtag, or none of them."
@@ -676,15 +720,15 @@ msgstr ""
 "Construit l’objet comme un littéral, avec une valeur littérale, et soit un "
 "type, soit un langtag, soit aucun des deux."
 
-#: src/adftool_python.c:250
+#: src/adftool_python.c:277
 msgid "Set the object as a literal integer."
 msgstr "Assigne un entier à l’objet."
 
-#: src/adftool_python.c:252
+#: src/adftool_python.c:279
 msgid "Set the object as a literal floating point number."
 msgstr "Assigne un nombre à virgule flottante à l’objet."
 
-#: src/adftool_python.c:254
+#: src/adftool_python.c:281
 msgid ""
 "Set the object as a literal date, a tuple where the first element is the "
 "number of seconds since the epoch, and the second element is the number of "
@@ -694,27 +738,27 @@ msgstr ""
 "élément est le nombre de secondes depuis l’époque, et dont le second élément "
 "est le nombre de nanosecondes depuis le début de la dernière seconde."
 
-#: src/adftool_python.c:259
+#: src/adftool_python.c:286
 msgid "Return whether the term is an IRI reference."
 msgstr "Indique si le terme est une référence d’IRI."
 
-#: src/adftool_python.c:261
+#: src/adftool_python.c:288
 msgid "Return whether the term is a labeled blank node."
 msgstr "Indique si le term est un nœud blanc labellisé."
 
-#: src/adftool_python.c:263
+#: src/adftool_python.c:290
 msgid "Return whether the term is a literal."
 msgstr "Indique si le terme est un littéral."
 
-#: src/adftool_python.c:265
+#: src/adftool_python.c:292
 msgid "Return whether the term is a typed literal."
 msgstr "Indique si le terme est un littéral typé."
 
-#: src/adftool_python.c:267
+#: src/adftool_python.c:294
 msgid "Return whether the term is a langstring."
 msgstr "Indique si le terme est un langstring."
 
-#: src/adftool_python.c:269
+#: src/adftool_python.c:296
 msgid ""
 "Skip start bytes, then fill the argument with the next bytes of the "
 "identifier or literal value. Return the total number of bytes required."
@@ -722,7 +766,7 @@ msgstr ""
 "Ignore les start premiers octets, puis remplit l’objet bytes avec les octets "
 "suivants de la valeur littérale. Retourne le nombre total d’octets requis."
 
-#: src/adftool_python.c:273
+#: src/adftool_python.c:300
 msgid ""
 "Skip start bytes, then fill the argument with the next bytes of the "
 "namespace, type or langtag. Return the total number of bytes required."
@@ -731,19 +775,19 @@ msgstr ""
 "suivants de l’espace de nom, du type ou du langtag. Retourne le nombre total "
 "d’octets requis."
 
-#: src/adftool_python.c:277
+#: src/adftool_python.c:304
 msgid "Interpret the term as a literal number, and convert it to an integer."
 msgstr ""
 "Interprète le terme comme un nombre littéral, et le convertit en entier."
 
-#: src/adftool_python.c:280
+#: src/adftool_python.c:307
 msgid ""
 "Interpret the term as a literal number, and convert it to a floating point "
 "number."
 msgstr ""
 "Interprète le terme comme un nombre littéral, et le convertit en flottant."
 
-#: src/adftool_python.c:283
+#: src/adftool_python.c:310
 msgid ""
 "Interpret the term as a literal date, and return as a tuple the number of "
 "seconds since the epoch and the number of nanoseconds since the start of the "
@@ -753,7 +797,7 @@ msgstr ""
 "nombre de secondes depuis l’époque et le nombre de nanosecondes depuis le "
 "début de la seconde."
 
-#: src/adftool_python.c:287
+#: src/adftool_python.c:314
 msgid ""
 "Compare the N3 representation of self and the other term. Return a negative "
 "value is self comes first, a positive value if self comes last, and 0 if "
@@ -763,7 +807,7 @@ msgstr ""
 "négatif si self est classé devant, un nombre positif si self est classé "
 "après, et 0 s’ils sont égaux."
 
-#: src/adftool_python.c:292
+#: src/adftool_python.c:319
 msgid ""
 "Set self to a term parsed from the argument. Return the number of bytes used "
 "in the argument."
@@ -771,7 +815,7 @@ msgstr ""
 "Parse l’argument et assigne self. Retourne le nombre d’octets utilisés dans "
 "l’argument."
 
-#: src/adftool_python.c:295
+#: src/adftool_python.c:322
 msgid ""
 "Skip start bytes, then fill the argument with the next bytes of the N3 "
 "representation. Return the total number of bytes required."
@@ -779,56 +823,56 @@ msgstr ""
 "Ignore les start premiers octets, puis remplit l’objet bytes avec les octets "
 "suivants de la représentation N3. Retourne le nombre total d’octets requis."
 
-#: src/adftool_python.c:306
+#: src/adftool_python.c:333
 msgid "Implementation of a RDF term: IRI reference, blank node, or literal."
 msgstr ""
 "Implémentation d’un terme RDF : référence d’IRI, nœud blanc, ou littéral."
 
-#: src/adftool_python.c:324
+#: src/adftool_python.c:351
 msgid "Set the statement subject."
 msgstr "Modifie le sujet de la déclaration."
 
-#: src/adftool_python.c:326
+#: src/adftool_python.c:353
 msgid "Set the statement predicate."
 msgstr "Modifie le prédicat de la déclaration."
 
-#: src/adftool_python.c:328
+#: src/adftool_python.c:355
 msgid "Set the statement object."
 msgstr "Modifie l’objet de la déclaration."
 
-#: src/adftool_python.c:330
+#: src/adftool_python.c:357
 msgid "Set the statement graph."
 msgstr "Modifie le graphe de la déclaration."
 
-#: src/adftool_python.c:333
+#: src/adftool_python.c:360
 msgid "Set the statement deletion_date."
 msgstr "Modifie la date de suppression de la déclaration."
 
-#: src/adftool_python.c:335
+#: src/adftool_python.c:362
 msgid "Unset the statement subject."
 msgstr "Enlève le sujet de la déclaration."
 
-#: src/adftool_python.c:337
+#: src/adftool_python.c:364
 msgid "Unset the statement predicate."
 msgstr "Enlève le prédicat de la déclaration."
 
-#: src/adftool_python.c:339
+#: src/adftool_python.c:366
 msgid "Unset the statement object."
 msgstr "Enlève l’objet de la déclaration."
 
-#: src/adftool_python.c:341
+#: src/adftool_python.c:368
 msgid "Unset the statement graph."
 msgstr "Enlève le graphe de la déclaration."
 
-#: src/adftool_python.c:344
+#: src/adftool_python.c:371
 msgid "Unset the statement deletion_date."
 msgstr "Enlève la date de suppression de la déclaration."
 
-#: src/adftool_python.c:346
+#: src/adftool_python.c:373
 msgid "Get the fields of the statement."
 msgstr "Extrait les champs de la déclaration."
 
-#: src/adftool_python.c:348
+#: src/adftool_python.c:375
 msgid ""
 "Compare the N3 representation of the terms in self and the terms in the "
 "other statement, in the specified lexicographic order. Return a negative "
@@ -840,7 +884,7 @@ msgstr ""
 "négatif si self est classé devant, un nombre positif si self est classé "
 "après, et 0 s’ils sont égaux."
 
-#: src/adftool_python.c:361
+#: src/adftool_python.c:388
 msgid ""
 "Implementation of a RDF statement: subject, predicate, object, graph, and "
 "deletion date."
@@ -848,89 +892,90 @@ msgstr ""
 "Implémentation d’une déclaration RDF : sujet, prédicat, objet, graphe, et "
 "date de suppression."
 
-#: src/adftool_python.c:379
+#: src/adftool_python.c:406
 msgid "Get the (odd) number of coefficients of the filter."
 msgstr "Retourne le nombre (impair) de coefficients du filtre."
 
-#: src/adftool_python.c:381
+#: src/adftool_python.c:408
 msgid "Get the coefficients of the filter as a list."
 msgstr "Retourne la liste des coefficients du filtre."
 
-#: src/adftool_python.c:383
+#: src/adftool_python.c:410
 msgid "Set up the filter as band-pass."
 msgstr "Construit un filtre passe-bande."
 
-#: src/adftool_python.c:385
+#: src/adftool_python.c:412
 msgid "Apply the filter."
 msgstr "Applique le filtre."
 
-#: src/adftool_python.c:387
+#: src/adftool_python.c:414
 msgid "Compute default transition bandwidth"
 msgstr "Calcule la bande de transition par défaut"
 
-#: src/adftool_python.c:389
+#: src/adftool_python.c:416
 msgid "Compute a default filter order"
 msgstr "Calcule l’ordre du filtre par défaut"
 
-#: src/adftool_python.c:398
+#: src/adftool_python.c:425
 msgid "Implementation of a finite impulse response filter."
 msgstr "Implémentation d’un filtre à réponse finie."
 
-#: src/adftool_python.c:416
+#: src/adftool_python.c:443
 msgid "Manipulate linked data in HDF5 ADF files"
 msgstr "Manipule des données liées dans des fichiers HDF5 ADF"
 
-#: src/adftool_python.c:610
+#: src/adftool_python.c:637
 msgid "Cannot open that file. Does the parent directory exist?"
 msgstr "Impossible d’ouvrir ce fichier. Est-ce que le dossier parent existe ?"
 
-#: src/adftool_python.c:616
+#: src/adftool_python.c:643
 msgid ""
 "Cannot open that file. Are you sure that this is an existing valid ADF file?"
 msgstr ""
 "Impossible d’ouvrir ce fichier. Est-ce que c’est un fichier ADF existant et "
 "valide ?"
 
-#: src/adftool_python.c:654
+#: src/adftool_python.c:681
 msgid "Cannot open that virtual file."
 msgstr "Impossible d’ouvrir ce fichier virtuel."
 
-#: src/adftool_python.c:670
+#: src/adftool_python.c:697
 msgid "The file offset is negative."
 msgstr "Le décalage du fichier est négatif."
 
-#: src/adftool_python.c:733
+#: src/adftool_python.c:760
 msgid "Cannot look up data in the file."
 msgstr "Impossible de chercher des données dans le fichier."
 
-#: src/adftool_python.c:865 src/adftool_python.c:885 src/adftool_python.c:943
-#: src/adftool_python.c:1147 src/adftool_python.c:1185
+#: src/adftool_python.c:1091 src/adftool_python.c:1111
+#: src/adftool_python.c:1169 src/adftool_python.c:1373
+#: src/adftool_python.c:1411
 msgid "Cannot modify the file."
 msgstr "Impossible de modifier le fichier."
 
-#: src/adftool_python.c:1068 src/adftool_python.c:1081
+#: src/adftool_python.c:1294 src/adftool_python.c:1307
 msgid "No EEG data in the file."
 msgstr "Pas de données EEG dans ce fichier."
 
-#: src/adftool_python.c:1163
+#: src/adftool_python.c:1389
 msgid "No EEG time in the file."
 msgstr "Pas de date EEG dans ce fichier."
 
-#: src/adftool_python.c:1279
+#: src/adftool_python.c:1505
 msgid "A literal cannot have both a type and a langtag. Please choose."
 msgstr ""
 "Un littéral ne peut pas avoir à la fois un type et un langtag. Veuillez "
 "choisir."
 
-#: src/adftool_python.c:1427 src/adftool_python.c:1449
+#: src/adftool_python.c:1653 src/adftool_python.c:1675
 msgid "The term is not a number literal."
 msgstr "Le terme n’est pas un nombre littéral."
 
-#: src/adftool_python.c:1464
+#: src/adftool_python.c:1690
 msgid "The term is not a date literal."
 msgstr "Le terme n’est pas un littéral de date."
 
-#: src/adftool_python.c:1500
+#: src/adftool_python.c:1726
 msgid "The term is not in N3."
 msgstr "Le terme n’est pas en N3."
 
@@ -1106,6 +1151,9 @@ msgstr "%s:%d: La méta pour le numéro %lu est %s, mais devrait être %s.\n"
 #, c-format
 msgid "The test failed, keeping term_example.adf around.\n"
 msgstr "Le test a échoué, gardons term_exemple.adf.\n"
+
+#~ msgid "Set the object as a literal node."
+#~ msgstr "Assigne un littéral à l’objet."
 
 #, c-format
 #~ msgid "The setup took %f seconds, and the requests %f.\n"

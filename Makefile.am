@@ -76,7 +76,8 @@ check_PROGRAMS = \
   src/check_fine_eeg_get_data \
   src/check_lookup_pagination \
   src/simple_filters \
-  src/check_bplus
+  src/check_bplus \
+  src/typed_literal_lookup
 
 TESTS = $(check_PROGRAMS)
 
@@ -122,6 +123,7 @@ libadftool_la_SOURCES = \
   src/libadftool/fir.c \
   src/libadftool/indices.c \
   src/libadftool/lexer.l \
+  src/libadftool/literal_filter_iterator.h \
   src/libadftool/quads.h \
   src/libadftool/quads_index.h \
   src/libadftool/statement.c \

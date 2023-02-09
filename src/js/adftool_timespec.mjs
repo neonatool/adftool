@@ -1,4 +1,5 @@
 import Adftool from './adftool_binding.mjs'
+import { with_pointer_array } from './adftool_pointer_array.mjs';
 
 const adftool_timespec_alloc = Adftool.cwrap (
     'adftool_timespec_alloc',
@@ -42,6 +43,22 @@ export function with_timespec (f) {
     } finally {
 	ts._destroy ();
     }
+}
+
+export function with_n_timespec (n, f) {
+    return with_pointer_array (n, (pa) => {
+	const objects = [];
+	try {
+	    for (let i = 0; i < n; i++) {
+		const ts = new Timespec ();
+		objects.push (ts);
+		pa.set (i, ts._ptr);
+	    }
+	    return f (objects, pa);
+	} finally {
+	    objects.forEach ((ts) => ts._destroy ());
+	}
+    });
 }
 
 // Local Variables:

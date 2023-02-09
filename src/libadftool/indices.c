@@ -6,6 +6,7 @@
 
 #include "file.h"
 #include "statement.h"
+#include "literal_filter_iterator.h"
 
 struct copy_iterator_context
 {
@@ -131,6 +132,129 @@ adftool_lookup_objects (struct adftool_file *file,
       return 0;
     }
   return n_results;
+}
+
+static inline void
+adftool_lookup_init_pattern (struct adftool_statement **pattern,
+			     const struct adftool_term *subject,
+			     const char *predicate)
+{
+  *pattern = statement_alloc ();
+  if (*pattern == NULL)
+    {
+      return;
+    }
+  struct adftool_term *p = term_alloc ();
+  if (p == NULL)
+    {
+      statement_free (*pattern);
+      *pattern = NULL;
+      return;
+    }
+  term_set_named (p, predicate);
+  statement_set (*pattern, (struct adftool_term **) &subject, &p, NULL, NULL,
+		 NULL);
+  term_free (p);
+}
+
+size_t
+adftool_lookup_integer (struct adftool_file *file,
+			const struct adftool_term *subject,
+			const char *predicate,
+			size_t start, size_t max, long *objects)
+{
+  struct adftool_statement *pattern;
+  adftool_lookup_init_pattern (&pattern, subject, predicate);
+  size_t ret;
+  struct adftool_literal_filter filter;
+  adftool_literal_filter_init_integer (&filter, start, max, objects);
+  int error =
+    adftool_file_lookup (file, pattern, adftool_literal_filter_iterate,
+			 &filter);
+  adftool_literal_filter_deinit_integer (&filter, &ret);
+  statement_free (pattern);
+  if (error)
+    {
+      return 0;
+    }
+  return ret;
+}
+
+size_t
+adftool_lookup_double (struct adftool_file *file,
+		       const struct adftool_term *subject,
+		       const char *predicate,
+		       size_t start, size_t max, double *objects)
+{
+  struct adftool_statement *pattern;
+  adftool_lookup_init_pattern (&pattern, subject, predicate);
+  size_t ret;
+  struct adftool_literal_filter filter;
+  adftool_literal_filter_init_double (&filter, start, max, objects);
+  int error =
+    adftool_file_lookup (file, pattern, adftool_literal_filter_iterate,
+			 &filter);
+  adftool_literal_filter_deinit_double (&filter, &ret);
+  statement_free (pattern);
+  if (error)
+    {
+      return 0;
+    }
+  return ret;
+}
+
+size_t
+adftool_lookup_date (struct adftool_file *file,
+		     const struct adftool_term *subject,
+		     const char *predicate,
+		     size_t start, size_t max, struct timespec **objects)
+{
+  struct adftool_statement *pattern;
+  adftool_lookup_init_pattern (&pattern, subject, predicate);
+  size_t ret;
+  struct adftool_literal_filter filter;
+  adftool_literal_filter_init_date (&filter, start, max, objects);
+  int error =
+    adftool_file_lookup (file, pattern, adftool_literal_filter_iterate,
+			 &filter);
+  adftool_literal_filter_deinit_date (&filter, &ret);
+  statement_free (pattern);
+  if (error)
+    {
+      return 0;
+    }
+  return ret;
+}
+
+size_t
+adftool_lookup_string (struct adftool_file *file,
+		       const struct adftool_term *subject,
+		       const char *predicate,
+		       size_t *storage_required,
+		       size_t storage_size,
+		       char *storage,
+		       size_t start,
+		       size_t max,
+		       size_t *langtag_length,
+		       char **langtags, size_t *object_length, char **objects)
+{
+  struct adftool_statement *pattern;
+  adftool_lookup_init_pattern (&pattern, subject, predicate);
+  size_t ret;
+  struct adftool_literal_filter filter;
+  adftool_literal_filter_init_string (&filter, storage_size, storage, start,
+				      max, langtag_length, langtags,
+				      object_length, objects);
+  int error =
+    adftool_file_lookup (file, pattern, adftool_literal_filter_iterate,
+			 &filter);
+  adftool_literal_filter_deinit_string (&filter, &ret, storage_required);
+  statement_free (pattern);
+  if (error)
+    {
+      return 0;
+    }
+  return ret;
 }
 
 size_t

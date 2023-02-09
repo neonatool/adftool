@@ -3,8 +3,10 @@ import { with_size_t_array } from './adftool_size_t_array.mjs';
 import { with_string } from './adftool_string.mjs';
 import { with_n_statements } from './adftool_statement.mjs';
 import { with_term, with_n_terms } from './adftool_term.mjs';
-import { with_timespec } from './adftool_timespec.mjs';
+import { with_timespec, with_n_timespec } from './adftool_timespec.mjs';
+import { with_long_array } from './adftool_long_array.mjs';
 import { with_double_array } from './adftool_double_array.mjs';
+import { with_pointer_array } from './adftool_pointer_array.mjs';
 
 const adftool_file_open_data = Adftool.cwrap (
     'adftool_file_open_data',
@@ -29,12 +31,32 @@ const adftool_lookup = Adftool.cwrap (
 const adftool_lookup_objects = Adftool.cwrap (
     'adftool_lookup_objects',
     'number',
-    ['*', '*', '*', 'number', 'number', '*', '*']);
+    ['*', '*', '*', 'number', 'number', '*']);
+
+const adftool_lookup_integer = Adftool.cwrap (
+    'adftool_lookup_integer',
+    'number',
+    ['*', '*', '*', 'number', 'number', '*']);
+
+const adftool_lookup_double = Adftool.cwrap (
+    'adftool_lookup_double',
+    'number',
+    ['*', '*', '*', 'number', 'number', '*']);
+
+const adftool_lookup_date = Adftool.cwrap (
+    'adftool_lookup_date',
+    'number',
+    ['*', '*', '*', 'number', 'number', '*']);
+
+const adftool_lookup_string = Adftool.cwrap (
+    'adftool_lookup_string',
+    'number',
+    ['*', '*', '*', '*', 'number', '*', 'number', 'number', '*', '*', '*', '*']);
 
 const adftool_lookup_subjects = Adftool.cwrap (
     'adftool_lookup_subjects',
     'number',
-    ['*', '*', '*', 'number', 'number', '*', '*']);
+    ['*', '*', '*', 'number', 'number', '*']);
 
 const adftool_delete = Adftool.cwrap (
     'adftool_delete',
@@ -163,6 +185,111 @@ export class File {
 		return f (terms);
 	    });
 	});
+    }
+    lookup_integer (subject, predicate, f) {
+	const values = with_string (predicate, (predicate_p) => {
+	    const count = adftool_lookup_integer (this._ptr, subject._t, predicate_p, 0, 0, 0);
+	    return with_long_array (count, (array) => {
+		adftool_lookup_integer (this._ptr, subject._t, predicate_p, 0, count, array.address (0));
+		const values = [];
+		for (let i = 0; i < count; i++) {
+		    values.push (array.get (i));
+		}
+		return values;
+	    });
+	});
+	return f (values);
+    }
+    lookup_double (subject, predicate, f) {
+	const values = with_string (predicate, (predicate_p) => {
+	    const count = adftool_lookup_double (this._ptr, subject._t, predicate_p, 0, 0, 0);
+	    return with_double_array (count, (array) => {
+		adftool_lookup_double (this._ptr, subject._t, predicate_p, 0, count, array.address (0));
+		const values = [];
+		for (let i = 0; i < count; i++) {
+		    values.push (array.get (i));
+		}
+		return values;
+	    });
+	});
+	return f (values);
+    }
+    lookup_date (subject, predicate, f) {
+	const values = with_string (predicate, (predicate_p) => {
+	    const count = adftool_lookup_date (this._ptr, subject._t, predicate_p, 0, 0, 0);
+	    return with_n_timespec (count, (ts, array) => {
+		adftool_lookup_date (this._ptr, subject._t, predicate_p, 0, count, array.address (0));
+		const values = [];
+		for (let i = 0; i < count; i++) {
+		    values.push (ts[i].get ());
+		}
+		return values;
+	    });
+	});
+	return f (values);
+    }
+    lookup_string (subject, predicate, f) {
+	const values = with_string (predicate, (predicate_p) => {
+	    const storage_required = with_size_t_array (1, (storage_size_ptr) => {
+		adftool_lookup_string (this._ptr, subject._t, predicate_p,
+				       storage_size_ptr.address (0),
+				       0, 0, 0, 0, 0, 0, 0, 0);
+		return storage_size_ptr.get (0);
+	    });
+	    const storage_ptr = Adftool._malloc (storage_required);
+	    try {
+		const count = with_size_t_array (1, (storage_required_ptr) => {
+		    return adftool_lookup_string (this._ptr, subject._t, predicate_p,
+						  storage_required_ptr.address (0),
+						  storage_required,
+						  storage_ptr,
+						  0, 0, 0, 0, 0, 0);
+		});
+		return with_size_t_array (count, (langtag_length) => {
+		    return with_size_t_array (count, (object_length) => {
+			return with_pointer_array (count, (langtags) => {
+			    return with_pointer_array (count, (objects) => {
+				with_size_t_array (1, (storage_required_ptr) => {
+				    adftool_lookup_string (this._ptr, subject._t, predicate_p,
+							   storage_required_ptr.address (0),
+							   storage_required,
+							   storage_ptr,
+							   0, count,
+							   langtag_length.address (0),
+							   langtags.address (0),
+							   object_length.address (0),
+							   objects.address (0));
+				});
+				const values = [];
+				for (let i = 0; i < count; i++) {
+				    let langtag = null;
+				    if (langtags.get (i) != 0) {
+					const len = langtag_length.get (i);
+					const bytes = Adftool.HEAPU8.subarray (
+					    langtags.get (i), langtags.get (i) + len
+					);
+					langtag = new TextDecoder ().decode (bytes);
+				    }
+				    const len = object_length.get (i);
+				    const bytes = Adftool.HEAPU8.subarray (
+					objects.get (i), objects.get (i) + len
+				    );
+				    const object = new TextDecoder ().decode (bytes);
+				    values.push ({
+					'value': object,
+					'langtag': langtag
+				    });
+				}
+				return values;
+			    });
+			});
+		    });
+		});
+	    } finally {
+		Adftool._free (storage_ptr);
+	    }
+	});
+	return f (values)
     }
     delete_statement (pattern, deletion_date) {
 	const date = deletion_date - new Date (0);

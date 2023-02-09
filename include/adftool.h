@@ -218,6 +218,34 @@ extern "C"
 				   struct adftool_term **objects);
 
   extern LIBADFTOOL_API
+    size_t adftool_lookup_integer (struct adftool_file *file,
+				   const struct adftool_term *subject,
+				   const char *predicate, size_t start,
+				   size_t max, long *objects);
+
+  extern LIBADFTOOL_API
+    size_t adftool_lookup_double (struct adftool_file *file,
+				  const struct adftool_term *subject,
+				  const char *predicate, size_t start,
+				  size_t max, double *objects);
+
+  extern LIBADFTOOL_API
+    size_t adftool_lookup_date (struct adftool_file *file,
+				const struct adftool_term *subject,
+				const char *predicate, size_t start,
+				size_t max, struct timespec **objects);
+
+  extern LIBADFTOOL_API
+    size_t adftool_lookup_string (struct adftool_file *file,
+				  const struct adftool_term *subject,
+				  const char *predicate,
+				  size_t *storage_required,
+				  size_t storage_size, char *storage,
+				  size_t start, size_t max,
+				  size_t *langtag_length, char **langtags,
+				  size_t *object_length, char **objects);
+
+  extern LIBADFTOOL_API
     size_t adftool_lookup_subjects (struct adftool_file *file,
 				    const struct adftool_term *object,
 				    const char *predicate,

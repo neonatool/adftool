@@ -727,8 +727,8 @@ already allocated. If @var{max} is 0, then the @var{statements}
 pointer is not touched.
 @end deftypefun
 
-@deftypefun {size_t} adftool_lookup_objects (struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, struct adftool_term **@var{objects})
-@deftypefunx {size_t} adftool_lookup_subjects (struct adftool_file *@var{file}, const struct adftool_term *@var{object}, const char *@var{predicate}, struct adftool_term **@var{subjects})
+@deftypefun {size_t} adftool_lookup_objects (struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, size_t @var{start}, size_t @var{max}, struct adftool_term **@var{objects})
+@deftypefunx {size_t} adftool_lookup_subjects (struct adftool_file *@var{file}, const struct adftool_term *@var{object}, const char *@var{predicate}, size_t @var{start}, size_t @var{max}, struct adftool_term **@var{subjects})
 Return the total number of objects or subjects that match the pattern
 (@var{subject} @var{predicate} ?) or (? @var{predicate} @var{object})
 in @var{file}. Return 0 if there was an HDF5 error. Fill @var{objects}
@@ -738,6 +738,32 @@ or @var{subjects}, which @strong{must} be allocated to at least
 and setting at most the next @var{max} results.
 
 No output terms are deleted, all of them are live.
+@end deftypefun
+
+@deftypefun {size_t} adftool_lookup_integer (struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, size_t @var{start}, size_t @var{max}, long *@var{objects})
+@deftypefunx {size_t} adftool_lookup_double (struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, size_t @var{start}, size_t @var{max}, double *@var{objects})
+@deftypefunx {size_t} adftool_lookup_date (struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, size_t @var{start}, size_t @var{max}, struct timespec **@var{objects})
+Lookup the objects of the triple that are of the appropriate
+type. Discard the @var{start} first results, and then fill
+@var{objects} up to @var{max}. Return the total number of objects.
+@end deftypefun
+
+@deftypefun {size_t} adftool_lookup_string (struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, size_t *@var{storage_required}, size_t @var{storage_size}, char *@var{storage}, size_t @var{start}, size_t @var{max}, size_t *@var{langtag_length}, char **@var{langtags}, size t *@var{object_length}, char **@var{objects})
+Lookup the objects of the triple that are strings or
+langstrings. Discard the @var{start} first results, and then fill
+@var{langtag_length}, @var{langtags}, @var{object_length} and
+@var{objects} up to @var{max}. Return the total number of string
+objects.
+
+For non-langtagged strings, the corresponding @var{langtag} is set to
+@code{NULL}. In any case, @var{objects}, and in case of langstrings,
+@var{langtags}, are filled with pointers aliasing the @var{storage}
+passed to this function.
+
+At the end of the function call, if @code{*@var{storage_required}} is
+greater than @var{storage_size}, then the function failed because it
+does not have enough memory to save all objects. Call it again with a
+larger storage.
 @end deftypefun
 
 @deftypefun {int} adftool_delete (struct adftool_file *@var{file}, const struct adftool_statement *@var{pattern}, uint64_t @var{deletion_date})

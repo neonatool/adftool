@@ -76,6 +76,10 @@ static PyObject *file_open_data (struct adftool_py_file *, PyObject *);
 static PyObject *file_get_data (struct adftool_py_file *, PyObject *);
 static PyObject *lookup (struct adftool_py_file *, PyObject *);
 static PyObject *lookup_objects (struct adftool_py_file *, PyObject *);
+static PyObject *lookup_integer (struct adftool_py_file *, PyObject *);
+static PyObject *lookup_double (struct adftool_py_file *, PyObject *);
+static PyObject *lookup_date (struct adftool_py_file *, PyObject *);
+static PyObject *lookup_string (struct adftool_py_file *, PyObject *);
 static PyObject *lookup_subjects (struct adftool_py_file *, PyObject *);
 static PyObject *delete (struct adftool_py_file *, PyObject *);
 static PyObject *insert (struct adftool_py_file *, PyObject *);
@@ -181,6 +185,31 @@ static PyMethodDef adftool_file_methods[] = {
       "and fill the results with the next objects. "
       "Return the total number of undeleted objects that match "
       "the pattern.")},
+  {"lookup_integer", (PyCFunction) lookup_integer, METH_VARARGS,
+   N_("Search for non-deleted literal integers that match the pattern "
+      "subject <predicate> ?. Discard the first start values, "
+      "and fill the results with the next values. "
+      "Return the total number of undeleted values that match "
+      "the pattern.")},
+  {"lookup_double", (PyCFunction) lookup_double, METH_VARARGS,
+   N_("Search for non-deleted literal doubles that match the pattern "
+      "subject <predicate> ?. Discard the first start values, "
+      "and fill the results with the next values. "
+      "Return the total number of undeleted values that match "
+      "the pattern.")},
+  {"lookup_date", (PyCFunction) lookup_date, METH_VARARGS,
+   N_("Search for non-deleted literal dates that match the pattern "
+      "subject <predicate> ?. Discard the first start values, "
+      "and fill the results with the next values. "
+      "Return the total number of undeleted values that match "
+      "the pattern.")},
+  {"lookup_string", (PyCFunction) lookup_string, METH_VARARGS,
+   N_("Search for non-deleted (possibly langtagged) literal strings "
+      "that match the pattern "
+      "subject <predicate> ?. Discard the first start values, "
+      "and fill the results with the next values. "
+      "Return the total number of undeleted values that match "
+      "the pattern.")},
   {"lookup_subjects", (PyCFunction) lookup_subjects, METH_VARARGS,
    N_("Search for non-deleted subjects that match the pattern "
       "? <predicate> object. Discard the first start statements, "
@@ -241,8 +270,6 @@ static PyMethodDef adftool_term_methods[] = {
    N_("Set the object as an IRI reference.")},
   {"set_blank", (PyCFunction) term_set_blank, METH_VARARGS,
    N_("Set the object as a labeled blank node.")},
-  {"set_literal", (PyCFunction) term_set_literal, METH_VARARGS,
-   N_("Set the object as a literal node.")},
   {"set_literal", (PyCFunction) term_set_literal, METH_VARARGS,
    N_("Set the object as a literal node, with value as its "
       "literal value, and either type, langtag, or none of " "them.")},
@@ -790,6 +817,205 @@ lookup_objects (struct adftool_py_file *self, PyObject * args)
 				max, results);
     }
   free (results);
+  return PyLong_FromSsize_t (n_results);
+}
+
+static PyObject *
+lookup_integer (struct adftool_py_file *self, PyObject * args)
+{
+  struct adftool_py_term *subject;
+  const char *predicate;
+  Py_ssize_t start;
+  PyListObject *container;
+  int ok = PyArg_ParseTuple (args, "O!snO!", &adftool_type_term,
+			     (PyObject **) & subject, &predicate, &start,
+			     &PyList_Type, (PyObject **) & container);
+  if (!ok)
+    {
+      return NULL;
+    }
+  if (start < 0)
+    {
+      return NULL;
+    }
+  Py_ssize_t py_max = PyList_Size ((PyObject *) container);
+  assert (py_max >= 0);
+  size_t max = py_max;
+  long *results = malloc (max * sizeof (long));
+  if (results == NULL)
+    {
+      return NULL;
+    }
+  size_t n_results =
+    adftool_lookup_integer (self->ptr, subject->ptr, predicate, start, max,
+			    results);
+  for (size_t i = 0; i < max && i + start < n_results; i++)
+    {
+      PyList_SetItem ((PyObject *) container, i,
+		      PyLong_FromLong (results[i]));
+    }
+  free (results);
+  return PyLong_FromSsize_t (n_results);
+}
+
+static PyObject *
+lookup_double (struct adftool_py_file *self, PyObject * args)
+{
+  struct adftool_py_term *subject;
+  const char *predicate;
+  Py_ssize_t start;
+  PyListObject *container;
+  int ok = PyArg_ParseTuple (args, "O!snO!", &adftool_type_term,
+			     (PyObject **) & subject, &predicate, &start,
+			     &PyList_Type, (PyObject **) & container);
+  if (!ok)
+    {
+      return NULL;
+    }
+  if (start < 0)
+    {
+      return NULL;
+    }
+  Py_ssize_t py_max = PyList_Size ((PyObject *) container);
+  assert (py_max >= 0);
+  size_t max = py_max;
+  double *results = malloc (max * sizeof (double));
+  if (results == NULL)
+    {
+      return NULL;
+    }
+  size_t n_results =
+    adftool_lookup_double (self->ptr, subject->ptr, predicate, start, max,
+			   results);
+  for (size_t i = 0; i < max && i + start < n_results; i++)
+    {
+      PyList_SetItem ((PyObject *) container, i,
+		      PyFloat_FromDouble (results[i]));
+    }
+  free (results);
+  return PyLong_FromSsize_t (n_results);
+}
+
+static PyObject *
+lookup_date (struct adftool_py_file *self, PyObject * args)
+{
+  struct adftool_py_term *subject;
+  const char *predicate;
+  Py_ssize_t start;
+  PyListObject *container;
+  int ok = PyArg_ParseTuple (args, "O!snO!", &adftool_type_term,
+			     (PyObject **) & subject, &predicate, &start,
+			     &PyList_Type, (PyObject **) & container);
+  if (!ok)
+    {
+      return NULL;
+    }
+  if (start < 0)
+    {
+      return NULL;
+    }
+  Py_ssize_t py_max = PyList_Size ((PyObject *) container);
+  assert (py_max >= 0);
+  size_t max = py_max;
+  struct timespec *results_values = malloc (max * sizeof (struct timespec));
+  struct timespec **results = malloc (max * sizeof (struct timespec *));
+  if (results == NULL || results_values == NULL)
+    {
+      free (results);
+      free (results_values);
+      return NULL;
+    }
+  for (size_t i = 0; i < max; i++)
+    {
+      results[i] = &(results_values[i]);
+    }
+  size_t n_results =
+    adftool_lookup_date (self->ptr, subject->ptr, predicate, start, max,
+			 results);
+  for (size_t i = 0; i < max && i + start < n_results; i++)
+    {
+      PyList_SetItem ((PyObject *) container, i,
+		      Py_BuildValue ("(kk)", results_values[i].tv_sec,
+				     results_values[i].tv_nsec));
+    }
+  free (results);
+  free (results_values);
+  return PyLong_FromSsize_t (n_results);
+}
+
+static PyObject *
+lookup_string (struct adftool_py_file *self, PyObject * args)
+{
+  struct adftool_py_term *subject;
+  const char *predicate;
+  Py_ssize_t start;
+  PyListObject *container;
+  int ok = PyArg_ParseTuple (args, "O!snO!", &adftool_type_term,
+			     (PyObject **) & subject, &predicate, &start,
+			     &PyList_Type, (PyObject **) & container);
+  if (!ok)
+    {
+      return NULL;
+    }
+  if (start < 0)
+    {
+      return NULL;
+    }
+  Py_ssize_t py_max = PyList_Size ((PyObject *) container);
+  assert (py_max >= 0);
+  size_t max = py_max;
+  size_t storage_required;
+  size_t n_results =
+    adftool_lookup_string (self->ptr, subject->ptr, predicate,
+			   &storage_required, 0, NULL, 0, 0, NULL, NULL, NULL,
+			   NULL);
+  const size_t storage_allocated = storage_required;
+  char *storage = malloc (storage_allocated);
+  size_t *langtag_length = malloc (max * sizeof (size_t));
+  char **langtag = malloc (max * sizeof (char *));
+  size_t *value_length = malloc (max * sizeof (size_t));
+  char **value = malloc (max * sizeof (char *));
+  if (storage == NULL || langtag_length == NULL || langtag == NULL
+      || value_length == NULL || value == NULL)
+    {
+      free (value);
+      free (value_length);
+      free (langtag);
+      free (langtag_length);
+      free (storage);
+      return NULL;
+    }
+  size_t check_storage_required;
+  size_t check_n_results =
+    adftool_lookup_string (self->ptr, subject->ptr, predicate,
+			   &check_storage_required, storage_allocated,
+			   storage, start, max, langtag_length, langtag,
+			   value_length, value);
+  assert (check_n_results == n_results);
+  assert (check_storage_required == storage_required);
+  for (size_t i = 0; i < max && i + start < n_results; i++)
+    {
+      PyObject *py_langtag = NULL;
+      if (langtag[i] == NULL)
+	{
+	  Py_INCREF (Py_None);
+	  py_langtag = Py_None;
+	}
+      else
+	{
+	  py_langtag =
+	    PyBytes_FromStringAndSize (langtag[i], langtag_length[i]);
+	}
+      PyObject *py_value =
+	PyBytes_FromStringAndSize (value[i], value_length[i]);
+      PyList_SetItem ((PyObject *) container, i,
+		      Py_BuildValue ("(OO)", py_value, py_langtag));
+    }
+  free (value);
+  free (value_length);
+  free (langtag);
+  free (langtag_length);
+  free (storage);
   return PyLong_FromSsize_t (n_results);
 }
 

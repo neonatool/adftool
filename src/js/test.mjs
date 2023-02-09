@@ -289,6 +289,53 @@ AdftoolFactory ().then (Adftool => {
 	    });
 	});
     });
+
+    const d = new Date ('2022-02-09T10:14:32.123');
+    Adftool.with_file (new Uint8Array (0), (f) => {
+	Adftool.with_literal_integer (42, (integer_object) => {
+	    Adftool.with_literal_double (49.3, (double_object) => {
+		Adftool.with_literal_double (69, (double_integer_object) => {
+		    Adftool.with_literal_date (d, (date_object) => {
+			Adftool.with_literal_node ('foo', null, null, (foo_object) => {
+			    Adftool.with_literal_node ('hello, world!', null, 'en-us', (hello_object) => {
+				Adftool.with_named_node ('', (subject) => {
+				    Adftool.with_named_node ('https://example.com/test', (predicate) => {
+					for (const o of [ integer_object, double_object, double_integer_object, date_object, foo_object, hello_object ]) {
+					    Adftool.with_statement_init (subject, predicate, o, null, null, (st) => {
+						f.insert (st);
+					    });
+					}
+				    });
+				});
+			    });
+			});
+		    });
+		});
+	    });
+	});
+	Adftool.with_named_node ('', (subject) => {
+	    const predicate = 'https://example.com/test';
+	    const integers = f.lookup_integer (subject, predicate, (i) => i);
+	    const doubles = f.lookup_double (subject, predicate, (d) => d);
+	    const dates = f.lookup_date (subject, predicate, (d) => d);
+	    const strings = f.lookup_string (subject, predicate, (s) => s);
+	    assert (integers.length === 2);
+	    assert (integers[0] === 42);
+	    assert (integers[1] === 69);
+	    assert (doubles.length === 3);
+	    assert (Math.abs (doubles[0] - 49.3) < 1e-6);
+	    assert (doubles[1] === 42.0);
+	    assert (doubles[2] === 69.0);
+	    assert (dates.length === 1);
+	    assert ((dates[0] - d) === 0);
+	    assert (strings.length === 2);
+	    assert (strings[0].value === 'foo');
+	    assert (strings[0].langtag === null);
+	    assert (strings[1].value === 'hello, world!');
+	    assert (strings[1].langtag === 'en-us');
+	    console.log('OK!');
+	});
+    });
 });
 
 // Local Variables:
