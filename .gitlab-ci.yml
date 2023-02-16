@@ -33,7 +33,7 @@ dist:
     - ./bootstrap-bootstrap
     - mkdir -p build-dist
     - cd build-dist
-    - ../configure --enable-relocatable
+    - ../configure --enable-relocatable --enable-valgrind-tests=yes
     - make -j
     - mv src/libadftool/libadftool_la-lexer.c ../src/libadftool/
     - make -j distcheck
