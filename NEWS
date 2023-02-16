@@ -2,6 +2,9 @@
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 ** Bug fix: non-integer xsd:double or xsd:decimal literals can only be converted to integers if they are whole numbers
+** Breaking bug fix: "hello"^^<type> should come BEFORE "world"@en
+You need to regenerate your files, because the indices built with
+adftool 0.4.3 will be broken by this new version.
 
 * Noteworthy changes in release 0.4.3 (2023-01-21) [alpha]
 ** Add a missing import to src/js/adftool_file.mjs

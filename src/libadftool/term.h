@@ -440,11 +440,13 @@ term_compare (const struct adftool_term *reference,
 	}
       else
 	{
-	  /* langstrings come before typed literals */
-	  ret = adftool_term_fine_compare (reference->type, other->type);
+	  /* Compare the values. If equal, then the next thing to
+	     compare is the literal type (typed or langtagged), and
+	     finally the meta. */
+	  ret = strcmp (reference->str1, other->str1);
 	  if (ret == 0)
 	    {
-	      ret = strcmp (reference->str1, other->str1);
+	      ret = adftool_term_fine_compare (reference->type, other->type);
 	      if (ret == 0)
 		{
 		  ret = strcmp (reference->str2, other->str2);
