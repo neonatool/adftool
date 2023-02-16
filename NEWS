@@ -1,7 +1,7 @@
 #+title: What’s new in adftool
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
-
+** Bug fix: non-integer xsd:double or xsd:decimal literals can only be converted to integers if they are whole numbers
 
 * Noteworthy changes in release 0.4.3 (2023-01-21) [alpha]
 ** Add a missing import to src/js/adftool_file.mjs

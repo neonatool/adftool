@@ -812,6 +812,10 @@ term_as_mpz (const struct adftool_term *term, mpz_t value)
       mpf_t double_value;
       mpf_init (double_value);
       int error = term_as_mpf (term, double_value);
+      if (!mpf_integer_p (double_value))
+	{
+	  error = 1;
+	}
       if (error == 0)
 	{
 	  mpz_set_f (value, double_value);
