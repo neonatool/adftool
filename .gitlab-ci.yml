@@ -85,7 +85,7 @@ build_mingw:
     - cp -R /export/mingw64/lib/* $PWD/../public/mingw64/lib/
     - cp /export/mingw64/bin/*.dll .
     - cp ../public/mingw64/bin/*.dll .
-    - make -j check 'LOG_COMPILER = ./libtool --mode=execute wine' 'XFAIL_TESTS = src/eeg_metadata_example.exe src/term_manipulation_example.exe'
+    - make -j check 'LOG_COMPILER = ./libtool --mode=execute wine' 'XFAIL_TESTS = src/term_manipulation_example.exe'
     - LANG=fr_FR.UTF-8 wine ../public/mingw64/bin/adftool --aidez-moi
   artifacts:
     when: always

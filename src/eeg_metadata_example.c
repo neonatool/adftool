@@ -56,7 +56,8 @@ main (int argc, char *argv[])
 	       _("Could not compute the date of the first observation.\n"));
       abort ();
     }
-  assert (memcmp (&first_observation, &start, sizeof (struct timespec)) == 0);
+  assert (first_observation.tv_sec == start.tv_sec);
+  assert (first_observation.tv_nsec == start.tv_nsec);
   struct timespec second_observation;
   double sfreq;
   if (adftool_eeg_get_time (file, 1, &second_observation, &sfreq) != 0)

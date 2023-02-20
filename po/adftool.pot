@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.5.0\n"
+"Project-Id-Version: adftool 0.5.0.4-d559\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-02-17 10:39+0100\n"
+"POT-Creation-Date: 2023-02-21 00:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -892,12 +892,12 @@ msgstr ""
 msgid "Could not compute the date of the first observation.\n"
 msgstr ""
 
-#: src/eeg_metadata_example.c:64
+#: src/eeg_metadata_example.c:65
 #, c-format
 msgid "Could not compute the date of the second observation.\n"
 msgstr ""
 
-#: src/eeg_metadata_example.c:85
+#: src/eeg_metadata_example.c:86
 #, c-format
 msgid "Could not compute the date of the third observation.\n"
 msgstr ""
