@@ -23,7 +23,6 @@
 struct adftool_file *
 adftool_file_open (const char *filename, int write)
 {
-  FILE *file_handle = NULL;
   hid_t hdf5_file = H5I_INVALID_HID;
   unsigned mode = H5F_ACC_RDONLY;
   if (write)
@@ -44,20 +43,12 @@ adftool_file_open (const char *filename, int write)
 	  return NULL;
 	}
     }
-  file_handle = fopen (filename, "r" OPEN_BINARY_SUFFIX);
-  if (file_handle == NULL)
-    {
-      H5Fclose (hdf5_file);
-      return NULL;
-    }
-  struct adftool_file *ret =
-    adftool_file_alloc (hdf5_file, file_handle, DEFAULT_ORDER,
-			DEFAULT_DICTIONARY_CACHE_ENTRIES,
-			DEFAULT_DICTIONARY_CACHE_ENTRY_LENGTH);
+  struct adftool_file *ret = adftool_file_alloc (hdf5_file, DEFAULT_ORDER,
+						 DEFAULT_DICTIONARY_CACHE_ENTRIES,
+						 DEFAULT_DICTIONARY_CACHE_ENTRY_LENGTH);
   if (ret == NULL)
     {
       H5Fclose (hdf5_file);
-      fclose (file_handle);
     }
   return ret;
 }
@@ -136,29 +127,55 @@ adftool_file_get_data (struct adftool_file *file, size_t start, size_t max,
     {
       return 0;
     }
-  if (fseeko (file->file_handle, 0, SEEK_END) != 0)
+  ssize_t required = H5Fget_file_image (file->hdf5_handle, NULL, 0);
+  if (required < 0)
     {
       return 0;
     }
-  size_t file_length = ftello (file->file_handle);
+  if (max == 0)
+    {
+      return required;
+    }
+  char *all_bytes = malloc (required);
+  if (all_bytes == NULL)
+    {
+      return 0;
+    }
+  ssize_t check = H5Fget_file_image (file->hdf5_handle, all_bytes, required);
+  const size_t file_length = check;
+  if (check < 0)
+    {
+      /* Error the second time */
+      free (all_bytes);
+      return 0;
+    }
+  if (check > required)
+    {
+      /* Retry */
+      free (all_bytes);
+      return adftool_file_get_data (file, start, max, bytes);
+    }
   if (start > file_length)
     {
+      /* Nothing to set. */
+      free (all_bytes);
       return file_length;
     }
   if (start + max > file_length)
     {
+      /* Do not fill all of bytes, because the caller is too
+         generous. */
       assert (start <= file_length);
       max = file_length - start;
     }
-  if (fseeko (file->file_handle, start, SEEK_SET) != 0)
+  if (max != 0)
     {
-      return 0;
+      /* See earlier in the function. It is forbidden to copy 0 bytes
+	 with memcpy, so we protect it. However, we already returned
+	 early if max == 0, because we need no copy at all. */
+      memcpy (bytes, all_bytes + start, max);
     }
-  size_t filled = fread (bytes, 1, max, file->file_handle);
-  if (filled != max)
-    {
-      return 0;
-    }
+  free (all_bytes);
   return file_length;
 }
 

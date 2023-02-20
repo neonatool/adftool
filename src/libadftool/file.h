@@ -44,7 +44,6 @@ struct adftool_file;
 
 static inline
   struct adftool_file *adftool_file_alloc (hid_t hdf5_file,
-					   FILE * stdio_file,
 					   size_t default_order,
 					   size_t n_cache_entries,
 					   size_t max_cache_length);
@@ -69,14 +68,13 @@ static inline
 struct adftool_file
 {
   hid_t hdf5_handle;
-  FILE *file_handle;
   struct adftool_dictionary_index *dictionary;
   struct adftool_quads *quads;
   struct adftool_quads_index *indices[6];
 };
 
 static inline struct adftool_file *
-adftool_file_alloc (hid_t file, FILE * stdio_file, size_t default_order,
+adftool_file_alloc (hid_t file, size_t default_order,
 		    size_t n_cache_entries, size_t max_cache_length)
 {
   struct adftool_file *ret = malloc (sizeof (struct adftool_file));
@@ -85,7 +83,6 @@ adftool_file_alloc (hid_t file, FILE * stdio_file, size_t default_order,
       goto error;
     }
   ret->hdf5_handle = file;
-  ret->file_handle = stdio_file;
   if (file == H5I_INVALID_HID)
     {
       goto cleanup;
@@ -151,7 +148,6 @@ adftool_file_free (struct adftool_file *file)
       adftool_quads_free (file->quads);
       adftool_dictionary_index_free (file->dictionary);
       H5Fclose (file->hdf5_handle);
-      fclose (file->file_handle);
     }
   free (file);
 }
