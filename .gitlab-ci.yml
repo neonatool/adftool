@@ -50,6 +50,26 @@ dist:
       - build-dist/adftool-*/_build/sub/test-suite.log
       - public
 
+check_asan:
+  stage: build
+  script:
+    - apt-get install -y git gettext libgmp-dev libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc m4 libtinfo5 flex r-base texinfo texlive libpython3-dev pkg-config emacs check
+    - mkdir -p public
+    - export GNULIB_SRCDIR=$PWD/gnulib
+    - ./bootstrap-bootstrap
+    - mkdir -p build-dist
+    - cd build-dist
+    - ../configure --enable-relocatable --disable-python --disable-valgrind-tests "CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined,address -fsanitize-undefined-trap-on-error -Wall -Wextra -static-libasan"
+    - make -j
+    - make -j check
+  artifacts:
+    when: always
+    paths:
+      - build-dist/config.log
+      - build-dist/config.h
+      - build-dist/test-suite.log
+      - public
+
 build_mingw:
   stage: build
   script:
