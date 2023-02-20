@@ -2,7 +2,7 @@ SUBDIRS = lib libprog . po tests
 ACLOCAL_AMFLAGS = -I m4 -I m4prog
 EXTRA_DIST = m4/gnulib-cache.m4 m4prog/gnulib-cache.m4 \
   src/filter_test_data.c src/filter_test_data.R src/filter_test_data.csv \
-  po/Rules-install-local \
+  po/Rules-install-local src/test.py \
   $(top_srcdir)/.version \
   $(top_srcdir)/src/js/package.json.in
 
@@ -21,7 +21,8 @@ CLEANFILES = \
   channel_metadata_example.adf \
   eeg_data_example.adf \
   eeg_metadata_example.adf \
-  filter-log
+  filter-log \
+  test.adf
 
 COMMON_COMPILE_FLAGS = \
   -I include -I $(srcdir)/include \
@@ -81,7 +82,11 @@ check_PROGRAMS = \
 
 TESTS = $(check_PROGRAMS)
 
+TEST_EXTENSIONS = .py
+
 LOG_COMPILER = $(LOG_VALGRIND)
+
+PY_LOG_COMPILER = $(PYTHON)
 
 src_adftool_LDADD = \
   libprog/libgnu.la \
@@ -168,6 +173,12 @@ adftool_la_LIBADD = libadftool.la lib/libadftool.la $(LTLIBOBJS)
 adftool_la_LDFLAGS += \
   -no-undefined -avoid-version -module \
   $(LTLIBINTL)
+
+if WINDOWS
+adftool_la_LDFLAGS += -shrext .pyd
+endif
+
+TESTS += src/test.py
 endif
 
 DISTCLEANFILES =
@@ -191,7 +202,13 @@ endif
 
 AM_TESTS_ENVIRONMENT = \
   mkdir -p $(abs_top_builddir)/.tmp ; \
-  export TMPDIR=$(abs_top_builddir)/.tmp ;
+  export TMPDIR=$(abs_top_builddir)/.tmp ; \
+  export PYTHONPATH=$(abs_top_builddir)/.libs$(PATH_SEPARATOR)$$PYTHONPATH ;
+
+if WINDOWS
+AM_TESTS_ENVIRONMENT += \
+  export PATH=$(abs_top_builddir)/.libs$(PATH_SEPARATOR)$$PATH ;
+endif
 
 BUILT_SOURCES = src/filter_test_data.c
 src_filter_example_SOURCES = src/filter_example.c src/filter_test_data.c

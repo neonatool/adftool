@@ -14,8 +14,6 @@ AC_CONFIG_SRCDIR([include/adftool.h])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
-AM_CONDITIONAL([SHLIBS_IN_BINDIR],
-               [case "$host_os" in mingw* | cygwin*) true;; *) false;; esac])
 
 AC_ARG_ENABLE([python],
   [  --enable-python=yes/no  Build or skip python bindings],
@@ -77,6 +75,7 @@ AC_PROG_SED
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19])
 PKG_CHECK_MODULES([HDF5], [hdf5], [
+  CPPFLAGS="$CPPFLAGS $HDF5_CFLAGS"
   CFLAGS="$CFLAGS $HDF5_CFLAGS"
   LIBS="$LIBS $HDF5_LIBS"
 ], [AC_MSG_WARN([No hdf5 pkg-config module found.])])
@@ -84,6 +83,7 @@ AC_SEARCH_LIBS([H5open], [hdf5],,, [-lz])
 AC_SEARCH_LIBS([__gmpz_init], [gmp])
 AC_SEARCH_LIBS([cos], [m])
 PKG_CHECK_MODULES([PYTHON3], [python3], [
+  CPPFLAGS="$CPPFLAGS $PYTHON3_CPPFLAGS"
   CFLAGS="$CFLAGS $PYTHON3_CFLAGS"
   LIBS="$LIBS $PYTHON3_LIBS"
 ], [AC_MSG_WARN([No python pkg-config module found.])])
@@ -120,6 +120,15 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNC([H5open],, [AC_MSG_ERROR([I need the HDF5 library functions.])])
 AC_CHECK_FUNC([__gmpz_init],, [AC_MSG_ERROR([I need the GMP library functions.])])
 AC_SEARCH_LIBS([srunner_create], [check])
+
+i_am_windows=no
+case "$host_os" in
+  mingw* | cygwin*)
+    i_am_windows=yes;;
+esac
+
+AM_CONDITIONAL([SHLIBS_IN_BINDIR], [test "x$i_am_windows" = "xyes"])
+AM_CONDITIONAL([WINDOWS], [test "x$i_am_windows" = "xyes"])
 
 AC_CONFIG_FILES([
   Makefile
