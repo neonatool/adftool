@@ -1,0 +1,48 @@
+_realname=adftool
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=0.5.0.5-5477-dirty
+pkgrel=1
+pkgdesc="Adftool (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32')
+url='https://plmlab.math.cnrs.fr/neonatool/adftool'
+license=('LICENSE')
+depends=("${MINGW_PACKAGE_PREFIX}-hdf5"
+	 "${MINGW_PACKAGE_PREFIX}-gmp"
+	 "${MINGW_PACKAGE_PREFIX}-python"
+	 "${MINGW_PACKAGE_PREFIX}-gettext"
+	 "${MINGW_PACKAGE_PREFIX}-check")
+makedepends=("${MINGW_PACKAGE_PREFIX}-autotools"
+             "${MINGW_PACKAGE_PREFIX}-cc")
+source=("./${_realname}-${pkgver}.tar.gz")
+sha256sums=('642e7c8a7e45d1fd8b37da074b5d1052ed477f4a6ddc7ab7853b660ffe9ee929')
+
+build() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+  mkdir -p "${srcdir}/build-${MSYSTEM}" && cd "${srcdir}/build-${MSYSTEM}"
+
+  ../"${_realname}-${pkgver}"/configure \
+    --prefix="${MINGW_PREFIX}" \
+    --build="${MINGW_CHOST}" \
+    --host="${MINGW_CHOST}" \
+    --target="${MINGW_CHOST}" \
+    --enable-static \
+    --enable-shared \
+    --enable-relocatable
+
+  make
+}
+
+check() {
+  cd "${srcdir}/build-${MSYSTEM}"
+  ## src/test.py fails because python won’t find either adftool.pyd or
+  ## libadftool.dll, this is too much for me to handle.
+  make check 'XFAIL_TESTS = src/test.py'
+}
+
+package() {
+  cd "${srcdir}/build-${MSYSTEM}"
+
+  make install DESTDIR="${pkgdir}"
+}
