@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.5.1\n"
+"Project-Id-Version: adftool 0.5.1.4-9637\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-02-21 02:00+0100\n"
+"POT-Creation-Date: 2023-02-27 13:21+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -823,6 +823,114 @@ msgstr ""
 
 #: src/adftool_python.c:1726
 msgid "The term is not in N3."
+msgstr ""
+
+#: src/adftool_r.cc:239
+msgid "Construct a new, empty term."
+msgstr ""
+
+#: src/adftool_r.cc:240
+msgid "Copy the other term."
+msgstr ""
+
+#: src/adftool_r.cc:241
+msgid "Initialize the term as a blank term."
+msgstr ""
+
+#: src/adftool_r.cc:242
+msgid "Initialize the term as an IRIREF term."
+msgstr ""
+
+#: src/adftool_r.cc:243
+msgid "Initialize the term as a literal untagged string."
+msgstr ""
+
+#: src/adftool_r.cc:244
+msgid "Initialize the term as a typed literal string."
+msgstr ""
+
+#: src/adftool_r.cc:245
+msgid "Initialize the term as a lang-tagged string."
+msgstr ""
+
+#: src/adftool_r.cc:246
+msgid "Initialize the term as a literal integer."
+msgstr ""
+
+#: src/adftool_r.cc:247
+msgid "Initialize the term as a literal double."
+msgstr ""
+
+#: src/adftool_r.cc:248
+msgid ""
+"Initialize the term as a literal date with the number of seconds since the "
+"epoch, and the number of nanoseconds."
+msgstr ""
+
+#: src/adftool_r.cc:249
+msgid "Check whether the term is a blank node."
+msgstr ""
+
+#: src/adftool_r.cc:250
+msgid "Check whether the term is a named node."
+msgstr ""
+
+#: src/adftool_r.cc:251
+msgid "Check whether the term is a literal node."
+msgstr ""
+
+#: src/adftool_r.cc:252
+msgid ""
+"Check whether the term is a literal node with a type (as opposed to a "
+"langtag)."
+msgstr ""
+
+#: src/adftool_r.cc:253
+msgid "Check whether the term is a literal node with a language tag."
+msgstr ""
+
+#: src/adftool_r.cc:254
+msgid "Return the value of the term."
+msgstr ""
+
+#: src/adftool_r.cc:255
+msgid "Return the type or langtag."
+msgstr ""
+
+#: src/adftool_r.cc:256
+msgid ""
+"Try and convert the term as an integer. Return a 0-length array if it cannot "
+"be converted, or a 1-integer-long array if it can."
+msgstr ""
+
+#: src/adftool_r.cc:257
+msgid ""
+"Try and convert the term as a double. Return a 0-length array if it cannot "
+"be converted, or a 1-double-long array if it can."
+msgstr ""
+
+#: src/adftool_r.cc:258
+msgid ""
+"Try and convert the term as a date. Return an empty list if the conversion "
+"failed, or a list with keys \"tv_sec\" and \"tv_nsec\" otherwise."
+msgstr ""
+
+#: src/adftool_r.cc:259
+msgid ""
+"Compare the term order with the other term. Return a negative number if the "
+"main term comes before the other term, a positive number if it comes after, "
+"and 0 if both terms are equal."
+msgstr ""
+
+#: src/adftool_r.cc:260
+msgid ""
+"Try and parse the string as a N3 term. If successful, return a list with "
+"\"success\" set to TRUE and \"rest\" set to the suffix that has not been "
+"used by the parser. Otherwise, return a list with \"success\" set to FALSE."
+msgstr ""
+
+#: src/adftool_r.cc:261
+msgid "Return as a string the N3 encoding of the term."
 msgstr ""
 
 #: src/check_bplus.c:4190

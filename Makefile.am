@@ -4,7 +4,8 @@ EXTRA_DIST = m4/gnulib-cache.m4 m4prog/gnulib-cache.m4 \
   src/filter_test_data.c src/filter_test_data.R src/filter_test_data.csv \
   po/Rules-install-local src/test.py \
   $(top_srcdir)/.version \
-  $(top_srcdir)/src/js/package.json.in
+  $(top_srcdir)/src/js/package.json.in \
+  src/test-R.R
 
 info_TEXINFOS = doc/adftool.texi
 
@@ -79,11 +80,12 @@ check_PROGRAMS = \
 
 TESTS = $(check_PROGRAMS)
 
-TEST_EXTENSIONS = .py
+TEST_EXTENSIONS = .py .R
 
 LOG_COMPILER = $(LOG_VALGRIND)
 
 PY_LOG_COMPILER = $(PYTHON)
+R_LOG_COMPILER = $(RSCRIPT)
 
 src_adftool_LDADD = \
   libprog/libgnu.la \
@@ -156,6 +158,21 @@ libadftool_la_LDFLAGS = \
   $(LIBTHREAD) \
   $(INTL_MACOSX_LIBS)
 
+AM_TESTS_ENVIRONMENT = \
+  mkdir -p $(abs_top_builddir)/.tmp ; \
+  export TMPDIR=$"$$($(CYGPATH_W) $(abs_top_builddir)/.tmp)$" ; \
+  export PYTHONPATH=$"$$($(CYGPATH_WP) "$(abs_top_builddir)/.libs$(PATH_SEPARATOR)$(abs_top_builddir)/src/.libs$(PATH_SEPARATOR)$$PYTHONPATH")$" ;
+
+.PHONY: print-tests-environment run-in-tests-environment
+
+print-tests-environment: $(lib_LTLIBRARIES)
+	@echo "# Set by adftool: $(AM_TESTS_ENVIRONMENT)"
+	@echo "# Set by the TESTS_ENVIRONMENT make variable: $(TESTS_ENVIRONMENT)"
+	@echo "$(AM_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)"
+
+run-in-tests-environment: $(lib_LTLIBRARIES)
+	@$(AM_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT) $(COMMAND)
+
 adftool_la_LDFLAGS =
 if PYTHON_MODULE
 pyexec_LTLIBRARIES = adftool.la
@@ -178,6 +195,35 @@ endif
 TESTS += src/test.py
 endif
 
+if R_MODULE
+lib_LTLIBRARIES += src/libadftool-r.la
+src_libadftool_r_la_SOURCES = \
+  src/adftool_r.cc
+src_libadftool_r_la_CPPFLAGS = \
+  -I lib -I $(srcdir)/lib \
+  -DBUILDING_LIBADFTOOL_R \
+  $(COMMON_COMPILE_FLAGS)
+src_libadftool_r_la_CXXFLAGS = $(CFLAG_VISIBILITY) $(R_CXXFLAGS) $(RCPP_CXXFLAGS)
+src_libadftool_r_la_LIBADD = libadftool.la lib/libadftool.la $(LTLIBOBJS) $(R_LIBS) $(RCPP_LIBS)
+src_libadftool_r_la_LDFLAGS = \
+  -no-undefined -avoid-version -module \
+  $(LTLIBINTL)
+
+TESTS += src/test-R.R
+
+AM_TESTS_ENVIRONMENT += \
+  export LIBADFTOOL_R_LIBRARY=$"$$($(CYGPATH_W) $$(. src/libadftool-r.la ; echo "$(abs_top_builddir)/src/.libs/$$dlname"))$" ;
+endif
+
+if WINDOWS
+## Windows forbids loading of DLLs if they are not in PATH (this is
+## not about discoverability). WARNING: anything that comes after that
+## in AM_TESTS_ENVIRONMENT, or anything in TESTS_ENVIRONMENT, will not
+## have a PATH usable by msys2/cygwin.
+AM_TESTS_ENVIRONMENT += \
+  export PATH=$"$$($(CYGPATH_WP) "$(abs_top_builddir)/.libs$(PATH_SEPARATOR)$(abs_top_builddir)/src/.libs$(PATH_SEPARATOR)$$PATH")$";
+endif
+
 DISTCLEANFILES =
 
 if RELOCATABLE_VIA_LD
@@ -195,16 +241,6 @@ defexecdir = $(libdir)
 defexec_DATA = libadftool-$(DLL_VERSION).def
 
 DISTCLEANFILES += $(defexec_DATA)
-endif
-
-AM_TESTS_ENVIRONMENT = \
-  mkdir -p $(abs_top_builddir)/.tmp ; \
-  export TMPDIR=$(abs_top_builddir)/.tmp ; \
-  export PYTHONPATH=$(abs_top_builddir)/.libs$(PATH_SEPARATOR)$$PYTHONPATH ;
-
-if WINDOWS
-AM_TESTS_ENVIRONMENT += \
-  export PATH=$(abs_top_builddir)/.libs$(PATH_SEPARATOR)$$PATH ;
 endif
 
 BUILT_SOURCES = src/filter_test_data.c

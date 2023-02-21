@@ -8,6 +8,7 @@
  (gnu packages check)
  (gnu packages code)
  (gnu packages compression)
+ (gnu packages cran)
  (gnu packages emacs)
  (gnu packages emacs-xyz)
  (gnu packages flex)
@@ -117,7 +118,8 @@
   '("out" "devel" "pdf" "html"))
  (arguments
   (list
-   #:configure-flags #~'("--enable-relocatable")
+   #:configure-flags
+   #~`("--enable-relocatable")
    #:phases
    #~(modify-phases
       %standard-phases
@@ -142,6 +144,11 @@
 	  "po/Makefile.in.in"
 	  (("SHELL = /bin/sh")
 	   "SHELL = @SHELL@"))))
+      (add-before
+       'check 'set-timezone
+       (lambda* (#:key inputs #:allow-other-keys)
+	 (setenv "TZ" "UTC+1")
+	 (setenv "TZDIR" (search-input-directory inputs "share/zoneinfo"))))
       (add-after
        'check 'tags
        (lambda _
@@ -178,13 +185,23 @@
        'install 'install-html
        (lambda* (#:key outputs #:allow-other-keys)
 	 (invoke "make" "-j" "install-html"
-		 (format #f "prefix = ~a" #$output:html)))))))
+		 (format #f "prefix = ~a" #$output:html))))
+      (add-after
+       'check 'syntax-check
+       (lambda* _
+	 (invoke "make" "syntax-check")))
+      (add-after
+       'check 'distcheck
+       (lambda* _
+	 (setenv "LD_LIBRARY_PATH" ".libs")
+	 (invoke "make" "-j" "distcheck"))))))
  (native-inputs
   (list emacs emacs-org autoconf autoconf-archive automake libtool gnu-gettext
 	perl git
 	valgrind (list glibc "debug")
 	tar global flex r pkg-config
-	texinfo (texlive-updmap.cfg (list texlive))))
+	texinfo (texlive-updmap.cfg (list texlive))
+	r-minimal r-rcpp tzdata-for-tests))
  (inputs
   (list hdf5 check gnu-gettext zlib gmp python))
  (home-page "https://plmlab.math.cnrs.fr/vkraus/bplus")

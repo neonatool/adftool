@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-02-21 02:00+0100\n"
-"PO-Revision-Date: 2023-02-16 11:10+0100\n"
+"POT-Creation-Date: 2023-02-27 13:21+0100\n"
+"PO-Revision-Date: 2023-02-21 22:17+0100\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -979,6 +979,129 @@ msgstr "Le terme n’est pas un littéral de date."
 msgid "The term is not in N3."
 msgstr "Le terme n’est pas en N3."
 
+#: src/adftool_r.cc:239
+msgid "Construct a new, empty term."
+msgstr "Construit un nouveau terme vide."
+
+#: src/adftool_r.cc:240
+msgid "Copy the other term."
+msgstr "Copie le terme other."
+
+#: src/adftool_r.cc:241
+msgid "Initialize the term as a blank term."
+msgstr "Indique si le terme est un nœud vide."
+
+#: src/adftool_r.cc:242
+msgid "Initialize the term as an IRIREF term."
+msgstr "Indique si le terme est une référence d’IRI."
+
+#: src/adftool_r.cc:243
+msgid "Initialize the term as a literal untagged string."
+msgstr "Initialise le terme comme chaîne littérale non taggée."
+
+#: src/adftool_r.cc:244
+msgid "Initialize the term as a typed literal string."
+msgstr "Initialise le terme comme chaîne littérale typée."
+
+#: src/adftool_r.cc:245
+msgid "Initialize the term as a lang-tagged string."
+msgstr "Initialise le terme comme chaîne languo-taggée."
+
+#: src/adftool_r.cc:246
+msgid "Initialize the term as a literal integer."
+msgstr "Initialise le terme comme entier littéral."
+
+#: src/adftool_r.cc:247
+msgid "Initialize the term as a literal double."
+msgstr "Initialise le terme comme double littéral."
+
+#: src/adftool_r.cc:248
+msgid ""
+"Initialize the term as a literal date with the number of seconds since the "
+"epoch, and the number of nanoseconds."
+msgstr ""
+"Initialise le terme comme une date littérale avec le nombre de secondes "
+"depuis l’époque, et le nombre de nanosecondes."
+
+#: src/adftool_r.cc:249
+msgid "Check whether the term is a blank node."
+msgstr "Vérifie si le term est un nœud blanc."
+
+#: src/adftool_r.cc:250
+msgid "Check whether the term is a named node."
+msgstr "Vérifie si le term est un nœud nommé."
+
+#: src/adftool_r.cc:251
+msgid "Check whether the term is a literal node."
+msgstr "Vérifie si le terme est un nœud littéral."
+
+#: src/adftool_r.cc:252
+msgid ""
+"Check whether the term is a literal node with a type (as opposed to a "
+"langtag)."
+msgstr ""
+"Vérifie si le terme est un nœud littéral avec type (contrairement au langtag)"
+
+#: src/adftool_r.cc:253
+msgid "Check whether the term is a literal node with a language tag."
+msgstr "Vérifie si le terme est un nœud littéral avec un tag de langue."
+
+#: src/adftool_r.cc:254
+msgid "Return the value of the term."
+msgstr "Retourne la valeur du terme."
+
+#: src/adftool_r.cc:255
+msgid "Return the type or langtag."
+msgstr "Retourne le type ou languotag."
+
+#: src/adftool_r.cc:256
+msgid ""
+"Try and convert the term as an integer. Return a 0-length array if it cannot "
+"be converted, or a 1-integer-long array if it can."
+msgstr ""
+"Essaye de convertir le terme en entier. Retourne un tableau vide à défaut, "
+"ou un tableau de 1 entier si c’est possible."
+
+#: src/adftool_r.cc:257
+msgid ""
+"Try and convert the term as a double. Return a 0-length array if it cannot "
+"be converted, or a 1-double-long array if it can."
+msgstr ""
+"Essaye de convertir le terme en double. Retourne un tableau vide à défaut, "
+"ou un tableau de 1 double si c’est possible."
+
+#: src/adftool_r.cc:258
+msgid ""
+"Try and convert the term as a date. Return an empty list if the conversion "
+"failed, or a list with keys \"tv_sec\" and \"tv_nsec\" otherwise."
+msgstr ""
+"Essaye de convertir le terme en date. Retourne une liste vide en cas "
+"d’échec, ou une liste avec les clés « tv_sec » et « tv_nsec » sinon."
+
+#: src/adftool_r.cc:259
+msgid ""
+"Compare the term order with the other term. Return a negative number if the "
+"main term comes before the other term, a positive number if it comes after, "
+"and 0 if both terms are equal."
+msgstr ""
+"Compare l’ordre du terme avec le terme other. Retourne un nombre négatif si "
+"le terme principal vient avant le terme other, un nombre positif si il vient "
+"après, et 0 s’ils sont égaux."
+
+#: src/adftool_r.cc:260
+msgid ""
+"Try and parse the string as a N3 term. If successful, return a list with "
+"\"success\" set to TRUE and \"rest\" set to the suffix that has not been "
+"used by the parser. Otherwise, return a list with \"success\" set to FALSE."
+msgstr ""
+"Essaye de lire la chaîne comme terme N3. En cas de réussite, retourne une "
+"liste avec « success » valant TRUE et « rest » le suffixe qui n’a pas été "
+"lu. Sinon, retourne une liste où « success » vaut FALSE."
+
+#: src/adftool_r.cc:261
+msgid "Return as a string the N3 encoding of the term."
+msgstr "Retourne comme chaîne l’encodage N3 du terme."
+
 #: src/check_bplus.c:4190
 msgid "Libbplus test suite"
 msgstr "Suite de test libbplus"
@@ -1152,8 +1275,8 @@ msgstr "%s:%d: La méta pour le numéro %lu est %s, mais devrait être %s.\n"
 msgid "The test failed, keeping term_example.adf around.\n"
 msgstr "Le test a échoué, gardons term_exemple.adf.\n"
 
-#~ msgid "Set the object as a literal node."
-#~ msgstr "Assigne un littéral à l’objet."
+#~ msgid "Example function that returns 42."
+#~ msgstr "Fonction exemple qui retourne 42."
 
 #, c-format
 #~ msgid "The setup took %f seconds, and the requests %f.\n"

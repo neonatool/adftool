@@ -486,6 +486,254 @@ extern "C"
 
 # ifdef __cplusplus
 }
+
+#  include <string>
+#  include <vector>
+#  include <chrono>
+#  include <optional>
+
+/* *INDENT-OFF* */
+namespace adftool
+{
+  class term
+  {
+  private:
+    struct adftool_term *ptr;
+  public:
+    term ()
+    {
+      this->ptr = adftool_term_alloc ();
+      if (this->ptr == nullptr)
+	{
+	  std::bad_alloc error;
+	  throw error;
+	}
+    }
+    term (term &&v) noexcept: ptr (v.ptr)
+    {
+      v.ptr = nullptr;
+    }
+    term (const term &v)
+    {
+      this->ptr = adftool_term_alloc ();
+      if (this->ptr == nullptr)
+	{
+	  std::bad_alloc error;
+	  throw error;
+	}
+      this->copy (v);
+    }
+    ~term (void) noexcept
+    {
+      adftool_term_free (this->ptr);
+    }
+    term &operator= (term &v)
+    {
+      this->copy (v);
+      return *this;
+    }
+    term &operator= (term &&v) noexcept
+    {
+      adftool_term_free (this->ptr);
+      this->ptr = v.ptr;
+      v.ptr = nullptr;
+      return *this;
+    }
+    void copy (const struct adftool_term *other) noexcept
+    {
+      adftool_term_copy (this->ptr, other);
+    }
+    void copy (const term & other) noexcept
+    {
+      adftool_term_copy (this->ptr, other.ptr);
+    }
+    void set_blank (const std::string & id) noexcept
+    {
+      adftool_term_set_blank (this->ptr, id.c_str ());
+    }
+    void set_named (const std::string & id) noexcept
+    {
+      adftool_term_set_named (this->ptr, id.c_str ());
+    }
+    void set_string (const std::string & value) noexcept
+    {
+      adftool_term_set_literal (this->ptr, value.c_str (), nullptr, nullptr);
+    }
+    void set_typed_literal (const std::string & value,
+			    const std::string & type) noexcept
+    {
+      adftool_term_set_literal (this->ptr, value.c_str (), type.c_str (),
+				nullptr);
+    }
+    void set_langstring (const std::string & value,
+			 const std::string & langtag) noexcept
+    {
+      adftool_term_set_literal (this->ptr, value.c_str (), nullptr,
+				langtag.c_str ());
+    }
+    void set_integer (long value) noexcept
+    {
+      adftool_term_set_integer (this->ptr, value);
+    }
+    void set_double (double value) noexcept
+    {
+      adftool_term_set_double (this->ptr, value);
+    }
+    void set_date (std::chrono::time_point<std::chrono::high_resolution_clock> date) noexcept
+    {
+      using clock = std::chrono::high_resolution_clock;
+      using seconds = std::chrono::seconds;
+      using nanoseconds = std::chrono::nanoseconds;
+      const clock::duration since_epoch = date.time_since_epoch ();
+      const seconds date_seconds =
+	std::chrono::duration_cast<seconds> (since_epoch);
+      const clock::duration since_epoch_floor =
+	std::chrono::duration_cast<clock::duration> (date_seconds);
+      const clock::duration remaining = since_epoch - since_epoch_floor;
+      const nanoseconds date_nanoseconds =
+	std::chrono::duration_cast<nanoseconds> (remaining);
+      struct timespec c_date;
+      c_date.tv_sec = date_seconds.count ();
+      c_date.tv_nsec = date_nanoseconds.count ();
+      adftool_term_set_date (this->ptr, &c_date);
+    }
+    bool is_blank (void) const noexcept
+    {
+      return adftool_term_is_blank (this->ptr);
+    }
+    bool is_named (void) const noexcept
+    {
+      return adftool_term_is_named (this->ptr);
+    }
+    bool is_literal (void) const noexcept
+    {
+      return adftool_term_is_literal (this->ptr);
+    }
+    bool is_typed_literal (void) const noexcept
+    {
+      return adftool_term_is_typed_literal (this->ptr);
+    }
+    bool is_langstring (void) const noexcept
+    {
+      return adftool_term_is_langstring (this->ptr);
+    }
+    size_t value (size_t discard, std::string::iterator begin,
+		  std::string::iterator end) const noexcept
+    {
+      return adftool_term_value (this->ptr, discard, end - begin, &(*begin));
+    }
+    std::string value_alloc (void) const
+    {
+      std::string nothing;
+      size_t required = this->value (0, nothing.begin (), nothing.end ());
+      std::string ret;
+      ret.resize (required);
+      this->value (0, ret.begin (), ret.end ());
+      return ret;
+    }
+    size_t meta (size_t discard, std::string::iterator begin,
+		 std::string::iterator end) const noexcept
+    {
+      return adftool_term_meta (this->ptr, discard, end - begin, &(*begin));
+    }
+    std::string meta_alloc (void) const
+    {
+      std::string nothing;
+      size_t required = this->meta (0, nothing.begin (), nothing.end ());
+      std::string ret;
+      ret.resize (required);
+      this->meta (0, ret.begin (), ret.end ());
+      return ret;
+    }
+    bool as_mpz (mpz_t value) const
+    {
+      return (adftool_term_as_mpz (this->ptr, value) == 0);
+    }
+    std::optional<long> as_integer (void) const
+    {
+      long value;
+      if (adftool_term_as_integer (this->ptr, &value) == 0)
+	{
+	  std::optional<long> ret = value;
+	  return ret;
+	}
+      return std::nullopt;
+    }
+    bool as_mpf (mpf_t value) const
+    {
+      return (adftool_term_as_mpf (this->ptr, value) == 0);
+    }
+    std::optional<double> as_double (void) const
+    {
+      double value;
+      if (adftool_term_as_double (this->ptr, &value) == 0)
+	{
+	  std::optional<double> ret = value;
+	  return ret;
+	}
+      return std::nullopt;
+    }
+    std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> as_date (void) const
+    {
+      struct timespec value;
+      if (adftool_term_as_date (this->ptr, &value) == 0)
+	{
+	  using clock = std::chrono::high_resolution_clock;
+	  using seconds = std::chrono::seconds;
+	  using nanoseconds = std::chrono::nanoseconds;
+	  const auto seconds_since_epoch = seconds (value.tv_sec);
+	  const auto remaining = nanoseconds (value.tv_nsec);
+	  const auto since_epoch =
+	    std::chrono::duration_cast<clock::duration> (seconds_since_epoch)
+	    + std::chrono::duration_cast<clock::duration> (remaining);
+	  const std::chrono::time_point<clock> cxx_value =
+	    std::chrono::time_point<clock> (since_epoch);
+	  const std::optional<std::chrono::time_point<clock>> ret = cxx_value;
+	  return ret;
+	}
+      return std::nullopt;
+    }
+    int compare (const term & other) const
+    {
+      return adftool_term_compare (this->ptr, other.ptr);
+    }
+    std::pair<bool, std::string::const_iterator>
+      parse_n3 (const std::string::const_iterator & begin,
+		const std::string::const_iterator & end)
+    {
+      size_t consumed;
+      if (adftool_term_parse_n3 (&(*begin), end - begin, &consumed, this->ptr)
+	  == 0)
+	{
+	  return std::pair<bool, std::string::const_iterator> (true, begin + consumed);
+	}
+      return std::pair<bool, std::string::const_iterator> (false, begin);
+    }
+    size_t to_n3 (size_t discard, const std::string::iterator begin,
+		  const std::string::iterator end) const noexcept
+    {
+      return adftool_term_to_n3 (this->ptr, discard, end - begin, &(*begin));
+    }
+    std::string to_n3_alloc (void) const
+    {
+      std::string nothing;
+      size_t required = this->to_n3 (0, nothing.begin (), nothing.end ());
+      std::string ret;
+      ret.resize (required);
+      this->to_n3 (0, ret.begin (), ret.end ());
+      return ret;
+    }
+    const struct adftool_term *c_ptr (void) const
+    {
+      return this->ptr;
+    }
+    struct adftool_term *c_ptr (void)
+    {
+      return this->ptr;
+    }
+  };
+}
+/* *INDENT-ON* */
 # endif				/* __cplusplus */
 
 #endif				/* not H_ADFTOOL_INCLUDED */
