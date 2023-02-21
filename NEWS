@@ -1,6 +1,6 @@
 #+title: What’s new in adftool
 
-* Noteworthy changes in release ?.? (????-??-??) [?]
+* Noteworthy changes in release 0.5.1 (2023-02-21) [alpha]
 ** Fix windows compilation
 A couple of bugs have been fixed for windows, now the whole test suite
 should pass.

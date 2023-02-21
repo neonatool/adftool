@@ -171,8 +171,8 @@ adftool_file_get_data (struct adftool_file *file, size_t start, size_t max,
   if (max != 0)
     {
       /* See earlier in the function. It is forbidden to copy 0 bytes
-	 with memcpy, so we protect it. However, we already returned
-	 early if max == 0, because we need no copy at all. */
+         with memcpy, so we protect it. However, we already returned
+         early if max == 0, because we need no copy at all. */
       memcpy (bytes, all_bytes + start, max);
     }
   free (all_bytes);
