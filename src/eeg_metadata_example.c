@@ -74,7 +74,7 @@ of the second observation.\n"));
     second_observation.tv_nsec - first_observation.tv_nsec;
   if (time_between_observations.tv_nsec < 0)
     {
-      time_between_observations.tv_sec++;
+      time_between_observations.tv_sec--;
       time_between_observations.tv_nsec += 1 * 1000 * 1000 * 1000;
     }
   assert (time_between_observations.tv_sec == 0);
