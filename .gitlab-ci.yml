@@ -79,13 +79,14 @@ build_mingw:
     - cd build-mingw
     - ../adftool-*/configure CPPFLAGS="-I$PWD/../public/mingw64/include -I/export/mingw64/include" LDFLAGS="-L$PWD/../public/mingw64/lib -L/export/mingw64/lib" HDF5_CFLAGS=-I/export/mingw64/include 'HDF5_LIBS=-L/export/mingw64/lib -lhdf5' 'CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -Wall -Wextra' --enable-relocatable --host=x86_64-w64-mingw32 --prefix=/mingw64 --disable-python
     - make -j
-    - make -j DESTDIR=$PWD/../public install
-    - cp /export/mingw64/bin/*.dll $PWD/../public/mingw64/bin
+    - mkdir -p $PWD/../public/mingw64/bin/ $PWD/../public/mingw64/include/ $PWD/../public/mingw64/lib/
+    - cp /export/mingw64/bin/*.dll $PWD/../public/mingw64/bin/
     - cp -R /export/mingw64/include/* $PWD/../public/mingw64/include/
     - cp -R /export/mingw64/lib/* $PWD/../public/mingw64/lib/
     - cp /export/mingw64/bin/*.dll .
+    - make -j DESTDIR=$PWD/../public install
     - cp ../public/mingw64/bin/*.dll .
-    - make -j check 'LOG_COMPILER = ./libtool --mode=execute wine' 'XFAIL_TESTS = src/term_manipulation_example.exe'
+    - make -j check 'LOG_COMPILER = ./libtool --mode=execute wine'
     - LANG=fr_FR.UTF-8 wine ../public/mingw64/bin/adftool --aidez-moi
   artifacts:
     when: always
