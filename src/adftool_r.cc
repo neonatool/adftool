@@ -388,9 +388,177 @@ namespace adftool_r
   };
 }
 
+namespace adftool_r
+{
+  class file
+  {
+  private:
+    adftool::file t;
+  public:
+    file (std::string filename, bool writeable): t (filename, writeable)
+    {
+    }
+    file (const std::vector<uint8_t> & data): t (data)
+    {
+    }
+    file (file && v) noexcept: t (std::move (v.t))
+    {
+    }
+    void close (void)
+    {
+      t.close ();
+    }
+    file & operator= (file && v) noexcept
+    {
+      t = std::move (v.t);
+      return *this;
+    }
+    std::vector<uint8_t> get_data (void) const
+    {
+      return t.get_data ();
+    }
+    Rcpp::List lookup (const statement &pattern) const
+    {
+      std::optional<std::vector<adftool::statement>> cxx_opt_results = t.lookup (pattern.cxx_data ());
+      if (cxx_opt_results.has_value ())
+	{
+	  std::vector<adftool::statement> cxx_results = cxx_opt_results.value ();
+	  Rcpp::List ret = Rcpp::List (cxx_results.size ());
+	  for (size_t i = 0; i < cxx_results.size (); i++)
+	    {
+	      adftool_r::statement rcpp_result = std::move (cxx_results[i]);
+	      ret[i] = Rcpp::wrap (rcpp_result);
+	    }
+	  return ret;
+	}
+      else
+	{
+	  return Rcpp::List ();
+	}
+    }
+    Rcpp::List lookup_objects (const term &subject, const std::string &predicate) const
+    {
+      std::vector<adftool::term> cxx_results = t.lookup_objects (subject.cxx_value (), predicate);
+      Rcpp::List ret = Rcpp::List (cxx_results.size ());
+      for (size_t i = 0; i < cxx_results.size (); i++)
+	{
+	  adftool_r::term rcpp_term = std::move (cxx_results[i]);
+	  ret[i] = Rcpp::wrap (rcpp_term);
+	}
+      return ret;
+    }
+    Rcpp::List lookup_subjects (const term &object, const std::string &predicate) const
+    {
+      std::vector<adftool::term> cxx_results = t.lookup_subjects (object.cxx_value (), predicate);
+      Rcpp::List ret = Rcpp::List (cxx_results.size ());
+      for (size_t i = 0; i < cxx_results.size (); i++)
+	{
+	  adftool_r::term rcpp_term = std::move (cxx_results[i]);
+	  ret[i] = Rcpp::wrap (rcpp_term);
+	}
+      return ret;
+    }
+    std::vector<long> lookup_integer (const term &subject, std::string predicate) const
+    {
+      return t.lookup_integer (subject.cxx_value (), predicate);
+    }
+    std::vector<double> lookup_double (const term &subject, std::string predicate) const
+    {
+      return t.lookup_double (subject.cxx_value (), predicate);
+    }
+    Rcpp::DatetimeVector lookup_date (const term &subject, std::string predicate) const
+    {
+      using clock = std::chrono::high_resolution_clock;
+      using seconds = std::chrono::seconds;
+      using nanoseconds = std::chrono::nanoseconds;
+      const std::vector<std::chrono::time_point<clock>> date_values =
+	t.lookup_date (subject.cxx_value (), predicate);
+      Rcpp::DatetimeVector ret = Rcpp::DatetimeVector (date_values.size ());
+      for (size_t i = 0; i < date_values.size (); i++)
+	{
+	  const std::chrono::time_point<clock> date_value = date_values[i];
+	  const clock::duration since_epoch = date_value.time_since_epoch ();
+	  const seconds date_seconds =
+	    std::chrono::duration_cast<seconds> (since_epoch);
+	  const clock::duration since_epoch_floor =
+	    std::chrono::duration_cast<clock::duration> (date_seconds);
+	  const clock::duration remaining = since_epoch - since_epoch_floor;
+	  const nanoseconds date_nanoseconds =
+	    std::chrono::duration_cast<nanoseconds> (remaining);
+	  const Rcpp::Datetime rough = Rcpp::Datetime (date_seconds.count ());
+	  const Rcpp::Datetime fine =
+	    rough + Rcpp::Datetime (date_nanoseconds.count () * 1e-9);
+	  ret[i] = fine;
+	}
+      return ret;
+    }
+    Rcpp::List lookup_string (const term &subject, std::string predicate) const
+    {
+      std::vector<std::pair<std::string, std::optional<std::string>>> records =
+	t.lookup_string (subject.cxx_value (), predicate);
+      Rcpp::List ret;
+      for (auto i = records.begin (); i != records.end (); i++)
+	{
+	  std::string langtag = "";
+	  if (i->second.has_value ())
+	    {
+	      langtag = i->second.value ();
+	    }
+	  Rcpp::StringVector others = Rcpp::StringVector ();
+	  if (ret.containsElementNamed (langtag.c_str ()))
+	    {
+	      others = ret[langtag];
+	    }
+	  others.push_back (i->first);
+	}
+      return ret;
+    }
+    Rcpp::LogicalVector delete_statement (const statement &pattern, uint64_t deletion_date)
+    {
+      Rcpp::LogicalVector ret = Rcpp::LogicalVector (1);
+      ret[0] = t.delete_statement (pattern.cxx_data (), deletion_date);
+      return ret;
+    }
+    Rcpp::LogicalVector insert_statement (const statement &statement)
+    {
+      Rcpp::LogicalVector ret = Rcpp::LogicalVector (1);
+      ret[0] = t.insert_statement (statement.cxx_data ());
+      return ret;
+    }
+    Rcpp::LogicalVector set_eeg_data (size_t n, size_t p, std::vector<double> data)
+    {
+      Rcpp::LogicalVector ret = Rcpp::LogicalVector (1);
+      ret[0] = t.set_eeg_data (n, p, data);
+      return ret;
+    }
+    Rcpp::List get_eeg_data (size_t start, size_t length, size_t channel) const
+    {
+      Rcpp::List ret = Rcpp::List ();
+      const std::string n_key = "n";
+      const std::string p_key = "p";
+      const std::string data_key = "data";
+      const auto data = t.get_eeg_data (start, length, channel);
+      if (data.has_value ())
+	{
+	  ret[n_key] = std::get<0> (data.value ());
+	  ret[p_key] = std::get<1> (data.value ());
+	  std::vector<double> values = std::get<2> (data.value ());
+	  Rcpp::NumericVector r_values = Rcpp::NumericVector (values.size ());
+	  for (auto i = values.begin (); i != values.end (); i++)
+	    {
+	      r_values[i - values.begin ()] = *i;
+	    }
+	  ret[data_key] = r_values;
+	}
+      return ret;
+    }
+  };
+}
+
 RCPP_EXPOSED_CLASS (adftool_r::term)
 RCPP_EXPOSED_CLASS (adftool_r::statement)
 RCPP_EXPOSED_CLASS (adftool_r::fir)
+RCPP_EXPOSED_CLASS (adftool_r::file)
 
 extern "C" LIBADFTOOL_R_DLL_EXPORTED SEXP
 _rcpp_module_boot_adftool ()
@@ -438,6 +606,23 @@ _rcpp_module_boot_adftool ()
     .constructor<double, double, double, double, double> (_("Construct a band-pass filter, acting on a signal of the given sampling frequency, and letting through frequencies from low to high, by specifying the low and high transition bandwidths."))
     .method ("coefficients", &adftool_r::fir::coefficients, _("Return the coefficients of the filter."))
     .method ("apply", &adftool_r::fir::apply, _("Apply the filter on new data."));
+
+  Rcpp::class_<adftool_r::file> ("file")
+    .constructor<std::string, bool> (_("Open a file on disk."))
+    .constructor<std::vector<uint8_t>> (_("Open an anonymous file on disk with initial data."))
+    .method ("close", &adftool_r::file::close, _("Close the file early."))
+    .method ("get_data", &adftool_r::file::get_data, _("Return the file contents as bytes."))
+    .method ("lookup", &adftool_r::file::lookup, _("Search for a pattern in file, return all the matches."))
+    .method ("lookup_objects", &adftool_r::file::lookup_objects, _("Search for all objects in the file that are related to the subject by predicate, return all the matches."))
+    .method ("lookup_subjects", &adftool_r::file::lookup_subjects, _("Search for all subjects in the file that are related to the objects by predicate, return all the matches."))
+    .method ("lookup_integer", &adftool_r::file::lookup_integer, _("Return all the integer properties of the subject in file for the predicate."))
+    .method ("lookup_double", &adftool_r::file::lookup_double, _("Return all the numeric properties of the subject in file for the predicate."))
+    .method ("lookup_date", &adftool_r::file::lookup_date, _("Return all the date properties of the subject in file for the predicate."))
+    .method ("lookup_string", &adftool_r::file::lookup_string, _("Return all the possibly lang-tagged property values of the subject in file for the predicate. Return them as a list of string vectors, named by the langtags. The non-tagged strings have an empty name."))
+    .method ("delete", &adftool_r::file::delete_statement, _("Try and delete all statements that match a pattern in file. Return wether it succeeded."))
+    .method ("insert", &adftool_r::file::insert_statement, _("Try and insert a new statement in file. Return wether it succeeded."))
+    .method ("set_eeg_data", &adftool_r::file::set_eeg_data, _("Try and set all the EEG data at once. Return wether it succeeded. The data must be row-oriented."))
+    .method ("get_eeg_data", &adftool_r::file::get_eeg_data, _("Read a temporal slice of a channel. If the request is larger than what is available, fill the rest with NAN values. The return value is a list, with key n bound to the number of time points available, p bound to the total number of channels, and data bound to the requested data."));
   /* Rcpp stuff: */
   Rcpp::XPtr<Rcpp::Module> mod_xp (&adftool, false);
   ::setCurrentScope (0);

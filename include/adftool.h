@@ -495,8 +495,11 @@ extern "C"
 #  include <vector>
 #  include <chrono>
 #  include <optional>
+#  include <algorithm>
 #  include <tuple>
 #  include <cassert>
+#  include <cfloat>
+#  include <cmath>
 
 /* *INDENT-OFF* */
 namespace adftool
@@ -976,6 +979,468 @@ namespace adftool
       output.resize (input.size ());
       this->apply (input, output);
       return output;
+    }
+  };
+
+  class file
+  {
+  private:
+    struct adftool_file *ptr;
+  public:
+    file (std::string filename, bool write)
+    {
+      this->ptr = adftool_file_open (filename.c_str (), write ? 1 : 0);
+      if (this->ptr == nullptr)
+	{
+	  std::bad_alloc error;
+	  throw error;
+	}
+    }
+    file (const std::vector<uint8_t> &initial_data)
+    {
+      this->ptr = adftool_file_open_data (initial_data.size (), initial_data.data ());
+      if (this->ptr == nullptr)
+	{
+	  std::bad_alloc error;
+	  throw error;
+	}
+    }
+    file (file && v) noexcept: ptr (v.ptr)
+    {
+      v.ptr = nullptr;
+    }
+    ~file (void) noexcept
+    {
+      this->close ();
+    }
+    file & operator= (file && v) noexcept
+    {
+      adftool_file_close (this->ptr);
+      this->ptr = v.ptr;
+      v.ptr = nullptr;
+      return *this;
+    }
+    void close (void) noexcept
+    {
+      adftool_file_close (this->ptr);
+      this->ptr = nullptr;
+    }
+    size_t get_data (size_t start, std::vector<uint8_t>::iterator begin, std::vector<uint8_t>::iterator end) const noexcept
+    {
+      return adftool_file_get_data (this->ptr, start, end - begin, & (*begin));
+    }
+    std::vector<uint8_t> get_data_guess_size (size_t start, size_t guess_size) const
+    {
+      std::vector<uint8_t> v = std::vector<uint8_t> (guess_size);
+      const size_t required = this->get_data (start, v.begin (), v.end ());
+      if (required > start + v.size ())
+	{
+	  return this->get_data_guess_size (start, required - start);
+	}
+      else
+	{
+	  if (required <= start)
+	    {
+	      v.resize (0);
+	    }
+	  else
+	    {
+	      v.resize (required - start);
+	    }
+	  return v;
+	}
+    }
+    // Expect the file to be less than 32 kb.
+    static constexpr size_t typical_file_size = 32768;
+    std::vector<uint8_t> get_data (size_t start) const
+    {
+      return this->get_data_guess_size (start, typical_file_size);
+    }
+    std::vector<uint8_t> get_data (void) const
+    {
+      return this->get_data_guess_size (0, typical_file_size);
+    }
+    bool lookup_noalloc (const adftool::statement &pattern, size_t start, std::vector<adftool::statement>::iterator begin, std::vector<adftool::statement>::iterator end, size_t &n_results) const noexcept
+    {
+      struct adftool_statement **result_pointers =
+	(struct adftool_statement **) malloc ((end - begin) * sizeof (struct adftool_statement *));
+      if (result_pointers == NULL)
+	{
+	  /* That’s hopeless. */
+	  abort ();
+	}
+      for (auto i = begin; i != end; i++)
+	{
+	  result_pointers[i - begin] = i->c_ptr ();
+	}
+      int c_error = adftool_lookup (this->ptr, pattern.c_ptr (), start, end - begin, &n_results, result_pointers);
+      free (result_pointers);
+      return (c_error == 0);
+    }
+    std::optional<std::vector<adftool::statement>> lookup_guess_size (const adftool::statement &pattern, size_t start, size_t guess_size) const
+    {
+      size_t n_total;
+      std::vector<adftool::statement> results =
+	std::vector<adftool::statement> (guess_size);
+      if (this->lookup_noalloc (pattern, start, results.begin (), results.end (), n_total))
+	{
+	  /* Success. */
+	  if (n_total > start + guess_size)
+	    {
+	      /* Not enough room, guess better. */
+	      return this->lookup_guess_size (pattern, start, n_total - start);
+	    }
+	  else
+	    {
+	      /* n_total <= start + guess_size */
+	      if (n_total <= start)
+		{
+		  results.resize (0);
+		}
+	      else
+		{
+		  results.resize (n_total - start);
+		}
+	      std::optional<std::vector<adftool::statement>> ret =
+		std::optional<std::vector<adftool::statement>> (std::move (results));
+	      return ret;
+	    }
+	}
+      return std::nullopt;
+    }
+    static constexpr size_t typical_lookup_results = 16;
+    std::optional<std::vector<adftool::statement>> lookup (const adftool::statement &pattern, size_t start) const
+    {
+      return this->lookup_guess_size (pattern, start, typical_lookup_results);
+    }
+    std::optional<std::vector<adftool::statement>> lookup (const adftool::statement &pattern) const
+    {
+      return this->lookup_guess_size (pattern, 0, typical_lookup_results);
+    }
+    size_t lookup_objects_noalloc (const adftool::term &subject, const std::string &predicate, size_t start, std::vector<adftool::term>::iterator begin, std::vector<adftool::term>::iterator end) const noexcept
+    {
+      struct adftool_term **result_pointers =
+	(struct adftool_term **) malloc ((end - begin) * sizeof (struct adftool_term *));
+      if (result_pointers == NULL)
+	{
+	  /* That’s hopeless. */
+	  abort ();
+	}
+      for (auto i = begin; i != end; i++)
+	{
+	  result_pointers[i - begin] = i->c_ptr ();
+	}
+      size_t n_results = adftool_lookup_objects (this->ptr, subject.c_ptr (), predicate.c_str (), start, end - begin, result_pointers);
+      free (result_pointers);
+      return n_results;
+    }
+    std::vector<adftool::term> lookup_objects_guess_size (const adftool::term &subject, const std::string &predicate, size_t start, size_t guess_size) const
+    {
+      std::vector<adftool::term> results =
+	std::vector<adftool::term> (guess_size);
+      size_t n_total = this->lookup_objects_noalloc (subject, predicate, start, results.begin (), results.end ());
+      if (n_total > start + guess_size)
+	{
+	  /* Not enough room, guess better. */
+	  return this->lookup_objects_guess_size (subject, predicate, start, n_total - start);
+	}
+      else
+	{
+	  /* n_total <= start + guess_size */
+	  if (n_total <= start)
+	    {
+	      results.resize (0);
+	    }
+	  else
+	    {
+	      results.resize (n_total - start);
+	    }
+	  return results;
+	}
+    }
+    static constexpr size_t typical_lookup_object_results = 4;
+    std::vector<adftool::term> lookup_objects (const adftool::term &subject, const std::string &predicate, size_t start) const
+    {
+      return this->lookup_objects_guess_size (subject, predicate, start, typical_lookup_object_results);
+    }
+    std::vector<adftool::term> lookup_objects (const adftool::term &subject, const std::string &predicate) const
+    {
+      return this->lookup_objects_guess_size (subject, predicate, 0, typical_lookup_object_results);
+    }
+    size_t lookup_subjects_noalloc (const adftool::term &object, const std::string &predicate, size_t start, std::vector<adftool::term>::iterator begin, std::vector<adftool::term>::iterator end) const noexcept
+    {
+      struct adftool_term **result_pointers =
+	(struct adftool_term **) malloc ((end - begin) * sizeof (struct adftool_term *));
+      if (result_pointers == NULL)
+	{
+	  /* That’s hopeless. */
+	  abort ();
+	}
+      for (auto i = begin; i != end; i++)
+	{
+	  result_pointers[i - begin] = i->c_ptr ();
+	}
+      size_t n_results = adftool_lookup_subjects (this->ptr, object.c_ptr (), predicate.c_str (), start, end - begin, result_pointers);
+      free (result_pointers);
+      return n_results;
+    }
+    std::vector<adftool::term> lookup_subjects_guess_size (const adftool::term &object, const std::string &predicate, size_t start, size_t guess_size) const
+    {
+      std::vector<adftool::term> results =
+	std::vector<adftool::term> (guess_size);
+      size_t n_total = this->lookup_subjects_noalloc (object, predicate, start, results.begin (), results.end ());
+      if (n_total > start + guess_size)
+	{
+	  /* Not enough room, guess better. */
+	  return this->lookup_subjects_guess_size (object, predicate, start, n_total - start);
+	}
+      else
+	{
+	  /* n_total <= start + guess_size */
+	  if (n_total <= start)
+	    {
+	      results.resize (0);
+	    }
+	  else
+	    {
+	      results.resize (n_total - start);
+	    }
+	  return results;
+	}
+    }
+    static constexpr size_t typical_lookup_subject_results = 4;
+    std::vector<adftool::term> lookup_subjects (const adftool::term &object, const std::string &predicate, size_t start) const
+    {
+      return this->lookup_subjects_guess_size (object, predicate, start, typical_lookup_object_results);
+    }
+    std::vector<adftool::term> lookup_subjects (const adftool::term &object, const std::string &predicate) const
+    {
+      return this->lookup_subjects_guess_size (object, predicate, 0, typical_lookup_object_results);
+    }
+    size_t lookup_integer_noalloc (const adftool::term &subject, const std::string &predicate, size_t start, std::vector<long>::iterator begin, std::vector<long>::iterator end) const noexcept
+    {
+      return adftool_lookup_integer (this->ptr, subject.c_ptr (), predicate.c_str (), start, end - begin, & (*begin));
+    }
+    std::vector<long> lookup_integer_guess_size (const adftool::term &subject, const std::string &predicate, size_t start, size_t guess_size) const
+    {
+      std::vector<long> results = std::vector<long> (guess_size);
+      size_t n_total = this->lookup_integer_noalloc (subject, predicate, start, results.begin (), results.end ());
+      if (n_total > start + guess_size)
+	{
+	  /* Not enough room, guess better. */
+	  return this->lookup_integer_guess_size (subject, predicate, start, n_total - start);
+	}
+      else
+	{
+	  /* n_total <= start + guess_size */
+	  if (n_total <= start)
+	    {
+	      results.resize (0);
+	    }
+	  else
+	      results.resize (n_total - start);
+	    }
+	  return results;
+	}
+    static constexpr size_t typical_typed_integers = 1;
+    std::vector<long> lookup_integer (const adftool::term &subject, const std::string &predicate, size_t start) const
+    {
+      return this->lookup_integer_guess_size (subject, predicate, start, typical_typed_integers);
+    }
+    std::vector<long> lookup_integer (const adftool::term &subject, const std::string &predicate) const
+    {
+      return this->lookup_integer_guess_size (subject, predicate, 0, typical_typed_integers);
+    }
+    size_t lookup_double_noalloc (const adftool::term &subject, const std::string &predicate, size_t start, std::vector<double>::iterator begin, std::vector<double>::iterator end) const noexcept
+    {
+      return adftool_lookup_double (this->ptr, subject.c_ptr (), predicate.c_str (), start, end - begin, & (*begin));
+    }
+    std::vector<double> lookup_double_guess_size (const adftool::term &subject, const std::string &predicate, size_t start, size_t guess_size) const
+    {
+      std::vector<double> results = std::vector<double> (guess_size);
+      size_t n_total = this->lookup_double_noalloc (subject, predicate, start, results.begin (), results.end ());
+      if (n_total > start + guess_size)
+	{
+	  /* Not enough room, guess better. */
+	  return this->lookup_double_guess_size (subject, predicate, start, n_total - start);
+	}
+      else
+	{
+	  /* n_total <= start + guess_size */
+	  if (n_total <= start)
+	    {
+	      results.resize (0);
+	    }
+	  else
+	      results.resize (n_total - start);
+	    }
+	  return results;
+	}
+    static constexpr size_t typical_typed_doubles = 1;
+    std::vector<double> lookup_double (const adftool::term &subject, const std::string &predicate, size_t start) const
+    {
+      return this->lookup_double_guess_size (subject, predicate, start, typical_typed_doubles);
+    }
+    std::vector<double> lookup_double (const adftool::term &subject, const std::string &predicate) const
+    {
+      return this->lookup_double_guess_size (subject, predicate, 0, typical_typed_doubles);
+    }
+    size_t lookup_date_noalloc (const adftool::term &subject, const std::string &predicate, size_t start, std::vector<std::chrono::time_point<std::chrono::high_resolution_clock>>::iterator begin, std::vector<std::chrono::time_point<std::chrono::high_resolution_clock>>::iterator end) const noexcept
+    {
+      struct timespec *before_conversion = (struct timespec *) malloc ((end - begin) * sizeof (struct timespec));
+      struct timespec **pointers = (struct timespec **) malloc ((end - begin) * sizeof (struct timespec *));
+      if (before_conversion == NULL || pointers == NULL)
+	{
+	  /* So you’re telling me you could allocate begin - end time
+	     points, but I can’t allocate begin - end timespecs and
+	     their pointers? I consider it rare enough to be worth an
+	     abort. */
+	  abort ();
+	}
+      for (size_t i = 0; i < end - begin; i++)
+	{
+	  pointers[i] = & (before_conversion[i]);
+	}
+      size_t n_total = adftool_lookup_date (this->ptr, subject.c_ptr (), predicate.c_str (), start, end - begin, pointers);
+      for (size_t i = 0; i < begin - end && i + start < n_total; i++)
+	{
+	  using clock = std::chrono::high_resolution_clock;
+	  using seconds = std::chrono::seconds;
+	  using nanoseconds = std::chrono::nanoseconds;
+	  const auto seconds_since_epoch = seconds (before_conversion[i].tv_sec);
+	  const auto remaining = nanoseconds (before_conversion[i].tv_nsec);
+	  const auto since_epoch =
+	    std::chrono::duration_cast<clock::duration> (seconds_since_epoch)
+	    + std::chrono::duration_cast<clock::duration> (remaining);
+	  *(begin + i) = std::chrono::time_point<clock> (since_epoch);
+	}
+      free (pointers);
+      free (before_conversion);
+      return n_total;
+    }
+    std::vector<std::chrono::time_point<std::chrono::high_resolution_clock>> lookup_date_guess_size (const adftool::term &subject, const std::string &predicate, size_t start, size_t guess_size) const
+    {
+      std::vector<std::chrono::time_point<std::chrono::high_resolution_clock>> results =
+	std::vector<std::chrono::time_point<std::chrono::high_resolution_clock>> (guess_size);
+      size_t n_total = this->lookup_date_noalloc (subject, predicate, start, results.begin (), results.end ());
+      if (n_total > start + guess_size)
+	{
+	  return this->lookup_date_guess_size (subject, predicate, start, n_total - start);
+	}
+      else
+	{
+	  /* n_total <= start + guess_size */
+	  if (n_total <= start)
+	    {
+	      results.resize (0);
+	    }
+	  else
+	    {
+	      results.resize (n_total - start);
+	    }
+	  return results;
+	}
+    }
+    static constexpr size_t typical_typed_dates = 1;
+    std::vector<std::chrono::time_point<std::chrono::high_resolution_clock>> lookup_date (const adftool::term &subject, const std::string &predicate, size_t start) const
+    {
+      return this->lookup_date_guess_size (subject, predicate, start, typical_typed_dates);
+    }
+    std::vector<std::chrono::time_point<std::chrono::high_resolution_clock>> lookup_date (const adftool::term &subject, const std::string &predicate) const
+    {
+      return this->lookup_date_guess_size (subject, predicate, 0, typical_typed_dates);
+    }
+    std::vector<std::pair<std::string, std::optional<std::string>>> lookup_string_guess_size (const adftool::term &subject, const std::string &predicate, size_t start, size_t guess_storage_size, size_t guess_entries) const
+    {
+      std::vector<char> storage;
+      storage.resize (guess_storage_size);
+      std::vector<char *> langtags, objects;
+      std::vector<size_t> langtag_length, object_length;
+      langtags.resize (guess_entries);
+      objects.resize (guess_entries);
+      langtag_length.resize (guess_entries);
+      object_length.resize (guess_entries);
+      size_t storage_required;
+      size_t n_total = adftool_lookup_string (this->ptr, subject.c_ptr (), predicate.c_str (), &storage_required, guess_storage_size, storage.data (), start, guess_entries, langtag_length.data (), langtags.data (), object_length.data (), objects.data ());
+      if (storage_required > guess_storage_size)
+	{
+	  return this->lookup_string_guess_size (subject, predicate, start, 2 * guess_storage_size, guess_entries);
+	}
+      if (n_total > start + guess_entries)
+	{
+	  return this->lookup_string_guess_size (subject, predicate, start, guess_storage_size, n_total - start);
+	}
+      else
+	{
+	  std::vector<std::pair<std::string, std::optional<std::string>>> ret;
+	  if (n_total <= start)
+	    {
+	      langtag_length.resize (0);
+	      object_length.resize (0);
+	      langtags.resize (0);
+	      objects.resize (0);
+	    }
+	  else
+	    {
+	      langtag_length.resize (n_total - start);
+	      object_length.resize (n_total - start);
+	      langtags.resize (n_total - start);
+	      objects.resize (n_total - start);
+	    }
+	  ret.resize (objects.size ());
+	  for (size_t i = 0; i < objects.size (); i++)
+	    {
+	      ret[i].first = std::string (objects[i], object_length[i]);
+	      if (langtags[i] != nullptr)
+		{
+		  ret[i].second = std::string (langtags[i], langtag_length[i]);
+		}
+	    }
+	  return ret;
+	}
+    }
+    static constexpr size_t typical_typed_string_storage = 4096;
+    static constexpr size_t typical_typed_strings = 4;
+    std::vector<std::pair<std::string, std::optional<std::string>>> lookup_string (const adftool::term &subject, const std::string &predicate, size_t start) const
+    {
+      return this->lookup_string_guess_size (subject, predicate, start, typical_typed_string_storage, typical_typed_strings);
+    }
+    std::vector<std::pair<std::string, std::optional<std::string>>> lookup_string (const adftool::term &subject, const std::string &predicate) const
+    {
+      return this->lookup_string_guess_size (subject, predicate, 0, typical_typed_string_storage, typical_typed_strings);
+    }
+    bool delete_statement (const adftool::statement &pattern, uint64_t deletion_date) noexcept
+    {
+      int error = adftool_delete (this->ptr, pattern.c_ptr (), deletion_date);
+      return (error == 0);
+    }
+    bool insert_statement (const adftool::statement &statement) noexcept
+    {
+      int error = adftool_insert (this->ptr, statement.c_ptr ());
+      return (error == 0);
+    }
+    bool set_eeg_data (size_t n_times, size_t n_channels, const std::vector<double> &data) noexcept
+    {
+      assert (data.size () >= n_times * n_channels);
+      int c_error = adftool_eeg_set_data (this->ptr, n_times, n_channels, data.data ());
+      return (c_error == 0);
+    }
+    /* It’s hard to return a matrix, we just need 1 channel anyway. */
+    std::optional<std::tuple<size_t, size_t, std::vector<double>>> get_eeg_data (size_t time_start, size_t n_times, size_t channel) const
+    {
+      size_t time_max, channel_max;
+      std::vector<double> output;
+      output.resize (n_times);
+      std::fill (output.begin (), output.end (), NAN);
+      int c_error = adftool_eeg_get_data (this->ptr, time_start, n_times, &time_max, channel, 1, &channel_max, output.data ());
+      if (c_error == 0)
+	{
+	  return std::tuple<size_t, size_t, std::vector<double>> (time_max, channel_max, output);
+	}
+      else
+	{
+	  return std::nullopt;
+	}
     }
   };
 }
