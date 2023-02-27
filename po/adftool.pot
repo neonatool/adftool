@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.5.1.4-9637\n"
+"Project-Id-Version: adftool 0.5.1.5-2a84\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-02-27 13:21+0100\n"
+"POT-Creation-Date: 2023-03-02 09:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -825,112 +825,150 @@ msgstr ""
 msgid "The term is not in N3."
 msgstr ""
 
-#: src/adftool_r.cc:239
+#: src/adftool_r.cc:371
 msgid "Construct a new, empty term."
 msgstr ""
 
-#: src/adftool_r.cc:240
+#: src/adftool_r.cc:372
 msgid "Copy the other term."
 msgstr ""
 
-#: src/adftool_r.cc:241
+#: src/adftool_r.cc:373
 msgid "Initialize the term as a blank term."
 msgstr ""
 
-#: src/adftool_r.cc:242
+#: src/adftool_r.cc:374
 msgid "Initialize the term as an IRIREF term."
 msgstr ""
 
-#: src/adftool_r.cc:243
+#: src/adftool_r.cc:375
 msgid "Initialize the term as a literal untagged string."
 msgstr ""
 
-#: src/adftool_r.cc:244
+#: src/adftool_r.cc:376
 msgid "Initialize the term as a typed literal string."
 msgstr ""
 
-#: src/adftool_r.cc:245
+#: src/adftool_r.cc:377
 msgid "Initialize the term as a lang-tagged string."
 msgstr ""
 
-#: src/adftool_r.cc:246
+#: src/adftool_r.cc:378
 msgid "Initialize the term as a literal integer."
 msgstr ""
 
-#: src/adftool_r.cc:247
+#: src/adftool_r.cc:379
 msgid "Initialize the term as a literal double."
 msgstr ""
 
-#: src/adftool_r.cc:248
+#: src/adftool_r.cc:380
 msgid ""
 "Initialize the term as a literal date with the number of seconds since the "
 "epoch, and the number of nanoseconds."
 msgstr ""
 
-#: src/adftool_r.cc:249
+#: src/adftool_r.cc:381
 msgid "Check whether the term is a blank node."
 msgstr ""
 
-#: src/adftool_r.cc:250
+#: src/adftool_r.cc:382
 msgid "Check whether the term is a named node."
 msgstr ""
 
-#: src/adftool_r.cc:251
+#: src/adftool_r.cc:383
 msgid "Check whether the term is a literal node."
 msgstr ""
 
-#: src/adftool_r.cc:252
+#: src/adftool_r.cc:384
 msgid ""
 "Check whether the term is a literal node with a type (as opposed to a "
 "langtag)."
 msgstr ""
 
-#: src/adftool_r.cc:253
+#: src/adftool_r.cc:385
 msgid "Check whether the term is a literal node with a language tag."
 msgstr ""
 
-#: src/adftool_r.cc:254
+#: src/adftool_r.cc:386
 msgid "Return the value of the term."
 msgstr ""
 
-#: src/adftool_r.cc:255
+#: src/adftool_r.cc:387
 msgid "Return the type or langtag."
 msgstr ""
 
-#: src/adftool_r.cc:256
+#: src/adftool_r.cc:388
 msgid ""
 "Try and convert the term as an integer. Return a 0-length array if it cannot "
 "be converted, or a 1-integer-long array if it can."
 msgstr ""
 
-#: src/adftool_r.cc:257
+#: src/adftool_r.cc:389
 msgid ""
 "Try and convert the term as a double. Return a 0-length array if it cannot "
 "be converted, or a 1-double-long array if it can."
 msgstr ""
 
-#: src/adftool_r.cc:258
+#: src/adftool_r.cc:390
 msgid ""
 "Try and convert the term as a date. Return an empty list if the conversion "
 "failed, or a list with keys \"tv_sec\" and \"tv_nsec\" otherwise."
 msgstr ""
 
-#: src/adftool_r.cc:259
+#: src/adftool_r.cc:391
 msgid ""
 "Compare the term order with the other term. Return a negative number if the "
 "main term comes before the other term, a positive number if it comes after, "
 "and 0 if both terms are equal."
 msgstr ""
 
-#: src/adftool_r.cc:260
+#: src/adftool_r.cc:392
 msgid ""
 "Try and parse the string as a N3 term. If successful, return a list with "
 "\"success\" set to TRUE and \"rest\" set to the suffix that has not been "
 "used by the parser. Otherwise, return a list with \"success\" set to FALSE."
 msgstr ""
 
-#: src/adftool_r.cc:261
+#: src/adftool_r.cc:393
 msgid "Return as a string the N3 encoding of the term."
+msgstr ""
+
+#: src/adftool_r.cc:396
+msgid "Construct a new, empty pattern."
+msgstr ""
+
+#: src/adftool_r.cc:397
+msgid "Copy the other pattern."
+msgstr ""
+
+#: src/adftool_r.cc:398
+msgid ""
+"Initialize parts of the pattern from the argument, a list. For each of the "
+"keys, subject, predicate, object and graph, if the list has a value, set the "
+"corresponding term. The value can be FALSE to unset the term, or a valid "
+"term object to replace it. If the list has a value for the deletion_date "
+"key, then also set the deletion date. If the deletion date is FALSE, then "
+"undelete the statement. Otherwise, set its deletion date."
+msgstr ""
+
+#: src/adftool_r.cc:399
+msgid "Return all the terms as a named vector."
+msgstr ""
+
+#: src/adftool_r.cc:400
+msgid ""
+"Return the deletion date as numeric vector. If there is no deletion date, "
+"return an empty numeric vector."
+msgstr ""
+
+#: src/adftool_r.cc:401
+msgid ""
+"Compare the pattern order with the other pattern. Return a negative number "
+"if the main pattern comes before the other pattern, a positive number if it "
+"comes after, and 0 if both patterns overlap. The order is a lexicographic "
+"order, but the order of the terms to compare can be parametrized. For "
+"instance, \"GSPO\" compares the graphs, then subjects, then predicates, then "
+"objects."
 msgstr ""
 
 #: src/check_bplus.c:4190

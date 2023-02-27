@@ -174,6 +174,10 @@ extern "C"
 				struct adftool_term **graph,
 				const uint64_t * deletion_date);
 
+  /* WARNING: subject, predicate, object and graph are output
+     parameters. They should be declared const, because you’re not
+     supposed to touch them, bust const + double pointers are not
+     great. */
   extern LIBADFTOOL_API
     void adftool_statement_get (const struct adftool_statement *statement,
 				struct adftool_term **subject,
@@ -491,6 +495,7 @@ extern "C"
 #  include <vector>
 #  include <chrono>
 #  include <optional>
+#  include <tuple>
 
 /* *INDENT-OFF* */
 namespace adftool
@@ -545,7 +550,7 @@ namespace adftool
     }
     void copy (const term & other) noexcept
     {
-      adftool_term_copy (this->ptr, other.ptr);
+      this->copy (other.ptr);
     }
     void set_blank (const std::string & id) noexcept
     {
@@ -728,6 +733,127 @@ namespace adftool
       return this->ptr;
     }
     struct adftool_term *c_ptr (void)
+    {
+      return this->ptr;
+    }
+  };
+
+  using optional_term = std::optional<term>;
+
+  class statement
+  {
+  private:
+    struct adftool_statement *ptr;
+  public:
+    statement ()
+    {
+      this->ptr = adftool_statement_alloc ();
+      if (this->ptr == nullptr)
+	{
+	  std::bad_alloc error;
+	  throw error;
+	}
+    }
+    statement (statement &&v) noexcept: ptr (v.ptr)
+    {
+      v.ptr = nullptr;
+    }
+    statement (const statement &v)
+    {
+      this->ptr = adftool_statement_alloc ();
+      if (this->ptr == nullptr)
+	{
+	  std::bad_alloc error;
+	  throw error;
+	}
+      this->copy (v);
+    }
+    ~statement (void) noexcept
+    {
+      adftool_statement_free (this->ptr);
+    }
+    statement &operator= (statement &v)
+    {
+      this->copy (v);
+      return *this;
+    }
+    statement &operator= (statement &&v) noexcept
+    {
+      adftool_statement_free (this->ptr);
+      this->ptr = v.ptr;
+      v.ptr = nullptr;
+      return *this;
+    }
+    void set (const std::tuple<std::optional<optional_term>, std::optional<optional_term>, std::optional<optional_term>, std::optional<optional_term>, std::optional<std::optional<uint64_t>>> &data)
+    {
+      const struct adftool_term *c_terms[4];
+      struct adftool_term **c_term_pointers[4];
+      for (size_t i = 0; i < 4; i++)
+	{
+	  c_terms[i] = nullptr;
+	  c_term_pointers[i] = nullptr;
+	}
+#define adftool_set_ptr(i) \
+      if (std::get<i> (data).has_value () && std::get<i> (data).value ().has_value ()) \
+	{ \
+	  c_terms[i] = std::get<i> (data).value ().value ().c_ptr ();	\
+	} \
+      if (std::get<i> (data).has_value ())	\
+	{ \
+	  c_term_pointers[i] = (struct adftool_term **) & (c_terms[i]); \
+	}
+      adftool_set_ptr (0);
+      adftool_set_ptr (1);
+      adftool_set_ptr (2);
+      adftool_set_ptr (3);
+#undef adftool_set_ptr
+      uint64_t c_date = ((uint64_t) (-1));
+      uint64_t *c_date_ptr = nullptr;
+      if (std::get<4> (data).has_value () && std::get<4> (data).value ().has_value ())
+	{
+	  c_date = std::get<4> (data).value ().value ();
+	}
+      if (std::get<4> (data).has_value ())
+	{
+	  c_date_ptr = &c_date;
+	}
+      adftool_statement_set (this->ptr, c_term_pointers[0], c_term_pointers[1], c_term_pointers[2], c_term_pointers[3], c_date_ptr);
+    }
+    std::tuple<term, term, term, term, std::optional<uint64_t>> get (void) const
+    {
+      std::tuple<term, term, term, term, std::optional<uint64_t>> ret;
+      uint64_t date;
+      struct adftool_term *ptrs[4];
+      adftool_statement_get (this->ptr,
+			     & (ptrs[0]), & (ptrs[1]), & (ptrs[2]), & (ptrs[3]),
+			     &date);
+      if (date != ((uint64_t) (-1)))
+	{
+	  std::get<4> (ret) = date;
+	}
+      std::get<0> (ret).copy (ptrs[0]);
+      std::get<1> (ret).copy (ptrs[1]);
+      std::get<2> (ret).copy (ptrs[2]);
+      std::get<3> (ret).copy (ptrs[3]);
+      return ret;
+    }
+    void copy (const struct adftool_statement *other) noexcept
+    {
+      adftool_statement_copy (this->ptr, other);
+    }
+    void copy (const statement & other) noexcept
+    {
+      this->copy (other.ptr);
+    }
+    int compare (const statement & other, std::string order) const
+    {
+      return adftool_statement_compare (this->ptr, other.ptr, order.c_str ());
+    }
+    const struct adftool_statement *c_ptr (void) const
+    {
+      return this->ptr;
+    }
+    struct adftool_statement *c_ptr (void)
     {
       return this->ptr;
     }

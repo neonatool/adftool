@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-02-27 13:21+0100\n"
-"PO-Revision-Date: 2023-02-21 22:17+0100\n"
+"POT-Creation-Date: 2023-03-02 09:10+0100\n"
+"PO-Revision-Date: 2023-02-27 13:41+0100\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -979,43 +979,43 @@ msgstr "Le terme n’est pas un littéral de date."
 msgid "The term is not in N3."
 msgstr "Le terme n’est pas en N3."
 
-#: src/adftool_r.cc:239
+#: src/adftool_r.cc:371
 msgid "Construct a new, empty term."
 msgstr "Construit un nouveau terme vide."
 
-#: src/adftool_r.cc:240
+#: src/adftool_r.cc:372
 msgid "Copy the other term."
 msgstr "Copie le terme other."
 
-#: src/adftool_r.cc:241
+#: src/adftool_r.cc:373
 msgid "Initialize the term as a blank term."
 msgstr "Indique si le terme est un nœud vide."
 
-#: src/adftool_r.cc:242
+#: src/adftool_r.cc:374
 msgid "Initialize the term as an IRIREF term."
 msgstr "Indique si le terme est une référence d’IRI."
 
-#: src/adftool_r.cc:243
+#: src/adftool_r.cc:375
 msgid "Initialize the term as a literal untagged string."
 msgstr "Initialise le terme comme chaîne littérale non taggée."
 
-#: src/adftool_r.cc:244
+#: src/adftool_r.cc:376
 msgid "Initialize the term as a typed literal string."
 msgstr "Initialise le terme comme chaîne littérale typée."
 
-#: src/adftool_r.cc:245
+#: src/adftool_r.cc:377
 msgid "Initialize the term as a lang-tagged string."
 msgstr "Initialise le terme comme chaîne languo-taggée."
 
-#: src/adftool_r.cc:246
+#: src/adftool_r.cc:378
 msgid "Initialize the term as a literal integer."
 msgstr "Initialise le terme comme entier littéral."
 
-#: src/adftool_r.cc:247
+#: src/adftool_r.cc:379
 msgid "Initialize the term as a literal double."
 msgstr "Initialise le terme comme double littéral."
 
-#: src/adftool_r.cc:248
+#: src/adftool_r.cc:380
 msgid ""
 "Initialize the term as a literal date with the number of seconds since the "
 "epoch, and the number of nanoseconds."
@@ -1023,38 +1023,38 @@ msgstr ""
 "Initialise le terme comme une date littérale avec le nombre de secondes "
 "depuis l’époque, et le nombre de nanosecondes."
 
-#: src/adftool_r.cc:249
+#: src/adftool_r.cc:381
 msgid "Check whether the term is a blank node."
 msgstr "Vérifie si le term est un nœud blanc."
 
-#: src/adftool_r.cc:250
+#: src/adftool_r.cc:382
 msgid "Check whether the term is a named node."
 msgstr "Vérifie si le term est un nœud nommé."
 
-#: src/adftool_r.cc:251
+#: src/adftool_r.cc:383
 msgid "Check whether the term is a literal node."
 msgstr "Vérifie si le terme est un nœud littéral."
 
-#: src/adftool_r.cc:252
+#: src/adftool_r.cc:384
 msgid ""
 "Check whether the term is a literal node with a type (as opposed to a "
 "langtag)."
 msgstr ""
 "Vérifie si le terme est un nœud littéral avec type (contrairement au langtag)"
 
-#: src/adftool_r.cc:253
+#: src/adftool_r.cc:385
 msgid "Check whether the term is a literal node with a language tag."
 msgstr "Vérifie si le terme est un nœud littéral avec un tag de langue."
 
-#: src/adftool_r.cc:254
+#: src/adftool_r.cc:386
 msgid "Return the value of the term."
 msgstr "Retourne la valeur du terme."
 
-#: src/adftool_r.cc:255
+#: src/adftool_r.cc:387
 msgid "Return the type or langtag."
 msgstr "Retourne le type ou languotag."
 
-#: src/adftool_r.cc:256
+#: src/adftool_r.cc:388
 msgid ""
 "Try and convert the term as an integer. Return a 0-length array if it cannot "
 "be converted, or a 1-integer-long array if it can."
@@ -1062,7 +1062,7 @@ msgstr ""
 "Essaye de convertir le terme en entier. Retourne un tableau vide à défaut, "
 "ou un tableau de 1 entier si c’est possible."
 
-#: src/adftool_r.cc:257
+#: src/adftool_r.cc:389
 msgid ""
 "Try and convert the term as a double. Return a 0-length array if it cannot "
 "be converted, or a 1-double-long array if it can."
@@ -1070,7 +1070,7 @@ msgstr ""
 "Essaye de convertir le terme en double. Retourne un tableau vide à défaut, "
 "ou un tableau de 1 double si c’est possible."
 
-#: src/adftool_r.cc:258
+#: src/adftool_r.cc:390
 msgid ""
 "Try and convert the term as a date. Return an empty list if the conversion "
 "failed, or a list with keys \"tv_sec\" and \"tv_nsec\" otherwise."
@@ -1078,7 +1078,7 @@ msgstr ""
 "Essaye de convertir le terme en date. Retourne une liste vide en cas "
 "d’échec, ou une liste avec les clés « tv_sec » et « tv_nsec » sinon."
 
-#: src/adftool_r.cc:259
+#: src/adftool_r.cc:391
 msgid ""
 "Compare the term order with the other term. Return a negative number if the "
 "main term comes before the other term, a positive number if it comes after, "
@@ -1088,7 +1088,7 @@ msgstr ""
 "le terme principal vient avant le terme other, un nombre positif si il vient "
 "après, et 0 s’ils sont égaux."
 
-#: src/adftool_r.cc:260
+#: src/adftool_r.cc:392
 msgid ""
 "Try and parse the string as a N3 term. If successful, return a list with "
 "\"success\" set to TRUE and \"rest\" set to the suffix that has not been "
@@ -1098,9 +1098,62 @@ msgstr ""
 "liste avec « success » valant TRUE et « rest » le suffixe qui n’a pas été "
 "lu. Sinon, retourne une liste où « success » vaut FALSE."
 
-#: src/adftool_r.cc:261
+#: src/adftool_r.cc:393
 msgid "Return as a string the N3 encoding of the term."
 msgstr "Retourne comme chaîne l’encodage N3 du terme."
+
+#: src/adftool_r.cc:396
+msgid "Construct a new, empty pattern."
+msgstr "Construit un nouveau motif vide."
+
+#: src/adftool_r.cc:397
+msgid "Copy the other pattern."
+msgstr "Copie le motif other."
+
+#: src/adftool_r.cc:398
+msgid ""
+"Initialize parts of the pattern from the argument, a list. For each of the "
+"keys, subject, predicate, object and graph, if the list has a value, set the "
+"corresponding term. The value can be FALSE to unset the term, or a valid "
+"term object to replace it. If the list has a value for the deletion_date "
+"key, then also set the deletion date. If the deletion date is FALSE, then "
+"undelete the statement. Otherwise, set its deletion date."
+msgstr ""
+"Initialise certaines parties du motif à partir de l’argument liste. Pour "
+"chaque clé subject, predicate, object et graph, si la liste a une valeur, "
+"initialise le terme correspondant. La valeur peut être FALSE pour "
+"réinitialiser le terme, ou un terme valide pour le remplacer. Si la liste a "
+"une valeur pour la clé deletion_date, initialise aussi la date de "
+"suppression. Si la date de suppression est FALSE, dé-supprime la "
+"déclaration. Sinon, initialise la date de suppression."
+
+#: src/adftool_r.cc:399
+msgid "Return all the terms as a named vector."
+msgstr "Retourne tous les termes dans un vecteur nommé."
+
+#: src/adftool_r.cc:400
+msgid ""
+"Return the deletion date as numeric vector. If there is no deletion date, "
+"return an empty numeric vector."
+msgstr ""
+"Retourne la date de suppression en vecteur numérique. S’il n’y a pas de "
+"date, retourne un vecteur numérique vide."
+
+#: src/adftool_r.cc:401
+msgid ""
+"Compare the pattern order with the other pattern. Return a negative number "
+"if the main pattern comes before the other pattern, a positive number if it "
+"comes after, and 0 if both patterns overlap. The order is a lexicographic "
+"order, but the order of the terms to compare can be parametrized. For "
+"instance, \"GSPO\" compares the graphs, then subjects, then predicates, then "
+"objects."
+msgstr ""
+"Compare l’ordre du motif avec le motif other. Retourne un nombre négatif si "
+"le motif principal vient avant le motif other, un nombre positif si il vient "
+"après, et 0 si les motifs se recouvrent partiellement. L’ordre est un ordre "
+"lexicographique, mais l’ordre des termes comparés peut être paramétré. Par "
+"exemple, « GSPO » compare les graphes, puis les sujets, puis les prédicats, "
+"puis les objets."
 
 #: src/check_bplus.c:4190
 msgid "Libbplus test suite"

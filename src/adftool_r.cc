@@ -29,6 +29,7 @@
 #include <adftool.h>
 #include <Rcpp.h>
 #include <cmath>
+#include <optional>
 #include "gettext.h"
 #include "relocatable.h"
 
@@ -226,7 +227,138 @@ namespace adftool_r
   };
 }
 
+namespace adftool_r
+{
+  class statement
+  {
+  private:
+    adftool::statement t;
+  public:
+    statement (): t ()
+    {
+    }
+    statement (adftool::statement &&v) noexcept: t (v)
+    {
+    }
+    statement (const statement &v): t (v.t)
+    {
+    }
+    statement (statement &&v) noexcept: t (std::move (v.t))
+    {
+    }
+    statement (SEXPREC *&): t ()
+    {
+    }
+    void copy (statement & other) noexcept
+    {
+      t.copy (other.t);
+    }
+    void set (const Rcpp::List &what)
+    {
+      std::array<std::optional<std::optional<adftool::term>>, 4> cxx_terms;
+      const std::array<std::string, 4> keys = { "subject", "predicate", "object", "graph" };
+#define set_ptr(i)							\
+      if (what.containsElementNamed(keys[i].c_str ()))			\
+	{								\
+	  Rcpp::RObject value = what[keys[i]];				\
+	  if (Rcpp::is<Rcpp::LogicalVector> (value))			\
+	    {								\
+	      /* Most likely FALSE */					\
+	      std::optional<adftool::term> no_term;			\
+	      std::get<i> (cxx_terms) = std::move (no_term);		\
+	    }								\
+	  else								\
+	    {								\
+	      term t = Rcpp::as<term> (what[keys[i]]);			\
+	      std::optional<adftool::term> ot = t.cxx_value ();		\
+	      std::get<i> (cxx_terms) = std::move (ot);			\
+	    }								\
+	}
+      set_ptr (0);
+      set_ptr (1);
+      set_ptr (2);
+      set_ptr (3);
+#undef set_ptr
+      const std::optional<uint64_t> no_date;
+      const std::string date_key = "deletion_date";
+      std::optional<std::optional<uint64_t>> date;
+      if (what.containsElementNamed(date_key.c_str ()))
+	{
+	  Rcpp::RObject value = what[date_key];
+	  if (Rcpp::is<Rcpp::LogicalVector> (value))
+	    {
+	      // Suppose FALSE
+	      date = no_date;
+	    }
+	  else
+	    {
+	      Rcpp::NumericVector date_arg =
+		Rcpp::as<Rcpp::NumericVector> (what[date_key]);
+	      uint64_t actual_date = date_arg[0];
+	      std::optional<uint64_t> actual_date_ptr = actual_date;
+	      date = actual_date_ptr;
+	    }
+	}
+      using optional_term_setter = std::optional<std::optional<adftool::term>>;
+      using optional_date_setter = std::optional<std::optional<uint64_t>>;
+      std::tuple<optional_term_setter,
+		 optional_term_setter,
+		 optional_term_setter,
+		 optional_term_setter,
+		 optional_date_setter> args;
+      std::get<0> (args) = std::move (cxx_terms[0]);
+      std::get<1> (args) = std::move (cxx_terms[1]);
+      std::get<2> (args) = std::move (cxx_terms[2]);
+      std::get<3> (args) = std::move (cxx_terms[3]);
+      std::get<4> (args) = date;
+      t.set (args);
+    }
+    std::map<std::string, term> get_terms (void) const
+    {
+      auto args = t.get ();
+      std::array<adftool::term, 4> cxx_values;
+      std::array<std::string, 4> names = { "subject", "predicate", "object", "graph" };
+#define take(i) \
+      cxx_values[i] = std::move (std::get<i> (args));
+      take (0);
+      take (1);
+      take (2);
+      take (3);
+#undef take
+      std::map<std::string, term> ret;
+      for (size_t i = 0; i < 4; i++)
+	{
+	  term rcpp_value = std::move (cxx_values[i]);
+	  ret[names[i]] = std::move (rcpp_value);
+	}
+      return ret;
+    }
+    Rcpp::NumericVector get_deletion_date (void) const
+    {
+      auto args = t.get ();
+      if (std::get<4> (args).has_value ())
+	{
+	  Rcpp::NumericVector ret (1);
+	  ret[0] = std::get<4> (args).value ();
+	  return ret;
+	}
+      Rcpp::NumericVector ret (0);
+      return ret;
+    }
+    int compare (const statement & other, const std::string order) const
+    {
+      return t.compare (other.t, order);
+    }
+    const adftool::statement &cxx_data (void) const
+    {
+      return t;
+    }
+  };
+}
+
 RCPP_EXPOSED_CLASS (adftool_r::term)
+RCPP_EXPOSED_CLASS (adftool_r::statement)
+
 extern "C" LIBADFTOOL_R_DLL_EXPORTED SEXP
 _rcpp_module_boot_adftool ()
 {
@@ -259,6 +391,14 @@ _rcpp_module_boot_adftool ()
     .method ("compare", &adftool_r::term::compare, _("Compare the term order with the other term. Return a negative number if the main term comes before the other term, a positive number if it comes after, and 0 if both terms are equal."))
     .method ("parse_n3", &adftool_r::term::parse_n3, _("Try and parse the string as a N3 term. If successful, return a list with \"success\" set to TRUE and \"rest\" set to the suffix that has not been used by the parser. Otherwise, return a list with \"success\" set to FALSE."))
     .method ("to_n3", &adftool_r::term::to_n3, _("Return as a string the N3 encoding of the term."));
+
+  Rcpp::class_<adftool_r::statement> ("statement")
+    .constructor(_("Construct a new, empty pattern."))
+    .method ("copy", &adftool_r::statement::copy, _("Copy the other pattern."))
+    .method ("set", &adftool_r::statement::set, _("Initialize parts of the pattern from the argument, a list. For each of the keys, subject, predicate, object and graph, if the list has a value, set the corresponding term. The value can be FALSE to unset the term, or a valid term object to replace it. If the list has a value for the deletion_date key, then also set the deletion date. If the deletion date is FALSE, then undelete the statement. Otherwise, set its deletion date."))
+    .method ("get_terms", &adftool_r::statement::get_terms, _("Return all the terms as a named vector."))
+    .method ("get_deletion_date", &adftool_r::statement::get_deletion_date, _("Return the deletion date as numeric vector. If there is no deletion date, return an empty numeric vector."))
+    .method ("compare", &adftool_r::statement::compare, _("Compare the pattern order with the other pattern. Return a negative number if the main pattern comes before the other pattern, a positive number if it comes after, and 0 if both patterns overlap. The order is a lexicographic order, but the order of the terms to compare can be parametrized. For instance, \"GSPO\" compares the graphs, then subjects, then predicates, then objects."));
   /* Rcpp stuff: */
   Rcpp::XPtr<Rcpp::Module> mod_xp (&adftool, false);
   ::setCurrentScope (0);
