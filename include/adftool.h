@@ -496,6 +496,7 @@ extern "C"
 #  include <chrono>
 #  include <optional>
 #  include <tuple>
+#  include <cassert>
 
 /* *INDENT-OFF* */
 namespace adftool
@@ -856,6 +857,125 @@ namespace adftool
     struct adftool_statement *c_ptr (void)
     {
       return this->ptr;
+    }
+  };
+
+  class fir
+  {
+  private:
+    struct adftool_fir *ptr;
+  public:
+    fir (size_t order)
+    {
+      this->ptr = adftool_fir_alloc (order);
+      if (this->ptr == nullptr)
+	{
+	  std::bad_alloc error;
+	  throw error;
+	}
+    }
+    fir (double sfreq, double freq_low, double freq_high)
+    {
+      std::pair<double, double> transition =
+	fir::auto_bandwidth (sfreq, freq_low, freq_high);
+      size_t order =
+	fir::auto_order (sfreq, transition);
+      this->ptr = adftool_fir_alloc (order);
+      if (this->ptr == nullptr)
+	{
+	  std::bad_alloc error;
+	  throw error;
+	}
+      this->design_bandpass (sfreq, freq_low, freq_high, transition.first, transition.second);
+    }
+    fir (double sfreq, double freq_low, double freq_high, double trans_low, double trans_high)
+    {
+      size_t order =
+	fir::auto_order (sfreq, std::pair<double, double> (trans_low, trans_high));
+      this->ptr = adftool_fir_alloc (order);
+      if (this->ptr == nullptr)
+	{
+	  std::bad_alloc error;
+	  throw error;
+	}
+      this->design_bandpass (sfreq, freq_low, freq_high, trans_low, trans_high);
+    }
+    fir (fir && v) noexcept: ptr (v.ptr)
+    {
+      v.ptr = nullptr;
+    }
+    ~fir (void) noexcept
+    {
+      adftool_fir_free (this->ptr);
+    }
+    fir & operator= (fir && v) noexcept
+    {
+      adftool_fir_free (this->ptr);
+      this->ptr = v.ptr;
+      v.ptr = nullptr;
+      return *this;
+    }
+    static std::pair<double, double> auto_bandwidth (double sfreq, double freq_low, double freq_high)
+    {
+      double trans_low, trans_high;
+      adftool_fir_auto_bandwidth (sfreq, freq_low, freq_high, &trans_low, &trans_high);
+      return std::pair<double, double> (trans_low, trans_high);
+    }
+    static size_t auto_order (double sfreq, double tightest_transition_bandwidth) noexcept
+    {
+      return adftool_fir_auto_order (sfreq, tightest_transition_bandwidth);
+    }
+    static size_t auto_order (double sfreq, std::pair<double, double> transition) noexcept
+    {
+      double tightest = transition.first;
+      if (transition.second < tightest)
+	{
+	  tightest = transition.second;
+	}
+      return adftool_fir_auto_order (sfreq, tightest);
+    }
+    static size_t auto_order (double sfreq, double freq_low, double freq_high)
+    {
+      std::pair<double, double> transition = fir::auto_bandwidth (sfreq, freq_low, freq_high);
+      return fir::auto_order (sfreq, transition);
+    }
+    size_t order (void) const noexcept
+    {
+      return adftool_fir_order (this->ptr);
+    }
+    void coefficients (std::vector<double> &output) const noexcept
+    {
+      assert (output.size () >= this->order ());
+      adftool_fir_coefficients (this->ptr, output.data ());
+    }
+    std::vector<double> coefficients (void) const
+    {
+      std::vector<double> coef;
+      coef.resize (this->order ());
+      this->coefficients (coef);
+      return coef;
+    }
+    void design_bandpass (double sfreq, double freq_low, double freq_high, double trans_low, double trans_high) noexcept
+    {
+      adftool_fir_design_bandpass (this->ptr, sfreq, freq_low, freq_high, trans_low, trans_high);
+    }
+    void design_bandpass (double sfreq, double freq_low, double freq_high) noexcept
+    {
+      double trans_low, trans_high;
+      adftool_fir_auto_bandwidth (sfreq, freq_low, freq_high, &trans_low, &trans_high);
+      this->design_bandpass (sfreq, freq_low, freq_high, trans_low, trans_high);
+    }
+    void apply (const std::vector<double> &input, std::vector<double> &output) const noexcept
+    {
+      assert (input.size () == output.size ());
+      adftool_fir_apply (this->ptr, input.size (), input.data (), output.data ());
+    }
+    std::vector<double> apply (const std::vector<double> &input) const
+    {
+      std::vector<double> output;
+      output.resize (input.size ());
+      this->apply (input, output);
+      return output;
     }
   };
 }

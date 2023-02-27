@@ -110,3 +110,16 @@ if (compared_to_live != 0) {
 if (compared_to_live != 0) {
     stop ("Impossible, subject pattern and live statement also match.")
 }
+
+## Checking the band-pass filter
+sfreq <- 256
+data <- rnorm (5120)
+
+filter <- new (mod$fir, 256, 0.3, 35)
+filtered <- filter$apply (data)
+
+if (length (filtered) != 5120) {
+    stop ("The filter application always returns the same number of points.")
+}
+
+print (summary (filtered))

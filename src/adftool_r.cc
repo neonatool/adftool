@@ -356,8 +356,41 @@ namespace adftool_r
   };
 }
 
+namespace adftool_r
+{
+  class fir
+  {
+  private:
+    adftool::fir t;
+  public:
+    fir (double sfreq, double freq_low, double freq_high): t (sfreq, freq_low, freq_high)
+    {
+    }
+    fir (double sfreq, double freq_low, double freq_high, double trans_low, double trans_high): t (sfreq, freq_low, freq_high, trans_low, trans_high)
+    {
+    }
+    fir (fir && v) noexcept: t (std::move (v.t))
+    {
+    }
+    fir & operator= (fir && v) noexcept
+    {
+      t = std::move (v.t);
+      return *this;
+    }
+    std::vector<double> coefficients (void) const
+    {
+      return t.coefficients ();
+    }
+    std::vector<double> apply (const std::vector<double> &input) const
+    {
+      return t.apply (input);
+    }
+  };
+}
+
 RCPP_EXPOSED_CLASS (adftool_r::term)
 RCPP_EXPOSED_CLASS (adftool_r::statement)
+RCPP_EXPOSED_CLASS (adftool_r::fir)
 
 extern "C" LIBADFTOOL_R_DLL_EXPORTED SEXP
 _rcpp_module_boot_adftool ()
@@ -399,6 +432,12 @@ _rcpp_module_boot_adftool ()
     .method ("get_terms", &adftool_r::statement::get_terms, _("Return all the terms as a named vector."))
     .method ("get_deletion_date", &adftool_r::statement::get_deletion_date, _("Return the deletion date as numeric vector. If there is no deletion date, return an empty numeric vector."))
     .method ("compare", &adftool_r::statement::compare, _("Compare the pattern order with the other pattern. Return a negative number if the main pattern comes before the other pattern, a positive number if it comes after, and 0 if both patterns overlap. The order is a lexicographic order, but the order of the terms to compare can be parametrized. For instance, \"GSPO\" compares the graphs, then subjects, then predicates, then objects."));
+
+  Rcpp::class_<adftool_r::fir> ("fir")
+    .constructor<double, double, double> (_("Construct a band-pass filter, acting on a signal of the given sampling frequency, and letting through frequencies from low to high."))
+    .constructor<double, double, double, double, double> (_("Construct a band-pass filter, acting on a signal of the given sampling frequency, and letting through frequencies from low to high, by specifying the low and high transition bandwidths."))
+    .method ("coefficients", &adftool_r::fir::coefficients, _("Return the coefficients of the filter."))
+    .method ("apply", &adftool_r::fir::apply, _("Apply the filter on new data."));
   /* Rcpp stuff: */
   Rcpp::XPtr<Rcpp::Module> mod_xp (&adftool, false);
   ::setCurrentScope (0);
