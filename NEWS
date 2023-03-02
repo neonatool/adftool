@@ -1,5 +1,8 @@
 #+title: What’s new in adftool
 
+* Noteworthy changes in release ?.? (????-??-??) [?]
+
+
 * Noteworthy changes in release 0.5.2 (2023-03-02) [alpha]
 ** R binding with Rcpp
 It is now possible to use the adftool API within R, thanks to the new
