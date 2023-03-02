@@ -510,6 +510,7 @@ namespace adftool_r
 	      others = ret[langtag];
 	    }
 	  others.push_back (i->first);
+	  ret[langtag] = others;
 	}
       return ret;
     }

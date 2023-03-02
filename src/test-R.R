@@ -196,3 +196,26 @@ if (any (is.finite (eeg_data$data))) {
 }
 
 file.remove ("test-R.adf")
+
+## Check strings
+file <- new (mod$file, "test-R.adf", TRUE)
+gen_comment <- function (comment, langtag) {
+    subject <- eeg_itself
+    predicate <- new (mod$term)
+    predicate$set_named ("http://www.w3.org/2000/01/rdf-schema#comment")
+    object <- new (mod$term)
+    object$set_langstring (comment, langtag)
+    statement <- new (mod$statement)
+    statement$set (list (subject = subject, predicate = predicate, object = object))
+    file$insert (statement)
+}
+
+gen_comment ("En français", "fr-FR")
+gen_comment ("In English", "en-US")
+
+comments <- file$lookup_string (eeg_itself, "http://www.w3.org/2000/01/rdf-schema#comment")
+
+stopifnot (comments$`fr-FR` == "En français")
+stopifnot (comments$`en-US` == "In English")
+
+file.remove ("test-R.adf")
