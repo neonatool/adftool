@@ -103,8 +103,6 @@ build_emscripten:
     - apt-get install -y git python3 gettext autoconf autoconf-archive automake libtool valgrind tar autopoint make gcc m4 libtinfo5 lbzip2
     - tar xf public/adftool-latest.tar.gz
     - cd adftool-*
-    - (echo 'extern char const *getprogname (void);' ; cat lib/error.c) > lib/true-error.c
-    - mv lib/true-error.c lib/error.c
     - (echo 'extern char const *getprogname (void);' ; cat libprog/error.c) > libprog/true-error.c
     - mv libprog/true-error.c libprog/error.c
     - (echo 'void *rawmemchr (const void *, int);' ; cat libprog/canonicalize-lgpl.c) > libprog/true-canonicalize-lgpl.c
