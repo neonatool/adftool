@@ -70,6 +70,27 @@ check_asan:
       - build-dist/test-suite.log
       - public
 
+check_clang:
+  stage: build
+  image: ubuntu
+  script:
+    - apt-get install -y git gettext libgmp-dev libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make clang m4 libtinfo5 flex r-base r-cran-rcpp texinfo texlive libpython3-dev pkg-config emacs check
+    - mkdir -p public
+    - export GNULIB_SRCDIR=$PWD/gnulib
+    - ./bootstrap-bootstrap
+    - mkdir -p build-clang
+    - cd build-clang
+    - ../configure --enable-relocatable CXX=clang++
+    - make -j
+    - make -j check
+  artifacts:
+    when: always
+    paths:
+      - build-clang/config.log
+      - build-clang/config.h
+      - build-clang/test-suite.log
+      - public
+
 build_mingw:
   stage: build
   script:

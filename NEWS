@@ -8,6 +8,8 @@ because only the unescaped form was compared. Similarly, the double
 quote as a literal ('"\""') would compare before '"A"', even if ASCII
 '\' is after ASCII 'A'.
 
+** Adftool now compiles with clang
+
 * Noteworthy changes in release 0.5.2 (2023-03-02) [alpha]
 ** R binding with Rcpp
 It is now possible to use the adftool API within R, thanks to the new

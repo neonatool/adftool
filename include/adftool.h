@@ -536,7 +536,7 @@ namespace adftool
     {
       adftool_term_free (this->ptr);
     }
-    term &operator= (term &v)
+    term &operator= (const term &v)
     {
       this->copy (v);
       return *this;
@@ -776,7 +776,7 @@ namespace adftool
     {
       adftool_statement_free (this->ptr);
     }
-    statement &operator= (statement &v)
+    statement &operator= (const statement &v)
     {
       this->copy (v);
       return *this;

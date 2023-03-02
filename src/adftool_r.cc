@@ -556,10 +556,10 @@ namespace adftool_r
   };
 }
 
-RCPP_EXPOSED_CLASS (adftool_r::term)
-RCPP_EXPOSED_CLASS (adftool_r::statement)
-RCPP_EXPOSED_CLASS (adftool_r::fir)
-RCPP_EXPOSED_CLASS (adftool_r::file)
+RCPP_EXPOSED_CLASS_NODECL (adftool_r::term)
+RCPP_EXPOSED_CLASS_NODECL (adftool_r::statement)
+RCPP_EXPOSED_CLASS_NODECL (adftool_r::fir)
+RCPP_EXPOSED_CLASS_NODECL (adftool_r::file)
 
 extern "C" LIBADFTOOL_R_DLL_EXPORTED SEXP
 _rcpp_module_boot_adftool ()
