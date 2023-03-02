@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-03-02 09:45+0100\n"
+"POT-Creation-Date: 2023-03-02 10:56+0100\n"
 "PO-Revision-Date: 2023-03-02 09:33+0100\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -18,14 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 2.2.4\n"
-
-#: lib/error.c:193
-msgid "Unknown system error"
-msgstr "Erreur système inconnue"
-
-#: lib/xalloc-die.c:34
-msgid "memory exhausted"
-msgstr "plus de mémoire"
 
 #: src/adftool.c:53
 #, c-format
@@ -1456,6 +1448,12 @@ msgstr "%s:%d: La méta pour le numéro %lu est %s, mais devrait être %s.\n"
 #, c-format
 msgid "The test failed, keeping term_example.adf around.\n"
 msgstr "Le test a échoué, gardons term_exemple.adf.\n"
+
+#~ msgid "Unknown system error"
+#~ msgstr "Erreur système inconnue"
+
+#~ msgid "memory exhausted"
+#~ msgstr "plus de mémoire"
 
 #~ msgid "Example function that returns 42."
 #~ msgstr "Fonction exemple qui retourne 42."

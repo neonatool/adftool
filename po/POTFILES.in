@@ -1,5 +1,3 @@
-lib/error.c
-lib/xalloc-die.c
 src/adftool.c
 src/adftool_python.c
 src/adftool_r.cc
