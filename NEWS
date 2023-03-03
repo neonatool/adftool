@@ -1,6 +1,6 @@
 #+title: What’s new in adftool
 
-* Noteworthy changes in release ?.? (????-??-??) [?]
+* Noteworthy changes in release 0.5.3 (2023-03-03) [alpha]
 ** Fix the named node comparison and the literal comparison
 The terms should be compared by their N3 encoding. Previously, '<0>'
 would compare before '<%3E>', even if ASCII '0' is after ASII '%',
