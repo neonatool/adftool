@@ -41,9 +41,9 @@ main (int argc, char *argv[])
   /* In this example, we are encoding the following terms: */
   /* Blank nodes: _:hello, _:world */
   /* Named nodes: <hello>, <world>, <0>, <%3E> */
-  /* Typed literals: "hello"^^<xsd:string>, "world"^^<my-type> */
-  /* Lang strings: "hello"@en, "world"@zz */
-  struct adftool_term *all_terms[10];
+  /* Typed literals: "hello"^^<xsd:string>, "world"^^<my-type>, "hello"^^<0>, "hello"^^<%3E> */
+  /* Lang strings: "hello"@en, "world"@zz, "\""@zz, "A"@zz */
+  struct adftool_term *all_terms[14];
   static const int types[][5] = {
     /* Blank? Named? Literal? Typed? Langstring? */
     {1, 0, 0, 0, 0},		/* _:hello */
@@ -54,20 +54,24 @@ main (int argc, char *argv[])
     {0, 1, 0, 0, 0},		/* <%3E> */
     {0, 0, 1, 1, 0},		/* "hello"^^<xsd:string> */
     {0, 0, 1, 1, 0},		/* "world"^^<my-type> */
+    {0, 0, 1, 1, 0},		/* "hello"^^<0> */
+    {0, 0, 1, 1, 0},		/* "hello"^^<%3E> */
     {0, 0, 1, 0, 1},		/* "hello"@en */
-    {0, 0, 1, 0, 1}		/* "world"@zz */
+    {0, 0, 1, 0, 1},		/* "world"@zz */
+    {0, 0, 1, 0, 1},		/* "\""@zz */
+    {0, 0, 1, 0, 1},		/* "A"@zz */
   };
   static const char *expected_value[] = {
     "hello", "world",		/* blanks */
     "hello", "world", "0", ">",	/* URIs */
-    "hello", "world",		/* typed */
-    "hello", "world",		/* langstrings */
+    "hello", "world", "hello", "hello",	/* typed */
+    "hello", "world", "\"", "A"	/* langstrings */
   };
   static const char *expected_meta[] = {
     "", "",			/* blanks */
     "", "", "", "",		/* URIs */
-    "http://www.w3.org/2001/XMLSchema#string", "my-type",
-    "en", "zz",
+    "http://www.w3.org/2001/XMLSchema#string", "my-type", "0", ">",
+    "en", "zz", "zz", "zz"
   };
   static const char *encoded[] = {
     "_:hello",
@@ -78,8 +82,12 @@ main (int argc, char *argv[])
     "<%3E>",
     "\"hello\"^^<http://www.w3.org/2001/XMLSchema#string>",
     "\"world\"^^<my-type>",
+    "\"hello\"^^<0>",
+    "\"hello\"^^<%3E>",
     "\"hello\"@en",
-    "\"world\"@zz"
+    "\"world\"@zz",
+    "\"\\\"\"@zz",
+    "\"A\"@zz"
   };
   static const size_t n_terms = sizeof (all_terms) / sizeof (all_terms[0]);
   assert (sizeof (types) / sizeof (types[0]) == n_terms);
@@ -97,8 +105,12 @@ main (int argc, char *argv[])
   adftool_term_set_named (all_terms[5], ">");
   adftool_term_set_literal (all_terms[6], "hello", NULL, NULL);
   adftool_term_set_literal (all_terms[7], "world", "my-type", NULL);
-  adftool_term_set_literal (all_terms[8], "hello", NULL, "en");
-  adftool_term_set_literal (all_terms[9], "world", NULL, "zz");
+  adftool_term_set_literal (all_terms[8], "hello", "0", NULL);
+  adftool_term_set_literal (all_terms[9], "hello", ">", NULL);
+  adftool_term_set_literal (all_terms[10], "hello", NULL, "en");
+  adftool_term_set_literal (all_terms[11], "world", NULL, "zz");
+  adftool_term_set_literal (all_terms[12], "\"", NULL, "zz");
+  adftool_term_set_literal (all_terms[13], "A", NULL, "zz");
   for (size_t i = 0; i < n_terms; i++)
     {
       int my_types[5];
@@ -187,9 +199,9 @@ should be %d, it is %d.\n"), i, encoded[i], j, encoded[j], expected_cmp, cmp);
     }
   static const char *dict_terms[] = {
     "hello", "world", "0", ">", "my-type", "en", "zz",
-    "http://www.w3.org/2001/XMLSchema#string"
+    "http://www.w3.org/2001/XMLSchema#string", "\"", "A"
   };
-  uint32_t dict_term_ids[8];
+  uint32_t dict_term_ids[10];
   assert (sizeof (dict_term_ids) / sizeof (dict_term_ids[0]) ==
 	  sizeof (dict_terms) / sizeof (dict_terms[0]));
   for (size_t i = 0; i < sizeof (dict_terms) / sizeof (dict_terms[0]); i++)
@@ -214,8 +226,12 @@ should be %d, it is %d.\n"), i, encoded[i], j, encoded[j], expected_cmp, cmp);
     CHECK_PACK (3, EMPTY_TERM, 1),	/* <%3E> */
     CHECK_PACK (0, 7, 2),	/* "hello" */
     CHECK_PACK (1, 4, 2),	/* "world"^^<my-type> */
+    CHECK_PACK (0, 2, 2),	/* "hello"^^<0> */
+    CHECK_PACK (0, 3, 2),	/* "hello"^^<%3E> */
     CHECK_PACK (0, 5, 3),	/* "hello"@en */
-    CHECK_PACK (1, 6, 3)	/* "world"@zz */
+    CHECK_PACK (1, 6, 3),	/* "world"@zz */
+    CHECK_PACK (8, 6, 3),	/* "\""@zz */
+    CHECK_PACK (9, 6, 3)	/* "A"@zz */
   };
   assert (sizeof (encoded_forms) / sizeof (encoded_forms[0]) == n_terms);
   for (size_t i = 0; i < n_terms; i++)
