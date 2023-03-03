@@ -1,7 +1,10 @@
 #+title: What’s new in adftool
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
-
+** Fix the named node comparison
+The terms should be compared by their N3 encoding. Previously, '<0>'
+would compare before '<%3E>', even if ASCII '0' is after ASII '%',
+because only the unescaped form was compared.
 
 * Noteworthy changes in release 0.5.2 (2023-03-02) [alpha]
 ** R binding with Rcpp

@@ -40,16 +40,18 @@ main (int argc, char *argv[])
     }
   /* In this example, we are encoding the following terms: */
   /* Blank nodes: _:hello, _:world */
-  /* Named nodes: <hello>, <world> */
+  /* Named nodes: <hello>, <world>, <0>, <%3E> */
   /* Typed literals: "hello"^^<xsd:string>, "world"^^<my-type> */
   /* Lang strings: "hello"@en, "world"@zz */
-  struct adftool_term *all_terms[8];
+  struct adftool_term *all_terms[10];
   static const int types[][5] = {
     /* Blank? Named? Literal? Typed? Langstring? */
     {1, 0, 0, 0, 0},		/* _:hello */
     {1, 0, 0, 0, 0},		/* _:world */
     {0, 1, 0, 0, 0},		/* <hello> */
     {0, 1, 0, 0, 0},		/* <world> */
+    {0, 1, 0, 0, 0},		/* <0> */
+    {0, 1, 0, 0, 0},		/* <%3E> */
     {0, 0, 1, 1, 0},		/* "hello"^^<xsd:string> */
     {0, 0, 1, 1, 0},		/* "world"^^<my-type> */
     {0, 0, 1, 0, 1},		/* "hello"@en */
@@ -57,40 +59,32 @@ main (int argc, char *argv[])
   };
   static const char *expected_value[] = {
     "hello", "world",		/* blanks */
-    "hello", "world",		/* URIs */
+    "hello", "world", "0", ">",	/* URIs */
     "hello", "world",		/* typed */
     "hello", "world",		/* langstrings */
   };
   static const char *expected_meta[] = {
     "", "",			/* blanks */
-    "", "",			/* URIs */
+    "", "", "", "",		/* URIs */
     "http://www.w3.org/2001/XMLSchema#string", "my-type",
     "en", "zz",
   };
-  static const int compare_table[8][8] = {
-    {0, -1, +1, +1, +1, +1, +1, +1},
-    {+1, 0, +1, +1, +1, +1, +1, +1},
-    {-1, -1, 0, -1, +1, +1, +1, +1},
-    {-1, -1, +1, 0, +1, +1, +1, +1},
-    {-1, -1, -1, -1, 0, -1, +1, -1},
-    {-1, -1, -1, -1, +1, 0, +1, +1},
-    {-1, -1, -1, -1, -1, -1, 0, -1},
-    {-1, -1, -1, -1, +1, -1, +1, 0}
+  static const char *encoded[] = {
+    "_:hello",
+    "_:world",
+    "<hello>",
+    "<world>",
+    "<0>",
+    "<%3E>",
+    "\"hello\"^^<http://www.w3.org/2001/XMLSchema#string>",
+    "\"world\"^^<my-type>",
+    "\"hello\"@en",
+    "\"world\"@zz"
   };
   static const size_t n_terms = sizeof (all_terms) / sizeof (all_terms[0]);
   assert (sizeof (types) / sizeof (types[0]) == n_terms);
   assert (sizeof (expected_value) / sizeof (expected_value[0]) == n_terms);
-  assert (sizeof (compare_table) / sizeof (compare_table[0]) == n_terms);
-  assert (sizeof (compare_table[0]) / sizeof (compare_table[0][0]) ==
-	  n_terms);
-  for (size_t i = 0; i < n_terms; i++)
-    {
-      for (size_t j = 0; j < n_terms; j++)
-	{
-	  /* compare_table is antisymmetric */
-	  assert (compare_table[i][j] + compare_table[j][i] == 0);
-	}
-    }
+  assert (sizeof (encoded) / sizeof (encoded[0]) == n_terms);
   for (size_t i = 0; i < n_terms; i++)
     {
       all_terms[i] = adftool_term_alloc ();
@@ -99,10 +93,12 @@ main (int argc, char *argv[])
   adftool_term_set_blank (all_terms[1], "world");
   adftool_term_set_named (all_terms[2], "hello");
   adftool_term_set_named (all_terms[3], "world");
-  adftool_term_set_literal (all_terms[4], "hello", NULL, NULL);
-  adftool_term_set_literal (all_terms[5], "world", "my-type", NULL);
-  adftool_term_set_literal (all_terms[6], "hello", NULL, "en");
-  adftool_term_set_literal (all_terms[7], "world", NULL, "zz");
+  adftool_term_set_named (all_terms[4], "0");
+  adftool_term_set_named (all_terms[5], ">");
+  adftool_term_set_literal (all_terms[6], "hello", NULL, NULL);
+  adftool_term_set_literal (all_terms[7], "world", "my-type", NULL);
+  adftool_term_set_literal (all_terms[8], "hello", NULL, "en");
+  adftool_term_set_literal (all_terms[9], "world", NULL, "zz");
   for (size_t i = 0; i < n_terms; i++)
     {
       int my_types[5];
@@ -123,22 +119,42 @@ main (int argc, char *argv[])
 	      goto failure;
 	    }
 	}
+      char n3_form[256];
+      size_t n3_length =
+	adftool_term_to_n3 (all_terms[i], 0, sizeof (n3_form), n3_form);
+      if (n3_length >= sizeof (n3_form))
+	{
+	  fprintf (stderr,
+		   _("Term %lu cannot be encoded to N3 "
+		     "in less than 256 characters (%lu required).\n"), i,
+		   n3_length);
+	  goto failure;
+	}
+      if (STRNEQ (n3_form, encoded[i]))
+	{
+	  fprintf (stderr,
+		   _("Term %lu N3 encoding is not correct: "
+		     "%s vs expected %s.\n"), i, n3_form, encoded[i]);
+	  goto failure;
+	}
       char buffer[40];
       static const size_t max = sizeof (buffer) / sizeof (buffer[0]);
       size_t n_used = adftool_term_value (all_terms[i], 0, max, buffer);
       if (n_used != strlen (expected_value[i])
 	  || STRNEQ (buffer, expected_value[i]))
 	{
-	  fprintf (stderr, _("Value for number %lu is %s, should be %s.\n"),
-		   i, buffer, expected_value[i]);
+	  fprintf (stderr,
+		   _("Value for number %lu (%s) is %s, should be %s.\n"), i,
+		   n3_form, buffer, expected_value[i]);
 	  goto failure;
 	}
       n_used = adftool_term_meta (all_terms[i], 0, max, buffer);
       if (n_used != strlen (expected_meta[i])
 	  || STRNEQ (buffer, expected_meta[i]))
 	{
-	  fprintf (stderr, _("Meta for number %lu is %s, should be %s.\n"),
-		   i, buffer, expected_meta[i]);
+	  fprintf (stderr,
+		   _("Meta for number %lu (%s) is %s, should be %s.\n"), i,
+		   n3_form, buffer, expected_meta[i]);
 	  goto failure;
 	}
       for (size_t j = 0; j < n_terms; j++)
@@ -152,19 +168,28 @@ main (int argc, char *argv[])
 	    {
 	      cmp = +1;
 	    }
-	  if (cmp != compare_table[i][j])
+	  int expected_cmp = strcmp (encoded[i], encoded[j]);
+	  if (expected_cmp < 0)
 	    {
-	      fprintf (stderr, _("Comparison between %lu and %lu \
-should be %d, it is %d.\n"), i, j, compare_table[i][j], cmp);
+	      expected_cmp = -1;
+	    }
+	  if (expected_cmp > 0)
+	    {
+	      expected_cmp = 1;
+	    }
+	  if (cmp != expected_cmp)
+	    {
+	      fprintf (stderr, _("Comparison between %lu (%s) and %lu (%s) \
+should be %d, it is %d.\n"), i, encoded[i], j, encoded[j], expected_cmp, cmp);
 	      goto failure;
 	    }
 	}
     }
   static const char *dict_terms[] = {
-    "hello", "world", "my-type", "en", "zz",
+    "hello", "world", "0", ">", "my-type", "en", "zz",
     "http://www.w3.org/2001/XMLSchema#string"
   };
-  uint32_t dict_term_ids[6];
+  uint32_t dict_term_ids[8];
   assert (sizeof (dict_term_ids) / sizeof (dict_term_ids[0]) ==
 	  sizeof (dict_terms) / sizeof (dict_terms[0]));
   for (size_t i = 0; i < sizeof (dict_terms) / sizeof (dict_terms[0]); i++)
@@ -185,10 +210,12 @@ should be %d, it is %d.\n"), i, j, compare_table[i][j], cmp);
     CHECK_PACK (1, EMPTY_TERM, 0),	/* _:world */
     CHECK_PACK (0, EMPTY_TERM, 1),	/* <hello> */
     CHECK_PACK (1, EMPTY_TERM, 1),	/* <world> */
-    CHECK_PACK (0, 5, 2),	/* "hello" */
-    CHECK_PACK (1, 2, 2),	/* "world"^^<my-type> */
-    CHECK_PACK (0, 3, 3),	/* "hello"@en */
-    CHECK_PACK (1, 4, 3)	/* "world"@zz */
+    CHECK_PACK (2, EMPTY_TERM, 1),	/* <0> */
+    CHECK_PACK (3, EMPTY_TERM, 1),	/* <%3E> */
+    CHECK_PACK (0, 7, 2),	/* "hello" */
+    CHECK_PACK (1, 4, 2),	/* "world"^^<my-type> */
+    CHECK_PACK (0, 5, 3),	/* "hello"@en */
+    CHECK_PACK (1, 6, 3)	/* "world"@zz */
   };
   assert (sizeof (encoded_forms) / sizeof (encoded_forms[0]) == n_terms);
   for (size_t i = 0; i < n_terms; i++)

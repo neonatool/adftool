@@ -339,6 +339,25 @@ struct named_iterator
   const char *strs[2];
 };
 
+static void
+adftool_term_named_iterator_init (struct named_iterator *it, const char *str1,
+				  const char *str2)
+{
+  static const char *empty = "";
+  it->atend = 0;
+  it->i_str = 0;
+  it->i_within_str = 0;
+  it->strs[0] = str1;
+  it->strs[1] = str2;
+  for (size_t i = 0; i < 2; i++)
+    {
+      if (it->strs[i] == NULL)
+	{
+	  it->strs[i] = empty;
+	}
+    }
+}
+
 static char
 adftool_term_named_iterator_next (struct named_iterator *it)
 {
@@ -365,6 +384,44 @@ adftool_term_named_iterator_next (struct named_iterator *it)
   return ret;
 }
 
+struct escaped_named_iterator
+{
+  char remaining_escape_sequence[3];
+  struct named_iterator it;
+};
+
+static void
+adftool_term_escaped_named_iterator_init (struct escaped_named_iterator *it,
+					  const char *str1, const char *str2)
+{
+  for (size_t i = 0; i < sizeof (it->remaining_escape_sequence); i++)
+    {
+      it->remaining_escape_sequence[i] = '\0';
+    }
+  adftool_term_named_iterator_init (&(it->it), str1, str2);
+}
+
+static char
+adftool_term_escaped_named_iterator_next (struct escaped_named_iterator *it)
+{
+  if (it->remaining_escape_sequence[0] != '\0')
+    {
+      char ret = it->remaining_escape_sequence[0];
+      it->remaining_escape_sequence[0] = it->remaining_escape_sequence[1];
+      it->remaining_escape_sequence[1] = it->remaining_escape_sequence[2];
+      it->remaining_escape_sequence[2] = '\0';
+      return ret;
+    }
+  char ret = adftool_term_named_iterator_next (&(it->it));
+  if (ret == '>')
+    {
+      /* Must emit %3E */
+      ret = '%';
+      strcpy (it->remaining_escape_sequence, "3E");
+    }
+  return ret;
+}
+
 static inline int
 term_compare (const struct adftool_term *reference,
 	      const struct adftool_term *other)
@@ -379,35 +436,17 @@ term_compare (const struct adftool_term *reference,
       if (reference->type == TERM_NAMED)
 	{
 	  /* Compare the namespace and then the value. */
-	  struct named_iterator ref, oth;
-	  ref.atend = 0;
-	  ref.i_str = 0;
-	  ref.i_within_str = 0;
-	  ref.strs[0] = reference->str2;
-	  ref.strs[1] = reference->str1;
-	  for (size_t i = 0; i < 2; i++)
+	  struct escaped_named_iterator ref, oth;
+	  /* In named iterators, the prefix is term->str2. So
+	     term->str2 MUST come BEFORE term->str1. */
+	  adftool_term_escaped_named_iterator_init (&ref, reference->str2,
+						    reference->str1);
+	  adftool_term_escaped_named_iterator_init (&oth, other->str2,
+						    other->str1);
+	  while (!(ref.it.atend) && !(oth.it.atend) && ret == 0)
 	    {
-	      if (ref.strs[i] == NULL)
-		{
-		  ref.strs[i] = "";
-		}
-	    }
-	  oth.atend = 0;
-	  oth.i_str = 0;
-	  oth.i_within_str = 0;
-	  oth.strs[0] = other->str2;
-	  oth.strs[1] = other->str1;
-	  for (size_t i = 0; i < 2; i++)
-	    {
-	      if (oth.strs[i] == NULL)
-		{
-		  oth.strs[i] = "";
-		}
-	    }
-	  while (!(ref.atend) && !(oth.atend) && ret == 0)
-	    {
-	      char c_ref = adftool_term_named_iterator_next (&ref);
-	      char c_oth = adftool_term_named_iterator_next (&oth);
+	      char c_ref = adftool_term_escaped_named_iterator_next (&ref);
+	      char c_oth = adftool_term_escaped_named_iterator_next (&oth);
 	      if (c_ref < c_oth)
 		{
 		  ret = -1;
@@ -417,19 +456,19 @@ term_compare (const struct adftool_term *reference,
 		  ret = +1;
 		}
 	    }
-	  if (ref.atend && !(oth.atend))
+	  if (ref.it.atend && !(oth.it.atend))
 	    {
 	      assert (ret != 0);
 	    }
-	  if (!(ref.atend) && oth.atend)
+	  if (!(ref.it.atend) && oth.it.atend)
 	    {
 	      assert (ret != 0);
 	    }
-	  if (ref.atend && oth.atend)
+	  if (ref.it.atend && oth.it.atend)
 	    {
 	      assert (ret == 0);
 	    }
-	  if (!(ref.atend) && !(oth.atend))
+	  if (!(ref.it.atend) && !(oth.it.atend))
 	    {
 	      assert (ret != 0);
 	    }
