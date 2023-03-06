@@ -2,7 +2,7 @@
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 ** API cleaning
-Undocumented entry points are now marked as deprecated.
+Undocumented and internal entry points are now marked as deprecated.
 ** Bug fix: reading short strings from a dictionary now correctly NUL-terminates the result
 Reading a short string would put a NUL character at position 12,
 leaving bytes before that uninitialized. Now the NUL character is put

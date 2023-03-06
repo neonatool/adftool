@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.5.3.5-a4a3\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-03-06 11:33+0100\n"
+"POT-Creation-Date: 2023-03-06 11:35+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1139,42 +1139,42 @@ msgstr ""
 msgid "Could not compute the date of the third observation.\n"
 msgstr ""
 
-#: src/encoding_unit_test.c:81
+#: src/encoding_unit_test.c:82
 #, c-format
 msgid "The dictionary does not know %s.\n"
 msgstr ""
 
-#: src/encoding_unit_test.c:88
+#: src/encoding_unit_test.c:89
 #, c-format
 msgid "The dictionary put %s in position %u, not %u.\n"
 msgstr ""
 
-#: src/encoding_unit_test.c:116
+#: src/encoding_unit_test.c:117
 #, c-format
 msgid "Not enough memory to allocate a term.\n"
 msgstr ""
 
-#: src/encoding_unit_test.c:121
+#: src/encoding_unit_test.c:122
 #, c-format
 msgid "Failed to encode term %lu.\n"
 msgstr ""
 
-#: src/encoding_unit_test.c:126
+#: src/encoding_unit_test.c:127
 #, c-format
 msgid "Encoding term %lu gives %016lx, not %016lx.\n"
 msgstr ""
 
-#: src/encoding_unit_test.c:132
+#: src/encoding_unit_test.c:133
 #, c-format
 msgid "Failed to decode term %lu (%016lx).\n"
 msgstr ""
 
-#: src/encoding_unit_test.c:138
+#: src/encoding_unit_test.c:139
 #, c-format
 msgid "Term %lu is not decoded properly (%016lx).\n"
 msgstr ""
 
-#: src/encoding_unit_test.c:155 src/term_manipulation_example.c:204
+#: src/encoding_unit_test.c:156 src/term_manipulation_example.c:204
 #, c-format
 msgid "The test failed, keeping term_example.adf around.\n"
 msgstr ""

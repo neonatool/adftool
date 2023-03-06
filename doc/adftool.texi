@@ -583,18 +583,6 @@ Compare the representation of @var{reference} and @var{other}, as with
 otherwise. Think of it as the difference function.
 @end deftypefun
 
-@deftypefun int adftool_term_decode (struct adftool_file *@var{file}, uint64_t @var{encoded}, struct adftool_term *@var{term})
-@deftypefunx int adftool_term_encode (struct adftool_file *@var{file}, const struct adftool_term *@var{term}, uint64_t *@var{encoded})
-Encode or decode a @var{term}. The @var{encoded} form uses 64 bits, as
-@math{31 + 31 + 2}. To encode a term, we must make sure that the
-dictionary is up to date, which is why we might modify @var{file}. To
-decode a term, we also keep maintaining a dictionar cache, so the
-@var{file} might be modified also. In any case, @var{term} must be
-allocated.
-
-Return 0 on success, another value if an error occured.
-@end deftypefun
-
 @deftypefun int adftool_term_parse_n3 (const char *@var{text}, size_t @var{available}, size_t *@var{consumed}, struct adftool_term *@var{term})
 Initialize @var{term} with the next object in Notation-3 in
 @var{text}. @var{available} is the number of bytes in

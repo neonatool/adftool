@@ -136,15 +136,6 @@ extern "C"
     int adftool_term_compare (const struct adftool_term *reference,
 			      const struct adftool_term *other);
 
-  extern LIBADFTOOL_API
-    int adftool_term_decode (struct adftool_file *file, uint64_t value,
-			     struct adftool_term *decoded);
-
-  extern LIBADFTOOL_API
-    int adftool_term_encode (struct adftool_file *file,
-			     const struct adftool_term *term,
-			     uint64_t * encoded);
-
   /* FIXME: it only recognizes N-Triples, no namespace support, and
      only double quotes for literal values. consumed is set to the
      number of bytes that can be part of the literal. Return 0 (and
@@ -504,6 +495,15 @@ extern "C"
   LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
     int adftool_dictionary_insert (struct adftool_file *file, size_t length,
 				   const char *key, uint32_t * id);
+
+  LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
+    int adftool_term_decode (struct adftool_file *file, uint64_t value,
+			     struct adftool_term *decoded);
+
+  LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
+    int adftool_term_encode (struct adftool_file *file,
+			     const struct adftool_term *term,
+			     uint64_t * encoded);
 
 # ifdef __cplusplus
 }

@@ -17,6 +17,7 @@
 
 #include "libadftool/file.h"
 #include "libadftool/dictionary_index.h"
+#include "libadftool/term.h"
 
 #define CHECK_PACK(value, meta, flags) \
   ((((((uint64_t) (value)) << 31) | ((uint64_t) (meta))) << 2) | ((uint64_t) (flags)))
@@ -116,7 +117,7 @@ main (int argc, char *argv[])
 	  fprintf (stderr, _("Not enough memory to allocate a term.\n"));
 	  goto term_failure;
 	}
-      if (adftool_term_encode (file, all_terms[i], &encoded) != 0)
+      if (term_encode (dico, all_terms[i], &encoded) != 0)
 	{
 	  fprintf (stderr, _("Failed to encode term %lu.\n"), i);
 	  goto term_failure;
@@ -127,7 +128,7 @@ main (int argc, char *argv[])
 		   i, encoded, encoded_forms[i]);
 	  goto term_failure;
 	}
-      if (adftool_term_decode (file, encoded_forms[i], term) != 0)
+      if (term_decode (dico, encoded_forms[i], term) != 0)
 	{
 	  fprintf (stderr, _("Failed to decode term %lu (%016lx).\n"), i,
 		   encoded_forms[i]);
