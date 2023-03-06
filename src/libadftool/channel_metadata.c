@@ -6,6 +6,7 @@
 
 #include "term.h"
 #include "file.h"
+#include "channel_decoder.h"
 
 int
 adftool_find_channel_identifier (struct adftool_file *file,
@@ -32,88 +33,12 @@ adftool_find_channel_identifier (struct adftool_file *file,
   return 0;
 }
 
-static int
-channel_decoder_find (struct adftool_file *file,
-		      const struct adftool_term *identifier,
-		      const char *scale_or_offset, double *value)
-{
-  char predicate_str[256];
-  sprintf (predicate_str,
-	   "https://localhost/lytonepal#has-channel-decoder-%s",
-	   scale_or_offset);
-  struct adftool_term *object = term_alloc ();
-  if (object == NULL)
-    {
-      abort ();
-    }
-  size_t n_results =
-    adftool_lookup_objects (file, identifier, predicate_str, 0, 1, &object);
-  if (n_results > 0)
-    {
-      int error = term_as_double (object, value);
-      if (error)
-	{
-	  n_results = 0;
-	}
-    }
-  term_free (object);
-  return (n_results == 0);
-}
-
-static int
-channel_decoder_replace (struct adftool_file *file,
-			 const struct adftool_term *identifier,
-			 const char *scale_or_offset,
-			 const struct adftool_term *replacement)
-{
-  int error = 0;
-  char predicate_str[256];
-  sprintf (predicate_str,
-	   "https://localhost/lytonepal#has-channel-decoder-%s",
-	   scale_or_offset);
-  struct adftool_term p = {
-    .type = TERM_NAMED,
-    .str1 = predicate_str,
-    .str2 = NULL
-  };
-  struct adftool_statement pattern = {
-    .subject = (struct adftool_term *) identifier,
-    .predicate = &p,
-    .object = NULL,
-    .graph = NULL,
-    .deletion_date = ((uint64_t) (-1))
-  };
-  if (adftool_file_delete (file, &pattern, time (NULL) * 1000) != 0)
-    {
-      error = 1;
-      goto cleanup;
-    }
-  pattern.object = (struct adftool_term *) replacement;
-  if (adftool_insert (file, &pattern) != 0)
-    {
-      error = 1;
-      goto cleanup;
-    }
-cleanup:
-  return error;
-}
-
 int
 adftool_get_channel_decoder (struct adftool_file *file,
 			     const struct adftool_term *identifier,
 			     double *scale, double *offset)
 {
-  int scale_error =
-    channel_decoder_find ((struct adftool_file *) file, identifier, "scale",
-			  scale);
-  int offset_error =
-    channel_decoder_find ((struct adftool_file *) file, identifier, "offset",
-			  offset);
-  if (scale_error || offset_error)
-    {
-      return 1;
-    }
-  return 0;
+  return channel_decoder_get (file, identifier, scale, offset);
 }
 
 int
@@ -121,36 +46,7 @@ adftool_set_channel_decoder (struct adftool_file *file,
 			     const struct adftool_term *identifier,
 			     double scale, double offset)
 {
-  int error = 0;
-  struct adftool_term *literal_scale = term_alloc ();
-  struct adftool_term *literal_offset = term_alloc ();
-  if (literal_scale == NULL || literal_offset == NULL)
-    {
-      if (literal_scale)
-	{
-	  term_free (literal_scale);
-	}
-      if (literal_offset)
-	{
-	  term_free (literal_offset);
-	}
-      return 1;
-    }
-  term_set_double (literal_scale, scale);
-  term_set_double (literal_offset, offset);
-  int scale_error =
-    channel_decoder_replace (file, identifier, "scale", literal_scale);
-  int offset_error =
-    channel_decoder_replace (file, identifier, "offset", literal_offset);
-  if (scale_error || offset_error)
-    {
-      error = 1;
-      goto wrapup;
-    }
-wrapup:
-  term_free (literal_scale);
-  term_free (literal_offset);
-  return error;
+  return channel_decoder_set (file, identifier, scale, offset);
 }
 
 int

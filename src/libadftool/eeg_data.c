@@ -5,6 +5,7 @@
 #define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
 
 #include "file.h"
+#include "channel_decoder.h"
 
 #include <float.h>
 
@@ -68,7 +69,7 @@ adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
 	  error = 1;
 	  goto clean_new_channel;
 	}
-      if (adftool_set_channel_decoder (file, identifier, scale, offset) != 0)
+      if (channel_decoder_set (file, identifier, scale, offset) != 0)
 	{
 	  error = 1;
 	  goto clean_new_channel;
@@ -209,8 +210,7 @@ adftool_eeg_get_data (struct adftool_file *file, size_t time_start,
 	  goto clean_identifier;
 	}
       double scale, offset;
-      if (adftool_get_channel_decoder (file, identifier, &scale, &offset) !=
-	  0)
+      if (channel_decoder_get (file, identifier, &scale, &offset) != 0)
 	{
 	  error = 1;
 	  goto clean_identifier;

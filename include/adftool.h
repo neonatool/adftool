@@ -274,16 +274,6 @@ extern "C"
 					  struct adftool_term **identifiers);
 
   extern LIBADFTOOL_API
-    int adftool_get_channel_decoder (struct adftool_file *file,
-				     const struct adftool_term *identifier,
-				     double *scale, double *offset);
-
-  extern LIBADFTOOL_API
-    int adftool_set_channel_decoder (struct adftool_file *file,
-				     const struct adftool_term *identifier,
-				     double scale, double offset);
-
-  extern LIBADFTOOL_API
     int adftool_eeg_set_data (struct adftool_file *file, size_t n_points,
 			      size_t n_channels, const double *data);
 
@@ -504,6 +494,16 @@ extern "C"
     int adftool_quads_insert (struct adftool_file *file,
 			      const struct adftool_statement *statement,
 			      uint32_t * id);
+
+  LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
+    int adftool_get_channel_decoder (struct adftool_file *file,
+				     const struct adftool_term *identifier,
+				     double *scale, double *offset);
+
+  LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
+    int adftool_set_channel_decoder (struct adftool_file *file,
+				     const struct adftool_term *identifier,
+				     double scale, double offset);
 
 # ifdef __cplusplus
 }

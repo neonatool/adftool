@@ -80,13 +80,13 @@ main (int argc, char *argv[])
       if (error || !found)
 	{
 	  fprintf (stderr, _("The dictionary does not know %s.\n"),
-		   dict_terms[i], error, found);
+		   dict_terms[i]);
 	  goto failure;
 	}
       if (dict_term_ids[i] != i)
 	{
 	  fprintf (stderr,
-		   _("The dictionary put %s in position %u, not %u.\n"),
+		   _("The dictionary put %s in position %u, not %lu.\n"),
 		   dict_terms[i], dict_term_ids[i], i);
 	  goto failure;
 	}

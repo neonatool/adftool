@@ -10,9 +10,12 @@
 #include "progname.h"
 #include <locale.h>
 #include <assert.h>
+#include <string.h>
 
-#define _(String) gettext(String)
-#define N_(String) (String)
+#define STREQ(a, b) (strcmp ((a), (b)) == 0)
+#define STRNEQ(a, b) (! (STREQ ((a), (b))))
+
+#include "libadftool/channel_decoder.h"
 
 int
 main (int argc, char *argv[])
@@ -43,7 +46,7 @@ main (int argc, char *argv[])
     {
       abort ();
     }
-  if (adftool_set_channel_decoder (file, identifier, 42, 18) != 0)
+  if (channel_decoder_set (file, identifier, 42, 18) != 0)
     {
       abort ();
     }
@@ -84,7 +87,7 @@ main (int argc, char *argv[])
     }
   assert (column_index == 0);
   double scale, offset;
-  if (adftool_get_channel_decoder (file, identifier, &scale, &offset) != 0)
+  if (channel_decoder_get (file, identifier, &scale, &offset) != 0)
     {
       abort ();
     }
