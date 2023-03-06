@@ -190,19 +190,6 @@ extern "C"
 				   const char *order);
 
   extern LIBADFTOOL_API
-    int adftool_quads_get (const struct adftool_file *file, uint32_t id,
-			   struct adftool_statement *statement);
-
-  extern LIBADFTOOL_API
-    int adftool_quads_delete (struct adftool_file *file, uint32_t id,
-			      uint64_t deletion_date);
-
-  extern LIBADFTOOL_API
-    int adftool_quads_insert (struct adftool_file *file,
-			      const struct adftool_statement *statement,
-			      uint32_t * id);
-
-  extern LIBADFTOOL_API
     int adftool_lookup (struct adftool_file *file,
 			const struct adftool_statement *pattern,
 			size_t start, size_t max, size_t *n_results,
@@ -504,6 +491,19 @@ extern "C"
     int adftool_term_encode (struct adftool_file *file,
 			     const struct adftool_term *term,
 			     uint64_t * encoded);
+
+  LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
+    int adftool_quads_get (const struct adftool_file *file, uint32_t id,
+			   struct adftool_statement *statement);
+
+  LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
+    int adftool_quads_delete (struct adftool_file *file, uint32_t id,
+			      uint64_t deletion_date);
+
+  LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
+    int adftool_quads_insert (struct adftool_file *file,
+			      const struct adftool_statement *statement,
+			      uint32_t * id);
 
 # ifdef __cplusplus
 }

@@ -45,8 +45,12 @@ main (int argc, char *argv[])
   adftool_term_set_named (term_b, "b");
   adftool_term_set_named (term_c, "c");
   adftool_statement_set (statement, &term_a, &term_b, &term_c, NULL, NULL);
-  uint32_t statement_id = 42;
-  if (adftool_quads_insert (file, statement, &statement_id) != 0)
+  if (adftool_insert (file, statement) != 0)
+    {
+      abort ();
+    }
+  struct adftool_statement *wildcard = adftool_statement_alloc ();
+  if (wildcard == NULL)
     {
       abort ();
     }
@@ -55,19 +59,18 @@ main (int argc, char *argv[])
     {
       abort ();
     }
-  if (statement_id != 0)
+  if (adftool_delete (file, statement, 42) != 0)
     {
       abort ();
     }
-  if (adftool_quads_delete (file, 0, 0) != 0)
-    {
-      abort ();
-    }
-  if (adftool_quads_get (file, 0, statement_zero) != 0)
-    {
-      abort ();
-    }
+  size_t n_results;
   uint64_t deletion_date;
+  int lookup_wildcard_error =
+    adftool_lookup (file, wildcard, 0, 1, &n_results, &statement_zero);
+  if (lookup_wildcard_error != 0 || n_results != 1)
+    {
+      abort ();
+    }
   adftool_statement_get (statement_zero, NULL, NULL, NULL, NULL,
 			 &deletion_date);
   const int statement_zero_deleted = (deletion_date != ((uint64_t) (-1)));
@@ -75,7 +78,7 @@ main (int argc, char *argv[])
     {
       abort ();
     }
-  if (deletion_date != 0)
+  if (deletion_date != 42)
     {
       abort ();
     }
@@ -83,6 +86,7 @@ main (int argc, char *argv[])
     {
       abort ();
     }
+  adftool_statement_free (wildcard);
   adftool_statement_free (statement_zero);
   adftool_term_free (term_c);
   adftool_term_free (term_b);
