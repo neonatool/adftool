@@ -23,9 +23,16 @@
 #  define N_(String) (String)
 # endif
 
+# define DEALLOC_DICTIONARY_INDEX \
+  ATTRIBUTE_DEALLOC (adftool_dictionary_index_free, 1)
+
 struct adftool_dictionary_index;
 
-static inline
+MAYBE_UNUSED static
+  void adftool_dictionary_index_free (struct adftool_dictionary_index *index);
+
+MAYBE_UNUSED DEALLOC_DICTIONARY_INDEX
+  static
   struct adftool_dictionary_index *adftool_dictionary_index_alloc (hid_t
 								   file,
 								   size_t
@@ -34,8 +41,6 @@ static inline
 								   n_cache_entries,
 								   size_t
 								   max_cache_length);
-static inline
-  void adftool_dictionary_index_free (struct adftool_dictionary_index *index);
 
 static
   int adftool_dictionary_index_find (struct adftool_dictionary_index
@@ -51,7 +56,7 @@ struct adftool_dictionary_index
   struct adftool_dictionary_cache *data;
 };
 
-static inline struct adftool_dictionary_index *
+static struct adftool_dictionary_index *
 adftool_dictionary_index_alloc (hid_t file, size_t default_order,
 				size_t n_cache_entries,
 				size_t max_cache_length)
@@ -147,7 +152,7 @@ adftool_dictionary_index_alloc (hid_t file, size_t default_order,
   return ret;
 }
 
-static inline void
+static void
 adftool_dictionary_index_free (struct adftool_dictionary_index *index)
 {
   if (index != NULL)

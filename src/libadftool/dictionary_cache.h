@@ -23,14 +23,18 @@
 #  define N_(String) (String)
 # endif
 
+# define DEALLOC_DICTIONARY_CACHE \
+  ATTRIBUTE_DEALLOC (adftool_dictionary_cache_free, 1)
+
 struct adftool_dictionary_cache;
 
-static struct adftool_dictionary_cache *adftool_dictionary_cache_alloc (size_t
-									n_entries,
-									size_t
-									max_entries_length);
 static void adftool_dictionary_cache_free (struct adftool_dictionary_cache
 					   *cache);
+
+DEALLOC_DICTIONARY_CACHE
+  static struct adftool_dictionary_cache
+  *adftool_dictionary_cache_alloc (size_t n_entries,
+				   size_t max_entries_length);
 
 static int adftool_dictionary_cache_setup (struct adftool_dictionary_cache
 					   *cache, hid_t file);

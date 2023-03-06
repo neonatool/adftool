@@ -21,17 +21,22 @@
 #  define N_(String) (String)
 # endif
 
+# define DEALLOC_QUADS_INDEX \
+  ATTRIBUTE_DEALLOC (adftool_quads_index_free, 1)
+
 struct adftool_quads_index;
 
-static struct adftool_quads_index *adftool_quads_index_alloc (hid_t file,
-							      size_t
-							      default_order,
-							      const char
-							      *order,
-							      struct
-							      adftool_quads
-							      *data);
 static void adftool_quads_index_free (struct adftool_quads_index *index);
+
+DEALLOC_QUADS_INDEX
+  static struct adftool_quads_index *adftool_quads_index_alloc (hid_t file,
+								size_t
+								default_order,
+								const char
+								*order,
+								struct
+								adftool_quads
+								*data);
 
 static int
 adftool_quads_index_find (struct adftool_quads_index *index,

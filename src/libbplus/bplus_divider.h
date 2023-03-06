@@ -8,15 +8,18 @@
 # include <assert.h>
 # include <stdbool.h>
 
+# define DEALLOC_DIVIDER \
+  ATTRIBUTE_DEALLOC (divider_free, 1)
+
   /* The node divider is responsible for taking a node and an extra
      record to add, allocate a new node if needed, and deal the
      records more equally between both if the new record does not fit
      in. It does not actually emit the store requests yet. */
 struct bplus_divider;
 
-static struct bplus_divider *divider_alloc (size_t order);
-
 static void divider_free (struct bplus_divider *divider);
+
+DEALLOC_DIVIDER static struct bplus_divider *divider_alloc (size_t order);
 
 static void divider_setup (struct bplus_divider *divider, uint32_t node_id,
 			   const struct bplus_node *node, uint32_t extra_key,

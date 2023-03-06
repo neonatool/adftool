@@ -2,7 +2,10 @@
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 ** API cleaning
-Undocumented and internal entry points are now marked as deprecated.
+Undocumented and internal entry points are now marked as
+deprecated. The compiler is informed about which destructor must be
+called for allocation functions.
+
 ** Bug fix: reading short strings from a dictionary now correctly NUL-terminates the result
 Reading a short string would put a NUL character at position 12,
 leaving bytes before that uninitialized. Now the NUL character is put

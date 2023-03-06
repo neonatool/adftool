@@ -26,6 +26,7 @@
    std::ostream::_write, which does not exist. Boom. */
 #define GNULIB_NAMESPACE adftool_r_compat
 
+#include <attribute.h>
 #include <adftool.h>
 #include <Rcpp.h>
 #include <cmath>

@@ -49,6 +49,50 @@
 #  define LIBADFTOOL_DEPRECATED
 # endif
 
+# ifdef ATTRIBUTE_MALLOC
+#  define LIBADFTOOL_MALLOC ATTRIBUTE_MALLOC
+# else
+#  warning "Adftool does not know how to declare a malloc-like function."
+#  define LIBADFTOOL_MALLOC
+# endif
+
+# ifdef ATTRIBUTE_DEALLOC
+#  define LIBADFTOOL_DEALLOC ATTRIBUTE_DEALLOC
+# else
+#  warning "Adftool does not know how to declare a destructor."
+#  define LIBADFTOOL_DEALLOC()
+# endif
+
+# define LIBADFTOOL_DEALLOC_FILE \
+  LIBADFTOOL_DEALLOC (adftool_file_close, 1)
+
+# define LIBADFTOOL_DEALLOC_TERM \
+  LIBADFTOOL_DEALLOC (adftool_term_free, 1)
+
+# define LIBADFTOOL_DEALLOC_STATEMENT \
+  LIBADFTOOL_DEALLOC (adftool_statement_free, 1)
+
+# define LIBADFTOOL_DEALLOC_FIR \
+  LIBADFTOOL_DEALLOC (adftool_fir_free, 1)
+
+# define LIBADFTOOL_DEALLOC_TIMESPEC \
+  LIBADFTOOL_DEALLOC (adftool_timespec_free, 1)
+
+# define LIBADFTOOL_DEALLOC_ARRAY_LONG \
+  LIBADFTOOL_DEALLOC (adftool_array_long_free, 1)
+
+# define LIBADFTOOL_DEALLOC_ARRAY_DOUBLE \
+  LIBADFTOOL_DEALLOC (adftool_array_double_free, 1)
+
+# define LIBADFTOOL_DEALLOC_ARRAY_SIZE_T \
+  LIBADFTOOL_DEALLOC (adftool_array_size_t_free, 1)
+
+# define LIBADFTOOL_DEALLOC_ARRAY_UINT64_T \
+  LIBADFTOOL_DEALLOC (adftool_array_uint64_t_free, 1)
+
+# define LIBADFTOOL_DEALLOC_ARRAY_POINTER \
+  LIBADFTOOL_DEALLOC (adftool_array_pointer_free, 1)
+
 # ifdef __cplusplus
 extern "C"
 {
@@ -56,11 +100,12 @@ extern "C"
 
   struct adftool_file;
 
-  extern LIBADFTOOL_API
-    struct adftool_file *adftool_file_open (const char *filename, int write);
   extern LIBADFTOOL_API void adftool_file_close (struct adftool_file *file);
 
-  extern LIBADFTOOL_API
+  LIBADFTOOL_DEALLOC_FILE extern LIBADFTOOL_API
+    struct adftool_file *adftool_file_open (const char *filename, int write);
+
+  LIBADFTOOL_DEALLOC_FILE extern LIBADFTOOL_API
     struct adftool_file *adftool_file_open_data (size_t nbytes,
 						 const void *bytes);
 
@@ -69,8 +114,11 @@ extern "C"
 				  size_t max, void *bytes);
 
   struct adftool_term;
-  extern LIBADFTOOL_API struct adftool_term *adftool_term_alloc (void);
+
   extern LIBADFTOOL_API void adftool_term_free (struct adftool_term *term);
+
+  LIBADFTOOL_DEALLOC_TERM extern LIBADFTOOL_API
+    struct adftool_term *adftool_term_alloc (void);
 
   extern LIBADFTOOL_API
     void adftool_term_copy (struct adftool_term *dest,
@@ -153,10 +201,12 @@ extern "C"
 			       size_t max, char *str);
 
   struct adftool_statement;
-  extern LIBADFTOOL_API
-    struct adftool_statement *adftool_statement_alloc (void);
+
   extern LIBADFTOOL_API
     void adftool_statement_free (struct adftool_statement *statement);
+
+  LIBADFTOOL_DEALLOC_STATEMENT extern LIBADFTOOL_API
+    struct adftool_statement *adftool_statement_alloc (void);
 
 # define ADFTOOL_STATEMENT_NOT_DELETED ((uint64_t) (-1))
 
@@ -305,7 +355,10 @@ extern "C"
     size_t adftool_fir_auto_order (double sfreq,
 				   double tightest_transition_bandwidth);
 
-  extern LIBADFTOOL_API struct adftool_fir *adftool_fir_alloc (size_t order);
+  extern LIBADFTOOL_API void adftool_fir_free (struct adftool_fir *filter);
+
+  LIBADFTOOL_DEALLOC_FIR extern LIBADFTOOL_API
+    struct adftool_fir *adftool_fir_alloc (size_t order);
 
   extern LIBADFTOOL_API
     size_t adftool_fir_order (const struct adftool_fir *filter);
@@ -313,8 +366,6 @@ extern "C"
   extern LIBADFTOOL_API
     void adftool_fir_coefficients (const struct adftool_fir *filter,
 				   double *coefficients);
-
-  extern LIBADFTOOL_API void adftool_fir_free (struct adftool_fir *filter);
 
   extern LIBADFTOOL_API
     void adftool_fir_design_bandpass (struct adftool_fir *filter,
@@ -330,9 +381,10 @@ extern "C"
   /* These API functions are needed for emscripten, because it’s not
      easy to compute the address of something in JS. */
 
-  extern LIBADFTOOL_API struct timespec *adftool_timespec_alloc (void);
-
   extern LIBADFTOOL_API void adftool_timespec_free (struct timespec *time);
+
+  LIBADFTOOL_MALLOC LIBADFTOOL_DEALLOC_TIMESPEC
+    extern LIBADFTOOL_API struct timespec *adftool_timespec_alloc (void);
 
   extern LIBADFTOOL_API
     void adftool_timespec_set_js (struct timespec *time, double milliseconds);
@@ -343,10 +395,11 @@ extern "C"
   struct adftool_array_long;
 
   extern LIBADFTOOL_API
-    struct adftool_array_long *adftool_array_long_alloc (size_t n_elements);
-
-  extern LIBADFTOOL_API
     void adftool_array_long_free (struct adftool_array_long *array);
+
+  LIBADFTOOL_MALLOC LIBADFTOOL_DEALLOC_ARRAY_LONG
+    extern LIBADFTOOL_API
+    struct adftool_array_long *adftool_array_long_alloc (size_t n_elements);
 
   extern LIBADFTOOL_API
     long *adftool_array_long_address (struct adftool_array_long *array,
@@ -363,11 +416,12 @@ extern "C"
   struct adftool_array_double;
 
   extern LIBADFTOOL_API
+    void adftool_array_double_free (struct adftool_array_double *array);
+
+  LIBADFTOOL_MALLOC LIBADFTOOL_DEALLOC_ARRAY_DOUBLE
+    extern LIBADFTOOL_API
     struct adftool_array_double *adftool_array_double_alloc (size_t
 							     n_elements);
-
-  extern LIBADFTOOL_API
-    void adftool_array_double_free (struct adftool_array_double *array);
 
   extern LIBADFTOOL_API
     double *adftool_array_double_address (struct adftool_array_double *array,
@@ -384,11 +438,12 @@ extern "C"
   struct adftool_array_size_t;
 
   extern LIBADFTOOL_API
+    void adftool_array_size_t_free (struct adftool_array_size_t *array);
+
+  LIBADFTOOL_MALLOC LIBADFTOOL_DEALLOC_ARRAY_SIZE_T
+    extern LIBADFTOOL_API
     struct adftool_array_size_t *adftool_array_size_t_alloc (size_t
 							     n_elements);
-
-  extern LIBADFTOOL_API
-    void adftool_array_size_t_free (struct adftool_array_size_t *array);
 
   extern LIBADFTOOL_API
     size_t *adftool_array_size_t_address (struct adftool_array_size_t *array,
@@ -405,11 +460,12 @@ extern "C"
   struct adftool_array_uint64_t;
 
   extern LIBADFTOOL_API
+    void adftool_array_uint64_t_free (struct adftool_array_uint64_t *array);
+
+  LIBADFTOOL_MALLOC LIBADFTOOL_DEALLOC_ARRAY_UINT64_T
+    extern LIBADFTOOL_API
     struct adftool_array_uint64_t *adftool_array_uint64_t_alloc (size_t
 								 n_elements);
-
-  extern LIBADFTOOL_API
-    void adftool_array_uint64_t_free (struct adftool_array_uint64_t *array);
 
   extern LIBADFTOOL_API
     uint64_t *
@@ -441,11 +497,11 @@ extern "C"
   struct adftool_array_pointer;
 
   extern LIBADFTOOL_API
+    void adftool_array_pointer_free (struct adftool_array_pointer *array);
+
+  LIBADFTOOL_DEALLOC_ARRAY_POINTER extern LIBADFTOOL_API
     struct adftool_array_pointer *adftool_array_pointer_alloc (size_t
 							       n_elements);
-
-  extern LIBADFTOOL_API
-    void adftool_array_pointer_free (struct adftool_array_pointer *array);
 
   extern LIBADFTOOL_API
     void **adftool_array_pointer_address (struct adftool_array_pointer *array,

@@ -8,6 +8,9 @@
 # include <stdlib.h>
 # include <string.h>
 
+# define DEALLOC_EXPLORER \
+  ATTRIBUTE_DEALLOC (explorer_free, 1)
+
 /* The explorer is a process that is constructed from one or two
    nodes, that are the parents for a specific key (parent of the first
    instance and parent for the first key after the last instance). It
@@ -18,9 +21,10 @@
 
 struct bplus_explorer;
 
-static struct bplus_explorer *explorer_alloc (struct bplus_tree *tree);
-
 static void explorer_free (struct bplus_explorer *explorer);
+
+DEALLOC_EXPLORER
+  static struct bplus_explorer *explorer_alloc (struct bplus_tree *tree);
 
   /* The setup function may fail, if the nodes are leaves. In this
      case, a non-zero value is returned. */

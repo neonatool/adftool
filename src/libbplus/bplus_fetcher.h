@@ -7,11 +7,15 @@
 # include <string.h>
 # include <assert.h>
 
+# define DEALLOC_FETCHER \
+  ATTRIBUTE_DEALLOC (fetcher_free, 1)
+
 struct bplus_fetcher;
 
-static struct bplus_fetcher *fetcher_alloc (struct bplus_tree *tree);
-
 static void fetcher_free (struct bplus_fetcher *fetcher);
+
+DEALLOC_FETCHER
+  static struct bplus_fetcher *fetcher_alloc (struct bplus_tree *tree);
 
 static void fetcher_setup (struct bplus_fetcher *fetcher, uint32_t node_id);
 

@@ -24,10 +24,14 @@
 #  define N_(String) (String)
 # endif
 
+# define DEALLOC_QUADS \
+  ATTRIBUTE_DEALLOC (adftool_quads_free, 1)
+
 struct adftool_quads;
 
-static struct adftool_quads *adftool_quads_alloc (void);
 static void adftool_quads_free (struct adftool_quads *quads);
+
+DEALLOC_QUADS static struct adftool_quads *adftool_quads_alloc (void);
 
 static int adftool_quads_setup (struct adftool_quads *quads, hid_t file);
 

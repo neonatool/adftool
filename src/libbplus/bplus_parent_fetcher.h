@@ -8,6 +8,9 @@
 # include <string.h>
 # include <assert.h>
 
+# define DEALLOC_PARENT_FETCHER \
+  ATTRIBUTE_DEALLOC (parent_fetcher_free, 1)
+
   /* The parent fetcher not only fetches the parent of a given node,
      it also finds where the child is in the parent. More
      specifically, it returns the number of children that are strictly
@@ -15,9 +18,11 @@
      1 fetch operation. */
 struct bplus_parent_fetcher;
 
-static struct bplus_parent_fetcher *parent_fetcher_alloc (struct bplus_tree
-							  *tree);
 static void parent_fetcher_free (struct bplus_parent_fetcher *fetcher);
+
+DEALLOC_PARENT_FETCHER
+  static struct bplus_parent_fetcher *parent_fetcher_alloc (struct
+							    bplus_tree *tree);
 
 static void parent_fetcher_setup (struct bplus_parent_fetcher *fetcher,
 				  uint32_t child_id,

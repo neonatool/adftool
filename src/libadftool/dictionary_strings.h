@@ -23,12 +23,17 @@
 #  define N_(String) (String)
 # endif
 
+# define DEALLOC_DICTIONARY_STRING \
+  ATTRIBUTE_DEALLOC (adftool_dictionary_strings_free, 1)
+
 struct adftool_dictionary_strings;
 
-static struct adftool_dictionary_strings
-  *adftool_dictionary_strings_alloc (void);
 static void
 adftool_dictionary_strings_free (struct adftool_dictionary_strings *strings);
+
+DEALLOC_DICTIONARY_STRING
+  static struct adftool_dictionary_strings
+  *adftool_dictionary_strings_alloc (void);
 
 static int
 adftool_dictionary_strings_setup (struct adftool_dictionary_strings *strings,

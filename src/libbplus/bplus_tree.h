@@ -6,11 +6,14 @@
 # include <stdlib.h>
 # include <string.h>
 
+# define DEALLOC_TREE \
+  ATTRIBUTE_DEALLOC (tree_free, 1)
+
 struct bplus_tree;
 
-static inline struct bplus_tree *tree_alloc (size_t order);
+static void tree_free (struct bplus_tree *tree);
 
-static inline void tree_free (struct bplus_tree *tree);
+DEALLOC_TREE static struct bplus_tree *tree_alloc (size_t order);
 
 static inline size_t tree_order (struct bplus_tree *tree);
 
@@ -38,7 +41,7 @@ struct bplus_tree
   uint32_t *node_values;
 };
 
-static inline struct bplus_tree *
+static struct bplus_tree *
 tree_alloc (size_t order)
 {
   struct bplus_tree *tree = malloc (sizeof (struct bplus_tree));
@@ -77,7 +80,7 @@ tree_alloc (size_t order)
   return tree;
 }
 
-static inline void
+static void
 tree_free (struct bplus_tree *tree)
 {
   if (tree != NULL)

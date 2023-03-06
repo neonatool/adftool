@@ -8,14 +8,18 @@
 # include <string.h>
 # include <assert.h>
 
+# define DEALLOC_REPARENTOR \
+  ATTRIBUTE_DEALLOC (reparentor_free, 1)
+
 /* The reparentor will get a node, and make sure that all of its
    children recognize it as parent. */
 
 struct bplus_reparentor;
 
-static struct bplus_reparentor *reparentor_alloc (struct bplus_tree *tree);
-
 static void reparentor_free (struct bplus_reparentor *reparentor);
+
+DEALLOC_REPARENTOR
+  static struct bplus_reparentor *reparentor_alloc (struct bplus_tree *tree);
 
   /* This works even if the node is a leaf, in which case nothing will
      be done. */

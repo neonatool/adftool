@@ -10,11 +10,15 @@
 # include "bplus_reparentor.h"
 # include "bplus_fetcher.h"
 
+# define DEALLOC_GROWTH \
+  ATTRIBUTE_DEALLOC (growth_free, 1)
+
 struct bplus_growth;
 
-static struct bplus_growth *growth_alloc (struct bplus_tree *tree);
-
 static void growth_free (struct bplus_growth *growth);
+
+DEALLOC_GROWTH
+  static struct bplus_growth *growth_alloc (struct bplus_tree *tree);
 
 static void growth_setup (struct bplus_growth *growth);
 

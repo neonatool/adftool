@@ -6,13 +6,17 @@
 # include <stdlib.h>
 # include <string.h>
 
+# define DEALLOC_RANGE \
+  ATTRIBUTE_DEALLOC (range_free, 1)
+
   /* A range is a list of leaves, with a start and stop key
      position. You can iterate over the range. */
 struct bplus_range;
 
-static inline struct bplus_range *range_alloc (struct bplus_tree *tree);
+static void range_free (struct bplus_range *range);
 
-static inline void range_free (struct bplus_range *range);
+DEALLOC_RANGE
+  static struct bplus_range *range_alloc (struct bplus_tree *tree);
 
   /* May fail if the head or tail aren’t leaves. In this case, return
      non-zero. Otherwise, return 0. */
@@ -71,7 +75,7 @@ struct bplus_range
   struct bplus_fetcher *fetcher_next;
 };
 
-static inline struct bplus_range *
+static struct bplus_range *
 range_alloc (struct bplus_tree *tree)
 {
   struct bplus_range *range = malloc (sizeof (struct bplus_range));
@@ -103,7 +107,7 @@ range_alloc (struct bplus_tree *tree)
   return range;
 }
 
-static inline void
+static void
 range_free (struct bplus_range *range)
 {
   if (range != NULL)

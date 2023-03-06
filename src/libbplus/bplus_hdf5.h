@@ -6,11 +6,14 @@
 # include <stdlib.h>
 # include <string.h>
 
+# define DEALLOC_HDF5_TABLE \
+  ATTRIBUTE_DEALLOC (hdf5_table_free, 1)
+
 struct bplus_hdf5_table;
 
-static inline struct bplus_hdf5_table *hdf5_table_alloc (void);
+static void hdf5_table_free (struct bplus_hdf5_table *table);
 
-static inline void hdf5_table_free (struct bplus_hdf5_table *table);
+DEALLOC_HDF5_TABLE static struct bplus_hdf5_table *hdf5_table_alloc (void);
 
 static inline int hdf5_table_set (struct bplus_hdf5_table *table, hid_t data);
 
@@ -41,7 +44,7 @@ struct bplus_hdf5_table
   size_t order;
 };
 
-static inline struct bplus_hdf5_table *
+static struct bplus_hdf5_table *
 hdf5_table_alloc (void)
 {
   struct bplus_hdf5_table *ret = malloc (sizeof (struct bplus_hdf5_table));
@@ -54,7 +57,7 @@ hdf5_table_alloc (void)
   return ret;
 }
 
-static inline void
+static void
 hdf5_table_free (struct bplus_hdf5_table *table)
 {
   if (table != NULL)

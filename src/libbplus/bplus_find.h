@@ -107,7 +107,7 @@ _find_range (struct bplus_tree *tree, bplus_fetch_cb fetch_impl,
 cleanup_user_data:
   free (user_data);
 cleanup_finder:
-  finder_free (finder);
+  bplus_finder_free (finder);
 cleanup_root_node:
   free (root_keys);
   free (root_values);

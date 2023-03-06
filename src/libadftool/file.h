@@ -40,14 +40,19 @@ ensure_init (void)
     }
 }
 
+# define DEALLOC_FILE \
+  ATTRIBUTE_DEALLOC (adftool_file_free, 1)
+
 struct adftool_file;
 
-static inline
+MAYBE_UNUSED static void adftool_file_free (struct adftool_file *cache);
+
+MAYBE_UNUSED DEALLOC_FILE
+  static
   struct adftool_file *adftool_file_alloc (hid_t hdf5_file,
 					   size_t default_order,
 					   size_t n_cache_entries,
 					   size_t max_cache_length);
-static inline void adftool_file_free (struct adftool_file *cache);
 
 static int adftool_file_lookup (struct adftool_file *file,
 				const struct adftool_statement *pattern,
@@ -73,7 +78,7 @@ struct adftool_file
   struct adftool_quads_index *indices[6];
 };
 
-static inline struct adftool_file *
+static struct adftool_file *
 adftool_file_alloc (hid_t file, size_t default_order,
 		    size_t n_cache_entries, size_t max_cache_length)
 {

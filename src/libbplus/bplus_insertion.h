@@ -6,12 +6,15 @@
 # include <stdlib.h>
 # include <string.h>
 
+# define DEALLOC_INSERTION \
+  ATTRIBUTE_DEALLOC (insertion_free, 1)
+
 struct bplus_insertion;
 
-static inline
-  struct bplus_insertion *insertion_alloc (struct bplus_tree *tree);
+static void insertion_free (struct bplus_insertion *insertion);
 
-static inline void insertion_free (struct bplus_insertion *insertion);
+DEALLOC_INSERTION
+  static struct bplus_insertion *insertion_alloc (struct bplus_tree *tree);
 
   /* Start the insertion problem: insert record -> record in the
      tree. If back, insert it as the last position of the
@@ -113,7 +116,7 @@ struct bplus_insertion
   bool parent_fetcher_done;
 };
 
-static inline struct bplus_insertion *
+static struct bplus_insertion *
 insertion_alloc (struct bplus_tree *tree)
 {
   struct bplus_insertion *ret = malloc (sizeof (struct bplus_insertion));
@@ -150,7 +153,7 @@ insertion_alloc (struct bplus_tree *tree)
   return ret;
 }
 
-static inline void
+static void
 insertion_free (struct bplus_insertion *insertion)
 {
   if (insertion != NULL)

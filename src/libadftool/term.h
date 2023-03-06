@@ -25,6 +25,9 @@
 #  define N_(String) (String)
 # endif
 
+# define DEALLOC_TERM \
+  ATTRIBUTE_DEALLOC (term_free, 1)
+
 enum adftool_term_type
 {
   TERM_BLANK = 0,
@@ -44,8 +47,9 @@ struct adftool_term
    length of 0 -> it lives in the bytes dataset. Thus, I use
    2^31 - 1 to encode the empty term. */
 
-static inline struct adftool_term *term_alloc (void);
-static inline void term_free (struct adftool_term *term);
+MAYBE_UNUSED static void term_free (struct adftool_term *term);
+
+MAYBE_UNUSED DEALLOC_TERM static struct adftool_term *term_alloc (void);
 
 static void term_set_blank (struct adftool_term *term, const char *id);
 static void term_set_named (struct adftool_term *term, const char *id);
@@ -92,7 +96,7 @@ static inline int term_as_double (const struct adftool_term *term,
 static inline int term_as_date (const struct adftool_term *term,
 				struct timespec *nspec);
 
-static inline struct adftool_term *
+static struct adftool_term *
 term_alloc (void)
 {
   struct adftool_term *ret = malloc (sizeof (struct adftool_term));
@@ -115,7 +119,7 @@ term_alloc (void)
   return ret;
 }
 
-static inline void
+static void
 term_free (struct adftool_term *term)
 {
   if (term != NULL)

@@ -7,6 +7,9 @@
 # include <string.h>
 # include <assert.h>
 
+# define DEALLOC_ANALYZER \
+  ATTRIBUTE_DEALLOC (analyzer_free, 1)
+
   /* The key analyzer is a special process that takes a set of SORTED
      keys and a searched key. You can ask to get the first or the last
      occurence (or both) of the search key, and it will request you to
@@ -16,8 +19,11 @@ struct bplus_analyzer;
 
 static int analyzer_init (struct bplus_analyzer *analyzer, size_t order);
 static void analyzer_deinit (struct bplus_analyzer *analyzer);
-static inline struct bplus_analyzer *analyzer_alloc (size_t order);
-static inline void analyzer_free (struct bplus_analyzer *analyzer);
+
+MAYBE_UNUSED static void analyzer_free (struct bplus_analyzer *analyzer);
+
+MAYBE_UNUSED DEALLOC_ANALYZER
+  static struct bplus_analyzer *analyzer_alloc (size_t order);
 
 static void analyzer_setup (struct bplus_analyzer *analyzer, size_t n_keys,
 			    const uint32_t * keys,
@@ -79,7 +85,7 @@ analyzer_deinit (struct bplus_analyzer *analyzer)
   free (analyzer->keys);
 }
 
-static inline struct bplus_analyzer *
+static struct bplus_analyzer *
 analyzer_alloc (size_t order)
 {
   struct bplus_analyzer *analyzer = malloc (sizeof (struct bplus_analyzer));
@@ -94,7 +100,7 @@ analyzer_alloc (size_t order)
   return analyzer;
 }
 
-static inline void
+static void
 analyzer_free (struct bplus_analyzer *analyzer)
 {
   if (analyzer != NULL)

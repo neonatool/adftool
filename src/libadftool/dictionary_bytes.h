@@ -21,11 +21,17 @@
 #  define N_(String) (String)
 # endif
 
+# define DEALLOC_DICTIONARY_BYTES \
+  ATTRIBUTE_DEALLOC (adftool_dictionary_bytes_free, 1)
+
 struct adftool_dictionary_bytes;
 
-static struct adftool_dictionary_bytes *adftool_dictionary_bytes_alloc (void);
 static void adftool_dictionary_bytes_free (struct adftool_dictionary_bytes
 					   *bytes);
+
+DEALLOC_DICTIONARY_BYTES
+  static struct adftool_dictionary_bytes
+  *adftool_dictionary_bytes_alloc (void);
 
 static int adftool_dictionary_bytes_setup (struct adftool_dictionary_bytes
 					   *bytes, hid_t file);

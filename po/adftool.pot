@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.5.3.6-6b61-dirty\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-03-06 16:58+0100\n"
+"POT-Creation-Date: 2023-03-06 16:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -817,123 +817,123 @@ msgstr ""
 msgid "The term is not in N3."
 msgstr ""
 
-#: src/adftool_r.cc:573
+#: src/adftool_r.cc:574
 msgid "Construct a new, empty term."
 msgstr ""
 
-#: src/adftool_r.cc:574
+#: src/adftool_r.cc:575
 msgid "Copy the other term."
 msgstr ""
 
-#: src/adftool_r.cc:575
+#: src/adftool_r.cc:576
 msgid "Initialize the term as a blank term."
 msgstr ""
 
-#: src/adftool_r.cc:576
+#: src/adftool_r.cc:577
 msgid "Initialize the term as an IRIREF term."
 msgstr ""
 
-#: src/adftool_r.cc:577
+#: src/adftool_r.cc:578
 msgid "Initialize the term as a literal untagged string."
 msgstr ""
 
-#: src/adftool_r.cc:578
+#: src/adftool_r.cc:579
 msgid "Initialize the term as a typed literal string."
 msgstr ""
 
-#: src/adftool_r.cc:579
+#: src/adftool_r.cc:580
 msgid "Initialize the term as a lang-tagged string."
 msgstr ""
 
-#: src/adftool_r.cc:580
+#: src/adftool_r.cc:581
 msgid "Initialize the term as a literal integer."
 msgstr ""
 
-#: src/adftool_r.cc:581
+#: src/adftool_r.cc:582
 msgid "Initialize the term as a literal double."
 msgstr ""
 
-#: src/adftool_r.cc:582
+#: src/adftool_r.cc:583
 msgid ""
 "Initialize the term as a literal date with the number of seconds since the "
 "epoch, and the number of nanoseconds."
 msgstr ""
 
-#: src/adftool_r.cc:583
+#: src/adftool_r.cc:584
 msgid "Check whether the term is a blank node."
 msgstr ""
 
-#: src/adftool_r.cc:584
+#: src/adftool_r.cc:585
 msgid "Check whether the term is a named node."
 msgstr ""
 
-#: src/adftool_r.cc:585
+#: src/adftool_r.cc:586
 msgid "Check whether the term is a literal node."
 msgstr ""
 
-#: src/adftool_r.cc:586
+#: src/adftool_r.cc:587
 msgid ""
 "Check whether the term is a literal node with a type (as opposed to a "
 "langtag)."
 msgstr ""
 
-#: src/adftool_r.cc:587
+#: src/adftool_r.cc:588
 msgid "Check whether the term is a literal node with a language tag."
 msgstr ""
 
-#: src/adftool_r.cc:588
+#: src/adftool_r.cc:589
 msgid "Return the value of the term."
 msgstr ""
 
-#: src/adftool_r.cc:589
+#: src/adftool_r.cc:590
 msgid "Return the type or langtag."
 msgstr ""
 
-#: src/adftool_r.cc:590
+#: src/adftool_r.cc:591
 msgid ""
 "Try and convert the term as an integer. Return a 0-length array if it cannot "
 "be converted, or a 1-integer-long array if it can."
 msgstr ""
 
-#: src/adftool_r.cc:591
+#: src/adftool_r.cc:592
 msgid ""
 "Try and convert the term as a double. Return a 0-length array if it cannot "
 "be converted, or a 1-double-long array if it can."
 msgstr ""
 
-#: src/adftool_r.cc:592
+#: src/adftool_r.cc:593
 msgid ""
 "Try and convert the term as a date. Return an empty list if the conversion "
 "failed, or a list with keys \"tv_sec\" and \"tv_nsec\" otherwise."
 msgstr ""
 
-#: src/adftool_r.cc:593
+#: src/adftool_r.cc:594
 msgid ""
 "Compare the term order with the other term. Return a negative number if the "
 "main term comes before the other term, a positive number if it comes after, "
 "and 0 if both terms are equal."
 msgstr ""
 
-#: src/adftool_r.cc:594
+#: src/adftool_r.cc:595
 msgid ""
 "Try and parse the string as a N3 term. If successful, return a list with "
 "\"success\" set to TRUE and \"rest\" set to the suffix that has not been "
 "used by the parser. Otherwise, return a list with \"success\" set to FALSE."
 msgstr ""
 
-#: src/adftool_r.cc:595
+#: src/adftool_r.cc:596
 msgid "Return as a string the N3 encoding of the term."
 msgstr ""
 
-#: src/adftool_r.cc:598
+#: src/adftool_r.cc:599
 msgid "Construct a new, empty pattern."
 msgstr ""
 
-#: src/adftool_r.cc:599
+#: src/adftool_r.cc:600
 msgid "Copy the other pattern."
 msgstr ""
 
-#: src/adftool_r.cc:600
+#: src/adftool_r.cc:601
 msgid ""
 "Initialize parts of the pattern from the argument, a list. For each of the "
 "keys, subject, predicate, object and graph, if the list has a value, set the "
@@ -943,17 +943,17 @@ msgid ""
 "undelete the statement. Otherwise, set its deletion date."
 msgstr ""
 
-#: src/adftool_r.cc:601
+#: src/adftool_r.cc:602
 msgid "Return all the terms as a named vector."
 msgstr ""
 
-#: src/adftool_r.cc:602
+#: src/adftool_r.cc:603
 msgid ""
 "Return the deletion date as numeric vector. If there is no deletion date, "
 "return an empty numeric vector."
 msgstr ""
 
-#: src/adftool_r.cc:603
+#: src/adftool_r.cc:604
 msgid ""
 "Compare the pattern order with the other pattern. Return a negative number "
 "if the main pattern comes before the other pattern, a positive number if it "
@@ -963,98 +963,98 @@ msgid ""
 "objects."
 msgstr ""
 
-#: src/adftool_r.cc:606
+#: src/adftool_r.cc:607
 msgid ""
 "Construct a band-pass filter, acting on a signal of the given sampling "
 "frequency, and letting through frequencies from low to high."
 msgstr ""
 
-#: src/adftool_r.cc:607
+#: src/adftool_r.cc:608
 msgid ""
 "Construct a band-pass filter, acting on a signal of the given sampling "
 "frequency, and letting through frequencies from low to high, by specifying "
 "the low and high transition bandwidths."
 msgstr ""
 
-#: src/adftool_r.cc:608
+#: src/adftool_r.cc:609
 msgid "Return the coefficients of the filter."
 msgstr ""
 
-#: src/adftool_r.cc:609
+#: src/adftool_r.cc:610
 msgid "Apply the filter on new data."
 msgstr ""
 
-#: src/adftool_r.cc:612
+#: src/adftool_r.cc:613
 msgid "Open a file on disk."
 msgstr ""
 
-#: src/adftool_r.cc:613
+#: src/adftool_r.cc:614
 msgid "Open an anonymous file on disk with initial data."
 msgstr ""
 
-#: src/adftool_r.cc:614
+#: src/adftool_r.cc:615
 msgid "Close the file early."
 msgstr ""
 
-#: src/adftool_r.cc:615
+#: src/adftool_r.cc:616
 msgid "Return the file contents as bytes."
 msgstr ""
 
-#: src/adftool_r.cc:616
+#: src/adftool_r.cc:617
 msgid "Search for a pattern in file, return all the matches."
 msgstr ""
 
-#: src/adftool_r.cc:617
+#: src/adftool_r.cc:618
 msgid ""
 "Search for all objects in the file that are related to the subject by "
 "predicate, return all the matches."
 msgstr ""
 
-#: src/adftool_r.cc:618
+#: src/adftool_r.cc:619
 msgid ""
 "Search for all subjects in the file that are related to the objects by "
 "predicate, return all the matches."
 msgstr ""
 
-#: src/adftool_r.cc:619
+#: src/adftool_r.cc:620
 msgid ""
 "Return all the integer properties of the subject in file for the predicate."
 msgstr ""
 
-#: src/adftool_r.cc:620
+#: src/adftool_r.cc:621
 msgid ""
 "Return all the numeric properties of the subject in file for the predicate."
 msgstr ""
 
-#: src/adftool_r.cc:621
+#: src/adftool_r.cc:622
 msgid ""
 "Return all the date properties of the subject in file for the predicate."
 msgstr ""
 
-#: src/adftool_r.cc:622
+#: src/adftool_r.cc:623
 msgid ""
 "Return all the possibly lang-tagged property values of the subject in file "
 "for the predicate. Return them as a list of string vectors, named by the "
 "langtags. The non-tagged strings have an empty name."
 msgstr ""
 
-#: src/adftool_r.cc:623
+#: src/adftool_r.cc:624
 msgid ""
 "Try and delete all statements that match a pattern in file. Return wether it "
 "succeeded."
 msgstr ""
 
-#: src/adftool_r.cc:624
+#: src/adftool_r.cc:625
 msgid "Try and insert a new statement in file. Return wether it succeeded."
 msgstr ""
 
-#: src/adftool_r.cc:625
+#: src/adftool_r.cc:626
 msgid ""
 "Try and set all the EEG data at once. Return wether it succeeded. The data "
 "must be row-oriented."
 msgstr ""
 
-#: src/adftool_r.cc:626
+#: src/adftool_r.cc:627
 msgid ""
 "Read a temporal slice of a channel. If the request is larger than what is "
 "available, fill the rest with NAN values. The return value is a list, with "
@@ -1196,12 +1196,12 @@ msgid ""
 "result than to the raw signal."
 msgstr ""
 
-#: src/libadftool/lexer.l:404
+#: src/libadftool/lexer.l:405
 #, c-format
 msgid "I don’t know how to represent namespaced terms yet, sorry.\n"
 msgstr ""
 
-#: src/libadftool/quads.h:469
+#: src/libadftool/quads.h:473
 #, c-format
 msgid "Could not extend the dataset.\n"
 msgstr ""

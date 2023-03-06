@@ -23,6 +23,9 @@
 #  define N_(String) (String)
 # endif
 
+# define DEALLOC_STATEMENT \
+  ATTRIBUTE_DEALLOC (statement_free, 1)
+
 struct adftool_statement
 {
   struct adftool_term *subject;
@@ -32,8 +35,9 @@ struct adftool_statement
   uint64_t deletion_date;
 };
 
-static struct adftool_statement *statement_alloc (void);
 static void statement_free (struct adftool_statement *statement);
+
+DEALLOC_STATEMENT static struct adftool_statement *statement_alloc (void);
 
 static void statement_set (struct adftool_statement *statement,
 			   struct adftool_term **subject,

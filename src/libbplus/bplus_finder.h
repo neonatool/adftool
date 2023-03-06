@@ -6,6 +6,9 @@
 # include <stdlib.h>
 # include <string.h>
 
+# define DEALLOC_FINDER \
+  ATTRIBUTE_DEALLOC (finder_free, 1)
+
   /* The finder process is a recursive explorer. It starts at the
      root, and advances both a "first" and a "last" leg until it
      touches leaves. The value produced by the finder is a range. This
@@ -14,30 +17,25 @@
 
 struct bplus_finder;
 
-static inline
-  struct bplus_finder *bplus_finder_alloc (struct bplus_tree *tree);
+static void finder_free (struct bplus_finder *finder);
 
-static inline void bplus_finder_free (struct bplus_finder *finder);
-
-static inline
-  void bplus_finder_setup (struct bplus_finder *finder,
-			   const struct bplus_key *search_key,
-			   uint32_t root_id, const struct bplus_node *root);
+DEALLOC_FINDER
+  static struct bplus_finder *finder_alloc (struct bplus_tree *tree);
 
 static inline
-  void bplus_finder_status (const struct bplus_finder *finder,
-			    int *done,
-			    struct bplus_range *result,
-			    size_t *n_fetch_requests,
-			    size_t start_fetch_request,
-			    size_t max_fetch_requests,
-			    size_t *fetch_rows,
-			    size_t *fetch_starts,
-			    size_t *fetch_lengths,
-			    size_t *n_compare_requests,
-			    size_t start_compare_request,
-			    size_t max_compare_requests,
-			    struct bplus_key *as, struct bplus_key *bs);
+  void finder_setup (struct bplus_finder *finder,
+		     const struct bplus_key *search_key, uint32_t root_id,
+		     const struct bplus_node *root);
+
+static inline
+  void finder_status (const struct bplus_finder *finder, int *done,
+		      struct bplus_range *result, size_t *n_fetch_requests,
+		      size_t start_fetch_request, size_t max_fetch_requests,
+		      size_t *fetch_rows, size_t *fetch_starts,
+		      size_t *fetch_lengths, size_t *n_compare_requests,
+		      size_t start_compare_request,
+		      size_t max_compare_requests, struct bplus_key *as,
+		      struct bplus_key *bs);
 
 # include "bplus_analyzer.h"
 # include "bplus_explorer.h"
@@ -62,7 +60,7 @@ struct bplus_finder
   struct bplus_analyzer last_leaf_analyzer;
 };
 
-static inline struct bplus_finder *
+static struct bplus_finder *
 finder_alloc (struct bplus_tree *tree)
 {
   struct bplus_finder *finder = malloc (sizeof (struct bplus_finder));
@@ -106,7 +104,7 @@ finder_alloc (struct bplus_tree *tree)
   return finder;
 }
 
-static inline void
+static void
 finder_free (struct bplus_finder *finder)
 {
   if (finder != NULL)
