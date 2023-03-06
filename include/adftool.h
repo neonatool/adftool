@@ -33,6 +33,22 @@
   LIBADFTOOL_EMSCRIPTEN_KEEPALIVE \
   LIBADFTOOL_DLL_EXPORTED
 
+# ifdef DEPRECATED
+#  define LIBADFTOOL_DEPRECATED DEPRECATED
+# else
+#  ifdef __GNUC__
+#   define LIBADFTOOL_DEPRECATED __attribute__((deprecated))
+#  endif
+#  if defined _WIN32 && !defined __CYGWIN__
+#   define LIBADFTOOL_DEPRECATED __declspec(deprecated)
+#  endif
+# endif
+
+# ifndef LIBADFTOOL_DEPRECATED
+#  warning "Adftool does not know how to declare a deprecated function for your platform."
+#  define LIBADFTOOL_DEPRECATED
+# endif
+
 # ifdef __cplusplus
 extern "C"
 {
@@ -51,19 +67,6 @@ extern "C"
   extern LIBADFTOOL_API
     size_t adftool_file_get_data (struct adftool_file *file, size_t start,
 				  size_t max, void *bytes);
-
-  extern LIBADFTOOL_API
-    int adftool_dictionary_get (struct adftool_file *file, uint32_t id,
-				size_t start, size_t max, size_t *length,
-				char *dest);
-  extern LIBADFTOOL_API
-    int adftool_dictionary_lookup (struct adftool_file *file,
-				   size_t length, const char *key, int *found,
-				   uint32_t * id);
-  /* insert will do nothing if the key is already present. */
-  extern LIBADFTOOL_API
-    int adftool_dictionary_insert (struct adftool_file *file, size_t length,
-				   const char *key, uint32_t * id);
 
   struct adftool_term;
   extern LIBADFTOOL_API struct adftool_term *adftool_term_alloc (void);
@@ -487,6 +490,20 @@ extern "C"
   extern LIBADFTOOL_API
     void *adftool_array_pointer_get (const struct adftool_array_pointer
 				     *array, size_t i);
+
+  /* Deprecated entry points, do not use. */
+  LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
+    int adftool_dictionary_get (struct adftool_file *file, uint32_t id,
+				size_t start, size_t max, size_t *length,
+				char *dest);
+  LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
+    int adftool_dictionary_lookup (struct adftool_file *file,
+				   size_t length, const char *key, int *found,
+				   uint32_t * id);
+  /* insert will do nothing if the key is already present. */
+  LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
+    int adftool_dictionary_insert (struct adftool_file *file, size_t length,
+				   const char *key, uint32_t * id);
 
 # ifdef __cplusplus
 }

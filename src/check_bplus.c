@@ -1,5 +1,6 @@
 #include <config.h>
 
+#include <attribute.h>
 #include <bplus.h>
 
 #include <check.h>

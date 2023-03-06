@@ -23,6 +23,7 @@
 #include <Python.h>
 #include <structmember.h>
 
+#include <attribute.h>
 #include <adftool.h>
 #include <locale.h>
 #include <time.h>

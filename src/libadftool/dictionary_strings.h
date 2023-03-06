@@ -303,14 +303,23 @@ adftool_dictionary_strings_get_a (const struct adftool_dictionary_strings
   else
     {
       *length = memory[12];
-      *data = malloc (13);
+      *data = NULL;
+      if (*length <= 12)
+	{
+	  *data = malloc (*length + 1);
+	}
+      else
+	{
+	  /* Failure: The thirteenth column of the strings dataset
+	     must contain either 0 or a number at most equal to 12. */
+	}
       if (*data == NULL)
 	{
 	  error = 1;
 	  goto clean_memory_space;
 	}
-      memcpy (*data, memory, 12);
-      (*data)[12] = '\0';
+      memcpy (*data, memory, *length);
+      (*data)[*length] = '\0';
     }
 clean_memory_space:
   H5Sclose (memory_space);

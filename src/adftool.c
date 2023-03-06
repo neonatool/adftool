@@ -6,6 +6,7 @@
 #include "relocatable.h"
 #include "progname.h"
 #include <locale.h>
+#include <attribute.h>
 #include <adftool.h>
 #include <getopt.h>
 #include <time.h>

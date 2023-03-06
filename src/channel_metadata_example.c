@@ -1,4 +1,5 @@
 #include <config.h>
+#include <attribute.h>
 #include <adftool.h>
 #include <hdf5.h>
 

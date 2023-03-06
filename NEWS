@@ -1,7 +1,12 @@
 #+title: What’s new in adftool
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
-
+** API cleaning
+Undocumented entry points are now marked as deprecated.
+** Bug fix: reading short strings from a dictionary now correctly NUL-terminates the result
+Reading a short string would put a NUL character at position 12,
+leaving bytes before that uninitialized. Now the NUL character is put
+at the correct position.
 
 * Noteworthy changes in release 0.5.3 (2023-03-03) [alpha]
 ** Fix the named node comparison and the literal comparison

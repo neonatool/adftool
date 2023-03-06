@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.5.3\n"
+"Project-Id-Version: adftool 0.5.3.5-a4a3\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-03-03 14:55+0100\n"
+"POT-Creation-Date: 2023-03-06 11:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,145 +18,145 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: src/adftool.c:53
+#: src/adftool.c:54
 #, c-format
 msgid "Not enough memory.\n"
 msgstr ""
 
-#: src/adftool.c:106 src/adftool.c:433 src/adftool.c:546
+#: src/adftool.c:107 src/adftool.c:434 src/adftool.c:547
 msgctxt "Command-line|Option|"
 msgid "lookup"
 msgstr ""
 
-#: src/adftool.c:108 src/adftool.c:434
+#: src/adftool.c:109 src/adftool.c:435
 msgctxt "Command-line|Option|"
 msgid "add"
 msgstr ""
 
-#: src/adftool.c:110 src/adftool.c:435 src/adftool.c:548
+#: src/adftool.c:111 src/adftool.c:436 src/adftool.c:549
 msgctxt "Command-line|Option|"
 msgid "remove"
 msgstr ""
 
-#: src/adftool.c:112 src/adftool.c:439 src/adftool.c:549
+#: src/adftool.c:113 src/adftool.c:440 src/adftool.c:550
 msgctxt "Command-line|Option|"
 msgid "get-eeg-data"
 msgstr ""
 
-#: src/adftool.c:114 src/adftool.c:442 src/adftool.c:496 src/adftool.c:550
+#: src/adftool.c:115 src/adftool.c:443 src/adftool.c:497 src/adftool.c:551
 msgctxt "Command-line|Option|"
 msgid "set-eeg-data"
 msgstr ""
 
-#: src/adftool.c:116 src/adftool.c:453 src/adftool.c:560
+#: src/adftool.c:117 src/adftool.c:454 src/adftool.c:561
 msgctxt "Command-line|Option|"
 msgid "find-channel-identifier"
 msgstr ""
 
-#: src/adftool.c:118 src/adftool.c:456 src/adftool.c:561
+#: src/adftool.c:119 src/adftool.c:457 src/adftool.c:562
 msgctxt "Command-line|Option|"
 msgid "channel-metadata"
 msgstr ""
 
-#: src/adftool.c:120 src/adftool.c:459 src/adftool.c:562
+#: src/adftool.c:121 src/adftool.c:460 src/adftool.c:563
 msgctxt "Command-line|Option|"
 msgid "add-channel-type"
 msgstr ""
 
-#: src/adftool.c:122 src/adftool.c:462 src/adftool.c:563
+#: src/adftool.c:123 src/adftool.c:463 src/adftool.c:564
 msgctxt "Command-line|Option|"
 msgid "channels-of-type"
 msgstr ""
 
-#: src/adftool.c:124 src/adftool.c:444
+#: src/adftool.c:125 src/adftool.c:445
 msgctxt "Command-line|Option|"
 msgid "eeg-metadata"
 msgstr ""
 
-#: src/adftool.c:126 src/adftool.c:449
+#: src/adftool.c:127 src/adftool.c:450
 msgctxt "Command-line|Option|"
 msgid "set-eeg-date"
 msgstr ""
 
-#: src/adftool.c:128 src/adftool.c:429
+#: src/adftool.c:129 src/adftool.c:430
 msgctxt "Command-line|Option|"
 msgid "subject"
 msgstr ""
 
-#: src/adftool.c:130 src/adftool.c:430
+#: src/adftool.c:131 src/adftool.c:431
 msgctxt "Command-line|Option|"
 msgid "predicate"
 msgstr ""
 
-#: src/adftool.c:132 src/adftool.c:431
+#: src/adftool.c:133 src/adftool.c:432
 msgctxt "Command-line|Option|"
 msgid "object"
 msgstr ""
 
-#: src/adftool.c:134 src/adftool.c:432
+#: src/adftool.c:135 src/adftool.c:433
 msgctxt "Command-line|Option|"
 msgid "graph"
 msgstr ""
 
-#: src/adftool.c:136 src/adftool.c:470
+#: src/adftool.c:137 src/adftool.c:471
 msgctxt "Command-line|Option|"
 msgid "deletion-date"
 msgstr ""
 
-#: src/adftool.c:138 src/adftool.c:471 src/adftool.c:718
+#: src/adftool.c:139 src/adftool.c:472 src/adftool.c:719
 msgctxt "Command-line|Option|"
 msgid "help"
 msgstr ""
 
-#: src/adftool.c:139 src/adftool.c:472
+#: src/adftool.c:140 src/adftool.c:473
 msgctxt "Command-line|Option|"
 msgid "version"
 msgstr ""
 
-#: src/adftool.c:174
+#: src/adftool.c:175
 #, c-format
 msgid "The argument to \"%s\" must be a number.\n"
 msgstr ""
 
-#: src/adftool.c:202 src/adftool.c:280 src/adftool.c:295
+#: src/adftool.c:203 src/adftool.c:281 src/adftool.c:296
 #, c-format
 msgid "The argument to \"%s\" must be a N3 identifier.\n"
 msgstr ""
 
-#: src/adftool.c:219 src/adftool.c:235 src/adftool.c:247 src/adftool.c:262
+#: src/adftool.c:220 src/adftool.c:236 src/adftool.c:248 src/adftool.c:263
 #, c-format
 msgid "The argument to \"%s\" must be in the form of IDENTIFIER=TYPE.\n"
 msgstr ""
 
-#: src/adftool.c:309
+#: src/adftool.c:310
 #, c-format
 msgid ""
 "The argument to \"%s\" must be in the form of DATE,SAMPLING_FREQUENCY.\n"
 msgstr ""
 
-#: src/adftool.c:334
+#: src/adftool.c:335
 #, c-format
 msgid "The DATE argument to \"%s\" must be a date according to XSD.\n"
 msgstr ""
 
-#: src/adftool.c:350
+#: src/adftool.c:351
 #, c-format
 msgid "The SAMPLING_FREQUENCY argument to \"%s\" must be a number.\n"
 msgstr ""
 
-#: src/adftool.c:369
+#: src/adftool.c:370
 #, c-format
 msgid "The argument to \"%s\" cannot be parsed as a N-Triples term: \"%s\"\n"
 msgstr ""
 
-#: src/adftool.c:384
+#: src/adftool.c:385
 #, c-format
 msgid ""
 "Warning: the argument to \"%s\" can be parsed as a N-Triples term, but the "
 "trailing \"%s\" will be discarded.\n"
 msgstr ""
 
-#: src/adftool.c:416
+#: src/adftool.c:417
 #, c-format
 msgid ""
 "Usage: [ENVIRONMENT…] adftool [OPTION…] FILE\n"
@@ -165,7 +165,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/adftool.c:418
+#: src/adftool.c:419
 #, c-format
 msgid ""
 "You can set a pattern in N-Triples format:\n"
@@ -181,30 +181,30 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/adftool.c:436
+#: src/adftool.c:437
 #, c-format
 msgid "There are other operation modes for adftool:\n"
 msgstr ""
 
-#: src/adftool.c:437
+#: src/adftool.c:438
 #, c-format
 msgid ""
 "  --%s: read the raw EEG sensor data (in Tab-Separated Value [TSV] format);\n"
 msgstr ""
 
-#: src/adftool.c:440
+#: src/adftool.c:441
 #, c-format
 msgid ""
 "  --%s: set the raw EEG sensor data (in TSV format) from the standard "
 "input;\n"
 msgstr ""
 
-#: src/adftool.c:443
+#: src/adftool.c:444
 #, c-format
 msgid "  --%s: read the EEG metadata;\n"
 msgstr ""
 
-#: src/adftool.c:445
+#: src/adftool.c:446
 #, c-format
 msgid ""
 "  --%s=DATE,SAMPLING_FREQUENCY: set the EEG date and sampling frequency "
@@ -212,31 +212,31 @@ msgid ""
 "format, %f);\n"
 msgstr ""
 
-#: src/adftool.c:451
+#: src/adftool.c:452
 #, c-format
 msgid ""
 "  --%s=COLUMN: find the channel identifier for the raw sensor data in COLUMN "
 "(an integer);\n"
 msgstr ""
 
-#: src/adftool.c:454
+#: src/adftool.c:455
 #, c-format
 msgid "  --%s=IDENTIFIER: read the channel metadata for IDENTIFIER (in N3);\n"
 msgstr ""
 
-#: src/adftool.c:457
+#: src/adftool.c:458
 #, c-format
 msgid ""
 "  --%s=IDENTIFIER=TYPE: add TYPE to the list of types for IDENTIFIER (both "
 "in N3);\n"
 msgstr ""
 
-#: src/adftool.c:460
+#: src/adftool.c:461
 #, c-format
 msgid "  --%s=TYPE: print the list of channels of type TYPE (in N3).\n"
 msgstr ""
 
-#: src/adftool.c:464
+#: src/adftool.c:465
 #, c-format
 msgid ""
 "There are other options:\n"
@@ -247,7 +247,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/adftool.c:473
+#: src/adftool.c:474
 #, c-format
 msgid ""
 "The following environment variables can change the behavior of the program:\n"
@@ -259,7 +259,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/adftool.c:482
+#: src/adftool.c:483
 #, c-format
 msgid ""
 "Please note that TSV exchange of raw EEG data uses the current numeric "
@@ -275,23 +275,23 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/adftool.c:503
+#: src/adftool.c:504
 #, c-format
 msgid ""
 "Here is a summary of the current values of the main environment variables:\n"
 msgstr ""
 
-#: src/adftool.c:510
+#: src/adftool.c:511
 #, c-format
 msgid "  %s: \"%s\"\n"
 msgstr ""
 
-#: src/adftool.c:514
+#: src/adftool.c:515
 #, c-format
 msgid "  %s is unset\n"
 msgstr ""
 
-#: src/adftool.c:519
+#: src/adftool.c:520
 #, c-format
 msgid ""
 "%s\n"
@@ -299,189 +299,189 @@ msgid ""
 "Copyright status is unclear.\n"
 msgstr ""
 
-#: src/adftool.c:530
+#: src/adftool.c:531
 #, c-format
 msgid "No file to process.\n"
 msgstr ""
 
-#: src/adftool.c:538
+#: src/adftool.c:539
 #, c-format
 msgid "Nothing to do.\n"
 msgstr ""
 
-#: src/adftool.c:544
+#: src/adftool.c:545
 #, c-format
 msgid ""
 "Conflicting operations: please pass either --%s, --%s, --%s, --%s or --%s.\n"
 msgstr ""
 
-#: src/adftool.c:547
+#: src/adftool.c:548
 msgctxt "Command-line|Option|"
 msgid "insert"
 msgstr ""
 
-#: src/adftool.c:557
+#: src/adftool.c:558
 #, c-format
 msgid "Conflicting operations: please pass either --%s, --%s, --%s or --%s.\n"
 msgstr ""
 
-#: src/adftool.c:573
+#: src/adftool.c:574
 #, c-format
 msgid "The file \"%s\" could not be opened.\n"
 msgstr ""
 
-#: src/adftool.c:597
+#: src/adftool.c:598
 #, c-format
 msgid "Error: could not get the current time.\n"
 msgstr ""
 
-#: src/adftool.c:611
+#: src/adftool.c:612
 #, c-format
 msgid "Could not insert the data.\n"
 msgstr ""
 
-#: src/adftool.c:618
+#: src/adftool.c:619
 #, c-format
 msgid "Could not delete the data.\n"
 msgstr ""
 
-#: src/adftool.c:629
+#: src/adftool.c:630
 #, c-format
 msgid "Could not read the EEG data.\n"
 msgstr ""
 
-#: src/adftool.c:711
+#: src/adftool.c:712
 #, c-format
 msgid ""
 "Error: input line %lu contains \"%s\", which cannot be parsed as a number.\n"
 msgstr ""
 
-#: src/adftool.c:716
+#: src/adftool.c:717
 #, c-format
 msgid ""
 "You may need to set LC_NUMERIC. Please run adftool --%s to read more about "
 "numeric data formats.\n"
 msgstr ""
 
-#: src/adftool.c:729
+#: src/adftool.c:730
 #, c-format
 msgid "Error: input line %lu has %lu values, but there are %lu columns.\n"
 msgstr ""
 
-#: src/adftool.c:744
+#: src/adftool.c:745
 #, c-format
 msgid "Error: cannot set the EEG data.\n"
 msgstr ""
 
-#: src/adftool.c:761
+#: src/adftool.c:762
 #, c-format
 msgid "Error: no channel identifier for column %lu.\n"
 msgstr ""
 
-#: src/adftool.c:782
+#: src/adftool.c:783
 #, c-format
 msgid "Metadata of channel %s:\n"
 msgstr ""
 
-#: src/adftool.c:787
+#: src/adftool.c:788
 #, c-format
 msgid "  - its data are in column %lu;\n"
 msgstr ""
 
-#: src/adftool.c:791
+#: src/adftool.c:792
 #, c-format
 msgid "  - its data cannot be found;\n"
 msgstr ""
 
-#: src/adftool.c:813
+#: src/adftool.c:814
 #, c-format
 msgid "  - it has no types.\n"
 msgstr ""
 
-#: src/adftool.c:817
+#: src/adftool.c:818
 #, c-format
 msgid "  - it has %lu type:\n"
 msgid_plural "  - it has %lu types:\n"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/adftool.c:833
+#: src/adftool.c:834
 #, c-format
 msgid "    %s\n"
 msgstr ""
 
-#: src/adftool.c:850
+#: src/adftool.c:851
 #, c-format
 msgid "Error: could not add a new type.\n"
 msgstr ""
 
-#: src/adftool.c:887
+#: src/adftool.c:888
 #, c-format
 msgid "%s\n"
 msgstr ""
 
-#: src/adftool.c:902
+#: src/adftool.c:903
 #, c-format
 msgid "The EEG does not have a start date or a sampling frequency.\n"
 msgstr ""
 
-#: src/adftool.c:924
+#: src/adftool.c:925
 #, c-format
 msgid "The EEG started at: %s, with a sampling frequency of %f Hz.\n"
 msgstr ""
 
-#: src/adftool.c:935
+#: src/adftool.c:936
 #, c-format
 msgid "Could not set the EEG time.\n"
 msgstr ""
 
-#: src/adftool.c:968
+#: src/adftool.c:969
 #, c-format
 msgid "Cannot allocate memory to hold the results.\n"
 msgstr ""
 
-#: src/adftool.c:992
+#: src/adftool.c:993
 #, c-format
 msgid "Cannot list the statements.\n"
 msgstr ""
 
-#: src/adftool_python.c:164
+#: src/adftool_python.c:165
 msgid ""
 "Open the file under the given name. If the write flag is set, open it for "
 "reading and writing. Otherwise, open it just for reading."
 msgstr ""
 
-#: src/adftool_python.c:168
+#: src/adftool_python.c:169
 msgid "Close the opened file."
 msgstr ""
 
-#: src/adftool_python.c:170
+#: src/adftool_python.c:171
 msgid ""
 "Open a virtual file with initial content. The argument is read-only. Use '."
 "get_data()' to return the final content."
 msgstr ""
 
-#: src/adftool_python.c:174
+#: src/adftool_python.c:175
 msgid ""
 "Discard the first start bytes, then fill the bytes object with the next "
 "bytes of the file. Return the total number of bytes in the file."
 msgstr ""
 
-#: src/adftool_python.c:178
+#: src/adftool_python.c:179
 msgid ""
 "Search for statements matching the pattern in the file, discard the first "
 "start statements, and fill the results with the next statements. Return the "
 "total number of statements that match the pattern."
 msgstr ""
 
-#: src/adftool_python.c:183
+#: src/adftool_python.c:184
 msgid ""
 "Search for non-deleted objects that match the pattern subject <predicate> ?. "
 "Discard the first start statements, and fill the results with the next "
 "objects. Return the total number of undeleted objects that match the pattern."
 msgstr ""
 
-#: src/adftool_python.c:189
+#: src/adftool_python.c:190
 msgid ""
 "Search for non-deleted literal integers that match the pattern subject "
 "<predicate> ?. Discard the first start values, and fill the results with the "
@@ -489,7 +489,7 @@ msgid ""
 "pattern."
 msgstr ""
 
-#: src/adftool_python.c:195
+#: src/adftool_python.c:196
 msgid ""
 "Search for non-deleted literal doubles that match the pattern subject "
 "<predicate> ?. Discard the first start values, and fill the results with the "
@@ -497,7 +497,7 @@ msgid ""
 "pattern."
 msgstr ""
 
-#: src/adftool_python.c:201
+#: src/adftool_python.c:202
 msgid ""
 "Search for non-deleted literal dates that match the pattern subject "
 "<predicate> ?. Discard the first start values, and fill the results with the "
@@ -505,7 +505,7 @@ msgid ""
 "pattern."
 msgstr ""
 
-#: src/adftool_python.c:207
+#: src/adftool_python.c:208
 msgid ""
 "Search for non-deleted (possibly langtagged) literal strings that match the "
 "pattern subject <predicate> ?. Discard the first start values, and fill the "
@@ -513,7 +513,7 @@ msgid ""
 "that match the pattern."
 msgstr ""
 
-#: src/adftool_python.c:214
+#: src/adftool_python.c:215
 msgid ""
 "Search for non-deleted subjects that match the pattern ? <predicate> object. "
 "Discard the first start statements, and fill the results with the next "
@@ -521,206 +521,206 @@ msgid ""
 "pattern."
 msgstr ""
 
-#: src/adftool_python.c:220
+#: src/adftool_python.c:221
 msgid "Mark every statement that match the pattern as deleted."
 msgstr ""
 
-#: src/adftool_python.c:222
+#: src/adftool_python.c:223
 msgid "Insert the new statement in the file."
 msgstr ""
 
-#: src/adftool_python.c:225
+#: src/adftool_python.c:226
 msgid ""
 "Find the term identifying the channel whose data is stored in the given "
 "column."
 msgstr ""
 
-#: src/adftool_python.c:228
+#: src/adftool_python.c:229
 msgid "Find in which column the channel data is stored."
 msgstr ""
 
-#: src/adftool_python.c:230
+#: src/adftool_python.c:231
 msgid "Add a new type to the channel."
 msgstr ""
 
-#: src/adftool_python.c:232
+#: src/adftool_python.c:233
 msgid "Query all the types for a channel."
 msgstr ""
 
-#: src/adftool_python.c:234
+#: src/adftool_python.c:235
 msgid "Query all the channels of a specific type."
 msgstr ""
 
-#: src/adftool_python.c:236
+#: src/adftool_python.c:237
 msgid "Get the raw EEG data."
 msgstr ""
 
-#: src/adftool_python.c:238
+#: src/adftool_python.c:239
 msgid "Set all the raw EEG data at once."
 msgstr ""
 
-#: src/adftool_python.c:240
+#: src/adftool_python.c:241
 msgid "Get the EEG recording time and sampling frequency."
 msgstr ""
 
-#: src/adftool_python.c:242
+#: src/adftool_python.c:243
 msgid "Set the EEG recording time and sampling frequency."
 msgstr ""
 
-#: src/adftool_python.c:251
+#: src/adftool_python.c:252
 msgid "Handle to a file on the file system or in memory"
 msgstr ""
 
-#: src/adftool_python.c:268
+#: src/adftool_python.c:269
 msgid "Set the object to a copy of its argument."
 msgstr ""
 
-#: src/adftool_python.c:270
+#: src/adftool_python.c:271
 msgid "Set the object as an IRI reference."
 msgstr ""
 
-#: src/adftool_python.c:272
+#: src/adftool_python.c:273
 msgid "Set the object as a labeled blank node."
 msgstr ""
 
-#: src/adftool_python.c:274
+#: src/adftool_python.c:275
 msgid ""
 "Set the object as a literal node, with value as its literal value, and "
 "either type, langtag, or none of them."
 msgstr ""
 
-#: src/adftool_python.c:277
+#: src/adftool_python.c:278
 msgid "Set the object as a literal integer."
 msgstr ""
 
-#: src/adftool_python.c:279
+#: src/adftool_python.c:280
 msgid "Set the object as a literal floating point number."
 msgstr ""
 
-#: src/adftool_python.c:281
+#: src/adftool_python.c:282
 msgid ""
 "Set the object as a literal date, a tuple where the first element is the "
 "number of seconds since the epoch, and the second element is the number of "
 "nanoseconds since the start of the last second."
 msgstr ""
 
-#: src/adftool_python.c:286
+#: src/adftool_python.c:287
 msgid "Return whether the term is an IRI reference."
 msgstr ""
 
-#: src/adftool_python.c:288
+#: src/adftool_python.c:289
 msgid "Return whether the term is a labeled blank node."
 msgstr ""
 
-#: src/adftool_python.c:290
+#: src/adftool_python.c:291
 msgid "Return whether the term is a literal."
 msgstr ""
 
-#: src/adftool_python.c:292
+#: src/adftool_python.c:293
 msgid "Return whether the term is a typed literal."
 msgstr ""
 
-#: src/adftool_python.c:294
+#: src/adftool_python.c:295
 msgid "Return whether the term is a langstring."
 msgstr ""
 
-#: src/adftool_python.c:296
+#: src/adftool_python.c:297
 msgid ""
 "Skip start bytes, then fill the argument with the next bytes of the "
 "identifier or literal value. Return the total number of bytes required."
 msgstr ""
 
-#: src/adftool_python.c:300
+#: src/adftool_python.c:301
 msgid ""
 "Skip start bytes, then fill the argument with the next bytes of the "
 "namespace, type or langtag. Return the total number of bytes required."
 msgstr ""
 
-#: src/adftool_python.c:304
+#: src/adftool_python.c:305
 msgid "Interpret the term as a literal number, and convert it to an integer."
 msgstr ""
 
-#: src/adftool_python.c:307
+#: src/adftool_python.c:308
 msgid ""
 "Interpret the term as a literal number, and convert it to a floating point "
 "number."
 msgstr ""
 
-#: src/adftool_python.c:310
+#: src/adftool_python.c:311
 msgid ""
 "Interpret the term as a literal date, and return as a tuple the number of "
 "seconds since the epoch and the number of nanoseconds since the start of the "
 "second."
 msgstr ""
 
-#: src/adftool_python.c:314
+#: src/adftool_python.c:315
 msgid ""
 "Compare the N3 representation of self and the other term. Return a negative "
 "value is self comes first, a positive value if self comes last, and 0 if "
 "they are equal."
 msgstr ""
 
-#: src/adftool_python.c:319
+#: src/adftool_python.c:320
 msgid ""
 "Set self to a term parsed from the argument. Return the number of bytes used "
 "in the argument."
 msgstr ""
 
-#: src/adftool_python.c:322
+#: src/adftool_python.c:323
 msgid ""
 "Skip start bytes, then fill the argument with the next bytes of the N3 "
 "representation. Return the total number of bytes required."
 msgstr ""
 
-#: src/adftool_python.c:333
+#: src/adftool_python.c:334
 msgid "Implementation of a RDF term: IRI reference, blank node, or literal."
 msgstr ""
 
-#: src/adftool_python.c:351
+#: src/adftool_python.c:352
 msgid "Set the statement subject."
 msgstr ""
 
-#: src/adftool_python.c:353
+#: src/adftool_python.c:354
 msgid "Set the statement predicate."
 msgstr ""
 
-#: src/adftool_python.c:355
+#: src/adftool_python.c:356
 msgid "Set the statement object."
 msgstr ""
 
-#: src/adftool_python.c:357
+#: src/adftool_python.c:358
 msgid "Set the statement graph."
 msgstr ""
 
-#: src/adftool_python.c:360
+#: src/adftool_python.c:361
 msgid "Set the statement deletion_date."
 msgstr ""
 
-#: src/adftool_python.c:362
+#: src/adftool_python.c:363
 msgid "Unset the statement subject."
 msgstr ""
 
-#: src/adftool_python.c:364
+#: src/adftool_python.c:365
 msgid "Unset the statement predicate."
 msgstr ""
 
-#: src/adftool_python.c:366
+#: src/adftool_python.c:367
 msgid "Unset the statement object."
 msgstr ""
 
-#: src/adftool_python.c:368
+#: src/adftool_python.c:369
 msgid "Unset the statement graph."
 msgstr ""
 
-#: src/adftool_python.c:371
+#: src/adftool_python.c:372
 msgid "Unset the statement deletion_date."
 msgstr ""
 
-#: src/adftool_python.c:373
+#: src/adftool_python.c:374
 msgid "Get the fields of the statement."
 msgstr ""
 
-#: src/adftool_python.c:375
+#: src/adftool_python.c:376
 msgid ""
 "Compare the N3 representation of the terms in self and the terms in the "
 "other statement, in the specified lexicographic order. Return a negative "
@@ -728,92 +728,92 @@ msgid ""
 "they are equal."
 msgstr ""
 
-#: src/adftool_python.c:388
+#: src/adftool_python.c:389
 msgid ""
 "Implementation of a RDF statement: subject, predicate, object, graph, and "
 "deletion date."
 msgstr ""
 
-#: src/adftool_python.c:406
+#: src/adftool_python.c:407
 msgid "Get the (odd) number of coefficients of the filter."
 msgstr ""
 
-#: src/adftool_python.c:408
+#: src/adftool_python.c:409
 msgid "Get the coefficients of the filter as a list."
 msgstr ""
 
-#: src/adftool_python.c:410
+#: src/adftool_python.c:411
 msgid "Set up the filter as band-pass."
 msgstr ""
 
-#: src/adftool_python.c:412
+#: src/adftool_python.c:413
 msgid "Apply the filter."
 msgstr ""
 
-#: src/adftool_python.c:414
+#: src/adftool_python.c:415
 msgid "Compute default transition bandwidth"
 msgstr ""
 
-#: src/adftool_python.c:416
+#: src/adftool_python.c:417
 msgid "Compute a default filter order"
 msgstr ""
 
-#: src/adftool_python.c:425
+#: src/adftool_python.c:426
 msgid "Implementation of a finite impulse response filter."
 msgstr ""
 
-#: src/adftool_python.c:443
+#: src/adftool_python.c:444
 msgid "Manipulate linked data in HDF5 ADF files"
 msgstr ""
 
-#: src/adftool_python.c:637
+#: src/adftool_python.c:638
 msgid "Cannot open that file. Does the parent directory exist?"
 msgstr ""
 
-#: src/adftool_python.c:643
+#: src/adftool_python.c:644
 msgid ""
 "Cannot open that file. Are you sure that this is an existing valid ADF file?"
 msgstr ""
 
-#: src/adftool_python.c:681
+#: src/adftool_python.c:682
 msgid "Cannot open that virtual file."
 msgstr ""
 
-#: src/adftool_python.c:697
+#: src/adftool_python.c:698
 msgid "The file offset is negative."
 msgstr ""
 
-#: src/adftool_python.c:760
+#: src/adftool_python.c:761
 msgid "Cannot look up data in the file."
 msgstr ""
 
-#: src/adftool_python.c:1091 src/adftool_python.c:1111
-#: src/adftool_python.c:1169 src/adftool_python.c:1373
-#: src/adftool_python.c:1411
+#: src/adftool_python.c:1092 src/adftool_python.c:1112
+#: src/adftool_python.c:1170 src/adftool_python.c:1374
+#: src/adftool_python.c:1412
 msgid "Cannot modify the file."
 msgstr ""
 
-#: src/adftool_python.c:1294 src/adftool_python.c:1307
+#: src/adftool_python.c:1295 src/adftool_python.c:1308
 msgid "No EEG data in the file."
 msgstr ""
 
-#: src/adftool_python.c:1389
+#: src/adftool_python.c:1390
 msgid "No EEG time in the file."
 msgstr ""
 
-#: src/adftool_python.c:1505
+#: src/adftool_python.c:1506
 msgid "A literal cannot have both a type and a langtag. Please choose."
 msgstr ""
 
-#: src/adftool_python.c:1653 src/adftool_python.c:1675
+#: src/adftool_python.c:1654 src/adftool_python.c:1676
 msgid "The term is not a number literal."
 msgstr ""
 
-#: src/adftool_python.c:1690
+#: src/adftool_python.c:1691
 msgid "The term is not a date literal."
 msgstr ""
 
-#: src/adftool_python.c:1726
+#: src/adftool_python.c:1727
 msgid "The term is not in N3."
 msgstr ""
 
@@ -1062,94 +1062,134 @@ msgid ""
 "number of channels, and data bound to the requested data."
 msgstr ""
 
-#: src/check_bplus.c:4190
+#: src/check_bplus.c:4191
 msgid "Libbplus test suite"
 msgstr ""
 
-#: src/check_bplus.c:4191
+#: src/check_bplus.c:4192
 msgid "Fetching a node"
 msgstr ""
 
-#: src/check_bplus.c:4195
+#: src/check_bplus.c:4196
 msgid "Finding a key with dichotomy"
 msgstr ""
 
-#: src/check_bplus.c:4198
+#: src/check_bplus.c:4199
 msgid "Search step for both first  and last occurence of a key"
 msgstr ""
 
-#: src/check_bplus.c:4204
+#: src/check_bplus.c:4205
 msgid "Check the range iterator"
 msgstr ""
 
-#: src/check_bplus.c:4209
+#: src/check_bplus.c:4210
 msgid "Check the recursive key finder"
 msgstr ""
 
-#: src/check_bplus.c:4214
+#: src/check_bplus.c:4215
 msgid "Fix the children’s parent"
 msgstr ""
 
-#: src/check_bplus.c:4221
+#: src/check_bplus.c:4222
 msgid "Grow the B+ tree"
 msgstr ""
 
-#: src/check_bplus.c:4226
+#: src/check_bplus.c:4227
 msgid "Fetch the parent of a node"
 msgstr ""
 
-#: src/check_bplus.c:4229
+#: src/check_bplus.c:4230
 msgid "Give some of your keys to a new node"
 msgstr ""
 
-#: src/check_bplus.c:4239
+#: src/check_bplus.c:4240
 msgid "Insert in the B+ tree"
 msgstr ""
 
-#: src/check_bplus.c:4250
+#: src/check_bplus.c:4251
 msgid "Insert in the B+ tree with the pull API"
 msgstr ""
 
-#: src/check_bplus.c:4256
+#: src/check_bplus.c:4257
 msgid "HDF5 callbacks for the API"
 msgstr ""
 
-#: src/eeg_metadata_example.c:36
+#: src/eeg_metadata_example.c:37
 #, c-format
 msgid "Could not get the current time.\n"
 msgstr ""
 
-#: src/eeg_metadata_example.c:43
+#: src/eeg_metadata_example.c:44
 #, c-format
 msgid "Could not set the time and sampling frequency.\n"
 msgstr ""
 
-#: src/eeg_metadata_example.c:56
+#: src/eeg_metadata_example.c:57
 #, c-format
 msgid "Could not compute the date of the first observation.\n"
 msgstr ""
 
-#: src/eeg_metadata_example.c:65
+#: src/eeg_metadata_example.c:66
 #, c-format
 msgid "Could not compute the date of the second observation.\n"
 msgstr ""
 
-#: src/eeg_metadata_example.c:86
+#: src/eeg_metadata_example.c:87
 #, c-format
 msgid "Could not compute the date of the third observation.\n"
 msgstr ""
 
-#: src/filter_example.c:60
+#: src/encoding_unit_test.c:81
+#, c-format
+msgid "The dictionary does not know %s.\n"
+msgstr ""
+
+#: src/encoding_unit_test.c:88
+#, c-format
+msgid "The dictionary put %s in position %u, not %u.\n"
+msgstr ""
+
+#: src/encoding_unit_test.c:116
+#, c-format
+msgid "Not enough memory to allocate a term.\n"
+msgstr ""
+
+#: src/encoding_unit_test.c:121
+#, c-format
+msgid "Failed to encode term %lu.\n"
+msgstr ""
+
+#: src/encoding_unit_test.c:126
+#, c-format
+msgid "Encoding term %lu gives %016lx, not %016lx.\n"
+msgstr ""
+
+#: src/encoding_unit_test.c:132
+#, c-format
+msgid "Failed to decode term %lu (%016lx).\n"
+msgstr ""
+
+#: src/encoding_unit_test.c:138
+#, c-format
+msgid "Term %lu is not decoded properly (%016lx).\n"
+msgstr ""
+
+#: src/encoding_unit_test.c:155 src/term_manipulation_example.c:204
+#, c-format
+msgid "The test failed, keeping term_example.adf around.\n"
+msgstr ""
+
+#: src/filter_example.c:61
 #, c-format
 msgid "Error: the filter order is %lu != %lu.\n"
 msgstr ""
 
-#: src/filter_example.c:119
+#: src/filter_example.c:120
 #, c-format
 msgid "The filter test failed (%f).\n"
 msgstr ""
 
-#: src/filter_example.c:124
+#: src/filter_example.c:125
 #, c-format
 msgid ""
 "The filter result is not great but at least it is closer to the expected "
@@ -1166,79 +1206,34 @@ msgstr ""
 msgid "Could not extend the dataset.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:129
+#: src/term_manipulation_example.c:125
 #, c-format
 msgid "Type %lu for number %lu is %d, should be %d.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:140
+#: src/term_manipulation_example.c:136
 #, c-format
 msgid ""
 "Term %lu cannot be encoded to N3 in less than 256 characters (%lu "
 "required).\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:148
+#: src/term_manipulation_example.c:144
 #, c-format
 msgid "Term %lu N3 encoding is not correct: %s vs expected %s.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:159
+#: src/term_manipulation_example.c:155
 #, c-format
 msgid "Value for number %lu (%s) is %s, should be %s.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:168
+#: src/term_manipulation_example.c:164
 #, c-format
 msgid "Meta for number %lu (%s) is %s, should be %s.\n"
 msgstr ""
 
-#: src/term_manipulation_example.c:194
+#: src/term_manipulation_example.c:190
 #, c-format
 msgid "Comparison between %lu (%s) and %lu (%s) should be %d, it is %d.\n"
-msgstr ""
-
-#: src/term_manipulation_example.c:214
-#, c-format
-msgid "Could not add %s to the dictionary.\n"
-msgstr ""
-
-#: src/term_manipulation_example.c:243
-#, c-format
-msgid "Not enough memory to allocate a term.\n"
-msgstr ""
-
-#: src/term_manipulation_example.c:248
-#, c-format
-msgid "Failed to encode term %lu.\n"
-msgstr ""
-
-#: src/term_manipulation_example.c:253
-#, c-format
-msgid "Encoding term %lu gives %016lx, not %016lx.\n"
-msgstr ""
-
-#: src/term_manipulation_example.c:259
-#, c-format
-msgid "Failed to decode term %lu (%016lx).\n"
-msgstr ""
-
-#: src/term_manipulation_example.c:275
-#, c-format
-msgid "%s:%d: Type %lu for number %lu is %d, should be %d.\n"
-msgstr ""
-
-#: src/term_manipulation_example.c:286
-#, c-format
-msgid "%s:%d: Value for number %lu is %s, should be %s.\n"
-msgstr ""
-
-#: src/term_manipulation_example.c:294
-#, c-format
-msgid "%s:%d: Meta for number %lu is %s, should be %s.\n"
-msgstr ""
-
-#: src/term_manipulation_example.c:308
-#, c-format
-msgid "The test failed, keeping term_example.adf around.\n"
 msgstr ""
