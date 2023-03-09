@@ -31,6 +31,7 @@
 #include <Rcpp.h>
 #include <cmath>
 #include <optional>
+#include <array>
 #include "gettext.h"
 #include "relocatable.h"
 
