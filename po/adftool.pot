@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: adftool 0.5.3.7-2823\n"
+"Project-Id-Version: adftool 0.5.3.8-5d8f-dirty\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-03-09 10:00+0100\n"
+"POT-Creation-Date: 2023-03-09 11:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1174,9 +1174,9 @@ msgstr ""
 msgid "Term %lu is not decoded properly (%016lx).\n"
 msgstr ""
 
-#: src/encoding_unit_test.c:156 src/term_manipulation_example.c:204
+#: src/encoding_unit_test.c:157
 #, c-format
-msgid "The test failed, keeping term_example.adf around.\n"
+msgid "The test failed, keeping encoding_unit_test.adf around.\n"
 msgstr ""
 
 #: src/filter_example.c:61
@@ -1236,4 +1236,9 @@ msgstr ""
 #: src/term_manipulation_example.c:190
 #, c-format
 msgid "Comparison between %lu (%s) and %lu (%s) should be %d, it is %d.\n"
+msgstr ""
+
+#: src/term_manipulation_example.c:204
+#, c-format
+msgid "The test failed, keeping term_example.adf around.\n"
 msgstr ""

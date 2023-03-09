@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adftool 0.0.0\n"
 "Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
-"POT-Creation-Date: 2023-03-09 10:00+0100\n"
-"PO-Revision-Date: 2023-03-06 16:59+0100\n"
+"POT-Creation-Date: 2023-03-09 11:48+0100\n"
+"PO-Revision-Date: 2023-03-09 11:48+0100\n"
 "Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -1390,10 +1390,10 @@ msgstr "Impossible de décoder le terme %lu (%016lx).\n"
 msgid "Term %lu is not decoded properly (%016lx).\n"
 msgstr "Le terme %lu n’a pas été décodé proprement (%016lx).\n"
 
-#: src/encoding_unit_test.c:156 src/term_manipulation_example.c:204
+#: src/encoding_unit_test.c:157
 #, c-format
-msgid "The test failed, keeping term_example.adf around.\n"
-msgstr "Le test a échoué, gardons term_exemple.adf.\n"
+msgid "The test failed, keeping encoding_unit_test.adf around.\n"
+msgstr "Le test a échoué, gardons unit_test.adf.\n"
 
 #: src/filter_example.c:61
 #, c-format
@@ -1457,6 +1457,11 @@ msgstr "La méta pour le numéro %lu (%s) est %s, mais devrait être %s.\n"
 #, c-format
 msgid "Comparison between %lu (%s) and %lu (%s) should be %d, it is %d.\n"
 msgstr "La comparaison entre %lu (%s) et %lu (%s) devrait être %d, c’est %d.\n"
+
+#: src/term_manipulation_example.c:204
+#, c-format
+msgid "The test failed, keeping term_example.adf around.\n"
+msgstr "Le test a échoué, gardons term_exemple.adf.\n"
 
 #, c-format
 #~ msgid "Could not add %s to the dictionary.\n"
