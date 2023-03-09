@@ -17,6 +17,7 @@ CLEANFILES = \
   non-existing.adf \
   dictionary_example.adf \
   term_example.adf \
+  encoding_unit_test.adf \
   statement_example.adf \
   multi_statement_example.adf \
   channel_metadata_example.adf \

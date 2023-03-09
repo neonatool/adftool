@@ -32,8 +32,8 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, relocate (LOCALEDIR));
   textdomain (PACKAGE);
-  remove ("term_example.adf");
-  struct adftool_file *file = adftool_file_open ("term_example.adf", 1);
+  remove ("encoding_unit_test.adf");
+  struct adftool_file *file = adftool_file_open ("encoding_unit_test.adf", 1);
   if (file == NULL)
     {
       abort ();
@@ -153,7 +153,8 @@ main (int argc, char *argv[])
   adftool_file_close (file);
   return 0;
 failure:
-  fprintf (stderr, _("The test failed, keeping term_example.adf around.\n"));
+  fprintf (stderr,
+	   _("The test failed, keeping encoding_unit_test.adf around.\n"));
   adftool_file_close (file);
   return 1;
 }
