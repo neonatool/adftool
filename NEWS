@@ -6,6 +6,14 @@ Undocumented and internal entry points are now marked as
 deprecated. The compiler is informed about which destructor must be
 called for allocation functions.
 
+** Adftool has been reported to compile on macos
+There might need to tweak a few options: at configure time, specify
+the explicit HDF5_CFLAGS and HDF5_LIBS as homebrew does not install a
+pkg-config file for HDF5, and explicitly set RCPP_CXXFLAGS, because
+sed does not work as expected. The Rcpp test will not pass until
+adftool is installed. The configure script cannot check whether Python
+can be linked, because cpython does not provide an ABI.
+
 ** Bug fix: reading short strings from a dictionary now correctly NUL-terminates the result
 Reading a short string would put a NUL character at position 12,
 leaving bytes before that uninitialized. Now the NUL character is put

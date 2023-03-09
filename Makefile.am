@@ -188,7 +188,16 @@ adftool_la_CFLAGS = $(CFLAG_VISIBILITY)
 adftool_la_LIBADD = libadftool.la lib/libadftool.la $(LTLIBOBJS)
 adftool_la_LDFLAGS += \
   -no-undefined -avoid-version -module \
-  $(LTLIBINTL)
+  $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
+  $(LIB_GETRANDOM) \
+  $(MODF_LIBM) \
+  $(TRUNC_LIBM) \
+  $(LIB_SETLOCALE) \
+  $(LIB_SETLOCALE_NULL) \
+  $(COMMON_LINK_FLAGS) \
+  $(LIBTHREAD) \
+  $(INTL_MACOSX_LIBS)
 
 if WINDOWS
 adftool_la_LDFLAGS += -shrext .pyd
@@ -209,7 +218,16 @@ src_libadftool_r_la_CXXFLAGS = $(CFLAG_VISIBILITY) $(R_CXXFLAGS) $(RCPP_CXXFLAGS
 src_libadftool_r_la_LIBADD = libadftool.la lib/libadftool.la $(LTLIBOBJS) $(R_LIBS) $(RCPP_LIBS)
 src_libadftool_r_la_LDFLAGS = \
   -no-undefined -avoid-version -module \
-  $(LTLIBINTL)
+  $(LTLIBINTL) \
+  $(LIB_CLOCK_GETTIME) \
+  $(LIB_GETRANDOM) \
+  $(MODF_LIBM) \
+  $(TRUNC_LIBM) \
+  $(LIB_SETLOCALE) \
+  $(LIB_SETLOCALE_NULL) \
+  $(COMMON_LINK_FLAGS) \
+  $(LIBTHREAD) \
+  $(INTL_MACOSX_LIBS)
 
 TESTS += src/test-R.R
 
