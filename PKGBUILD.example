@@ -1,7 +1,7 @@
 _realname=adftool
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
-pkgver=0.5.3
+pkgver=0.6.0
 pkgrel=1
 pkgdesc="Adftool (mingw-w64)"
 arch=('any')
@@ -16,7 +16,7 @@ depends=("${MINGW_PACKAGE_PREFIX}-hdf5"
 makedepends=("${MINGW_PACKAGE_PREFIX}-autotools"
              "${MINGW_PACKAGE_PREFIX}-cc")
 source=("./${_realname}-${pkgver}.tar.gz")
-sha256sums=('1fbbfb5e168d12cfb080dc18e985cc94396ebd8e866e3cb2680dd27e0565e6e4')
+sha256sums=('b6dda154bb11ada5d07fb578222af66d64b4a0f3f2f21fbd5338972b72f1556f')
 
 build() {
   cd "${srcdir}/${_realname}-${pkgver}"
