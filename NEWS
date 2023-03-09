@@ -1,6 +1,6 @@
 #+title: What’s new in adftool
 
-* Noteworthy changes in release ?.? (????-??-??) [?]
+* Noteworthy changes in release 0.6.0 (2023-03-09) [alpha]
 ** API cleaning
 Undocumented and internal entry points are now marked as
 deprecated. The compiler is informed about which destructor must be

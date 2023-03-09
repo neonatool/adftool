@@ -5,7 +5,7 @@ AC_PREREQ([2.69])
 AC_INIT([adftool], m4_esyscmd([sh build-aux/git-version-gen .tarball-version]), [vivien.kraus@univ-reims.fr])
 
 AC_SUBST(LTV_CURRENT, [1])
-AC_SUBST(LTV_REVISION, [2])
+AC_SUBST(LTV_REVISION, [3])
 AC_SUBST(LTV_AGE, [1])
 
 AC_SUBST(DLL_VERSION, $(expr ${LTV_CURRENT} - ${LTV_AGE}))
