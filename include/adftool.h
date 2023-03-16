@@ -109,6 +109,9 @@ extern "C"
     struct adftool_file *adftool_file_open_data (size_t nbytes,
 						 const void *bytes);
 
+  LIBADFTOOL_DEALLOC_FILE extern LIBADFTOOL_API
+    struct adftool_file *adftool_file_open_generated (void);
+
   extern LIBADFTOOL_API
     size_t adftool_file_get_data (struct adftool_file *file, size_t start,
 				  size_t max, void *bytes);
@@ -1072,6 +1075,15 @@ namespace adftool
     file (const std::vector<uint8_t> &initial_data)
     {
       this->ptr = adftool_file_open_data (initial_data.size (), initial_data.data ());
+      if (this->ptr == nullptr)
+	{
+	  std::bad_alloc error;
+	  throw error;
+	}
+    }
+    file (void)
+    {
+      this->ptr = adftool_file_open_generated ();
       if (this->ptr == nullptr)
 	{
 	  std::bad_alloc error;

@@ -403,6 +403,9 @@ namespace adftool_r
     file (const std::vector<uint8_t> & data): t (data)
     {
     }
+    file (void): t ()
+    {
+    }
     file (file && v) noexcept: t (std::move (v.t))
     {
     }
@@ -613,6 +616,7 @@ _rcpp_module_boot_adftool ()
   Rcpp::class_<adftool_r::file> ("file")
     .constructor<std::string, bool> (_("Open a file on disk."))
     .constructor<std::vector<uint8_t>> (_("Open an anonymous file on disk with initial data."))
+    .constructor (_("Open an anonymous file on disk with synthetic data."))
     .method ("close", &adftool_r::file::close, _("Close the file early."))
     .method ("get_data", &adftool_r::file::get_data, _("Return the file contents as bytes."))
     .method ("lookup", &adftool_r::file::lookup, _("Search for a pattern in file, return all the matches."))

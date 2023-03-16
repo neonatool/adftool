@@ -18,7 +18,7 @@ export default function () {
 	const { with_statement, with_statement_init,
 		with_statement_copy, with_n_statements } = await import('./adftool_statement.mjs');
 	const { with_fir, with_bandpass, with_bandpassed } = await import('./adftool_fir.mjs');
-	const { File, with_file } = await import('./adftool_file.mjs');
+	const { File, with_file, with_generated_file } = await import('./adftool_file.mjs');
 	return {
 	    File: File,
 	    with_bandpass: with_bandpass,
@@ -26,6 +26,7 @@ export default function () {
 	    with_blank_node: with_blank_node,
 	    with_double_array: with_double_array,
 	    with_file: with_file,
+	    with_generated_file: with_generated_file,
 	    with_fir: with_fir,
 	    with_literal_date: with_literal_date,
 	    with_literal_double: with_literal_double,

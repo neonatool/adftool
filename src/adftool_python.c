@@ -74,6 +74,7 @@ static void file_dealloc (PyObject *);
 static PyObject *file_open (struct adftool_py_file *, PyObject *);
 static PyObject *file_close (struct adftool_py_file *, PyObject *);
 static PyObject *file_open_data (struct adftool_py_file *, PyObject *);
+static PyObject *file_open_generated (struct adftool_py_file *, PyObject *);
 static PyObject *file_get_data (struct adftool_py_file *, PyObject *);
 static PyObject *lookup (struct adftool_py_file *, PyObject *);
 static PyObject *lookup_objects (struct adftool_py_file *, PyObject *);
@@ -171,6 +172,8 @@ static PyMethodDef adftool_file_methods[] = {
    N_("Open a virtual file with initial content. "
       "The argument is read-only. Use '.get_data()' "
       "to return the final content.")},
+  {"open_generated", (PyCFunction) file_open_generated, METH_VARARGS,
+   N_("Open a virtual file and populate it with a generated EEG.")},
   {"get_data", (PyCFunction) file_get_data, METH_VARARGS,
    N_("Discard the first start bytes, then fill the "
       "bytes object with the next bytes of the file. "
@@ -680,6 +683,24 @@ file_open_data (struct adftool_py_file *self, PyObject * args)
   else
     {
       PyErr_SetString (adftool_io_error, _("Cannot open that virtual file."));
+      return NULL;
+    }
+}
+
+static PyObject *
+file_open_generated (struct adftool_py_file *self, PyObject * args)
+{
+  struct adftool_file *new_file = adftool_file_open_generated ();
+  if (new_file)
+    {
+      adftool_file_close (self->ptr);
+      self->ptr = new_file;
+      Py_INCREF (Py_None);
+      return Py_None;
+    }
+  else
+    {
+      PyErr_SetString (adftool_io_error, _("Cannot generate a new EEG."));
       return NULL;
     }
 }

@@ -13,6 +13,11 @@ const adftool_file_open_data = Adftool.cwrap (
     '*',
     ['number', '*']);
 
+const adftool_file_open_generated = Adftool.cwrap (
+    'adftool_file_open_generated',
+    '*',
+    []);
+
 const adftool_file_close = Adftool.cwrap (
     'adftool_file_close',
     null,
@@ -130,6 +135,14 @@ export class File {
 	} finally {
 	    Adftool._free (input_pointer);
 	}
+    }
+    open_generated () {
+	const ptr = adftool_file_open_data (data.length, input_pointer);
+	if (ptr == 0) {
+	    throw 'Cannot open the file.';
+	}
+	this.close ();
+	this._ptr = ptr;
     }
     close () {
 	if (this._ptr === null) {
@@ -410,6 +423,20 @@ export function with_file (data, f) {
     const file = new File ();
     try {
 	file.open (data);
+	try {
+	    return f (file);
+	} finally {
+	    file.close ();
+	}
+    } finally {
+	file._destroy ();
+    }
+}
+
+export function with_generated_file (f) {
+    const file = new File ();
+    try {
+	file.open_generated ();
 	try {
 	    return f (file);
 	} finally {

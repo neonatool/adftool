@@ -198,7 +198,7 @@
  (native-inputs
   (list emacs emacs-org autoconf autoconf-archive automake libtool gnu-gettext
 	perl git
-	valgrind (list glibc "debug")
+	valgrind/interactive (list glibc "debug")
 	tar global flex r pkg-config
 	texinfo (texlive-updmap.cfg (list texlive))
 	r-minimal r-rcpp tzdata-for-tests))

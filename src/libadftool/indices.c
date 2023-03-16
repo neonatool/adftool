@@ -5,6 +5,8 @@
 #define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
 #define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
 
+#include <unistd.h>
+
 #include "file.h"
 #include "statement.h"
 #include "literal_filter_iterator.h"

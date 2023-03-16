@@ -3,6 +3,7 @@
 #include <adftool.h>
 #include <hdf5.h>
 
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "gettext.h"

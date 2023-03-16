@@ -685,6 +685,13 @@ This function has been introduced for the emscripten back-end, so that
 the implementation details of the file system is not important.
 @end deftypefun
 
+@deftypefun {struct adftool_file *} adftool_file_open_generated (void)
+Open an anonymous file backed by the file system, that contains a
+sample of an automatically generated EEG. Due to the lack of medical
+data that could be published, this comically simple EEG provides a
+good placeholder that can be used to demonstrate some EEG tools.
+@end deftypefun
+
 @deftypefun void adftool_file_close (struct adftool_file *@var{file})
 Close @var{file}. Due to how HDF5 works, you must close the @var{file}
 at some point, otherwise it will be permanently locked.

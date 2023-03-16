@@ -11,6 +11,7 @@
 #include "progname.h"
 #include <locale.h>
 #include <assert.h>
+#include <unistd.h>
 
 #define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
 #define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)

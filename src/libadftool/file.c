@@ -1,117 +1,32 @@
 #include <config.h>
 #include <attribute.h>
 #include <adftool.h>
+#include <unistd.h>
 
 #define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
 #define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
 
 #include "file.h"
+#include "generate.h"
 
 #include <hdf5.h>
-#include <unistd.h>
-
-#define DEFAULT_ORDER 256
-
-#if defined _WIN32
-# define OPEN_BINARY_SUFFIX "b"
-#else
-# define OPEN_BINARY_SUFFIX ""
-#endif
-
-#define DEFAULT_DICTIONARY_CACHE_ENTRIES 8191
-#define DEFAULT_DICTIONARY_CACHE_ENTRY_LENGTH 512
 
 struct adftool_file *
 adftool_file_open (const char *filename, int write)
 {
-  hid_t hdf5_file = H5I_INVALID_HID;
-  unsigned mode = H5F_ACC_RDONLY;
-  if (write)
-    {
-      mode = H5F_ACC_RDWR;
-    }
-  hdf5_file = H5Fopen (filename, mode, H5P_DEFAULT);
-  if (hdf5_file == H5I_INVALID_HID)
-    {
-      if (write)
-	{
-	  /* Try creating it… */
-	  hdf5_file =
-	    H5Fcreate (filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-	}
-      if (hdf5_file == H5I_INVALID_HID)
-	{
-	  return NULL;
-	}
-    }
-  struct adftool_file *ret = adftool_file_alloc (hdf5_file, DEFAULT_ORDER,
-						 DEFAULT_DICTIONARY_CACHE_ENTRIES,
-						 DEFAULT_DICTIONARY_CACHE_ENTRY_LENGTH);
-  if (ret == NULL)
-    {
-      H5Fclose (hdf5_file);
-    }
-  return ret;
+  return file_open (filename, write);
 }
 
 struct adftool_file *
 adftool_file_open_data (size_t nbytes, const void *bytes)
 {
-  /* Create a temporary file initially containing these bytes, open
-     the HDF5 file, and then unlink the file. So, the HDF5 file name
-     will not exist. To let users read the generated file, the
-     file_open function also opens it with a regular FILE* handle. */
-  const char *tmpdir_var = getenv ("TMPDIR");
-  static const char *default_tmpdir = "/tmp";
-  struct adftool_file *ret = NULL;
-  if (tmpdir_var == NULL)
-    {
-      tmpdir_var = default_tmpdir;
-    }
-  char *filename =
-    malloc (strlen (tmpdir_var) + strlen ("/adftool-XXXXXX") + 1);
-  if (filename == NULL)
-    {
-      goto wrapup;
-    }
-  sprintf (filename, "%s/adftool-XXXXXX", tmpdir_var);
-  int descr = mkstemp (filename);
-  if (descr == -1)
-    {
-      goto free_filename;
-    }
-  FILE *f = fopen (filename, "w" OPEN_BINARY_SUFFIX);
-  if (f == NULL)
-    {
-      goto close_descriptor;
-    }
-  size_t n_written = 0;
-  if (nbytes != 0)
-    {
-      n_written = fwrite (bytes, 1, nbytes, f);
-    }
-  if (n_written != nbytes)
-    {
-      goto close_file;
-    }
-  if (fflush (f) != 0)
-    {
-      goto close_file;
-    }
-  ret = adftool_file_open (filename, 1);
-  if (ret == NULL)
-    {
-      goto close_file;
-    }
-close_file:
-  fclose (f);
-close_descriptor:
-  remove (filename);
-  close (descr);
-free_filename:
-  free (filename);
-wrapup:
-  return ret;
+  return file_open_data (nbytes, bytes);
+}
+
+struct adftool_file *
+adftool_file_open_generated (void)
+{
+  return file_open_generated ();
 }
 
 void
