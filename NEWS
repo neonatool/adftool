@@ -1,5 +1,8 @@
 #+title: What’s new in adftool
 
+* Noteworthy changes in release ?.? (????-??-??) [?]
+
+
 * Noteworthy changes in release 0.7.0 (2023-03-17) [alpha]
 ** New function to generate an EEG
 adftool_file_open_generated can now generate a synthetic EEG.
