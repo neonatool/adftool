@@ -337,6 +337,32 @@ AdftoolFactory ().then (Adftool => {
     });
     Adftool.with_generated_file ((f) => {
 	Adftool.with_named_node ('https://localhost/lytonepal#Fp2', (fp2) => {
+	    Adftool.with_statement ((wildcard) => {
+		f.lookup (wildcard, ((data) => {
+		    console.assert (data.length >= 11);
+		    data.forEach ((st) => {
+			st.get ((terms) => {
+			    let subject = "?";
+			    let predicate = "?";
+			    let object = "?";
+			    let graph = "?";
+			    if (terms.subject) {
+				subject = terms.subject.to_n3 ();
+			    }
+			    if (terms.predicate) {
+				predicate = terms.predicate.to_n3 ();
+			    }
+			    if (terms.object) {
+				object = terms.object.to_n3 ();
+			    }
+			    if (terms.graph) {
+				graph = terms.graph.to_n3 ();
+			    }
+			    console.log('I haz a statement:', subject, predicate, object, graph);
+			});
+		    });
+		}));
+	    });
 	    f.find_channels_by_type (fp2, (channels) => {
 		assert (channels.length == 1);
 		f.eeg_get_data (channels[0], 0, 5120, (n_points, n_channels, fp2_data) => {

@@ -173,8 +173,8 @@ export class File {
 	    }
 	    const n_results = n_results_a.get (0);
 	    return with_n_statements (n_results, (statements, array) => {
-		const check_error = adftool_lookup (this._ptr, pattern._t, 0, n_results, array.address (0));
-		if (check_error != 0) {
+		const check_error = adftool_lookup (this._ptr, pattern._t, 0, n_results, n_results_a.address (0), array.address (0));
+		if (check_error != 0 || n_results_a.get (0) !== n_results) {
 		    throw 'Cannot perform lookup (second time)!';
 		}
 		return f (statements);
