@@ -1,7 +1,9 @@
 #+title: What’s new in adftool
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
-
+** The generator can be used in JavaScript
+An embarrassing bug has been fixed, now src/js/adftool_file.mjs calls
+adftool_file_open_generated correctly.
 
 * Noteworthy changes in release 0.7.0 (2023-03-17) [alpha]
 ** New function to generate an EEG

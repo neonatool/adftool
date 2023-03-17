@@ -333,6 +333,21 @@ AdftoolFactory ().then (Adftool => {
 	    assert (strings[0].langtag === null);
 	    assert (strings[1].value === 'hello, world!');
 	    assert (strings[1].langtag === 'en-us');
+	});
+    });
+    Adftool.with_generated_file ((f) => {
+	Adftool.with_named_node ('https://localhost/lytonepal#Fp2', (fp2) => {
+	    f.find_channels_by_type (fp2, (channels) => {
+		assert (channels.length == 1);
+		f.eeg_get_data (channels[0], 0, 5120, (n_points, n_channels, fp2_data) => {
+		    assert (n_points === 5120);
+		    assert (n_channels === 11);
+		    assert (fp2_data.length === 5120);
+		    fp2_data.forEach ((x) => {
+			assert (x >= -0.0015 && x <= 0.0015);
+		    });
+		});
+	    });
 	    console.log('OK!');
 	});
     });

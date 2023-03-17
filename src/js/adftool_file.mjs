@@ -137,7 +137,7 @@ export class File {
 	}
     }
     open_generated () {
-	const ptr = adftool_file_open_data (data.length, input_pointer);
+	const ptr = adftool_file_open_generated ();
 	if (ptr == 0) {
 	    throw 'Cannot open the file.';
 	}
