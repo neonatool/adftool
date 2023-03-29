@@ -1,5 +1,8 @@
 #+title: What’s new in adftool
 
+* Noteworthy changes in release ?.? (????-??-??) [?]
+
+
 * Noteworthy changes in release 0.7.2 (2023-03-29) [alpha]
 ** Fix the generated pointes
 The pointes would not look correct in the generated EEG: instead of
