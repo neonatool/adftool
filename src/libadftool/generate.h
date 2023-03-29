@@ -75,7 +75,7 @@ adftool_file_generate_pointe (const double *restrict times,
 	{
 	  const double advancement =
 	    (t - time_peak) / (time_stop - time_peak);
-	  data[i] += amplitude * advancement;
+	  data[i] += amplitude * (1 - advancement);
 	}
     }
 }

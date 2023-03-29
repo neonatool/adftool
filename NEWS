@@ -1,7 +1,10 @@
 #+title: What’s new in adftool
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
-
+** Fix the generated pointes
+The pointes would not look correct in the generated EEG: instead of
+being a downward spike in the standard montage, they would appear with
+a discontinuity (although smoothed out by the filter).
 
 * Noteworthy changes in release 0.7.1 (2023-03-17) [alpha]
 ** The generator can be used in JavaScript
