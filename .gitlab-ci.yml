@@ -131,7 +131,7 @@ build_emscripten:
     - cd ..
     - mkdir -p build-emscripten
     - cd build-emscripten
-    - emconfigure ../adftool-*/configure CPPFLAGS="-I/export/emscripten/include -I$PWD/../public/emscripten" LIBS="/export/emscripten/lib/libhdf5.a" LDFLAGS="-L/export/emscripten/lib -L$PWD/../public/emscripten/lib" --disable-relocatable --disable-shared --prefix=/emscripten --disable-python --disable-r --enable-node=yes --enable-js-initial-memory=$((256 * 1024 * 1024)) gl_cv_func_dup2_works=no --disable-valgrind-tests CFLAGS=--profiling
+    - emconfigure ../adftool-*/configure CPPFLAGS="-I/export/emscripten/include -I$PWD/../public/emscripten" LIBS="/export/emscripten/lib/libhdf5.a" LDFLAGS="-L/export/emscripten/lib -L$PWD/../public/emscripten/lib" --disable-relocatable --disable-shared --prefix=/emscripten --disable-python --disable-r --enable-node=yes --enable-js-initial-memory=$((256 * 1024 * 1024)) gl_cv_func_dup2_works=no --disable-valgrind-tests CFLAGS="-Oz"
     - emmake make -j
     - emmake make -j DESTDIR=$PWD/../public install
     - cp -R /export/emscripten/include/* $PWD/../public/emscripten/include/
