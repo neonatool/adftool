@@ -208,7 +208,7 @@ main (int argc, char *argv[])
     sizeof (example_data) / sizeof (example_data[0]);
   static const size_t n_channels =
     sizeof (example_data[0]) / sizeof (example_data[0][0]);
-  double *row_wise = malloc (n_points * n_channels * sizeof (row_wise));
+  double *row_wise = malloc (n_points * n_channels * sizeof (*row_wise));
   if (row_wise == NULL)
     {
       test_fail ();
