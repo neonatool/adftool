@@ -61,7 +61,7 @@ check_asan:
     - cd build-dist
     - ../configure --enable-relocatable --disable-python --disable-r --disable-valgrind-tests "CFLAGS=-g3 -O2 -DFORTIFY_SOURCE=2 -fsanitize=undefined,address -fsanitize-undefined-trap-on-error -Wall -Wextra -static-libasan"
     - make -j
-    - make -j check
+    - make -j check 'TESTS_ENVIRONMENT = export CK_TIMEOUT_MULTIPLIER=100;'
   artifacts:
     when: always
     paths:
