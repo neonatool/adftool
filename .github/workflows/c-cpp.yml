@@ -1,0 +1,31 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: submodules-init
+      run: git submodule init
+    - name: submodules-update
+      run: git submodule update
+    - name: install-dependencies
+      run: sudo apt install -y git gettext libgmp-dev libhdf5-dev zlib1g-dev autoconf autoconf-archive automake libtool valgrind tar global autopoint make gcc m4 libtinfo5 flex r-base texinfo texlive libpython3-dev pkg-config emacs check r-base r-cran-rcpp
+    - name: bootstrap
+      run: ./bootstrap-bootstrap
+    - name: configure
+      run: ./configure
+    - name: make
+      run: make
+    - name: make check
+      run: make check
+    - name: make distcheck
+      run: make distcheck
