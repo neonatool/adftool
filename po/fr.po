@@ -1,0 +1,1829 @@
+# French translations for adftool package
+# Traductions françaises du paquet adftool.
+# Copyright (C) 2022 ???
+# This file is distributed under the same license as the adftool package.
+# Vivien Kraus <vivien.kraus@univ-reims.fr>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: adftool 0.0.0\n"
+"Report-Msgid-Bugs-To: vivien.kraus@univ-reims.fr\n"
+"POT-Creation-Date: 2023-03-29 19:02+0200\n"
+"PO-Revision-Date: 2023-03-16 14:34+0100\n"
+"Last-Translator: Vivien Kraus <vivien.kraus@univ-reims.fr>\n"
+"Language-Team: French <traduc@traduc.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.2.4\n"
+
+#: src/adftool.c:54
+#, c-format
+msgid "Not enough memory.\n"
+msgstr "Pas assez de mémoire.\n"
+
+#: src/adftool.c:107 src/adftool.c:434 src/adftool.c:547
+msgctxt "Command-line|Option|"
+msgid "lookup"
+msgstr "chercher"
+
+#: src/adftool.c:109 src/adftool.c:435
+msgctxt "Command-line|Option|"
+msgid "add"
+msgstr "ajouter"
+
+#: src/adftool.c:111 src/adftool.c:436 src/adftool.c:549
+msgctxt "Command-line|Option|"
+msgid "remove"
+msgstr "enlever"
+
+#: src/adftool.c:113 src/adftool.c:440 src/adftool.c:550
+msgctxt "Command-line|Option|"
+msgid "get-eeg-data"
+msgstr "obtenir-données-eeg"
+
+#: src/adftool.c:115 src/adftool.c:443 src/adftool.c:497 src/adftool.c:551
+msgctxt "Command-line|Option|"
+msgid "set-eeg-data"
+msgstr "définir-données-eeg"
+
+#: src/adftool.c:117 src/adftool.c:454 src/adftool.c:561
+msgctxt "Command-line|Option|"
+msgid "find-channel-identifier"
+msgstr "identifiant-du-canal"
+
+#: src/adftool.c:119 src/adftool.c:457 src/adftool.c:562
+msgctxt "Command-line|Option|"
+msgid "channel-metadata"
+msgstr "métadonnées-du-canal"
+
+#: src/adftool.c:121 src/adftool.c:460 src/adftool.c:563
+msgctxt "Command-line|Option|"
+msgid "add-channel-type"
+msgstr "ajouter-type-de-canal"
+
+#: src/adftool.c:123 src/adftool.c:463 src/adftool.c:564
+msgctxt "Command-line|Option|"
+msgid "channels-of-type"
+msgstr "canaux-de-type"
+
+#: src/adftool.c:125 src/adftool.c:445
+msgctxt "Command-line|Option|"
+msgid "eeg-metadata"
+msgstr "métadonnées-eeg"
+
+#: src/adftool.c:127 src/adftool.c:450
+msgctxt "Command-line|Option|"
+msgid "set-eeg-date"
+msgstr "modifier-date-eeg"
+
+#: src/adftool.c:129 src/adftool.c:430
+msgctxt "Command-line|Option|"
+msgid "subject"
+msgstr "sujet"
+
+#: src/adftool.c:131 src/adftool.c:431
+msgctxt "Command-line|Option|"
+msgid "predicate"
+msgstr "prédicat"
+
+#: src/adftool.c:133 src/adftool.c:432
+msgctxt "Command-line|Option|"
+msgid "object"
+msgstr "objet"
+
+#: src/adftool.c:135 src/adftool.c:433
+msgctxt "Command-line|Option|"
+msgid "graph"
+msgstr "graphe"
+
+#: src/adftool.c:137 src/adftool.c:471
+msgctxt "Command-line|Option|"
+msgid "deletion-date"
+msgstr "date-de-suppression"
+
+#: src/adftool.c:139 src/adftool.c:472 src/adftool.c:719
+msgctxt "Command-line|Option|"
+msgid "help"
+msgstr "aidez-moi"
+
+#: src/adftool.c:140 src/adftool.c:473
+msgctxt "Command-line|Option|"
+msgid "version"
+msgstr "version"
+
+#: src/adftool.c:175
+#, c-format
+msgid "The argument to \"%s\" must be a number.\n"
+msgstr "L’argument de « %s » doit être un nombre.\n"
+
+#: src/adftool.c:203 src/adftool.c:281 src/adftool.c:296
+#, c-format
+msgid "The argument to \"%s\" must be a N3 identifier.\n"
+msgstr "L’argument de « %s » doit être un identifiant N3.\n"
+
+#: src/adftool.c:220 src/adftool.c:236 src/adftool.c:248 src/adftool.c:263
+#, c-format
+msgid "The argument to \"%s\" must be in the form of IDENTIFIER=TYPE.\n"
+msgstr "L’argument de « %s » doit être de la forme IDENTIFIANT=TYPE.\n"
+
+#: src/adftool.c:310
+#, c-format
+msgid ""
+"The argument to \"%s\" must be in the form of DATE,SAMPLING_FREQUENCY.\n"
+msgstr ""
+"L’argument de « %s » doit être de la forme DATE,"
+"FRÉQUENCE_D’ÉCHANTILLONNAGE.\n"
+
+#: src/adftool.c:335
+#, c-format
+msgid "The DATE argument to \"%s\" must be a date according to XSD.\n"
+msgstr "L’argument DATE de « %s » doit être une date selon XSD.\n"
+
+#: src/adftool.c:351
+#, c-format
+msgid "The SAMPLING_FREQUENCY argument to \"%s\" must be a number.\n"
+msgstr ""
+"L’argument FRÉQUENCE_D’ÉCHANTILLONNAGE de « %s » doit être un nombre.\n"
+
+#: src/adftool.c:370
+#, c-format
+msgid "The argument to \"%s\" cannot be parsed as a N-Triples term: \"%s\"\n"
+msgstr ""
+"L’argument de « %s » ne peut pas être compris comme un terme N-Triples : "
+"« %s »\n"
+
+#: src/adftool.c:385
+#, c-format
+msgid ""
+"Warning: the argument to \"%s\" can be parsed as a N-Triples term, but the "
+"trailing \"%s\" will be discarded.\n"
+msgstr ""
+"Attention : l’argument de « %s » peut être interprété comme un terme N-"
+"Triples, mais la fin « %s » sera ignorée.\n"
+
+#: src/adftool.c:417
+#, c-format
+msgid ""
+"Usage: [ENVIRONMENT…] adftool [OPTION…] FILE\n"
+"\n"
+"Read or update FILE.\n"
+"\n"
+msgstr ""
+"Utilisation : [ENVIRONNEMENT…] adftool [OPTION…] FICHIER\n"
+"\n"
+"Lit ou modifie FICHIER.\n"
+"\n"
+
+#: src/adftool.c:419
+#, c-format
+msgid ""
+"You can set a pattern in N-Triples format:\n"
+"  -s NT, --%s=NT;\n"
+"  -p NT, --%s=NT;\n"
+"  -o NT, --%s=NT;\n"
+"  -g NT, --%s=NT.\n"
+"\n"
+"You use this pattern to:\n"
+"  --%s: print the data matching the pattern;\n"
+"  --%s: add the statement (only graph is optional);\n"
+"  --%s: remove all statements matching the pattern.\n"
+"\n"
+msgstr ""
+"Vous pouvez sélectionner un motif au format N-Triples :\n"
+"  -s NT, --%s=NT_;\n"
+"  -p NT, --%s=NT ;\n"
+"  -o NT, --%s=NT ;\n"
+"  -g NT, --%s=NT.\n"
+"\n"
+"Vous pouvez utiliser ce motif pour :\n"
+"  --%s : afficher les données qui correspondent au motif ;\n"
+"  --%s : ajouter la déclaration (seul le graphe est optionnel) ;\n"
+"  --%s : enlever toutes les déclarations qui correspondent au motif.\n"
+"\n"
+
+#: src/adftool.c:437
+#, c-format
+msgid "There are other operation modes for adftool:\n"
+msgstr "Il y a d’autres modes d’opération pour adftool_:\n"
+
+#: src/adftool.c:438
+#, c-format
+msgid ""
+"  --%s: read the raw EEG sensor data (in Tab-Separated Value [TSV] format);\n"
+msgstr ""
+"  --%s : lit les données brutes du capteur EEG (au format Valeurs Séparées "
+"par des Tabulations [TSV en anglais]) ;\n"
+
+#: src/adftool.c:441
+#, c-format
+msgid ""
+"  --%s: set the raw EEG sensor data (in TSV format) from the standard "
+"input;\n"
+msgstr ""
+"  --%s : définit les données brutes de capteur EEG (au format TSV) à partir "
+"de l’entrée standard ;\n"
+
+#: src/adftool.c:444
+#, c-format
+msgid "  --%s: read the EEG metadata;\n"
+msgstr "  --%s : lit les métadonnées de l’EEG ;\n"
+
+#: src/adftool.c:446
+#, c-format
+msgid ""
+"  --%s=DATE,SAMPLING_FREQUENCY: set the EEG date and sampling frequency "
+"(DATE is in the format of %s, and SAMPLING_FREQUENCY in the locale numeric "
+"format, %f);\n"
+msgstr ""
+"  --%s=DATE,FRÉQUENCE_D’ÉCHANTILLONNAGE : modifie la date de l’EEG et la "
+"fréquence d’échantillonnage (DATE est au format de %s, et "
+"FRÉQUENCE_D’ÉCHANTILLONNAGE dans le format numéric local, %f) ;\n"
+
+#: src/adftool.c:452
+#, c-format
+msgid ""
+"  --%s=COLUMN: find the channel identifier for the raw sensor data in COLUMN "
+"(an integer);\n"
+msgstr ""
+"  --%s=COLONNE : trouve l’identifiant de canal pour les données brutes du "
+"capteur dans COLONNE (un entier) ;\n"
+
+#: src/adftool.c:455
+#, c-format
+msgid "  --%s=IDENTIFIER: read the channel metadata for IDENTIFIER (in N3);\n"
+msgstr ""
+"  --%s=IDENTIFIANT : lit les métadonnées du canal IDENTIFIANT (au format "
+"N3) ;\n"
+
+#: src/adftool.c:458
+#, c-format
+msgid ""
+"  --%s=IDENTIFIER=TYPE: add TYPE to the list of types for IDENTIFIER (both "
+"in N3);\n"
+msgstr ""
+"  --%s=IDENTIFIANT=TYPE : ajoute TYPE à la liste des types de IDENTIFIANT "
+"(tous les deux au format N3) ;\n"
+
+#: src/adftool.c:461
+#, c-format
+msgid "  --%s=TYPE: print the list of channels of type TYPE (in N3).\n"
+msgstr ""
+"  --%s=TYPE : affiche la liste des canaux de type TYPE (au format N3).\n"
+
+#: src/adftool.c:465
+#, c-format
+msgid ""
+"There are other options:\n"
+"  -d DATE, --%s=DATE: use DATE instead of the current date when deleting "
+"statements.\n"
+"  -h, --%s: print this message and exit.\n"
+"  -V, --%s: print the package version and exit.\n"
+"\n"
+msgstr ""
+"Il y a d’autres options :\n"
+"  -d DATE, --%s=DATE : utiliser la DATE à la place de la date courante pour "
+"la suppression de déclarations.\n"
+"  -h, --%s : afficher ce message et quitter.\n"
+"  -V, --%s : afficher la version du paquet et quitter.\n"
+"\n"
+
+#: src/adftool.c:474
+#, c-format
+msgid ""
+"The following environment variables can change the behavior of the program:\n"
+"  LANG: change the localization. Set it as \"LANG=C\" in the environment or "
+"\"LANG=en_US.UTF-8\" to disable localization.\n"
+"  LC_NUMERIC: change the expected number format to input and output numbers. "
+"Set it as \"LC_NUMERIC=C\" or \"LC_NUMERIC=en_US.UTF-8\" to use the English "
+"notation.\n"
+"\n"
+msgstr ""
+"Les variables d’environnement suivantes peuvent changer le comportement du "
+"programme :\n"
+"  LANG_: change la localisation. La définir avec la valeur « LANG=C » dans "
+"l’environnement ou « LANG=en_US.UTF-8 » désactive la localisation ;\n"
+"  LC_NUMERIC : change le format numérique attendu pour la lecture et "
+"l’écriture de nombres. Définissez-le avec « LC_NUMERIC=C » ou "
+"« LC_NUMERIC=en_US.UTF-8 » pour utiliser la notation anglaise.\n"
+"\n"
+
+#: src/adftool.c:483
+#, c-format
+msgid ""
+"Please note that TSV exchange of raw EEG data uses the current numeric "
+"locale format. For instance, here is an approximation of π: \"%f\". You can "
+"control the numeric format by setting the LC_NUMERIC environment variable.\n"
+"\n"
+"For instance, if the EEG data has been generated within the English locale, "
+"you would set it with the following command-line:\n"
+"  LC_NUMERIC=en_US.UTF-8 adftool --%s file.adf\n"
+"And then specify the data in this format:\n"
+"  0.01\t3.42e-4\t-1.18e2\n"
+"  3.1416\t…\t…\n"
+"\n"
+msgstr ""
+"Veuillez noter que l’échange de données brutes EEG par TSV utilise le format "
+"local numérique courant. Par exemple, voici une approximation de π : « %f ». "
+"Vous pouvez contrôler le format numérique en définissant la variable "
+"d’environnement LC_NUMERIC.\n"
+"\n"
+"Par exemple, si les données EEG ont été générées à partir d’une locale "
+"anglaise, vous pouvez les écrire avec la ligne de commande suivante :\n"
+"  LC_NUMERIC=en_US.UTF-8 adftool --%s fichier.adf\n"
+"Et spécifier par la suite les données dans ce format :\n"
+"  0.01\t3.42e-4\t-1.18e2\n"
+"  3.1416\t…\t…\n"
+"\n"
+
+#: src/adftool.c:504
+#, c-format
+msgid ""
+"Here is a summary of the current values of the main environment variables:\n"
+msgstr ""
+"Voici un résumé des valeurs actuelles des principales variables "
+"d’environnement_:\n"
+
+#: src/adftool.c:511
+#, c-format
+msgid "  %s: \"%s\"\n"
+msgstr "  %s : « %s »\n"
+
+#: src/adftool.c:515
+#, c-format
+msgid "  %s is unset\n"
+msgstr "  %s n’est pas définie\n"
+
+#: src/adftool.c:520
+#, c-format
+msgid ""
+"%s\n"
+"\n"
+"Copyright status is unclear.\n"
+msgstr ""
+"%s\n"
+"\n"
+"Le copyright n’est pas clair.\n"
+
+#: src/adftool.c:531
+#, c-format
+msgid "No file to process.\n"
+msgstr "Aucun fichier à traiter.\n"
+
+#: src/adftool.c:539
+#, c-format
+msgid "Nothing to do.\n"
+msgstr "Rien à faire.\n"
+
+#: src/adftool.c:545
+#, c-format
+msgid ""
+"Conflicting operations: please pass either --%s, --%s, --%s, --%s or --%s.\n"
+msgstr ""
+"Opérations conflictuelles : veuillez passer soit --%s, soit --%s, soit --%s, "
+"soit --%s, soit --%s.\n"
+
+#: src/adftool.c:548
+msgctxt "Command-line|Option|"
+msgid "insert"
+msgstr "ajouter"
+
+#: src/adftool.c:558
+#, c-format
+msgid "Conflicting operations: please pass either --%s, --%s, --%s or --%s.\n"
+msgstr ""
+"Opérations conflictuelles : veuillez passer soit --%s, soit --%s, soit --%s, "
+"soit --%s.\n"
+
+#: src/adftool.c:574
+#, c-format
+msgid "The file \"%s\" could not be opened.\n"
+msgstr "Le fichier « %s » n’a pas pu être ouvert.\n"
+
+#: src/adftool.c:598
+#, c-format
+msgid "Error: could not get the current time.\n"
+msgstr "Impossible de récupérer la date courante.\n"
+
+#: src/adftool.c:612
+#, c-format
+msgid "Could not insert the data.\n"
+msgstr "Impossible d’ajouter les données.\n"
+
+#: src/adftool.c:619
+#, c-format
+msgid "Could not delete the data.\n"
+msgstr ""
+"Impossible de supprimer les données.\n"
+"\n"
+
+#: src/adftool.c:630
+#, c-format
+msgid "Could not read the EEG data.\n"
+msgstr "Impossible de lire les données EEG.\n"
+
+#: src/adftool.c:712
+#, c-format
+msgid ""
+"Error: input line %lu contains \"%s\", which cannot be parsed as a number.\n"
+msgstr ""
+"Erreur_: la ligne d’entrée %lu contient « %s », qui ne peut pas être "
+"interprété comme un nombre.\n"
+
+#: src/adftool.c:717
+#, c-format
+msgid ""
+"You may need to set LC_NUMERIC. Please run adftool --%s to read more about "
+"numeric data formats.\n"
+msgstr ""
+"Vous devrez peut-être définir LC_NUMERIC. Veuillez exécuter adftool --%s "
+"pour en apprendre plus sur les formats de données numériques.\n"
+
+#: src/adftool.c:730
+#, c-format
+msgid "Error: input line %lu has %lu values, but there are %lu columns.\n"
+msgstr ""
+"Erreur_: la ligne d’entrée %lu a %lu valeurs, mais il y a %lu colonnes.\n"
+
+#: src/adftool.c:745
+#, c-format
+msgid "Error: cannot set the EEG data.\n"
+msgstr "Erreur : impossible de définir les données EEG.\n"
+
+#: src/adftool.c:762
+#, c-format
+msgid "Error: no channel identifier for column %lu.\n"
+msgstr "Erreur_: pas d’identifiant de canal pour la colonne %lu.\n"
+
+#: src/adftool.c:783
+#, c-format
+msgid "Metadata of channel %s:\n"
+msgstr "Métadonnées du canal %s :\n"
+
+#: src/adftool.c:788
+#, c-format
+msgid "  - its data are in column %lu;\n"
+msgstr "  - ses données sont dans la colonne %lu ;\n"
+
+#: src/adftool.c:792
+#, c-format
+msgid "  - its data cannot be found;\n"
+msgstr "  - ses données ne peuvent être lues ;\n"
+
+#: src/adftool.c:814
+#, c-format
+msgid "  - it has no types.\n"
+msgstr "  - il n’a pas de type.\n"
+
+#: src/adftool.c:818
+#, c-format
+msgid "  - it has %lu type:\n"
+msgid_plural "  - it has %lu types:\n"
+msgstr[0] "  - il a %lu type :\n"
+msgstr[1] "  - il a %lu types :\n"
+
+#: src/adftool.c:834
+#, c-format
+msgid "    %s\n"
+msgstr "    %s\n"
+
+#: src/adftool.c:851
+#, c-format
+msgid "Error: could not add a new type.\n"
+msgstr "Erreur_: impossible d’ajouter un nouveau type.\n"
+
+#: src/adftool.c:888
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
+
+#: src/adftool.c:903
+#, c-format
+msgid "The EEG does not have a start date or a sampling frequency.\n"
+msgstr "L’EEG n’a pas de date ou pas de fréquence d’échantillonnage.\n"
+
+#: src/adftool.c:925
+#, c-format
+msgid "The EEG started at: %s, with a sampling frequency of %f Hz.\n"
+msgstr ""
+"L’EEG a démarré à : %s, avec une fréquence d’échantillonnage de %f Hz.\n"
+
+#: src/adftool.c:936
+#, c-format
+msgid "Could not set the EEG time.\n"
+msgstr "Impossible de modifier la date de l’EEG.\n"
+
+#: src/adftool.c:969
+#, c-format
+msgid "Cannot allocate memory to hold the results.\n"
+msgstr "Impossible d’allouer de la mémoire pour les résultats.\n"
+
+#: src/adftool.c:993
+#, c-format
+msgid "Cannot list the statements.\n"
+msgstr "Impossible de lister les déclarations.\n"
+
+#: src/adftool_python.c:166
+msgid ""
+"Open the file under the given name. If the write flag is set, open it for "
+"reading and writing. Otherwise, open it just for reading."
+msgstr ""
+"Ouvre le fichier avec le nom donné. Si le drapeau write est vrai, ouvre le "
+"fichier pour la lecture et l’écriture. Sinon, ouvre le fichier juste pour la "
+"lecture."
+
+#: src/adftool_python.c:170
+msgid "Close the opened file."
+msgstr "Ferme le fichier ouvert."
+
+#: src/adftool_python.c:172
+msgid ""
+"Open a virtual file with initial content. The argument is read-only. Use '."
+"get_data()' to return the final content."
+msgstr ""
+"Ouvre un fichier virtuel avec un contenu initial. L’argument est disponible "
+"uniquement en lecture seule. Utilisez « .get_data » pour obtenir le contenu "
+"final."
+
+#: src/adftool_python.c:176
+msgid "Open a virtual file and populate it with a generated EEG."
+msgstr "Ouvre un fichier virtuel et le remplit avec un EEG généré."
+
+#: src/adftool_python.c:178
+msgid ""
+"Discard the first start bytes, then fill the bytes object with the next "
+"bytes of the file. Return the total number of bytes in the file."
+msgstr ""
+"Ignore les start premiers octets, puis remplit l’objet bytes avec les octets "
+"suivants du fichier. Retourne le nombre total d’octets dans le fichier."
+
+#: src/adftool_python.c:182
+msgid ""
+"Search for statements matching the pattern in the file, discard the first "
+"start statements, and fill the results with the next statements. Return the "
+"total number of statements that match the pattern."
+msgstr ""
+"Cherche des déclarations correspondant au motif pattern dans le fichier, "
+"ignore les start première déclarations et remplit results avec les "
+"déclarations suivantes. Retourne le nombre total de déclarations qui "
+"correspondent au motif."
+
+#: src/adftool_python.c:187
+msgid ""
+"Search for non-deleted objects that match the pattern subject <predicate> ?. "
+"Discard the first start statements, and fill the results with the next "
+"objects. Return the total number of undeleted objects that match the pattern."
+msgstr ""
+"Cherche des objets non supprimés correspondant au motif subjet <prédicat> ?. "
+"Ignore les start premières déclarations, et remplit results avec les objets "
+"suivants. Retourne le nombre total d’objets non supprimés qui correspondent "
+"au motif."
+
+#: src/adftool_python.c:193
+msgid ""
+"Search for non-deleted literal integers that match the pattern subject "
+"<predicate> ?. Discard the first start values, and fill the results with the "
+"next values. Return the total number of undeleted values that match the "
+"pattern."
+msgstr ""
+"Cherche des entiers littéraux non supprimés correspondant au motif sujet "
+"<prédicat> ?. Ignore les start premières valeurs, et remplit results avec "
+"les valeurs suivantes. Retourne le nombre total de valeurs non supprimées "
+"qui correspondent au motif."
+
+#: src/adftool_python.c:199
+msgid ""
+"Search for non-deleted literal doubles that match the pattern subject "
+"<predicate> ?. Discard the first start values, and fill the results with the "
+"next values. Return the total number of undeleted values that match the "
+"pattern."
+msgstr ""
+"Cherche des double flottants littéraux non supprimés correspondant au motif "
+"sujet <prédicat> ?. Ignore les start premières valeurs, et remplit results "
+"avec les valeurs suivantes. Retourne le nombre total de valeurs non "
+"supprimées qui correspondent au motif."
+
+#: src/adftool_python.c:205
+msgid ""
+"Search for non-deleted literal dates that match the pattern subject "
+"<predicate> ?. Discard the first start values, and fill the results with the "
+"next values. Return the total number of undeleted values that match the "
+"pattern."
+msgstr ""
+"Cherche des dates littérales non supprimées correspondant au motif sujet "
+"<prédicat> ?. Ignore les start premières valeurs, et remplit results avec "
+"les valeurs suivantes. Retourne le nombre total de valeurs non supprimées "
+"qui correspondent au motif."
+
+#: src/adftool_python.c:211
+msgid ""
+"Search for non-deleted (possibly langtagged) literal strings that match the "
+"pattern subject <predicate> ?. Discard the first start values, and fill the "
+"results with the next values. Return the total number of undeleted values "
+"that match the pattern."
+msgstr ""
+"Cherche des chaînes littérales (possiblement langtagguées) non supprimées "
+"correspondant au motif sujet <prédicat> ?. Ignore les start premières "
+"valeurs, et remplit results avec les valeurs suivantes. Retourne le nombre "
+"total de valeurs non supprimées qui correspondent au motif."
+
+#: src/adftool_python.c:218
+msgid ""
+"Search for non-deleted subjects that match the pattern ? <predicate> object. "
+"Discard the first start statements, and fill the results with the next "
+"subjects. Return the total number of undeleted subjects that match the "
+"pattern."
+msgstr ""
+"Cherche des sujets non supprimés correspondant au motif ? <prédicat> object. "
+"Ignore les start premières déclarations, et remplit results avec les sujets "
+"suivants. Retourne le nombre total de sujets non supprimés qui correspondent "
+"au motif."
+
+#: src/adftool_python.c:224
+msgid "Mark every statement that match the pattern as deleted."
+msgstr ""
+"Marque toutes les déclarations correspondant au motif comme supprimées."
+
+#: src/adftool_python.c:226
+msgid "Insert the new statement in the file."
+msgstr "Ajoute une nouvelle déclaration dans le fichier."
+
+#: src/adftool_python.c:229
+msgid ""
+"Find the term identifying the channel whose data is stored in the given "
+"column."
+msgstr ""
+"Trouve le terme identifiant le canal dont les données sont stockées dans la "
+"colonne donnée."
+
+#: src/adftool_python.c:232
+msgid "Find in which column the channel data is stored."
+msgstr "Trouve dans quelle colonne sont stockées les données du canal."
+
+#: src/adftool_python.c:234
+msgid "Add a new type to the channel."
+msgstr "Ajoute un nouveau type de canal."
+
+#: src/adftool_python.c:236
+msgid "Query all the types for a channel."
+msgstr "Requête tous les types d’un canal."
+
+#: src/adftool_python.c:238
+msgid "Query all the channels of a specific type."
+msgstr "Requête tous les canaux de ce type."
+
+#: src/adftool_python.c:240
+msgid "Get the raw EEG data."
+msgstr "Obtient les données EEG brutes."
+
+#: src/adftool_python.c:242
+msgid "Set all the raw EEG data at once."
+msgstr "Définit l’ensemble des données brutes EEG en une fois."
+
+#: src/adftool_python.c:244
+msgid "Get the EEG recording time and sampling frequency."
+msgstr ""
+"Obtient la date d’enregistrement de l’EEG et la fréquence d’échantillonnage."
+
+#: src/adftool_python.c:246
+msgid "Set the EEG recording time and sampling frequency."
+msgstr ""
+"Modifie la date d’enregistrement de l’EEG et la fréquence d’échantillonnage."
+
+#: src/adftool_python.c:255
+msgid "Handle to a file on the file system or in memory"
+msgstr "Contrôle d’un fichier dans le système de fichier ou en mémoire"
+
+#: src/adftool_python.c:272
+msgid "Set the object to a copy of its argument."
+msgstr "Assigne une copy de l’argument à l’objet."
+
+#: src/adftool_python.c:274
+msgid "Set the object as an IRI reference."
+msgstr "Assigne une référence d’IRI à l’objet."
+
+#: src/adftool_python.c:276
+msgid "Set the object as a labeled blank node."
+msgstr "Assigne un nœud blanc étiquetté à l’objet."
+
+#: src/adftool_python.c:278
+msgid ""
+"Set the object as a literal node, with value as its literal value, and "
+"either type, langtag, or none of them."
+msgstr ""
+"Construit l’objet comme un littéral, avec une valeur littérale, et soit un "
+"type, soit un langtag, soit aucun des deux."
+
+#: src/adftool_python.c:281
+msgid "Set the object as a literal integer."
+msgstr "Assigne un entier à l’objet."
+
+#: src/adftool_python.c:283
+msgid "Set the object as a literal floating point number."
+msgstr "Assigne un nombre à virgule flottante à l’objet."
+
+#: src/adftool_python.c:285
+msgid ""
+"Set the object as a literal date, a tuple where the first element is the "
+"number of seconds since the epoch, and the second element is the number of "
+"nanoseconds since the start of the last second."
+msgstr ""
+"Construit l’objet comme une date littérale, avec un tuple dont le premier "
+"élément est le nombre de secondes depuis l’époque, et dont le second élément "
+"est le nombre de nanosecondes depuis le début de la dernière seconde."
+
+#: src/adftool_python.c:290
+msgid "Return whether the term is an IRI reference."
+msgstr "Indique si le terme est une référence d’IRI."
+
+#: src/adftool_python.c:292
+msgid "Return whether the term is a labeled blank node."
+msgstr "Indique si le term est un nœud blanc labellisé."
+
+#: src/adftool_python.c:294
+msgid "Return whether the term is a literal."
+msgstr "Indique si le terme est un littéral."
+
+#: src/adftool_python.c:296
+msgid "Return whether the term is a typed literal."
+msgstr "Indique si le terme est un littéral typé."
+
+#: src/adftool_python.c:298
+msgid "Return whether the term is a langstring."
+msgstr "Indique si le terme est un langstring."
+
+#: src/adftool_python.c:300
+msgid ""
+"Skip start bytes, then fill the argument with the next bytes of the "
+"identifier or literal value. Return the total number of bytes required."
+msgstr ""
+"Ignore les start premiers octets, puis remplit l’objet bytes avec les octets "
+"suivants de la valeur littérale. Retourne le nombre total d’octets requis."
+
+#: src/adftool_python.c:304
+msgid ""
+"Skip start bytes, then fill the argument with the next bytes of the "
+"namespace, type or langtag. Return the total number of bytes required."
+msgstr ""
+"Ignore les start premiers octets, puis remplit l’objet bytes avec les octets "
+"suivants de l’espace de nom, du type ou du langtag. Retourne le nombre total "
+"d’octets requis."
+
+#: src/adftool_python.c:308
+msgid "Interpret the term as a literal number, and convert it to an integer."
+msgstr ""
+"Interprète le terme comme un nombre littéral, et le convertit en entier."
+
+#: src/adftool_python.c:311
+msgid ""
+"Interpret the term as a literal number, and convert it to a floating point "
+"number."
+msgstr ""
+"Interprète le terme comme un nombre littéral, et le convertit en flottant."
+
+#: src/adftool_python.c:314
+msgid ""
+"Interpret the term as a literal date, and return as a tuple the number of "
+"seconds since the epoch and the number of nanoseconds since the start of the "
+"second."
+msgstr ""
+"Interprète le terme comme une date littérale, et retourne en un tuple le "
+"nombre de secondes depuis l’époque et le nombre de nanosecondes depuis le "
+"début de la seconde."
+
+#: src/adftool_python.c:318
+msgid ""
+"Compare the N3 representation of self and the other term. Return a negative "
+"value is self comes first, a positive value if self comes last, and 0 if "
+"they are equal."
+msgstr ""
+"Compare la représentation N3 de self et de l’autre terme. Retourne un nombre "
+"négatif si self est classé devant, un nombre positif si self est classé "
+"après, et 0 s’ils sont égaux."
+
+#: src/adftool_python.c:323
+msgid ""
+"Set self to a term parsed from the argument. Return the number of bytes used "
+"in the argument."
+msgstr ""
+"Parse l’argument et assigne self. Retourne le nombre d’octets utilisés dans "
+"l’argument."
+
+#: src/adftool_python.c:326
+msgid ""
+"Skip start bytes, then fill the argument with the next bytes of the N3 "
+"representation. Return the total number of bytes required."
+msgstr ""
+"Ignore les start premiers octets, puis remplit l’objet bytes avec les octets "
+"suivants de la représentation N3. Retourne le nombre total d’octets requis."
+
+#: src/adftool_python.c:337
+msgid "Implementation of a RDF term: IRI reference, blank node, or literal."
+msgstr ""
+"Implémentation d’un terme RDF : référence d’IRI, nœud blanc, ou littéral."
+
+#: src/adftool_python.c:355
+msgid "Set the statement subject."
+msgstr "Modifie le sujet de la déclaration."
+
+#: src/adftool_python.c:357
+msgid "Set the statement predicate."
+msgstr "Modifie le prédicat de la déclaration."
+
+#: src/adftool_python.c:359
+msgid "Set the statement object."
+msgstr "Modifie l’objet de la déclaration."
+
+#: src/adftool_python.c:361
+msgid "Set the statement graph."
+msgstr "Modifie le graphe de la déclaration."
+
+#: src/adftool_python.c:364
+msgid "Set the statement deletion_date."
+msgstr "Modifie la date de suppression de la déclaration."
+
+#: src/adftool_python.c:366
+msgid "Unset the statement subject."
+msgstr "Enlève le sujet de la déclaration."
+
+#: src/adftool_python.c:368
+msgid "Unset the statement predicate."
+msgstr "Enlève le prédicat de la déclaration."
+
+#: src/adftool_python.c:370
+msgid "Unset the statement object."
+msgstr "Enlève l’objet de la déclaration."
+
+#: src/adftool_python.c:372
+msgid "Unset the statement graph."
+msgstr "Enlève le graphe de la déclaration."
+
+#: src/adftool_python.c:375
+msgid "Unset the statement deletion_date."
+msgstr "Enlève la date de suppression de la déclaration."
+
+#: src/adftool_python.c:377
+msgid "Get the fields of the statement."
+msgstr "Extrait les champs de la déclaration."
+
+#: src/adftool_python.c:379
+msgid ""
+"Compare the N3 representation of the terms in self and the terms in the "
+"other statement, in the specified lexicographic order. Return a negative "
+"value is self comes first, a positive value if self comes last, and 0 if "
+"they are equal."
+msgstr ""
+"Compare la représentation N3 des termes de self et des termes de l’autre "
+"déclaration, dans l’ordre lexicographique spécifié. Retourne un nombre "
+"négatif si self est classé devant, un nombre positif si self est classé "
+"après, et 0 s’ils sont égaux."
+
+#: src/adftool_python.c:392
+msgid ""
+"Implementation of a RDF statement: subject, predicate, object, graph, and "
+"deletion date."
+msgstr ""
+"Implémentation d’une déclaration RDF : sujet, prédicat, objet, graphe, et "
+"date de suppression."
+
+#: src/adftool_python.c:410
+msgid "Get the (odd) number of coefficients of the filter."
+msgstr "Retourne le nombre (impair) de coefficients du filtre."
+
+#: src/adftool_python.c:412
+msgid "Get the coefficients of the filter as a list."
+msgstr "Retourne la liste des coefficients du filtre."
+
+#: src/adftool_python.c:414
+msgid "Set up the filter as band-pass."
+msgstr "Construit un filtre passe-bande."
+
+#: src/adftool_python.c:416
+msgid "Apply the filter."
+msgstr "Applique le filtre."
+
+#: src/adftool_python.c:418
+msgid "Compute default transition bandwidth"
+msgstr "Calcule la bande de transition par défaut"
+
+#: src/adftool_python.c:420
+msgid "Compute a default filter order"
+msgstr "Calcule l’ordre du filtre par défaut"
+
+#: src/adftool_python.c:429
+msgid "Implementation of a finite impulse response filter."
+msgstr "Implémentation d’un filtre à réponse finie."
+
+#: src/adftool_python.c:447
+msgid "Manipulate linked data in HDF5 ADF files"
+msgstr "Manipule des données liées dans des fichiers HDF5 ADF"
+
+#: src/adftool_python.c:641
+msgid "Cannot open that file. Does the parent directory exist?"
+msgstr "Impossible d’ouvrir ce fichier. Est-ce que le dossier parent existe ?"
+
+#: src/adftool_python.c:647
+msgid ""
+"Cannot open that file. Are you sure that this is an existing valid ADF file?"
+msgstr ""
+"Impossible d’ouvrir ce fichier. Est-ce que c’est un fichier ADF existant et "
+"valide ?"
+
+#: src/adftool_python.c:685
+msgid "Cannot open that virtual file."
+msgstr "Impossible d’ouvrir ce fichier virtuel."
+
+#: src/adftool_python.c:703
+msgid "Cannot generate a new EEG."
+msgstr "Impossible de générer un nouvel EEG."
+
+#: src/adftool_python.c:719
+msgid "The file offset is negative."
+msgstr "Le décalage du fichier est négatif."
+
+#: src/adftool_python.c:782
+msgid "Cannot look up data in the file."
+msgstr "Impossible de chercher des données dans le fichier."
+
+#: src/adftool_python.c:1113 src/adftool_python.c:1133
+#: src/adftool_python.c:1191 src/adftool_python.c:1395
+#: src/adftool_python.c:1433
+msgid "Cannot modify the file."
+msgstr "Impossible de modifier le fichier."
+
+#: src/adftool_python.c:1316 src/adftool_python.c:1329
+msgid "No EEG data in the file."
+msgstr "Pas de données EEG dans ce fichier."
+
+#: src/adftool_python.c:1411
+msgid "No EEG time in the file."
+msgstr "Pas de date EEG dans ce fichier."
+
+#: src/adftool_python.c:1527
+msgid "A literal cannot have both a type and a langtag. Please choose."
+msgstr ""
+"Un littéral ne peut pas avoir à la fois un type et un langtag. Veuillez "
+"choisir."
+
+#: src/adftool_python.c:1675 src/adftool_python.c:1697
+msgid "The term is not a number literal."
+msgstr "Le terme n’est pas un nombre littéral."
+
+#: src/adftool_python.c:1712
+msgid "The term is not a date literal."
+msgstr "Le terme n’est pas un littéral de date."
+
+#: src/adftool_python.c:1748
+msgid "The term is not in N3."
+msgstr "Le terme n’est pas en N3."
+
+#: src/adftool_r.cc:578
+msgid "Construct a new, empty term."
+msgstr "Construit un nouveau terme vide."
+
+#: src/adftool_r.cc:579
+msgid "Copy the other term."
+msgstr "Copie le terme other."
+
+#: src/adftool_r.cc:580
+msgid "Initialize the term as a blank term."
+msgstr "Indique si le terme est un nœud vide."
+
+#: src/adftool_r.cc:581
+msgid "Initialize the term as an IRIREF term."
+msgstr "Indique si le terme est une référence d’IRI."
+
+#: src/adftool_r.cc:582
+msgid "Initialize the term as a literal untagged string."
+msgstr "Initialise le terme comme chaîne littérale non taggée."
+
+#: src/adftool_r.cc:583
+msgid "Initialize the term as a typed literal string."
+msgstr "Initialise le terme comme chaîne littérale typée."
+
+#: src/adftool_r.cc:584
+msgid "Initialize the term as a lang-tagged string."
+msgstr "Initialise le terme comme chaîne languo-taggée."
+
+#: src/adftool_r.cc:585
+msgid "Initialize the term as a literal integer."
+msgstr "Initialise le terme comme entier littéral."
+
+#: src/adftool_r.cc:586
+msgid "Initialize the term as a literal double."
+msgstr "Initialise le terme comme double littéral."
+
+#: src/adftool_r.cc:587
+msgid ""
+"Initialize the term as a literal date with the number of seconds since the "
+"epoch, and the number of nanoseconds."
+msgstr ""
+"Initialise le terme comme une date littérale avec le nombre de secondes "
+"depuis l’époque, et le nombre de nanosecondes."
+
+#: src/adftool_r.cc:588
+msgid "Check whether the term is a blank node."
+msgstr "Vérifie si le term est un nœud blanc."
+
+#: src/adftool_r.cc:589
+msgid "Check whether the term is a named node."
+msgstr "Vérifie si le term est un nœud nommé."
+
+#: src/adftool_r.cc:590
+msgid "Check whether the term is a literal node."
+msgstr "Vérifie si le terme est un nœud littéral."
+
+#: src/adftool_r.cc:591
+msgid ""
+"Check whether the term is a literal node with a type (as opposed to a "
+"langtag)."
+msgstr ""
+"Vérifie si le terme est un nœud littéral avec type (contrairement au langtag)"
+
+#: src/adftool_r.cc:592
+msgid "Check whether the term is a literal node with a language tag."
+msgstr "Vérifie si le terme est un nœud littéral avec un tag de langue."
+
+#: src/adftool_r.cc:593
+msgid "Return the value of the term."
+msgstr "Retourne la valeur du terme."
+
+#: src/adftool_r.cc:594
+msgid "Return the type or langtag."
+msgstr "Retourne le type ou languotag."
+
+#: src/adftool_r.cc:595
+msgid ""
+"Try and convert the term as an integer. Return a 0-length array if it cannot "
+"be converted, or a 1-integer-long array if it can."
+msgstr ""
+"Essaye de convertir le terme en entier. Retourne un tableau vide à défaut, "
+"ou un tableau de 1 entier si c’est possible."
+
+#: src/adftool_r.cc:596
+msgid ""
+"Try and convert the term as a double. Return a 0-length array if it cannot "
+"be converted, or a 1-double-long array if it can."
+msgstr ""
+"Essaye de convertir le terme en double. Retourne un tableau vide à défaut, "
+"ou un tableau de 1 double si c’est possible."
+
+#: src/adftool_r.cc:597
+msgid ""
+"Try and convert the term as a date. Return an empty list if the conversion "
+"failed, or a list with keys \"tv_sec\" and \"tv_nsec\" otherwise."
+msgstr ""
+"Essaye de convertir le terme en date. Retourne une liste vide en cas "
+"d’échec, ou une liste avec les clés « tv_sec » et « tv_nsec » sinon."
+
+#: src/adftool_r.cc:598
+msgid ""
+"Compare the term order with the other term. Return a negative number if the "
+"main term comes before the other term, a positive number if it comes after, "
+"and 0 if both terms are equal."
+msgstr ""
+"Compare l’ordre du terme avec le terme other. Retourne un nombre négatif si "
+"le terme principal vient avant le terme other, un nombre positif si il vient "
+"après, et 0 s’ils sont égaux."
+
+#: src/adftool_r.cc:599
+msgid ""
+"Try and parse the string as a N3 term. If successful, return a list with "
+"\"success\" set to TRUE and \"rest\" set to the suffix that has not been "
+"used by the parser. Otherwise, return a list with \"success\" set to FALSE."
+msgstr ""
+"Essaye de lire la chaîne comme terme N3. En cas de réussite, retourne une "
+"liste avec « success » valant TRUE et « rest » le suffixe qui n’a pas été "
+"lu. Sinon, retourne une liste où « success » vaut FALSE."
+
+#: src/adftool_r.cc:600
+msgid "Return as a string the N3 encoding of the term."
+msgstr "Retourne comme chaîne l’encodage N3 du terme."
+
+#: src/adftool_r.cc:603
+msgid "Construct a new, empty pattern."
+msgstr "Construit un nouveau motif vide."
+
+#: src/adftool_r.cc:604
+msgid "Copy the other pattern."
+msgstr "Copie le motif other."
+
+#: src/adftool_r.cc:605
+msgid ""
+"Initialize parts of the pattern from the argument, a list. For each of the "
+"keys, subject, predicate, object and graph, if the list has a value, set the "
+"corresponding term. The value can be FALSE to unset the term, or a valid "
+"term object to replace it. If the list has a value for the deletion_date "
+"key, then also set the deletion date. If the deletion date is FALSE, then "
+"undelete the statement. Otherwise, set its deletion date."
+msgstr ""
+"Initialise certaines parties du motif à partir de l’argument liste. Pour "
+"chaque clé subject, predicate, object et graph, si la liste a une valeur, "
+"initialise le terme correspondant. La valeur peut être FALSE pour "
+"réinitialiser le terme, ou un terme valide pour le remplacer. Si la liste a "
+"une valeur pour la clé deletion_date, initialise aussi la date de "
+"suppression. Si la date de suppression est FALSE, dé-supprime la "
+"déclaration. Sinon, initialise la date de suppression."
+
+#: src/adftool_r.cc:606
+msgid "Return all the terms as a named vector."
+msgstr "Retourne tous les termes dans un vecteur nommé."
+
+#: src/adftool_r.cc:607
+msgid ""
+"Return the deletion date as numeric vector. If there is no deletion date, "
+"return an empty numeric vector."
+msgstr ""
+"Retourne la date de suppression en vecteur numérique. S’il n’y a pas de "
+"date, retourne un vecteur numérique vide."
+
+#: src/adftool_r.cc:608
+msgid ""
+"Compare the pattern order with the other pattern. Return a negative number "
+"if the main pattern comes before the other pattern, a positive number if it "
+"comes after, and 0 if both patterns overlap. The order is a lexicographic "
+"order, but the order of the terms to compare can be parametrized. For "
+"instance, \"GSPO\" compares the graphs, then subjects, then predicates, then "
+"objects."
+msgstr ""
+"Compare l’ordre du motif avec le motif other. Retourne un nombre négatif si "
+"le motif principal vient avant le motif other, un nombre positif si il vient "
+"après, et 0 si les motifs se recouvrent partiellement. L’ordre est un ordre "
+"lexicographique, mais l’ordre des termes comparés peut être paramétré. Par "
+"exemple, « GSPO » compare les graphes, puis les sujets, puis les prédicats, "
+"puis les objets."
+
+#: src/adftool_r.cc:611
+msgid ""
+"Construct a band-pass filter, acting on a signal of the given sampling "
+"frequency, and letting through frequencies from low to high."
+msgstr ""
+"Construit un filtre passe-bande agissant sur un signal de fréquence "
+"d’échantillonnage donné, laissant passer les fréquences entre low et high."
+
+#: src/adftool_r.cc:612
+msgid ""
+"Construct a band-pass filter, acting on a signal of the given sampling "
+"frequency, and letting through frequencies from low to high, by specifying "
+"the low and high transition bandwidths."
+msgstr ""
+"Construit un filtre passe-bande agissant sur un signal de fréquence "
+"d’échantillonnage donné, laissant passer les fréquences entre low et high."
+
+#: src/adftool_r.cc:613
+msgid "Return the coefficients of the filter."
+msgstr "Retourne les coefficients du filtre."
+
+#: src/adftool_r.cc:614
+msgid "Apply the filter on new data."
+msgstr "Applique le filtre sur de nouvelles données."
+
+#: src/adftool_r.cc:617
+msgid "Open a file on disk."
+msgstr "Ouvre un fichier sur le disque."
+
+#: src/adftool_r.cc:618
+msgid "Open an anonymous file on disk with initial data."
+msgstr "Ouvre un fichier anonyme sur le disque avec des données initiales."
+
+#: src/adftool_r.cc:619
+msgid "Open an anonymous file on disk with synthetic data."
+msgstr "Ouvre un fichier anonyme sur le disque avec des données synthétiques."
+
+#: src/adftool_r.cc:620
+msgid "Close the file early."
+msgstr "Ferme le fichier immédiatement."
+
+#: src/adftool_r.cc:621
+msgid "Return the file contents as bytes."
+msgstr "Retourne les octets du contenu du fichier."
+
+#: src/adftool_r.cc:622
+msgid "Search for a pattern in file, return all the matches."
+msgstr ""
+"Recherche un motif dans le fichier, retourne toutes les correspondances."
+
+#: src/adftool_r.cc:623
+msgid ""
+"Search for all objects in the file that are related to the subject by "
+"predicate, return all the matches."
+msgstr ""
+"Recherche tous les objets du fichier qui sont reliés au sujet par le "
+"prédicat, retourne toutes les correspondances."
+
+#: src/adftool_r.cc:624
+msgid ""
+"Search for all subjects in the file that are related to the objects by "
+"predicate, return all the matches."
+msgstr ""
+"Recherche tous les sujets du fichier qui sont reliés à l’objet par le "
+"prédicat, retourne toutes les correspondances."
+
+#: src/adftool_r.cc:625
+msgid ""
+"Return all the integer properties of the subject in file for the predicate."
+msgstr ""
+"Retourne toutes les propriétés entières du sujet dans le fichier pour le "
+"prédicat."
+
+#: src/adftool_r.cc:626
+msgid ""
+"Return all the numeric properties of the subject in file for the predicate."
+msgstr ""
+"Retourne toutes les propriétés numériques du sujet dans le fichier pour le "
+"prédicat."
+
+#: src/adftool_r.cc:627
+msgid ""
+"Return all the date properties of the subject in file for the predicate."
+msgstr ""
+"Retourne toutes les propriétés de date du sujet dans le fichier pour le "
+"prédicat."
+
+#: src/adftool_r.cc:628
+msgid ""
+"Return all the possibly lang-tagged property values of the subject in file "
+"for the predicate. Return them as a list of string vectors, named by the "
+"langtags. The non-tagged strings have an empty name."
+msgstr ""
+"Retourne toutes les propriétés textuelles possiblement lang-tagguées du "
+"sujet dans le fichier pour le prédicat. Les valeurs sont retournées comme "
+"liste de vecteurs textuels, nommées par les langtags. Les chaînes non-"
+"langtagguées ont un nom vide."
+
+#: src/adftool_r.cc:629
+msgid ""
+"Try and delete all statements that match a pattern in file. Return wether it "
+"succeeded."
+msgstr ""
+"Essaye de supprimer toutes les déclarations correspondant au motif dans le "
+"fichier. Indique par la valeur de retour si ça a marché."
+
+#: src/adftool_r.cc:630
+msgid "Try and insert a new statement in file. Return wether it succeeded."
+msgstr ""
+"Essaye d’ajouter une nouvelle déclaration dans le fichier. Indique par la "
+"valeur de retour si ça a marché."
+
+#: src/adftool_r.cc:631
+msgid ""
+"Try and set all the EEG data at once. Return wether it succeeded. The data "
+"must be row-oriented."
+msgstr ""
+"Essaye de définir toutes les données EEG d’un coup. Indique par la valeur de "
+"retour si ça a marché. Les données doivent être orientées ligne."
+
+#: src/adftool_r.cc:632
+msgid ""
+"Read a temporal slice of a channel. If the request is larger than what is "
+"available, fill the rest with NAN values. The return value is a list, with "
+"key n bound to the number of time points available, p bound to the total "
+"number of channels, and data bound to the requested data."
+msgstr ""
+"Lit une section temporelle d’un canal. Si la requête est plus large que ce "
+"qui est disponible, remplit le reste avec des valeurs NAN. La valeur de "
+"retour est une liste, avec la clé n associée au nombre de points temporels "
+"disponibles, p associée au nombre total de canaux, et data associée aux "
+"données demandées."
+
+#: src/check_bplus.c:4191
+msgid "Libbplus test suite"
+msgstr "Suite de test libbplus"
+
+#: src/check_bplus.c:4192
+msgid "Fetching a node"
+msgstr "Récupération d’un nœud"
+
+#: src/check_bplus.c:4196
+msgid "Finding a key with dichotomy"
+msgstr "Trouver une clé par dichotomie"
+
+#: src/check_bplus.c:4199
+msgid "Search step for both first  and last occurence of a key"
+msgstr ""
+"Étape de recherche simultanée pour la première et dernière occurence d’une "
+"clé"
+
+#: src/check_bplus.c:4205
+msgid "Check the range iterator"
+msgstr "Vérifier l’itérateur d’intervalle"
+
+#: src/check_bplus.c:4210
+msgid "Check the recursive key finder"
+msgstr "Vérifier la recherche de clé récursive"
+
+#: src/check_bplus.c:4215
+msgid "Fix the children’s parent"
+msgstr "Réattacher le parent des enfants"
+
+#: src/check_bplus.c:4222
+msgid "Grow the B+ tree"
+msgstr "Agrandir l’arbre B+"
+
+#: src/check_bplus.c:4227
+msgid "Fetch the parent of a node"
+msgstr "Récupérer le parent d’un nœud"
+
+#: src/check_bplus.c:4230
+msgid "Give some of your keys to a new node"
+msgstr "Donner quelques-unes de vos clés à un nouveau nœud"
+
+#: src/check_bplus.c:4240
+msgid "Insert in the B+ tree"
+msgstr "Insertion dans l’arbre B+"
+
+#: src/check_bplus.c:4251
+msgid "Insert in the B+ tree with the pull API"
+msgstr "Insertion dans l’arbre B+ avec l’API pull"
+
+#: src/check_bplus.c:4257
+msgid "HDF5 callbacks for the API"
+msgstr "Fonctions de rappel HDF5"
+
+#: src/eeg_metadata_example.c:37
+#, c-format
+msgid "Could not get the current time.\n"
+msgstr "Impossible de récupérer la date courante.\n"
+
+#: src/eeg_metadata_example.c:44
+#, c-format
+msgid "Could not set the time and sampling frequency.\n"
+msgstr "Impossible de définir la date et la fréquence d’échantillonnage.\n"
+
+#: src/eeg_metadata_example.c:57
+#, c-format
+msgid "Could not compute the date of the first observation.\n"
+msgstr "Impossible de calculer la date de la première observation.\n"
+
+#: src/eeg_metadata_example.c:66
+#, c-format
+msgid "Could not compute the date of the second observation.\n"
+msgstr "Impossible de calculer la date de la seconde observation.\n"
+
+#: src/eeg_metadata_example.c:87
+#, c-format
+msgid "Could not compute the date of the third observation.\n"
+msgstr "Impossible de calculer la date de la troisième observation.\n"
+
+#: src/encoding_unit_test.c:83
+#, c-format
+msgid "The dictionary does not know %s.\n"
+msgstr "Le dictionnaire ne connaît pas %s.\n"
+
+#: src/encoding_unit_test.c:90
+#, c-format
+msgid "The dictionary put %s in position %u, not %lu.\n"
+msgstr "Le dictionnaire a mis %s en position %u, pas %lu.\n"
+
+#: src/encoding_unit_test.c:118
+#, c-format
+msgid "Not enough memory to allocate a term.\n"
+msgstr "Pas assez de mémoire pour allouer un terme.\n"
+
+#: src/encoding_unit_test.c:123
+#, c-format
+msgid "Failed to encode term %lu.\n"
+msgstr "Impossible d’encoder le terme %lu.\n"
+
+#: src/encoding_unit_test.c:128
+#, c-format
+msgid "Encoding term %lu gives %016lx, not %016lx.\n"
+msgstr "L’encodage du terme %lu donne %016lx, pas %016lx.\n"
+
+#: src/encoding_unit_test.c:134
+#, c-format
+msgid "Failed to decode term %lu (%016lx).\n"
+msgstr "Impossible de décoder le terme %lu (%016lx).\n"
+
+#: src/encoding_unit_test.c:140
+#, c-format
+msgid "Term %lu is not decoded properly (%016lx).\n"
+msgstr "Le terme %lu n’a pas été décodé proprement (%016lx).\n"
+
+#: src/encoding_unit_test.c:158
+#, c-format
+msgid "The test failed, keeping encoding_unit_test.adf around.\n"
+msgstr "Le test a échoué, gardons unit_test.adf.\n"
+
+#: src/filter_example.c:61
+#, c-format
+msgid "Error: the filter order is %lu != %lu.\n"
+msgstr "Erreur_: l’ordre du filtre est %lu ≠ %lu.\n"
+
+#: src/filter_example.c:120
+#, c-format
+msgid "The filter test failed (%f).\n"
+msgstr "Le test du filtre a échoué (%f).\n"
+
+#: src/filter_example.c:125
+#, c-format
+msgid ""
+"The filter result is not great but at least it is closer to the expected "
+"result than to the raw signal."
+msgstr ""
+"Le résultat du filtre n’est pas génial mais au moins il est plus proche du "
+"résultat attendu que du signal original."
+
+#: src/libadftool/lexer.l:405
+#, c-format
+msgid "I don’t know how to represent namespaced terms yet, sorry.\n"
+msgstr "Je ne supporte pas encore les données avec un espace de nom.\n"
+
+#: src/libadftool/quads.h:473
+#, c-format
+msgid "Could not extend the dataset.\n"
+msgstr "Impossible d’étendre le jeu de données.\n"
+
+#: src/term_manipulation_example.c:125
+#, c-format
+msgid "Type %lu for number %lu is %d, should be %d.\n"
+msgstr "Le type %lu pour le numéro %lu est %d, mais devrait être %d.\n"
+
+#: src/term_manipulation_example.c:136
+#, c-format
+msgid ""
+"Term %lu cannot be encoded to N3 in less than 256 characters (%lu "
+"required).\n"
+msgstr ""
+"Le terme %lu ne peut pas être encodé en N3 avec moins de 256 caractères (%lu "
+"sont nécessaires).\n"
+
+#: src/term_manipulation_example.c:144
+#, c-format
+msgid "Term %lu N3 encoding is not correct: %s vs expected %s.\n"
+msgstr "L’encodage du terme %lu en N3 n’est pas correct : %s vs %s attendu.\n"
+
+#: src/term_manipulation_example.c:155
+#, c-format
+msgid "Value for number %lu (%s) is %s, should be %s.\n"
+msgstr "La valeur pour le numéro %lu (%s) est %s, mais devrait être %s.\n"
+
+#: src/term_manipulation_example.c:164
+#, c-format
+msgid "Meta for number %lu (%s) is %s, should be %s.\n"
+msgstr "La méta pour le numéro %lu (%s) est %s, mais devrait être %s.\n"
+
+#: src/term_manipulation_example.c:190
+#, c-format
+msgid "Comparison between %lu (%s) and %lu (%s) should be %d, it is %d.\n"
+msgstr "La comparaison entre %lu (%s) et %lu (%s) devrait être %d, c’est %d.\n"
+
+#: src/term_manipulation_example.c:204
+#, c-format
+msgid "The test failed, keeping term_example.adf around.\n"
+msgstr "Le test a échoué, gardons term_exemple.adf.\n"
+
+#, c-format
+#~ msgid "Could not add %s to the dictionary.\n"
+#~ msgstr "Impossible d’ajouter %s au dictionnaire.\n"
+
+#, c-format
+#~ msgid "%s:%d: Type %lu for number %lu is %d, should be %d.\n"
+#~ msgstr "%s:%d: Le type %lu du numéro %lu est %d, mais devrait être %d.\n"
+
+#, c-format
+#~ msgid "%s:%d: Value for number %lu is %s, should be %s.\n"
+#~ msgstr "%s:%d: La valeur pour le numéro %lu est %s, mais devrait être %s.\n"
+
+#, c-format
+#~ msgid "%s:%d: Meta for number %lu is %s, should be %s.\n"
+#~ msgstr "%s:%d: La méta pour le numéro %lu est %s, mais devrait être %s.\n"
+
+#~ msgid "Unknown system error"
+#~ msgstr "Erreur système inconnue"
+
+#~ msgid "memory exhausted"
+#~ msgstr "plus de mémoire"
+
+#~ msgid "Example function that returns 42."
+#~ msgstr "Fonction exemple qui retourne 42."
+
+#, c-format
+#~ msgid "The setup took %f seconds, and the requests %f.\n"
+#~ msgstr "L’initialisation a pris %f secondes, et les requêtes %f.\n"
+
+#, c-format
+#~ msgid "Failed to read the next ID.\n"
+#~ msgstr "Impossible de lire le prochain ID.\n"
+
+#, c-format
+#~ msgid "The dataset must be a matrix.\n"
+#~ msgstr "Le jeu de données doit être une matrice.\n"
+
+#, c-format
+#~ msgid "Inconsistent result of the dataset dimensions.\n"
+#~ msgstr "Dimensioins du jeu de données incompatibles.\n"
+
+#, c-format
+#~ msgid "Failed to update the next ID.\n"
+#~ msgstr "Impossible de mettre à jour le prochain ID.\n"
+
+#, c-format
+#~ msgid "Could not get a handle of the dataset space.\n"
+#~ msgstr "Impossible d’obtenir le contrôle de l’espace du jeu de données.\n"
+
+#, c-format
+#~ msgid "Could not count the matrix dimensions, or it is not a matrix.\n"
+#~ msgstr ""
+#~ "Impossible de compter les dimensions de la matrice, ou alors ce n’est pas "
+#~ "une matrice.\n"
+
+#, c-format
+#~ msgid "Inconsistent number of dimensions.\n"
+#~ msgstr "Nombre de dimensions incohérent.\n"
+
+#, c-format
+#~ msgid "Could not define the selection space.\n"
+#~ msgstr "Impossible de définir l’espace de sélection.\n"
+
+#, c-format
+#~ msgid "Could not select that row.\n"
+#~ msgstr "Impossible de sélectionner cette ligne.\n"
+
+#, c-format
+#~ msgid "Could not define the memory space.\n"
+#~ msgstr "Impossible de définir l’espace mémoire.\n"
+
+#, c-format
+#~ msgid "Could not update the file.\n"
+#~ msgstr "Impossible de mettre à jour le fichier.\n"
+
+#, c-format
+#~ msgid "−> Load %u: [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
+#~ msgstr "−> Charge %u : [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
+
+#, c-format
+#~ msgid "Could not create the example file.\n"
+#~ msgstr "Impossible de créer le fichier d’exemple.\n"
+
+#, c-format
+#~ msgid "Could not create the dataset space.\n"
+#~ msgstr "Impossible de créer l’espace du jeu de données.\n"
+
+#, c-format
+#~ msgid "Could not create the dataset within the file.\n"
+#~ msgstr "Impossible de créer le jeu de données dans le fichier.\n"
+
+#, c-format
+#~ msgid "Could not create the attribute space.\n"
+#~ msgstr "Impossible de créer l’espace de l’attribut.\n"
+
+#, c-format
+#~ msgid "Could not create the attribute.\n"
+#~ msgstr "Impossible de créer l’attribut.\n"
+
+#, c-format
+#~ msgid "Could not set the attribute to 0.\n"
+#~ msgstr "Impossible d’initialiser l’attribut à 0.\n"
+
+#, c-format
+#~ msgid "Could not use the file as the B+ backend.\n"
+#~ msgstr "Impossible d’utiliser le fichier comme stockage pour l’arbre B+.\n"
+
+#, c-format
+#~ msgid "Error reading nextID.\n"
+#~ msgstr "Erreur de lecture de nextID.\n"
+
+#, c-format
+#~ msgid "The root has not been allocated.\n"
+#~ msgstr "La racine n’a pas été allouée.\n"
+
+#, c-format
+#~ msgid "Cannot get the dataset dataspace.\n"
+#~ msgstr "Impossible d’obtenir l’espace de données du jeu de données.\n"
+
+#, c-format
+#~ msgid "Cannot select the first row.\n"
+#~ msgstr "Impossible de sélectionner la première ligne.\n"
+
+#, c-format
+#~ msgid "Cannot create a simple dataspace.\n"
+#~ msgstr "Impossible de créer un simple espace de données.\n"
+
+#, c-format
+#~ msgid "Cannot read the first row.\n"
+#~ msgstr "Impossible de lire la première ligne.\n"
+
+#, c-format
+#~ msgid "The matrix has not been initialized properly.\n"
+#~ msgstr "La matrice n’a pas été initialisée proprement.\n"
+
+#, c-format
+#~ msgid "−> Allocate a new node: %u\n"
+#~ msgstr "−> Alloue un nouveau nœud : %u\n"
+
+#, c-format
+#~ msgid "−> Store %u, [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
+#~ msgstr "−> Stocke %u, [%d, %d, %d, %d, %d, %d, %d, %d, %08x]\n"
+
+#, c-format
+#~ msgid "Could not set the attribute to a scalar.\n"
+#~ msgstr "Impossible d’assigner un scalaire à l’attribut.\n"
+
+#, c-format
+#~ msgid "Could not create the initialized file space.\n"
+#~ msgstr "Impossible d’initialiser l’espace du fichier.\n"
+
+#, c-format
+#~ msgid "Could not create the initial data space.\n"
+#~ msgstr "Impossible de créer l’espace de données initial.\n"
+
+#, c-format
+#~ msgid "Could not initialize the file with the initial data.\n"
+#~ msgstr "Impossible d’initialiser le fichier avec les données initiales.\n"
+
+#, c-format
+#~ msgid "Could not set up the bplus.\n"
+#~ msgstr "Impossible de préparer le B+.\n"
+
+#, c-format
+#~ msgid "Could not reopen the file for reading.\n"
+#~ msgstr "Impossible de réouvrir le fichier en lecture.\n"
+
+#, c-format
+#~ msgid "Could not reopen the dataset.\n"
+#~ msgstr "Impossible de réouvrir le jeu de données.\n"
+
+#, c-format
+#~ msgid "Could not reopen nextID.\n"
+#~ msgstr "Impossible de réouvrir nextID.\n"
+
+#, c-format
+#~ msgid "The matrix has not grown at all.\n"
+#~ msgstr "La matrice n’a pas grandi du tout.\n"
+
+#, c-format
+#~ msgid "Failed to allocate the buffer.\n"
+#~ msgstr "Impossible d’allouer le tampon.\n"
+
+#, c-format
+#~ msgid "Failed to read the data.\n"
+#~ msgstr "Impossible de lire les données.\n"
+
+#, c-format
+#~ msgid "There is a mismatch.\n"
+#~ msgstr "Il y a quiproquo.\n"
+
+#, c-format
+#~ msgid "Growing a tree in an HDF5 file is OK!\n"
+#~ msgstr "Agrandir un arbre dans un fichier HDF5 est permis !\n"
+
+#, c-format
+#~ msgid "−> Compare %s to %s: %d\n"
+#~ msgstr "−> Compare %s à %s : %d\n"
+
+#, c-format
+#~ msgid "Finding %s…\n"
+#~ msgstr "Recherche %s…\n"
+
+#, c-format
+#~ msgid "Found %s.\n"
+#~ msgstr "%s trouvé.\n"
+
+#, c-format
+#~ msgid "adftool memory allocation problem detected.\n"
+#~ msgstr "problème d’allocation de mémoire pour adftool détecté.\n"
+
+#~ msgctxt "Command-line|Option|"
+#~ msgid "set-channel-identifier"
+#~ msgstr "modifier-identifiant-du-canal"
+
+#, c-format
+#~ msgid ""
+#~ "  --%s=COLUMN=IDENTIFIER: set the channel identifier for the raw sensor "
+#~ "data in COLUMN (an integer) to IDENTIFIER (in N3);\n"
+#~ msgstr ""
+#~ "  --%s=COLONNE=IDENTIFIANT : assigne l’IDENTIFIANT (au format N3) de "
+#~ "canal pour les données brutes du capteur dans COLONNE (un entier) ;\n"
+
+#, c-format
+#~ msgid "The argument to \"%s\" must be in the form of COLUMN=IDENTIFIER.\n"
+#~ msgstr "L’argument de « %s » doit être de la forme COLONNE=IDENTIFIANT.\n"
+
+#, c-format
+#~ msgid "The COLUMN argument to \"%s\" must be a number.\n"
+#~ msgstr "L’argument COLONNE de « %s » doit être un nombre.\n"
+
+#, c-format
+#~ msgid ""
+#~ "The IDENTIFIER argument to \"%s\" must be a N3 identifier (enclose it "
+#~ "with <> maybe?).\n"
+#~ msgstr ""
+#~ "L’argument IDENTIFIANT de « %s » doit être un identifiant N3 (peut-être "
+#~ "faut-il l’entourer de <> ?).\n"
+
+#, c-format
+#~ msgid "Error: unable to set the channel identifier of %lu.\n"
+#~ msgstr ""
+#~ "Erreur_: impossible de modifier l’identifiant de canal pour la colonne "
+#~ "%lu.\n"
+
+#~ msgid ""
+#~ "Set the term identifying the channel whose data is stored in the given "
+#~ "column."
+#~ msgstr ""
+#~ "Change le terme identifiant le canal dont les données sont stockées dans "
+#~ "la colonne donnée."
+
+#, c-format
+#~ msgid "Conflicting operations: please pass either --%s, %s or --%s.\n"
+#~ msgstr ""
+#~ "Opérations conflictuelles : veuillez passer soit --%s, soit --%s, soit --"
+#~ "%s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "There are other operation modes for adftool:\n"
+#~ "  --%s: read the raw EEG sensor data (in Tab-Separated Value [TSV] "
+#~ "format);\n"
+#~ "  --%s: set the raw EEG sensor data (in TSV format) from the standard "
+#~ "input.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Il y a d’autres modes d’opération pour adftool :\n"
+#~ "  --%s : lit les données brutes du capteur EEG (au format Valeurs "
+#~ "Séparées par des Tabulations [TSV en anglais]) ;\n"
+#~ "  --%s : définit les données brutes de capteur EEG (au format TSV) à "
+#~ "partir de l’entrée standard.\n"
+#~ "\n"
+
+#, c-format
+#~ msgid ""
+#~ "Usage: [ENVIRONMENT…] adftool [OPTION…] FILE\n"
+#~ "\n"
+#~ "Read or update FILE.\n"
+#~ "\n"
+#~ "You can set a pattern in N-Triples format:\n"
+#~ "  -s NT, --%s=NT;\n"
+#~ "  -p NT, --%s=NT;\n"
+#~ "  -o NT, --%s=NT;\n"
+#~ "  -g NT, --%s=NT;\n"
+#~ "\n"
+#~ "You use this pattern to:\n"
+#~ "  --%s: print the data matching the pattern;\n"
+#~ "  --%s: add the statement (only graph is optional);\n"
+#~ "  --%s: remove all statements matching the pattern;\n"
+#~ "  --%s: set the raw EEG sensor data (in Tab-Separated Value [TSV] format) "
+#~ "from the standard input.\n"
+#~ "\n"
+#~ "There are other options:\n"
+#~ "  -d DATE, --%s=DATE: use DATE instead of the current date when deleting "
+#~ "statements.\n"
+#~ "  -h, --%s: print this message and exit.\n"
+#~ "  -V, --%s: print the package version and exit.\n"
+#~ "\n"
+#~ "The following environment variables can change the behavior of the "
+#~ "program:\n"
+#~ "  LANG: change the localization. Set it as \"LANG=C\" in the environment "
+#~ "or \"LANG=en_US.UTF-8\" to disable localization.\n"
+#~ "  LC_NUMERIC: change the expected number format to input and output "
+#~ "numbers. Set it as \"LC_NUMERIC=C\" or \"LC_NUMERIC=en_US.UTF-8\" to use "
+#~ "the English notation.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Utilisation : [ENVIRONNEMENT…] adftool [OPTION…] FICHIER\n"
+#~ "\n"
+#~ "Lit ou modifie FICHIER.\n"
+#~ "\n"
+#~ "Vous pouvez sélectionner un motif au format N-Triples :\n"
+#~ "  -s NT, --%s=NT ;\n"
+#~ "  -p NT, --%s=NT ;\n"
+#~ "  -o NT, --%s=NT ;\n"
+#~ "  -g NT, --%s=NT ;\n"
+#~ "\n"
+#~ "Vous pouvez utiliser ce motif pour :\n"
+#~ "  --%s : afficher les données qui correspondent au motif ;\n"
+#~ "  --%s : ajouter la déclaration (seul le graphe est optionnel) ;\n"
+#~ "  --%s : enlever toutes les déclarations qui correspondent au motif ;\n"
+#~ "  --%s : définir les données brutes de capteurs EEG (au format Valeurs "
+#~ "Séparées par des Tabulations [TSV en anglais]) à partir de l’entrée "
+#~ "standard.\n"
+#~ "\n"
+#~ "Il y a d’autres options :\n"
+#~ "  -d DATE, --%s=DATE : utiliser la DATE à la place de la date courante "
+#~ "pour la suppression de déclarations.\n"
+#~ "  -h, --%s : afficher ce message et quitter.\n"
+#~ "  -V, --%s : afficher la version du paquet et quitter.\n"
+#~ "\n"
+#~ "Les variables d’environnement suivantes peuvent changer le comportement "
+#~ "du programme :\n"
+#~ "  LANG_: change la localisation. La définir avec la valeur « LANG=C » "
+#~ "dans l’environnement ou « LANG=en_US.UTF-8 » désactive la localisation.\n"
+#~ "  LC_NUMERIC : change le format numérique attendu pour la lecture et "
+#~ "l’écriture de nombres. Définissez-le avec « LC_NUMERIC=C » ou "
+#~ "« LC_NUMERIC=en_US.UTF-8 » pour utiliser la notation anglaise.\n"
+#~ "\n"
+
+#, c-format
+#~ msgid "The value for \"%s\" is invalid: \"%s\"\n"
+#~ msgstr "La valeur de « %s » est invalide : « %s »\n"
+
+#, c-format
+#~ msgid "I don’t know if the result has been deleted.\n"
+#~ msgstr "Je ne sais pas si le résultat a été supprimé.\n"
+
+#, c-format
+#~ msgid "Hello, world!\n"
+#~ msgstr "Bonjour, le monde !\n"

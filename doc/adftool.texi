@@ -1,0 +1,1001 @@
+\input texinfo
+@include version.texi
+@settitle Reading and writing data with adftool @value{VERSION}
+@syncodeindex pg cp
+@syncodeindex tp fn
+@setfilename adftool.info
+
+@copying
+Huh… I’ll have to think about copying conditions…
+
+Copyright @copyright{} 2022, 2023 me, I guess?
+@end copying
+
+@dircategory Texinfo documentation system
+@direntry
+* adftool: (adftool)Invoking adftool.
+@end direntry
+
+@titlepage
+@title Reading and writing data with adftool
+@subtitle for version @value{VERSION}, @value{UPDATED}
+@author Vivien Kraus (@email{vivien.kraus@@univ-reims.fr})
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@contents
+
+@node Top
+@top Adftool
+
+This is the user manual for adftool (version @value{VERSION},
+@value{UPDATED}).
+
+@menu
+* The ADF file format::
+* Invoking adftool::
+* The libadftool API::
+* Index::
+* Libadftool Index::
+@end menu
+
+@node The ADF file format
+@chapter The ADF file format
+
+@cindex linked data
+With the help of the World-wide Web, any dataset can be published in a
+form that can be understood both by humans and by machines. The most
+successful approach to that is @dfn{Linked Data}: each data point is
+assigned a URI, and it is possible to follow the links from one piece
+of data to another piece of data to build distributed knowledge
+graphs, in a very similar manner that the web of documents lets user
+click links to discover new pages. In that way, it is possible to
+augment any dataset with new information, without touching at how
+other systems use the same data.
+
+@cindex RDF
+@cindex subject
+@cindex predicate
+@cindex object
+@cindex graph
+@cindex triple
+@cindex quad
+@cindex statement
+To do this, the Resource Description Framework (@dfn{RDF}) has been
+introduced. It maps data to graphs. More specifically, a piece of data
+consists of a @dfn{subject}, a @dfn{predicate}, and an
+@dfn{object}. Each of them is a piece of data too. A later revision
+added the notion of @dfn{graphs}, to partition the data into different
+views. These four elements constitute a @dfn{quad}, or a @dfn{triple}
+if the graph is the default graph. This is also called a
+@dfn{statement}. So, good systems to store and query sets of quads or
+triples need to be used to process linked data.
+
+@cindex allotrope data format
+@cindex ADF
+@cindex hierarchical data format
+@cindex HDF
+This project is a more complete specification of the Allotrope Data
+Format Quad Store, defined at
+@url{https://docs.allotrope.org/ADF%20Quad%20Store%20API.html}. It is
+designed to work within a Hierarchical Data Format file.
+
+@menu
+* Overview of the quad store::
+* Building indices::
+* The dictionary::
+* Storage of statements::
+* Indexing statements::
+@end menu
+
+@node Overview of the quad store
+@section Overview of the quad store
+
+The quad store is a data structure to hold triples or quads, along
+with indices for efficient querying of the data set. The queries that
+can be solved by the file format are of the form:
+
+@example
+?@var{subject} ?@var{predicate} ?@var{object} ?@var{graph} .
+@end example
+
+where @var{subject}, @var{predicate}, @var{object} and @var{graph} can
+be defined as RDF nodes, or empty.
+
+Internally, statements, or quads, are stored as a set of tuples. Each
+element of the tuple may be a named node (IRI reference), a blank node
+with an identifier, a typed literal, or a literal with an localization
+mark.
+
+@cindex named node
+@cindex IRI reference
+A named node is a resource that one can try to dereference to access
+more data about the thing it represents. It is usually written between
+angle brackets, as an IRI or IRI reference:
+
+@example
+<https://example.org/resource?query-arguments#identifier>
+@end example
+
+Subjects, predicates, objects or graphs can be named nodes.
+
+@cindex blank node
+A blank node is an unnamed resource that can be used to link other
+resources together, scoped to the resource.
+
+@example
+<#me> <#knows> _:@var{someone} .
+_:@var{someone} <#knows> <#someone-else> .
+@end example
+
+In this example, there is no more information about the person
+identified as @var{someone}, than it is a link in my social
+network. Any other resource using @code{_:@var{someone}} will be
+interpreted as talking to someone else.
+
+Only subjects and objects may be blank nodes.
+
+@cindex literal
+@cindex typed literal
+@cindex type
+@cindex langstring
+@cindex langtag
+The literal is a piece of data that does not have further metadata. It
+is composed of a literal @dfn{value}, and an optional @dfn{type} or an
+optional @dfn{langtag}. The type is identified by an IRI reference,
+and it is usually expected to be one of the XML Schema Definition
+vocabulary. If no type is present, the
+@samp{<http://www.w3.org/2001/XMLSchema#string>} type is assumed. If the
+string is to be presented to a human, then it may have a localization
+tag, or langtag, indicating its locale.
+
+@example
+<#me> <#likes> "ananas"^^<http://www.w3.org/2001/XMLSchema#string> .
+<#me> <#likes> "pineapples"@@en .
+@end example
+
+Literals can only be used as objects.
+
+@cindex term ordering
+@cindex order
+We define an order on terms, as the byte lexicographic order of their
+UTF-8 encoding (which is the same as the unicode code point
+order). Each prefix of a term comes strictly before the term
+itself. The textual representation of a term is constructed as:
+
+@table @emph
+@item for a named node
+the IRI reference, without further percent-encoding, surrounded by
+angle brackets (no whitespace);
+@item for a blank node
+the string @code{_:} (underscore, colon) followed by the unescaped
+identifier of the blank node;
+@item for a typed literal
+a double quote, the escaped string (only the double quote character
+and backslash character require escaping), another double quote, the
+type marker @code{^^}, and the encoding of the type URI. If the type
+is missing, @samp{<http://www.w3.org/2001/XMLSchema#string>} is
+used. No extra whitespace is added;
+@item for a langstring
+a double quote, the escaped string, a double quote, the @code{@@}
+character, and the langtag.
+@end table
+
+@cindex pattern
+It is also possible to order statements, by using the lexicographic
+order of the terms. We extend the notion of statement or quad to that
+of @dfn{pattern}, by making the subject, predicate, object and graph
+optional, and by stating that a missing object compares equal to any
+term.
+
+For query answering, the specification maintains 6 indices of the
+data: @samp{GSPO}, @samp{GPOS}, @samp{GOSP}, @samp{SPOG}, @samp{POSG}
+and @samp{OSPG}. In these acronyms, @samp{G} means graph, @samp{S}
+means subject, @samp{P} means predicate and @samp{O} means object. Any
+of the 16 search patterns that can be formed by specifying some of the
+elements of the quad can be searched in one of these 6 indices. For
+instance, if @var{predicate} and @var{graph} are set, the query can be
+answered by using the @samp{GPOS} index.
+
+The algorithm is, given a search @var{pattern}, to find in an index
+all quads that compare equal to @var{pattern}, using the search order
+that corresponds to the index.
+
+@node Building indices
+@section Building indices
+
+@cindex B+
+@cindex leaf
+@cindex non-leaf
+The file format uses B+ nodes to build indices. These are search trees
+that have been designed to work well on computers that have a
+cache. Each node in the tree is either a @dfn{leaf}, or a
+@dfn{non-leaf}. Only leaves contain the actual data. In this file
+format, a B+ tree is always associated with a table that stores
+things. The associated table can do a lookup operation efficiently:
+given a row index, it can return in constant time the content of the
+row. Also, the associated table can grow by adding items at the
+end. This is implemented by the HDFS file format.
+
+@cindex associated table
+So, for all uses of B+ trees here, both keys and values are actually
+indices in the @dfn{associated table}. In fact, in all uses of B+
+trees, the key is equal to the value. This is represented as a 32-bit
+unsigned integer value, where numbers are stored in big-endian byte
+order.
+
+The B+ trees are themselves stored in a 2D dataset in the file, each
+row corresponding to a tree node. The first row (number 0) is always
+the root of the tree.
+
+@cindex nextID
+Each dataset in this file format can grow, but no row is allowed to be
+missing if a row is used after it. Thus, all elements are
+contiguous. However, to get (amortized) logarithmic append time, the
+datasets are allowed to be larger than what is strictly required. In
+any case, each dataset has an attribute named @dfn{nextID} attached to
+it, that indicates the number of rows actually used. This attribute is
+a 32-bit unsigned integer value, stored in big-endian byte order.
+
+@cindex order
+@cindex node order
+The @dfn{node order} of a B+ tree is defined as one plus the number of
+keys that each node can hold. Each row of the storage dataset for a B+
+tree of a given @var{order} has @math{2 * @var{order} + 1}
+columns. They are of type unsigned 32-bit integer.
+
+The first @code{@var{order} - 1} columns are dedicated to the
+keys. The index of the first -1 value (modulo @math{2 ^ 32}) is the
+number of keys present in the node. The keys are indices in the
+associated dataset.
+
+For a leaf node, the next @code{@var{order} - 1} columns are dedicated
+to the associated values (so, the same as the key). An additional
+column is the node index (in the B+ dataset) of the next leaf, with 0
+meaning no next leaf. Since 0 is the root anyway, it can only be a
+leaf if it is the only node in the tree. If it is the only node, there
+are no next leaves.
+
+For a non-leaf node, the next @code{@var{order}} columns are dedicated
+to the children of the node, as indices in the B+ dataset. The first
+child contains only keys that are lesser than or equal to the first
+key. The last child contains all keys that are strictly greater than
+the last key in the node.
+
+The next column is the ID of the parent, as index in the B+
+dataset. The root has a value -1 (modulo @math{2 ^ 32}) for its
+parent.
+
+Finally, the last column contains node flags. If the most significant
+bit of the value is set (@math{2 ^ 31}), then the node is a
+leaf. Otherwise, it is not a leaf.
+
+In any situations, if there is at least 2 nodes in the tree, each node
+has at least @math{@var{order} / 2} children or values, which ensures
+that the tree is dense enough to guarantee fast traversal. To traverse
+a B+ node given a @var{key}, one must find the first key index @var{k}
+such that @math{@var{lookup} (@var{k}) >= @var{key}}, where
+@var{lookup} is the function that looks up a key index in the
+associated storage.
+
+@node The dictionary
+@section The dictionary
+
+@cindex dictionary
+The dictionary is a specific index, for sequences of bytes. It is
+composed of a B+ tree, stored under @code{/dictionary/keys},
+associated to a storage under @code{/dictionary/strings}. An
+additional 1-dimensional storage of bytes under
+@code{/dictionary/bytes} stores long strings. For a dictionary, the
+associated storage is thus the strings dataset.
+
+The strings dataset has 13 columns, each as unsigned 8-bit
+numbers. Considering a big-endian virtual machine, these columns can
+also be interpreted as 3 columns, the first spanning 8 bytes, the
+second 4 bytes, and the last 1 byte. In any case, the last column can
+always be interpreted as a 8-bit number.
+
+If the value for the last column is 0, then the string is a long
+string. In that case, it must be interpreted as a 3-column
+dataset. The first big-endian 8 bytes indicate an @var{offset}, and
+the next 4 bytes indicate a @var{length}. If @var{length} is 0, then
+it represents the empty string. The empty string is used to mean the
+default graph. Otherwise, the string is composed of the @var{length}
+bytes that start at @var{offset} in the @emph{/dictionary/bytes}
+dataset.
+
+If the value for the last column is not 0, then it is at most 12. The
+dataset row must be interpreted as 12 bytes, and a string
+@var{length}. The string is thus the first @var{length} bytes of the
+row.
+
+Contrary to the storage of statements, the dictionary has only 1
+index.
+
+@cindex cache
+Since the dictionary is an append-only data structure, it is easy to
+maintain a cache of entries. This is very beneficial, because getting
+an entry from the dictionary requires two indirections and HDF5 reads
+most of the time. A hash table is ideal for this, because collisions
+can be easily resolved by dropping the earliest element in the cache
+that caused the collision.
+
+@node Storage of statements
+@section Storage of statements
+
+@cindex encoding
+@cindex decoding
+@cindex value
+@cindex meta
+Each term of the statement is @dfn{encoded} as a 64-bit number. The
+first 31 bits in big-endian notation hold the dictionary index of the
+@dfn{value}, the next 31 bits hold the dictionary index of the
+@dfn{meta}-data, if the term is not a blank node, and the last 2 bits
+indicate the term type.
+
+@code{00} indicates a named node, @code{01} is a blank node, @code{10}
+is a typed literal, and @code{11} is a langstring.
+
+For named nodes, the @var{value} is the IRI reference. The @var{meta}
+field is an optional base of the IRI reference. The node IRI reference
+is thus @var{value} rebased on @var{meta}, or @var{value} if meta is
+the empty string.
+
+For blank nodes, the @var{value} is the identifier of the blank node.
+
+For typed literals, the @var{value} is the textual value, and
+@var{meta} is the full IRI reference of the type.
+
+For langstrings, the @var{value} is also the textual value, and
+@var{meta} is the langtag.
+
+@cindex deletion date
+Each statement is represented as 5 64-bit values: encodings of the
+graph, then subject, predicate, object, and finally a @dfn{deletion
+date}. The deletion date value is @math{2 ^ 64 - 1} for undeleted
+statements, or the number of milliseconds since the unix epoch for any
+other value. Please note that you cannot use dates before 1970 as
+deletion dates.
+
+The statement storage dataset is a 2D dataset with 5 columns of 64-bit
+integers, containing statements, under the HDF5 path
+@emph{/data-description/quads}.
+
+@node Indexing statements
+@section Indexing statements
+Each statement index is thus a new B+ tree, associated to the
+statement storage dataset. Each index is stored in
+@emph{/data-description/index_@var{order}} where @var{order} is the
+indexing order: @samp{GSPO}, @samp{GPOS}, @samp{GOSP}, @samp{SPOG},
+@samp{POSG}, or @samp{OSPG}. Each and every index contains exactly all
+the statements that are stored, so solving a query can iterate over
+all statements matching a pattern by looking at any index.
+
+@node Invoking adftool
+@chapter Invoking adftool
+
+@pindex adftool
+@cindex invoking @command{adftool}
+The @command{adftool} program helps you create and manage ADF
+files. Please use the @command{-h} option to see the available
+behaviors.
+
+@node The libadftool API
+@chapter The libadftool API
+
+@cindex API (libadftool)
+@cindex libadftool
+The libadftool API is installed with the @code{<adftool.h>} header,
+that you must include. You must link @code{-ladftool} to your programs
+to use it.
+
+@cindex out of memory
+@cindex memory allocation errors
+@cindex handling memory allocation failure
+@cindex error handling
+@cindex programming errors
+@cindex file i/o errors
+@cindex i/o errors
+Within the library, there are different kinds of errors: the
+@dfn{programming errors} (passing both a type and a langstring to a
+literal, for instance), the @dfn{file i/o errors} (the file is not
+writable, for instance), and the @dfn{memory allocation errors}.
+
+The programming errors lead to a run-time call to @code{abort}, in the
+best case, or undefined behavior in some places. This is up to the
+library user to respect the function contracts. Obviously bugs in
+libadftool are treated the same way.
+
+The file i/o errors lead to the libadftool function returning an error
+flag as an integer: 0 means no error, any other value means an error.
+
+The memory allocation errors are treated in two different ways: if the
+allocated memory is transferred back to the caller, any memory
+allocation error that is bound to the transferred object will free all
+memory owned by that object, and that object will be set to
+@code{NULL}. If the allocated memory is used internally by the
+function, a failure will lead to early program termination. You cannot
+recover from the latter errors, because as the libadftool developer, I
+could allocate everything on the stack anyway and you would not be
+able to recover anything. However, if the memory is transferred, this
+is probably where it would hold unusually huge user inputs, so you can
+still detect most of the out of memory situations. I hope. There are
+situations where user inputs are copied in a non-transferring
+function, but I believe that could be fixed with shared pointers and
+other tricks. Anyway, this stuff is complex and there is little hope
+to recover from memory exhaustion anyway, due to the optimistic
+over-allocation strategy that the kernel may implement.
+
+@menu
+* Manipulating terms::
+* Manipulating statements::
+* Manipulating files::
+* EEG-specific API::
+* Data filtering::
+* Multi-threaded loading and filtering::
+@end menu
+
+@node Manipulating terms
+@section Manipulating terms
+@deftp struct adftool_term
+The @code{adftool_term} abstract data type holds all the information
+related to one term. It is allocated with @code{adftool_term_alloc},
+and freed with @code{adftool_term_free}.
+@end deftp
+
+@deftypefun {struct adftool_term *} adftool_term_alloc (void)
+Allocate a new term. Return @code{NULL} if the allocation failed.
+@end deftypefun
+
+@deftypefun void adftool_term_free (struct adftool_term *@var{term})
+Free an allocated @var{term}.
+@end deftypefun
+
+@deftypefun void adftool_term_copy (struct adftool_term *@var{term}, const struct adftool_term *@var{source})
+@deftypefunx void adftool_term_set_named (struct adftool_term *@var{term}, const char *@var{id})
+@deftypefunx void adftool_term_set_blank (struct adftool_term *@var{term}, const char *@var{id})
+@deftypefunx void adftool_term_set_literal (struct adftool_term *@var{term}, const char *@var{value}, const char *@var{meta})
+Initialize @var{term}. The @code{adftool_term_copy} function
+initializes it with a fresh new copy of @var{source}. The
+@code{adftool_term_set_literal} function expects that at most one
+argument among @var{value} and @var{meta} is not NULL. In any case,
+@var{term} @strong{must} be already allocated.
+
+@var{id}, @var{value} and @var{meta} must be NUL-terminated strings.
+@end deftypefun
+
+@deftypefun void adftool_term_set_mpz (struct adftool_term *@var{term}, mpz_t @var{value})
+@deftypefunx void adftool_term_set_mpf (struct adftool_term *@var{term}, mpf_t @var{value})
+@deftypefunx void adftool_term_set_integer (struct adftool_term *@var{term}, long @var{value})
+@deftypefunx void adftool_term_set_double (struct adftool_term *@var{term}, double @var{value})
+Initialize @var{term} with the numeric @var{value}, with an
+appropriate type.
+@end deftypefun
+
+@deftypefun void adftool_term_set_date (struct adftool_term *@var{term}, const struct timespec *@var{date})
+Initialize @var{term} as a date for @var{date}. If the @code{struct
+timespec} declaration is missing, then you may need to define it
+yourself, as a structure with 2 fields:
+@table @code
+@item time_t @var{tv_sec}
+contains the number of seconds since the epoch;
+@item long int @var{tv_nsec}
+contains the number of nanoseconds to add to @var{tv_sec}.
+@end table
+@end deftypefun
+
+@deftypefun int adftool_term_is_named (const struct adftool_term *@var{term})
+@deftypefunx int adftool_term_is_blank (const struct adftool_term *@var{term})
+@deftypefunx int adftool_term_is_literal (const struct adftool_term *@var{term})
+@deftypefunx int adftool_term_is_typed_literal (const struct adftool_term *@var{term})
+@deftypefunx int adftool_term_is_langstring (const struct adftool_term *@var{term})
+Return as a boolean value whether @var{term} is one of those types.
+@end deftypefun
+
+@deftypefun size_t adftool_term_value (const struct adftool_term *@var{term}, size_t @var{start}, size_t @var{max}, char *@var{value})
+@deftypefunx size_t adftool_term_meta (const struct adftool_term *@var{term}, size_t @var{start}, size_t @var{max}, char *@var{meta})
+Get the two components of @var{term}. If @var{max} is not 0, the first
+@var{start} bytes are ignored, then the next @var{max} are copied to
+@var{value} or @var{meta}. The total number of bytes is returned.
+
+It is admissible to pass a larger @var{max} value than required; in
+this case a NUL character will be added after the value. Also, if
+@var{max} is set to 0, then the @var{value} or @var{meta} pointers
+will never be dereferenced.
+
+You can use this to avoid transfering ownership of pointers while
+still copying the data only once:
+
+@example
+char first_data[80];
+size_t required =
+  adftool_term_value (@var{term},
+                      0, sizeof (first_data),
+                      first_data);
+if (required + 1 <= sizeof (first_data))
+  @{
+    /* Use first_data, it is NUL-terminated. */
+  @}
+else
+  @{
+    char *rest =
+      malloc (required - sizeof (first_data) + 1);
+    if (rest == NULL)
+      @{
+        abort ();
+      @}
+    size_t check =
+      adftool_term_value (@var{term},
+                          sizeof (first_data),
+                          required - sizeof (first_data) + 1,
+                          rest);
+    assert (check == required);
+    /* Do something. The first 80 characters are in first_data
+       (NOT NUL-terminated), and the rest are in rest
+       (NUL-terminated). */
+    free (rest);
+  @}
+@end example
+
+You can also simply do:
+
+@example
+size_t required =
+  adftool_term_value (@var{term}, 0, 0, NULL);
+char *value = malloc (required + 1);
+if (value == NULL)
+  @{
+    abort ();
+  @}
+size_t check =
+  adftool_term_value (@var{term}, 0, required + 1, value);
+assert (check == required);
+/* use value, it is NUL-terminated. */
+free (value);
+@end example
+@end deftypefun
+
+@deftypefun int adftool_term_as_mpz (const struct adftool_term *@var{term}, mpz_t @var{value})
+@deftypefunx int adftool_term_as_mpf (const struct adftool_term *@var{term}, mpf_t @var{value})
+@deftypefunx int adftool_term_as_integer (const struct adftool_term *@var{term}, long *@var{value})
+@deftypefunx int adftool_term_as_double (const struct adftool_term *@var{term}, double *@var{value})
+Try and parse @var{term} as a numeric value. Return 0 on success,
+another value if an error happens.
+
+These functions may perform conversions. For instance, if you ask for
+an integer when the literal is a double, then @var{value} will be set
+to its integer part.
+
+The double conversion might lose precision, even when converting to
+mpf. Converting large integer values will truncate them to fit in a
+long.
+@end deftypefun
+
+@deftypefun int adftool_term_as_date (const struct adftool_term *@var{term}, struct timespec *@var{date})
+Try and parse @var{term} as a date, and set @var{date}.
+@end deftypefun
+
+@deftypefun int adftool_term_compare (const struct adftool_term *@var{reference}, const struct adftool_term *@var{other})
+Compare the representation of @var{reference} and @var{other}, as with
+@code{strcmp}. Return 0 if both terms are equal, a negative value if
+@var{reference} comes before @var{other}, and a positive value
+otherwise. Think of it as the difference function.
+@end deftypefun
+
+@deftypefun int adftool_term_parse_n3 (const char *@var{text}, size_t @var{available}, size_t *@var{consumed}, struct adftool_term *@var{term})
+Initialize @var{term} with the next object in Notation-3 in
+@var{text}. @var{available} is the number of bytes in
+@var{text}. @var{consumed} is set to the number of bytes that have
+been read.
+
+Return 0 if a term has been parsed, or another value if no term has
+been parsed. If the return value is not 0, @var{consumed} is set to
+0. Otherwise, you can keep parsing things after discarding
+@var{consumed} bytes from @var{text}.
+@end deftypefun
+
+@deftypefun size_t adftool_term_to_n3 (const struct adftool_term *@var{term}, size_t @var{start}, size_t @var{max}, char *@var{str})
+Get a N3 representation of @var{term}, discard the first @var{start}
+bytes and write at most @var{max} bytes to @var{str}. If there is
+still room for a NUL character, append it too. Return the number of
+bytes required to hold the whole N3 representation (excluding the
+final NUL character).
+@end deftypefun
+
+@node Manipulating statements
+@section Manipulating statements
+@deftp struct adftool_statement
+The @code{adftool_statement} abstract data type holds an optional
+subject, predicate, object, graph, and deletion date. It is allocated
+with @code{adftool_statemet_alloc}, and freed with
+@code{adftool_statement_free}.
+@end deftp
+
+@deftypefun {struct adftool_statement *} adftool_statement_alloc (void)
+Allocate a new pattern. Return @code{NULL} if the allocation failed.
+@end deftypefun
+
+@deftypefun void adftool_statement_free (struct adftool_statement *@var{statement})
+Free an allocated @var{statement}.
+@end deftypefun
+
+@deftypefun void adftool_statement_set (struct adftool_statement *@var{statement}, struct adftool_term **@var{subject}, struct adftool_term **@var{predicate}, struct adftool_term **@var{object}, struct adftool_term **@var{graph}, const uint64_t *@var{deletion_date})
+Initialize @var{statement}. For each statement @var{term}, which can
+be @var{subject}, @var{predicate}, @var{object}, @var{graph} and
+@var{deletion_date}, if @var{term} is @code{NULL}, then don’t set
+@var{term}. If it is not @code{NULL}, and @code{*@var{term}} is
+@code{NULL}, then undefine @var{term}. If @code{@var{term}} and
+@code{*@var{term}} are not @code{NULL}, then set the corresponding
+statement term to @code{*@var{term}}.
+
+The deletion date is a bit special in that the special value to
+indicate to reset the deletion date (undelete the statement) is
+@code{((uint64_t) (-1))} instead of @code{NULL}.
+
+It is not very convenient to pass constant double-pointers in C,
+because conversions are not automatic. This is why @var{subject},
+@var{predicate}, @var{object} and @var{graph} do not have the
+@code{const} decorator. Despite this, neither pointer layer get
+modified by the function, and the memory ownership is not transferred.
+@end deftypefun
+
+@deftypefun void adftool_statement_get (const struct adftool_statement *@var{statement}, struct adftool_term **@var{subject}, struct adftool_term **@var{predicate}, struct adftool_term **@var{object}, struct adftool_term **@var{graph}, uint64_t *@var{deletion_date})
+For each statement @var{term}, which can be @var{subject},
+@var{predicate}, @var{object}, @var{graph} and @var{deletion_date}, if
+@var{term} is @code{NULL}, then don’t get it. Otherwise, fill the
+function argument to an @strong{unowned} (non-transferred), constant
+pointer to the corresponding term in @var{statement} if it is set, or
+@code{NULL} otherwise (@code{((uint64_t) (-1))} for the deletion
+date). You @strong{must not} free the argument, and you @strong{must
+not} modify it. The @code{const} modifier is not specified because
+it’s easier to use that way.
+@end deftypefun
+
+@deftypefun int adftool_statement_compare (const struct adftool_statement *@var{reference}, const struct adftool_statement *@var{other}, const char *@var{order})
+Compare the representation of @var{reference} and @var{other},
+respecting the given @var{order}. @var{order} may be @code{"SPOG"} for
+instance.
+@end deftypefun
+
+@node Manipulating files
+@section Manipulating files
+
+@deftp struct adftool_file
+A file is the main handle to interact with an ADF/HDF5 file. It can be
+reused for multiple files in the file system. It is allocated with
+@code{adftool_file_open*}, and freed with @code{adftool_file_close}.
+@end deftp
+
+@deftypefun {struct adftool_file *} adftool_file_open (const char *@var{filename}, int @var{write})
+Open @var{filename}, and return a new file to access it. If
+@var{write} is set, request permission to update the file. This is
+required for inserting or deleting statements, or changing the EEG
+data.
+
+If an error happens (invalid format, cannot respect the @var{write}
+preference, …), return @code{NULL}.
+@end deftypefun
+
+@deftypefun {struct adftool_file *} adftool_file_open_data (size_t @var{nbytes}, const void *@var{bytes})
+Open an anonymous file initialized with the @var{nbytes} of
+@var{bytes}. The file must be closed by @code{adftool_file_close}.
+
+This function has been introduced for the emscripten back-end, so that
+the implementation details of the file system is not important.
+@end deftypefun
+
+@deftypefun {struct adftool_file *} adftool_file_open_generated (void)
+Open an anonymous file backed by the file system, that contains a
+sample of an automatically generated EEG. Due to the lack of medical
+data that could be published, this comically simple EEG provides a
+good placeholder that can be used to demonstrate some EEG tools.
+@end deftypefun
+
+@deftypefun void adftool_file_close (struct adftool_file *@var{file})
+Close @var{file}. Due to how HDF5 works, you must close the @var{file}
+at some point, otherwise it will be permanently locked.
+@end deftypefun
+
+The adftool file maintains a cache of dictionary elements to speed up
+lookups. Because of this, lookup function may actually mutate some
+parts of the file, in a way that is not visible to the caller. Thus,
+the constant tag to file arguments is not present in the function
+signatures.
+
+@deftypefun size_t adftool_file_get_data (struct adftool_file *@var{file}, size_t @var{start}, size_t @var{max}, void *@var{bytes})
+Get the byte contents of @var{file}, ignoring the @var{start} first
+bytes, and writing the next @var{max} bytes to @var{bytes}. Return the
+total number of bytes.
+@end deftypefun
+
+@deftypefun {int} adftool_lookup (struct adftool_file *@var{file}, const struct adftool_statement *@var{pattern}, size_t @var{start}, size_t @var{max}, size_t *@var{n_results}, struct adftool_statement **@var{statements})
+Discard the first @var{start}, then get the last (at most) @var{max}
+@var{statements} in @var{file} that match @var{pattern}. Some
+statements may be marked as deleted, you can detect them with
+@code{adftool_statement_get_deletion_date}. Return 0 if no error
+happened, otherwise return a non-zero value. Set @var{n_results} to
+the total number of results.
+
+Here, all @var{max} elements in @var{statements} @strong{must} be
+already allocated. If @var{max} is 0, then the @var{statements}
+pointer is not touched.
+@end deftypefun
+
+@deftypefun {size_t} adftool_lookup_objects (struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, size_t @var{start}, size_t @var{max}, struct adftool_term **@var{objects})
+@deftypefunx {size_t} adftool_lookup_subjects (struct adftool_file *@var{file}, const struct adftool_term *@var{object}, const char *@var{predicate}, size_t @var{start}, size_t @var{max}, struct adftool_term **@var{subjects})
+Return the total number of objects or subjects that match the pattern
+(@var{subject} @var{predicate} ?) or (? @var{predicate} @var{object})
+in @var{file}. Return 0 if there was an HDF5 error. Fill @var{objects}
+or @var{subjects}, which @strong{must} be allocated to at least
+@var{max} terms (not touched if @var{max} is 0) that themselves
+@strong{must} be allocated, discarding the first @var{start} results
+and setting at most the next @var{max} results.
+
+No output terms are deleted, all of them are live.
+@end deftypefun
+
+@deftypefun {size_t} adftool_lookup_integer (struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, size_t @var{start}, size_t @var{max}, long *@var{objects})
+@deftypefunx {size_t} adftool_lookup_double (struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, size_t @var{start}, size_t @var{max}, double *@var{objects})
+@deftypefunx {size_t} adftool_lookup_date (struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, size_t @var{start}, size_t @var{max}, struct timespec **@var{objects})
+Lookup the objects of the triple that are of the appropriate
+type. Discard the @var{start} first results, and then fill
+@var{objects} up to @var{max}. Return the total number of objects.
+@end deftypefun
+
+@deftypefun {size_t} adftool_lookup_string (struct adftool_file *@var{file}, const struct adftool_term *@var{subject}, const char *@var{predicate}, size_t *@var{storage_required}, size_t @var{storage_size}, char *@var{storage}, size_t @var{start}, size_t @var{max}, size_t *@var{langtag_length}, char **@var{langtags}, size t *@var{object_length}, char **@var{objects})
+Lookup the objects of the triple that are strings or
+langstrings. Discard the @var{start} first results, and then fill
+@var{langtag_length}, @var{langtags}, @var{object_length} and
+@var{objects} up to @var{max}. Return the total number of string
+objects.
+
+For non-langtagged strings, the corresponding @var{langtag} is set to
+@code{NULL}. In any case, @var{objects}, and in case of langstrings,
+@var{langtags}, are filled with pointers aliasing the @var{storage}
+passed to this function.
+
+At the end of the function call, if @code{*@var{storage_required}} is
+greater than @var{storage_size}, then the function failed because it
+does not have enough memory to save all objects. Call it again with a
+larger storage.
+@end deftypefun
+
+@deftypefun {int} adftool_delete (struct adftool_file *@var{file}, const struct adftool_statement *@var{pattern}, uint64_t @var{deletion_date})
+Delete all statements in @var{file} that match @var{pattern}, by
+setting their @var{deletion_date}. Return 0 if no error happened,
+otherwise return a non-zero value.
+@end deftypefun
+
+@deftypefun {int} adftool_insert (struct adftool_file *@var{file}, const struct adftool_statement *@var{statement})
+Add @var{statement} to @var{file}. Return 0 if no error happened,
+otherwise return a non-zero value.
+@end deftypefun
+
+@node EEG-specific API
+@section EEG-specific API
+Raw EEG data is stored as long time series. It is much more efficient
+to use datasets than RDF to store these values.
+
+@deftypefun int adftool_find_channel_identifier (struct adftool_file *@var{file}, size_t @var{j}, struct adftool_term *@var{identifier})
+Get the @var{identifier} of the @var{j}-th raw EEG channel in
+@var{file}. Return non-zero iff an error occurs: there is less than
+@var{j} channels, or a copy failed, for instance.
+@end deftypefun
+
+@deftypefun int adftool_get_channel_column (struct adftool_file *@var{file}, const struct adftool_term *@var{channel}, size_t *@var{column})
+Get the @var{column} index for @var{channel} in @var{file}.
+@end deftypefun
+
+@deftypefun int adftool_add_channel_type (struct adftool_file *@var{file}, const struct adftool_term *@var{channel}, const struct adftool_term *@var{type})
+Add that @var{channel} in @var{file} is of the given
+@var{type}. Return 0 if the file has been updated successfully, or an
+error code otherwise.
+@end deftypefun
+
+@deftypefun size_t adftool_get_channel_types (struct adftool_file *@var{file}, const struct adftool_term *@var{channel}, size_t @var{start}, size_t @var{max}, struct adftool_term **@var{types})
+Discard the first @var{start} types that appear if @var{file} for
+@var{channel}, and initialize at most the next @var{max} @var{types}
+with the type values. Return the total number of types.
+@end deftypefun
+
+@deftypefun size_t adftool_find_channels_by_type (struct adftool_file *@var{file}, const struct adftool_term *@var{type}, size_t @var{start}, size_t @var{max}, struct adftool_term **@var{identifiers})
+Build the list of channel @var{identifiers} that are of the given
+@var{types}.
+@end deftypefun
+
+@deftypefun int adftool_eeg_get_data (struct adftool_file *@var{file}, size_t @var{time_start}, size_t @var{time_length}, size_t *@var{time_max}, size_t @var{channel_start}, size_t @var{channel_length}, size_t *@var{channel_max}, double *@var{data})
+Fetch the raw data from @var{file}. Consider @var{data} as a
+row-oriented storage of @var{time_length} rows by @var{channel_length}
+columns, and initialize it. Set @var{time_max} to the actual number of
+rows, and @var{channel_max} to the actual number of columns.
+
+Return an error code, or 0 if @var{data} has been loaded.
+
+You can use it like this:
+
+@example
+size_t time_length, n_channels;
+if (adftool_eeg_get_data (@var{file},
+                          0, 0, &time_length,
+                          0, 0, &n_channels,
+                          NULL) != 0)
+  @{
+    abort ();
+  @}
+double *data = calloc (time_length * n_channels,
+                       sizeof (double));
+if (data == NULL)
+  @{
+    abort ();
+  @}
+size_t check_time, check_channels;
+if (adftool_eeg_get_data (@var{file},
+                          0, time_length, &check_time,
+                          0, n_channels, &check_channels,
+                          data) != 0)
+  @{
+    abort ();
+  @}
+assert (check_time == time_length);
+assert (check_channels == n_channels);
+for (size_t time_point = 0;
+     time_point < time_length;
+     time_point++)
+  @{
+    for (size_t channel = 0;
+         channel < n_channels;
+         channel++)
+      @{
+        const double value =
+          data[time_point * n_channels + channel];
+        /* At time_point, the channel value is value. */
+      @}
+  @}
+free (data);
+@end example
+@end deftypefun
+
+@deftypefun int adtfool_eeg_set_data (struct adftool_file *@var{file}, size_t @var{n_points}, size_t @var{n_channels}, const double *@var{data})
+Change @strong{all} the raw @var{data} in @var{file}, discarding
+anything that was there before. @var{data} is row-oriented, with
+@var{n_points} rows and @var{n_channels} columns.
+
+Return 0 on success, or an error code.
+@end deftypefun
+
+@deftypefun int adftool_eeg_get_time (struct adftool_file *@var{file}, size_t @var{i}, struct timespec *@var{time}, double *@var{sampling_frequency})
+Get the @var{time} that the @var{i}-th observation was made in
+@var{file}, along with the @var{sampling_frequency} of the
+recording. @var{time} and @var{sampling_frequency} can each be
+@code{NULL}, in which case they are not set. @var{i} can be 0, if you
+want the date the recording started.
+
+Return 0 on success, or an error code.
+@end deftypefun
+
+@deftypefun int adftool_eeg_set_time (struct adftool_file *@var{file}, const struct timespec *@var{time}, double @var{sampling_frequency})
+Set the @var{time} ande the @var{sampling_frequency} of the
+recording.
+
+Return 0 on success, or an error code.
+@end deftypefun
+
+@node Data filtering
+@section Data filtering
+For visualization, the bipolar reference or the data must be band-pass
+filtered.
+
+@deftp struct adftool_fir
+A simple Finite Impulse Response a-causal filter, that can be applied
+to a batch of data.
+@end deftp
+
+To remain compatible with MNE, you must proceed in three steps:
+@enumerate
+@item
+Compute the default transition bandwidth if you don’t know them yet;
+@item
+Compute the default filter order if you don’t know it yet;
+@item
+Allocate the filter with the right number of coefficients (order);
+@item
+Design the band-pass filter.
+@end enumerate
+
+@deftypefun {void} adftool_fir_auto_bandwidth (double @var{sfreq}, double @var{low}, double @var{high}, double *@var{trans_low}, double *@var{trans_high})
+Compute a sensible value for the low and high bandwidth of a band-pass
+filter between @var{low} and @var{high}, that will be applied to a
+signal sampled at @var{sfreq} Hz.
+@end deftypefun
+
+@deftypefun {size_t} adftool_fir_auto_order (double @var{sfreq}, double @var{tightest_transition_bandwidth}
+Compute a good filter order that can respect the
+@var{tightest_transition_bandwidth} (for a band-pass filter, either
+its low or high transition bandwidths.
+@end deftypefun
+
+@deftypefun {struct adftool_fir *} adftool_fir_alloc (size_t @var{order})
+Allocate some storage for a new filter. Return @code{NULL} if the
+allocation failed, or the new filter, uninitialized.
+@end deftypefun
+
+@deftypefun void adftool_fir_free (struct adftool_fir *@var{filter})
+Free @var{filter}.
+@end deftypefun
+
+@deftypefun {size_t} adftool_fir_order (const struct adftool_fir *@var{filter})
+Return the order of @var{filter}. It is an odd number.
+@end deftypefun
+
+@deftypefun void adftool_fir_design_bandpass (struct adftool_fir *@var{filter}, double @var{sampling_frequency}, double @var{lowest_frequency}, double @var{highest_frequency}, double @var{low_transition_bandwidth}, double @var{high_transition_bandwidth})
+Set @var{filter} to be a filter that lets the band between
+@var{lowest_frequency} and @var{highest_frequency}
+pass.
+@end deftypefun
+
+@deftypefun void adftool_fir_apply (const struct adftool_fir *@var{filter}, size_t @var{signal_length}, const double *@var{signal}, double *@var{filtered})
+Apply @var{filter} to @var{signal}, and store the @var{filtered}
+results. Both are arrays of length @var{signal_length}.
+@end deftypefun
+
+@node Multi-threaded loading and filtering
+@section Multi-threaded loading and filtering
+
+Filtering the data may be a heavy task, however it can be
+parallelized. Adftool provides a multi-threaded channel processor
+group. When data is requested, the group immediately responds with
+whatever relevant data is in the cache, and schedules the cache to be
+populated later. A pool of threads can then work in the background to
+populate the cache, so that the next request may get more relevant
+data.
+
+@deftp struct adftool_channel_processor_group
+A multi-threaded cache for multiple channels.
+@end deftp
+
+@deftypefun {struct adftool_channel_processor_group *} adftool_channel_processor_group_alloc (struct adftool_file *@var{file}, pthread_mutex_t *@var{file_synchronizer}, size_t @var{max_active_channels})
+Allocate a new group of multi-threaded processors. It will allocate a
+cache for at most @var{max_active_channels} channels. If a new channel
+is queried, or the filter parameters change, a new cache will be
+allocated. The slots are recycled.
+
+@var{file} must be kept around for as long as the group is
+allocated. To prevent concurrent accesses, you must also pass
+@var{file_synchronizer}.
+@end deftypefun
+
+@deftypefun void adftool_channel_processor_group_free (struct adftool_channel_processor_group *@var{group}
+Free all resources associated with @var{group}: free all caches,
+cancel all threads, and release the file synchronizer mutex.
+@end deftypefun
+
+@deftypefun int adftool_channel_processor_group_get (struct adftool_channel_processor_group *@var{group}, const struct adftool_term *@var{channel_type}, double @var{filter_low}, double @var{filter_high}, size t @var{start_index}, size_t @var{length}, size_t *@var{nearest_start}, size_t *@var{nearest_length}, double *@var{data})
+Request filtered data. The function returns immediately, and set
+@var{nearest_start} and @var{nearest_length} to the requested window,
+clamped so that it will never go past the end of the
+signal. @var{data} is filled with the filtered data, or @code{NAN} if
+the data is not yet in cache.
+
+Return 0 on success (even partial success, when some or all of the
+data is not in cache), a negative value otherwise.
+@end deftypefun
+
+@deftypefun int adftool_channel_processor_group_populate_cache (struct adftool_channel_processor_group *@var{group}, int *@var{work_done})
+Block and try to expand the cache. Set @var{work_done} to 1 if a cache
+has been populated, or 0 if nothing has to be done.
+
+Return 0 on success (even if no task was scheduled), a negative value
+otherwise.
+@end deftypefun
+
+@node Index
+@unnumbered Index
+@printindex cp
+
+@node Libadftool Index
+@unnumbered Libadftool Index
+@printindex fn
+
+@bye

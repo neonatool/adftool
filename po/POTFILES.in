@@ -1,0 +1,10 @@
+src/adftool.c
+src/adftool_python.c
+src/adftool_r.cc
+src/check_bplus.c
+src/eeg_metadata_example.c
+src/encoding_unit_test.c
+src/filter_example.c
+src/libadftool/lexer.l
+src/libadftool/quads.h
+src/term_manipulation_example.c

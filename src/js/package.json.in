@@ -1,0 +1,14 @@
+{
+  "name": "adftool",
+  "version": "@VERSION@",
+  "description": "ADF file format manipulation.",
+  "main": "adftool.mjs",
+  "devDependencies": {
+    "esbuild": ">=0.14.0"
+  },
+  "scripts": {
+    "test": "esbuild test.mjs --platform=node --bundle --outfile=test.js --external:path --external:fs && node test.js"
+  },
+  "author": "vivien.kraus@univ-reims.fr",
+  "license": "???"
+}
