@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Build adftool for emscripten, once all dependencies have been
+# installed to ./deps.
+
+cd emsdk
+
+. ./emsdk_env.sh
+
+cd ..
+
+emconfigure ./configure CPPFLAGS="-I$PWD/deps/include" LIBS="$PWD/deps/lib/libhdf5.a $PWD/deps/lib/libcheck.a" LDFLAGS="-L$PWD/deps/lib" --disable-relocatable --disable-shared --prefix=/ --disable-python --disable-r --enable-node=yes --enable-js-initial-memory=$((256 * 1024 * 1024)) gl_cv_func_dup2_works=no gl_cv_func_nanosleep='no' --disable-valgrind-tests CFLAGS=--profiling
+
+emmake make -j 8
+
+emmake make DESTDIR=$PWD/public install
