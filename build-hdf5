@@ -1,0 +1,32 @@
+#!/bin/sh
+
+cd emsdk
+
+. ./emsdk_env.sh
+
+cd ..
+
+# Build HDF5 with emscripten.
+
+mkdir -p build-hdf5-emscripten
+
+cd hdf5
+
+ln -s /usr/bin/libtoolize ./libtoolize
+
+export HDF5_ACLOCAL=$(which aclocal)
+export HDF5_AUTOHEADER=$(which autoheader)
+export HDF5_AUTOMAKE=$(which automake)
+export HDF5_AUTOCONF=$(which autoconf)
+export HDF5_LIBTOOL=$(which libtool)
+export HDF5_M4=$(which m4)
+
+./autogen.sh
+
+cd ../build-hdf5-emscripten
+
+emconfigure ../hdf5/configure --enable-build-mode=production --prefix=/ --disable-tools --disable-tests --disable-shared
+
+emmake make -j 8
+
+emmake make DESTDIR=$PWD/../deps install
