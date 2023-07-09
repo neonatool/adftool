@@ -89,7 +89,7 @@ main (int argc, char *argv[])
 	  fail_test ();
 	}
       n3[n3_length] = '\0';
-      static const char *expected_prefix = "<https://localhost/lytonepal#";
+      static const char *expected_prefix = "<" LYTONEPAL_ONTOLOGY_PREFIX;
       if (strncmp (n3, expected_prefix, strlen (expected_prefix)) != 0)
 	{
 	  fprintf (stderr, "%s:%d: error: the N3 representation \

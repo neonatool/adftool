@@ -25,7 +25,7 @@ adftool_find_channel_identifier (struct adftool_file *file,
     }
   term_set_mpz (object, i);
   mpz_clear (i);
-  static const char *p = "https://localhost/lytonepal#column-number";
+  static const char *p = LYTONEPAL_ONTOLOGY_PREFIX "column-number";
   size_t n_results =
     adftool_lookup_subjects (file, object, p, 0, 1, &identifier);
   term_free (object);
@@ -62,7 +62,7 @@ adftool_get_channel_column (struct adftool_file *file,
     {
       abort ();
     }
-  static const char *p = "https://localhost/lytonepal#column-number";
+  static const char *p = LYTONEPAL_ONTOLOGY_PREFIX "column-number";
   size_t n_results =
     adftool_lookup_objects (file, identifier, p, 0, 1, &object);
   mpz_t i;

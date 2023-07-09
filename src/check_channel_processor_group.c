@@ -45,8 +45,8 @@ main (int argc, char *argv[])
     {
       fail_test ();
     }
-  term_set_named (fp1, "https://localhost/lytonepal#Fp1");
-  term_set_named (fp2, "https://localhost/lytonepal#Fp2");
+  term_set_named (fp1, LYTONEPAL_ONTOLOGY_PREFIX "Fp1");
+  term_set_named (fp2, LYTONEPAL_ONTOLOGY_PREFIX "Fp2");
   struct adftool_channel_processor_group *group =
     channel_processor_group_alloc (file, &sync, 2);
   if (group == NULL)

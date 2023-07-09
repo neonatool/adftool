@@ -20,9 +20,9 @@ static const struct adftool_term default_eeg = {
 };
 
 static const char *const lyto_start_date =
-  "https://localhost/lytonepal#start-date";
+  LYTONEPAL_ONTOLOGY_PREFIX "start-date";
 static const char *const lyto_sampling_frequency =
-  "https://localhost/lytonepal#sampling-frequency";
+  LYTONEPAL_ONTOLOGY_PREFIX "sampling-frequency";
 
 static const struct adftool_term p_start_date = {
   .type = TERM_NAMED,

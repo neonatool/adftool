@@ -40,7 +40,7 @@ channel_decoder_find (struct adftool_file *file,
 {
   char predicate_str[256];
   sprintf (predicate_str,
-	   "https://localhost/lytonepal#has-channel-decoder-%s",
+	   LYTONEPAL_ONTOLOGY_PREFIX "has-channel-decoder-%s",
 	   scale_or_offset);
   struct adftool_term *object = term_alloc ();
   if (object == NULL)
@@ -70,7 +70,7 @@ channel_decoder_replace (struct adftool_file *file,
   int error = 0;
   char predicate_str[256];
   sprintf (predicate_str,
-	   "https://localhost/lytonepal#has-channel-decoder-%s",
+	   LYTONEPAL_ONTOLOGY_PREFIX "has-channel-decoder-%s",
 	   scale_or_offset);
   struct adftool_term p = {
     .type = TERM_NAMED,

@@ -43,7 +43,7 @@ main (int argc, char *argv[])
     {
       fail_test ();
     }
-  term_set_named (channel_type, "https://localhost/lytonepal#Fp2");
+  term_set_named (channel_type, LYTONEPAL_ONTOLOGY_PREFIX "Fp2");
   struct adftool_channel_processor *processor =
     channel_processor_alloc (file, &sync, channel_type, 0.3, 35);
   if (processor == NULL)
