@@ -1,0 +1,23 @@
+#!/bin/sh
+
+cd emsdk
+
+. ./emsdk_env.sh
+
+cd ..
+
+# Build a fairly recent release of Check with emscripten.
+
+wget https://github.com/libcheck/check/releases/download/0.15.2/check-0.15.2.tar.gz
+
+tar xf check-0.15.2.tar.gz
+
+mkdir -p build-check-emscripten
+
+cd build-check-emscripten
+
+emconfigure ../check-0.15.2/configure --prefix=/ --disable-assembly --host none
+
+emmake make -j 8
+
+emmake make DESTDIR=$PWD/../deps install

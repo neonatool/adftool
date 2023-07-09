@@ -1,0 +1,25 @@
+#!/bin/sh
+
+cd emsdk
+
+. ./emsdk_env.sh
+
+cd ..
+
+# Build a fairly recent release of GMP with emscripten.
+
+GMP_VERSION=6.2.1
+
+wget https://ftp.gnu.org/gnu/gmp/gmp-$GMP_VERSION.tar.lz
+
+tar xf gmp-$GMP_VERSION.tar.lz
+
+mkdir -p build-gmp-emscripten
+
+cd build-gmp-emscripten
+
+emconfigure ../gmp-$GMP_VERSION/configure --prefix=/ --disable-assembly --host none
+
+emmake make -j 8
+
+emmake make DESTDIR=$PWD/../deps install

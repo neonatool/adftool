@@ -434,6 +434,7 @@ over-allocation strategy that the kernel may implement.
 * Manipulating files::
 * EEG-specific API::
 * Data filtering::
+* Multi-threaded loading and filtering::
 @end menu
 
 @node Manipulating terms
@@ -777,6 +778,16 @@ otherwise return a non-zero value.
 Raw EEG data is stored as long time series. It is much more efficient
 to use datasets than RDF to store these values.
 
+@deftypefun size_t adftool_lytonepal (const char *@var{concept}, size_t @var{start}, size_t @var{max}, char *@var{dest})
+The Lytonepal ontology URI is configured at build time for
+adftool. The @code{adftool_lytonepal} function can recover the full
+URI for a Lytonepal @var{concept}. Ignore the first @var{start} bytes
+of the full URI for @var{concept}, and then copy at most the next
+@var{max} bytes of the full URI to @var{dest}. If there is still room
+for it, add a final NUL character. Return the total number of bytes
+for the full URI, not counting the final NUL.
+@end deftypefun
+
 @deftypefun int adftool_find_channel_identifier (struct adftool_file *@var{file}, size_t @var{j}, struct adftool_term *@var{identifier})
 Get the @var{identifier} of the @var{j}-th raw EEG channel in
 @var{file}. Return non-zero iff an error occurs: there is less than
@@ -937,6 +948,56 @@ pass.
 @deftypefun void adftool_fir_apply (const struct adftool_fir *@var{filter}, size_t @var{signal_length}, const double *@var{signal}, double *@var{filtered})
 Apply @var{filter} to @var{signal}, and store the @var{filtered}
 results. Both are arrays of length @var{signal_length}.
+@end deftypefun
+
+@node Multi-threaded loading and filtering
+@section Multi-threaded loading and filtering
+
+Filtering the data may be a heavy task, however it can be
+parallelized. Adftool provides a multi-threaded channel processor
+group. When data is requested, the group immediately responds with
+whatever relevant data is in the cache, and schedules the cache to be
+populated later. A pool of threads can then work in the background to
+populate the cache, so that the next request may get more relevant
+data.
+
+@deftp struct adftool_channel_processor_group
+A multi-threaded cache for multiple channels.
+@end deftp
+
+@deftypefun {struct adftool_channel_processor_group *} adftool_channel_processor_group_alloc (struct adftool_file *@var{file}, pthread_mutex_t *@var{file_synchronizer}, size_t @var{max_active_channels})
+Allocate a new group of multi-threaded processors. It will allocate a
+cache for at most @var{max_active_channels} channels. If a new channel
+is queried, or the filter parameters change, a new cache will be
+allocated. The slots are recycled.
+
+@var{file} must be kept around for as long as the group is
+allocated. To prevent concurrent accesses, you must also pass
+@var{file_synchronizer}.
+@end deftypefun
+
+@deftypefun void adftool_channel_processor_group_free (struct adftool_channel_processor_group *@var{group}
+Free all resources associated with @var{group}: free all caches,
+cancel all threads, and release the file synchronizer mutex.
+@end deftypefun
+
+@deftypefun int adftool_channel_processor_group_get (struct adftool_channel_processor_group *@var{group}, const struct adftool_term *@var{channel_type}, double @var{filter_low}, double @var{filter_high}, size t @var{start_index}, size_t @var{length}, size_t *@var{nearest_start}, size_t *@var{nearest_length}, double *@var{data})
+Request filtered data. The function returns immediately, and set
+@var{nearest_start} and @var{nearest_length} to the requested window,
+clamped so that it will never go past the end of the
+signal. @var{data} is filled with the filtered data, or @code{NAN} if
+the data is not yet in cache.
+
+Return 0 on success (even partial success, when some or all of the
+data is not in cache), a negative value otherwise.
+@end deftypefun
+
+@deftypefun int adftool_channel_processor_group_populate_cache (struct adftool_channel_processor_group *@var{group}, int *@var{work_done})
+Block and try to expand the cache. Set @var{work_done} to 1 if a cache
+has been populated, or 0 if nothing has to be done.
+
+Return 0 on success (even if no task was scheduled), a negative value
+otherwise.
 @end deftypefun
 
 @node Index

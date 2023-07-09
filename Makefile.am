@@ -34,8 +34,7 @@ COMMON_COMPILE_FLAGS = \
 
 COMMON_LINK_FLAGS = \
   $(LTLIBOBJS) \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME)
+  $(LTLIBINTL)
 
 AM_CPPFLAGS = \
   -I libprog -I $(srcdir)/libprog \
@@ -55,6 +54,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS = SHELL=$(SHELL)
 RELOCATABLE_LIBRARY_PATH = $(libdir)
 
 bin_PROGRAMS = src/adftool
+libexec_PROGRAMS = src/adftool-mt
 
 lib_LTLIBRARIES = libadftool.la
 dist_include_HEADERS = include/adftool.h
@@ -79,7 +79,9 @@ check_PROGRAMS = \
   src/check_bplus \
   src/typed_literal_lookup \
   src/encoding_unit_test \
-  src/check_generated_file
+  src/check_generated_file \
+  src/check_channel_processor \
+  src/check_channel_processor_group
 
 TESTS = $(check_PROGRAMS)
 
@@ -120,6 +122,9 @@ libadftool_la_SOURCES = \
   src/libadftool/array.c \
   src/libadftool/channel_decoder.h \
   src/libadftool/channel_metadata.c \
+  src/libadftool/channel_processor.h \
+  src/libadftool/channel_processor_group.c \
+  src/libadftool/channel_processor_group.h \
   src/libadftool/dictionary_bytes.h \
   src/libadftool/dictionary_cache.h \
   src/libadftool/dictionary_index.h \
@@ -152,15 +157,20 @@ libadftool_la_LIBADD = lib/libadftool.la $(LTLIBOBJS)
 libadftool_la_LDFLAGS = \
   -no-undefined \
   -version-info ${LTV_CURRENT}:${LTV_REVISION}:${LTV_AGE} \
-  $(LTLIBINTL) \
-  $(LIB_CLOCK_GETTIME) \
-  $(LIB_GETRANDOM) \
-  $(MODF_LIBM) \
-  $(TRUNC_LIBM) \
-  $(LIB_SETLOCALE) \
-  $(LIB_SETLOCALE_NULL) \
-  $(COMMON_LINK_FLAGS) \
+  $(CLOCK_TIME_LIB) \
+  $(GETRANDOM_LIB) \
+  $(LIBPMULTITHREAD) \
+  $(LIBPTHREAD) \
+  $(LIBSOCKET) \
   $(LIBTHREAD) \
+  $(LTLIBINTL) \
+  $(MODF_LIBM) \
+  $(NANOSLEEP_LIB) \
+  $(PTHREAD_SIGMASK_LIB) \
+  $(SELECT_LIB) \
+  $(SETLOCALE_LIB) \
+  $(SETLOCALE_NULL_LIB) \
+  $(TRUNC_LIBM) \
   $(INTL_MACOSX_LIBS)
 
 AM_TESTS_ENVIRONMENT = \

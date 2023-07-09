@@ -68,6 +68,8 @@ struct adftool_py_fir
   struct adftool_fir *ptr;
 };
 
+static PyObject *lytonepal (PyObject *, PyObject *);
+
 static PyObject *file_new (PyTypeObject *, PyObject *, PyObject *);
 static int file_init (PyObject *, PyObject *, PyObject *);
 static void file_dealloc (PyObject *);
@@ -438,6 +440,8 @@ static PyTypeObject adftool_type_fir = {
 };
 
 static PyMethodDef adftool_methods[] = {
+  {"lytonepal", (PyCFunction) lytonepal, METH_VARARGS,
+   N_("Get the full URI for a Lytonepal concept")},
   {NULL, NULL, 0, NULL}
 };
 
@@ -587,6 +591,29 @@ PyInit_adftool (void)
 }
 
 static PyObject *
+lytonepal (PyObject *self, PyObject * args)
+{
+  assert (self == NULL);
+  const char *c_concept;
+  if (PyArg_ParseTuple (args, "s", &c_concept) == 0)
+    {
+      return NULL;
+    }
+  size_t required = adftool_lytonepal (c_concept, 0, 0, NULL);
+  char *c_full = malloc (required + 1);
+  if (c_full == NULL)
+    {
+      return NULL;
+    }
+  const size_t ck_required =
+    adftool_lytonepal (c_concept, 0, required + 1, c_full);
+  assert (ck_required == required);
+  PyObject *full = PyUnicode_FromString (c_full);
+  free (c_full);
+  return full;
+}
+
+static PyObject *
 file_new (PyTypeObject * subtype, PyObject * args, PyObject * kwds)
 {
   (void) args;
@@ -690,6 +717,7 @@ file_open_data (struct adftool_py_file *self, PyObject * args)
 static PyObject *
 file_open_generated (struct adftool_py_file *self, PyObject * args)
 {
+  (void) args;
   struct adftool_file *new_file = adftool_file_open_generated ();
   if (new_file)
     {

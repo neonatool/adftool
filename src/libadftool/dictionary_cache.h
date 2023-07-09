@@ -15,13 +15,15 @@
 
 # include "gettext.h"
 
-# ifdef BUILDING_LIBADFTOOL
-#  define _(String) dgettext (PACKAGE, (String))
-#  define N_(String) (String)
-# else
-#  define _(String) gettext (String)
-#  define N_(String) (String)
-# endif
+# ifndef _
+#  ifdef BUILDING_LIBADFTOOL
+#   define _(String) dgettext (PACKAGE, (String))
+#   define N_(String) (String)
+#  else
+#   define _(String) gettext (String)
+#   define N_(String) (String)
+#  endif
+# endif/* not _ */
 
 # define DEALLOC_DICTIONARY_CACHE \
   ATTRIBUTE_DEALLOC (adftool_dictionary_cache_free, 1)

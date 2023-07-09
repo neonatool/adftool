@@ -17,13 +17,20 @@
 
 # include "gettext.h"
 
-# ifdef BUILDING_LIBADFTOOL
-#  define _(String) dgettext (PACKAGE, (String))
-#  define N_(String) (String)
-# else
-#  define _(String) gettext (String)
-#  define N_(String) (String)
-# endif
+# ifndef _
+#  ifdef BUILDING_LIBADFTOOL
+#   define _(String) dgettext (PACKAGE, (String))
+#   define N_(String) (String)
+#  else
+#   define _(String) gettext (String)
+#   define N_(String) (String)
+#  endif
+# endif/* not _ */
+
+# ifndef STREQ
+#  define STREQ(s1, s2) (strcmp ((s1), (s2)) == 0)
+#  define STRNEQ(s1, s2) (strcmp ((s1), (s2)) != 0)
+# endif/* not STREQ */
 
 # define DEALLOC_TERM \
   ATTRIBUTE_DEALLOC (term_free, 1)

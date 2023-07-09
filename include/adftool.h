@@ -93,6 +93,9 @@
 # define LIBADFTOOL_DEALLOC_ARRAY_POINTER \
   LIBADFTOOL_DEALLOC (adftool_array_pointer_free, 1)
 
+# define LIBADFTOOL_DEALLOC_CHANNEL_PROCESSOR_GROUP \
+  LIBADFTOOL_DEALLOC (adftool_channel_processor_group_free, 1)
+
 # ifdef __cplusplus
 extern "C"
 {
@@ -518,6 +521,44 @@ extern "C"
     void *adftool_array_pointer_get (const struct adftool_array_pointer
 				     *array, size_t i);
 
+# include <pthread.h>
+
+  struct adftool_channel_processor_group;
+
+  extern LIBADFTOOL_API
+    void adftool_channel_processor_group_free (struct
+					       adftool_channel_processor_group
+					       *group);
+
+  LIBADFTOOL_DEALLOC_CHANNEL_PROCESSOR_GROUP extern LIBADFTOOL_API
+    struct adftool_channel_processor_group
+    *adftool_channel_processor_group_alloc (struct adftool_file *file,
+					    pthread_mutex_t *
+					    file_synchronizer,
+					    size_t max_active_channels);
+
+  extern LIBADFTOOL_API int
+    adftool_channel_processor_group_get (struct
+					 adftool_channel_processor_group
+					 *group,
+					 const struct adftool_term
+					 *channel_type, double filter_low,
+					 double filter_high,
+					 size_t start_index, size_t length,
+					 size_t *nearest_start,
+					 size_t *nearest_length,
+					 double *data);
+
+  extern LIBADFTOOL_API int
+    adftool_channel_processor_group_populate_cache (struct
+						    adftool_channel_processor_group
+						    *group, int *work_done);
+
+  /* Return the full URI for the lytonepal ontology concept */
+  extern LIBADFTOOL_API size_t
+    adftool_lytonepal (const char *cncept, size_t start, size_t max,
+		       char *dest);
+
   /* Deprecated entry points, do not use. */
   LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
     int adftool_dictionary_get (struct adftool_file *file, uint32_t id,
@@ -580,6 +621,23 @@ extern "C"
 /* *INDENT-OFF* */
 namespace adftool
 {
+  static size_t lytonepal (const std::string cncept,
+                           size_t discard,
+                           const std::string::iterator begin, const
+                           std::string::iterator end) noexcept
+  {
+    return adftool_lytonepal (cncept.c_str (), discard, end - begin, &(*begin));
+  }
+
+  static std::string lytonepal_alloc (const std::string cncept)
+  {
+    std::string nothing;
+    size_t required = lytonepal (cncept, 0, nothing.begin (), nothing.end ());
+    std::string ret;
+    ret.resize (required);
+    lytonepal (cncept, 0, ret.begin (), ret.end ());
+    return ret;
+  }
   class term
   {
   private:

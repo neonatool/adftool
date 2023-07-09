@@ -355,7 +355,7 @@ new_channel_statement (size_t i)
   /* <> <https://localhost/lytonepal#has-channel> <#channel-%lu> . */
   char label[64];
   sprintf (label, "#channel-%lu", i);
-  static const char *pred = "https://localhost/lytonepal#has-channel";
+  static const char *pred = LYTONEPAL_ONTOLOGY_PREFIX "has-channel";
   /* 64 chars is enough I guess. There are up to 64 digits in base 2,
      so around a third of that in base 10. */
   term_set_named (subject, "");
@@ -391,7 +391,7 @@ set_channel_identifier (struct adftool_file *file,
   mpz_clear (i);
   struct adftool_term predicate = {
     .type = TERM_NAMED,
-    .str1 = "https://localhost/lytonepal#column-number",
+    .str1 = LYTONEPAL_ONTOLOGY_PREFIX "column-number",
     .str2 = NULL
   };
   struct adftool_statement pattern = {
