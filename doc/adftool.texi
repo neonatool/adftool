@@ -778,6 +778,16 @@ otherwise return a non-zero value.
 Raw EEG data is stored as long time series. It is much more efficient
 to use datasets than RDF to store these values.
 
+@deftypefun size_t adftool_lytonepal (const char *@var{concept}, size_t @var{start}, size_t @var{max}, char *@var{dest})
+The Lytonepal ontology URI is configured at build time for
+adftool. The @code{adftool_lytonepal} function can recover the full
+URI for a Lytonepal @var{concept}. Ignore the first @var{start} bytes
+of the full URI for @var{concept}, and then copy at most the next
+@var{max} bytes of the full URI to @var{dest}. If there is still room
+for it, add a final NUL character. Return the total number of bytes
+for the full URI, not counting the final NUL.
+@end deftypefun
+
 @deftypefun int adftool_find_channel_identifier (struct adftool_file *@var{file}, size_t @var{j}, struct adftool_term *@var{identifier})
 Get the @var{identifier} of the @var{j}-th raw EEG channel in
 @var{file}. Return non-zero iff an error occurs: there is less than

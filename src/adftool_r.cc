@@ -40,6 +40,11 @@
 
 namespace adftool_r
 {
+  std::string lytonepal (const std::string cncept)
+  {
+    return adftool::lytonepal_alloc (cncept);
+  }
+
   class term
   {
   private:
@@ -574,6 +579,8 @@ _rcpp_module_boot_adftool ()
   ::setCurrentScope (&adftool);
 
   /* Initialization code here */
+  Rcpp::function ("lytonepal", &adftool_r::lytonepal);
+
   Rcpp::class_<adftool_r::term> ("term")
     .constructor(_("Construct a new, empty term."))
     .method ("copy", &adftool_r::term::copy, _("Copy the other term."))

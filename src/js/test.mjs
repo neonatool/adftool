@@ -336,7 +336,7 @@ AdftoolFactory ().then (Adftool => {
 	});
     });
     Adftool.with_generated_file ((f) => {
-	Adftool.with_named_node ('https://localhost/lytonepal#Fp2', (fp2) => {
+	Adftool.with_named_node (Adftool.lytonepal ('Fp2'), (fp2) => {
 	    Adftool.with_statement ((wildcard) => {
 		f.lookup (wildcard, ((data) => {
 		    console.assert (data.length >= 11);

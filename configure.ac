@@ -58,6 +58,17 @@ AC_ARG_ENABLE([js-initial-memory],
 	CFLAGS="$CFLAGS -sINITIAL_MEMORY=${enableval}" ;;
   esac])
 
+DEFAULT_ONTOLOGY_PREFIX="https://localhost/lytonepal#"
+
+AC_ARG_VAR([LYTONEPAL_ONTOLOGY_PREFIX], [The lytonepal ontology prefix, with the final \# character if needed.])
+
+if test "x$LYTONEPAL_ONTOLOGY_PREFIX" = "x"
+then
+  LYTONEPAL_ONTOLOGY_PREFIX="$DEFAULT_ONTOLOGY_PREFIX"
+fi
+
+AC_DEFINE_UNQUOTED([LYTONEPAL_ONTOLOGY_PREFIX], ["$LYTONEPAL_ONTOLOGY_PREFIX"], [The Lytonepal ontology prefix])
+
 # Checks for programs.
 AC_PROG_CC
 gl_EARLY
