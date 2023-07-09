@@ -36,7 +36,7 @@ dist:
     - ../configure --enable-relocatable --enable-valgrind-tests=yes
     - make -j
     - mv src/libadftool/libadftool_la-lexer.c ../src/libadftool/
-    - make -j distcheck
+    - make -j distcheck 'TESTS_ENVIRONMENT = export CK_TIMEOUT_MULTIPLIER=10;'
     - cp adftool-*.tar.gz ../public/adftool-latest.tar.gz
     - cp ../.version ../public
   artifacts:
