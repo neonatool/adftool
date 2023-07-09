@@ -1,7 +1,10 @@
 #+title: What’s new in adftool
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
-
+** Nomad ontology
+The ontology URI is now configured at build-time. An exported
+function, adftool_lytonepal, can then return the correct URI for a
+lytonepal concept.
 
 * Noteworthy changes in release 0.7.2 (2023-03-29) [alpha]
 ** Fix the generated pointes
