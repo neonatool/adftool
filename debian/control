@@ -1,0 +1,13 @@
+Source: adftool
+Maintainer: Vivien Kraus <vivien.kraus@univ-reims.fr>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9), gettext, libgmp-dev, libhdf5-dev, zlib1g-dev, valgrind, libtinfo5, libmpfr-dev, texinfo, python3, libpython3-dev, pkg-config
+
+Package: adftool
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3
+Description: tool to parse and generate ADF files for EEG
+ The ADF specification is slightly incomplete, so I made one in the
+ same spirit but with more precise expectations.
