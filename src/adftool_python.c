@@ -690,6 +690,7 @@ file_open_data (struct adftool_py_file *self, PyObject * args)
 static PyObject *
 file_open_generated (struct adftool_py_file *self, PyObject * args)
 {
+  (void) args;
   struct adftool_file *new_file = adftool_file_open_generated ();
   if (new_file)
     {
