@@ -19,6 +19,7 @@ export default function () {
 		with_statement_copy, with_n_statements } = await import('./adftool_statement.mjs');
 	const { with_fir, with_bandpass, with_bandpassed } = await import('./adftool_fir.mjs');
 	const { File, with_file, with_generated_file } = await import('./adftool_file.mjs');
+	const { lytonepal } = await import('./adftool_lytonepal.mjs');
 	return {
 	    File: File,
 	    with_bandpass: with_bandpass,
@@ -46,7 +47,8 @@ export default function () {
 	    with_term: with_term,
 	    with_term_copy: with_term_copy,
 	    with_timespec: with_timespec,
-	    with_uint64_t_array: with_uint64_t_array
+	    with_uint64_t_array: with_uint64_t_array,
+            lytonepal: lytonepal
 	};
     });
 }

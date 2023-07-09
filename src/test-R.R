@@ -156,7 +156,7 @@ print (dataset)
 eeg_itself <- new (mod$term)
 eeg_itself$set_named ("")
 
-channel_ids <- f$lookup_objects (eeg_itself, "https://localhost/lytonepal#has-channel")
+channel_ids <- f$lookup_objects (eeg_itself, mod$lytonepal ("has-channel"))
 
 if (length (channel_ids) != 3) {
     stop ("The file did not create identifiers for the channel data!")
@@ -165,7 +165,7 @@ if (length (channel_ids) != 3) {
 ## Let’s take any channel... The second one for instance.
 picked <- 2
 channel <- channel_ids[[picked]]
-column_number <- f$lookup_integer (channel, "https://localhost/lytonepal#column-number")
+column_number <- f$lookup_integer (channel, mod$lytonepal ("column-number"))
 if (length (column_number) != 1) {
     stop (paste0 (channel$to_n3 (), " does not have exactly 1 column number"))
 }

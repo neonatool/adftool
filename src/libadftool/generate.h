@@ -413,7 +413,7 @@ file_open_generated (void)
 	{
 	  goto cleanup_term;
 	}
-      static const char *lyto = "https://localhost/lytonepal#";
+      static const char *lyto = LYTONEPAL_ONTOLOGY_PREFIX;
       char *id = malloc (strlen (lyto) + strlen (short_names[i]) + 1);
       if (id == NULL)
 	{

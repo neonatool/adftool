@@ -554,6 +554,11 @@ extern "C"
 						    adftool_channel_processor_group
 						    *group, int *work_done);
 
+  /* Return the full URI for the lytonepal ontology concept */
+  extern LIBADFTOOL_API size_t
+    adftool_lytonepal (const char *cncept, size_t start, size_t max,
+		       char *dest);
+
   /* Deprecated entry points, do not use. */
   LIBADFTOOL_DEPRECATED extern LIBADFTOOL_API
     int adftool_dictionary_get (struct adftool_file *file, uint32_t id,
@@ -616,6 +621,23 @@ extern "C"
 /* *INDENT-OFF* */
 namespace adftool
 {
+  static size_t lytonepal (const std::string cncept,
+                           size_t discard,
+                           const std::string::iterator begin, const
+                           std::string::iterator end) noexcept
+  {
+    return adftool_lytonepal (cncept.c_str (), discard, end - begin, &(*begin));
+  }
+
+  static std::string lytonepal_alloc (const std::string cncept)
+  {
+    std::string nothing;
+    size_t required = lytonepal (cncept, 0, nothing.begin (), nothing.end ());
+    std::string ret;
+    ret.resize (required);
+    lytonepal (cncept, 0, ret.begin (), ret.end ());
+    return ret;
+  }
   class term
   {
   private:
