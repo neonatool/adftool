@@ -28,7 +28,7 @@ jobs:
     - name: bootstrap
       run: ./bootstrap-bootstrap
     - name: configure
-      run: mkdir -p build-adftool-emscripten && cd build-adftool-emscripten && ../configure 
+      run: mkdir -p build-adftool-emscripten && cd build-adftool-emscripten && ../configure
     - name: make
       run: cd build-adftool-emscripten && make -j 8
     - name: make check
