@@ -87,8 +87,15 @@
 			       (not (string-suffix? "/hdf5" filename))))))
 
 (define gnulib
-  (git-checkout
-   (url "https://git.savannah.gnu.org/git/gnulib.git")))
+  (origin
+   (method git-fetch)
+   (uri
+    (git-reference
+     (url "https://git.savannah.gnu.org/git/gnulib.git")
+     (commit "9f205ff9624b8e10b4331432c59bc732b8c1a7fe")))
+   (sha256
+    (base32
+     "1wr45q2r2yvqqjj3kmf3frhwq2w8n8k6dp49v80rf3mazxi7213i"))))
 
 (define gnulib-patched
   (directory-union
