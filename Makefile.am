@@ -101,6 +101,7 @@ src_adftool_LDADD = \
 
 libadftool_la_SOURCES = \
   ./include/bplus.h \
+  src/gettext.h \
   src/libbplus/bplus_hdf5.h \
   src/libbplus/bplus_analyzer.h \
   src/libbplus/bplus_divider.h \
@@ -144,7 +145,8 @@ libadftool_la_SOURCES = \
   src/libadftool/statement.h \
   src/libadftool/term.c \
   src/libadftool/term.h \
-  src/libadftool/version.c
+  src/libadftool/version.c \
+  lib/relocatable.h
 libadftool_la_CPPFLAGS = \
   -I lib -I $(srcdir)/lib \
   -I $(abs_top_builddir)/src/libadftool -I $(abs_top_srcdir)/src/libadftool \
