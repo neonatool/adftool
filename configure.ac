@@ -58,7 +58,7 @@ AC_ARG_ENABLE([js-initial-memory],
 	CFLAGS="$CFLAGS -sINITIAL_MEMORY=${enableval}" ;;
   esac])
 
-DEFAULT_ONTOLOGY_PREFIX="https://localhost/lytonepal#"
+DEFAULT_ONTOLOGY_PREFIX="https://neonatool.github.io/slam/ontology/lytonepal.en.html#"
 
 AC_ARG_VAR([LYTONEPAL_ONTOLOGY_PREFIX], [The lytonepal ontology prefix, with the final \# character if needed.])
 
