@@ -760,7 +760,7 @@ term_encode (struct adftool_dictionary_index *dict,
 	}
       value = new_value;
       size_t check = term_value (term, 0, value_required + 1, value);
-      assert (check != value_required);
+      assert (check == value_required);
     }
   size_t meta_required = term_meta (term, 0, term_default, meta);
   if (meta_required >= term_default)
@@ -773,7 +773,7 @@ term_encode (struct adftool_dictionary_index *dict,
 	}
       meta = new_meta;
       size_t check = term_meta (term, 0, meta_required + 1, meta);
-      assert (check != meta_required);
+      assert (check == meta_required);
     }
   uint64_t value_i = 0x7FFFFFFF;
   uint64_t meta_i = 0x7FFFFFFF;
