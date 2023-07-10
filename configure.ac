@@ -115,6 +115,7 @@ PKG_CHECK_MODULES([HDF5], [hdf5], [
 AC_SEARCH_LIBS([H5open], [hdf5],,, [-lz])
 AC_SEARCH_LIBS([__gmpz_init], [gmp])
 AC_SEARCH_LIBS([cos], [m])
+AC_SEARCH_LIBS([modf], [m])
 PKG_CHECK_MODULES([PYTHON3], [python3], [
   CPPFLAGS="$CPPFLAGS $PYTHON3_CPPFLAGS"
   CFLAGS="$CFLAGS $PYTHON3_CFLAGS"
@@ -175,12 +176,22 @@ then
     fi
   fi
 fi
-
+AX_PTHREAD([
+  LIBS="$PTHREAD_LIBS $LIBS"
+  CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+  CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
+  CC="$PTHREAD_CC"
+  CXX="$PTHREAD_CXX"
+], [AC_MSG_ERROR([I need pthreads])])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h emscripten.h check.h])
 AC_CHECK_HEADER([hdf5.h],, [AC_MSG_ERROR([I need the HDF5 header.])])
 AC_CHECK_HEADER([gmp.h],, [AC_MSG_ERROR([I need the gmp.h header.])])
+AC_CHECK_HEADER([time.h],, [AC_MSG_ERROR([I need the time.h header.])])
+AC_CHECK_HEADER([stdbool.h],, [AC_MSG_ERROR([I need the stdbool.h header.])])
+AC_CHECK_HEADER([stdio.h],, [AC_MSG_ERROR([I need the stdio.h header.])])
+AC_CHECK_HEADER([pthread.h],, [AC_MSG_ERROR([I need the pthread.h header.])])
 AC_CHECK_HEADER([Python.h],, [
   if test x$python_module = xtrue ; then
     AC_MSG_ERROR([Python module was required, but Python.h cannot be used.])
@@ -213,6 +224,13 @@ CPPFLAGS="$SAVE_CPPFLAGS"
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
+AC_CHECK_FUNC([mkstemp],, [AC_MSG_ERROR([I need the mkstemp function.])])
+AC_CHECK_FUNC([time],, [AC_MSG_ERROR([I need the time function.])])
+AC_CHECK_FUNC([gmtime_r],, [AC_MSG_ERROR([I need the gmtime_r function.])])
+AC_CHECK_FUNC([timegm],, [AC_MSG_ERROR([I need the gmtime_r function.])])
+AC_CHECK_FUNC([snprintf],, [AC_MSG_ERROR([I need the snprintf function.])])
+AC_CHECK_FUNC([modf],, [AC_MSG_ERROR([I need the modf math function.])])
+AC_CHECK_FUNC([pthread_mutex_init],, [AC_MSG_ERROR([I need the pthread functions.])])
 AC_CHECK_FUNC([H5open],, [AC_MSG_ERROR([I need the HDF5 library functions.])])
 AC_CHECK_FUNC([__gmpz_init],, [AC_MSG_ERROR([I need the GMP library functions.])])
 AC_SEARCH_LIBS([srunner_create], [check])

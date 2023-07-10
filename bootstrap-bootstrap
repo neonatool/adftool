@@ -8,4 +8,6 @@ then
     export GNULIB_SRCDIR="$PWD/gnulib"
 fi
 
+cp /usr/share/gettext/gettext.h src/gettext.h
+
 cp "$GNULIB_SRCDIR"/top/* "$medir" && "$medir"/bootstrap "$@"
