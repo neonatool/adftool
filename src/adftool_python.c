@@ -591,7 +591,7 @@ PyInit_adftool (void)
 }
 
 static PyObject *
-lytonepal (PyObject *self, PyObject * args)
+lytonepal (PyObject * self, PyObject * args)
 {
   const char *c_concept;
   if (PyArg_ParseTuple (args, "s", &c_concept) == 0)
