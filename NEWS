@@ -1,5 +1,8 @@
 #+title: What’s new in adftool
 
+* Noteworthy changes in release ?.? (????-??-??) [?]
+
+
 * Noteworthy changes in release 0.8.0 (2023-07-10) [alpha]
 ** Nomad ontology
 The ontology URI is now configured at build-time. An exported
